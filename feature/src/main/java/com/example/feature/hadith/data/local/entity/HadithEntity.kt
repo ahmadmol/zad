@@ -11,13 +11,20 @@ data class HadithEntity(
     val narrator: String,
     val source: String,
     val category: String,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val explanation: String? = null
 ) {
-    fun toDomain() = Hadith(id, text, narrator, source, category, isFavorite)
+    fun toDomain() = Hadith(id, text, narrator, source, category, isFavorite, explanation)
     
     companion object {
         fun fromDomain(hadith: Hadith) = HadithEntity(
-            hadith.id, hadith.text, hadith.narrator, hadith.source, hadith.category, hadith.isFavorite
+            hadith.id,
+            hadith.text,
+            hadith.narrator,
+            hadith.source,
+            hadith.category,
+            hadith.isFavorite,
+            hadith.explanation
         )
     }
 }

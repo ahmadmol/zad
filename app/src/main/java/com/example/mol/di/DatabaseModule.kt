@@ -2,6 +2,7 @@ package com.example.mol.di
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.feature.azkar.data.local.entity.ZikrEntity
 import com.example.feature.core.data.local.database.IhsanDatabase
@@ -16,11 +17,18 @@ import org.koin.dsl.module
 val databaseModule = module {
     single<IhsanDatabase> {
         val context = androidContext()
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Add explanation column to hadiths table; existing rows will have NULL
+                database.execSQL("ALTER TABLE hadiths ADD COLUMN explanation TEXT")
+            }
+        }
+
         Room.databaseBuilder(
             context,
             IhsanDatabase::class.java,
             "ihsan_master_db"
-        ).fallbackToDestructiveMigration()
+        ).addMigrations(MIGRATION_2_3)
         .addCallback(object : RoomDatabase.Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)

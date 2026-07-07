@@ -3,6 +3,7 @@ package com.example.feature.hadith.presentation
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,6 +12,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,6 +28,12 @@ import com.example.designsystem.component.IhsanSearchBar
 import com.example.designsystem.component.shimmerEffect
 import com.example.feature.hadith.domain.model.Hadith
 import org.koin.androidx.compose.koinViewModel
+import kotlinx.coroutines.launch
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,9 +42,16 @@ fun HadithScreen(
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    var selectedHadith by rememberSaveable { mutableStateOf<Long?>(null) }
+    val selectedHadithObj by remember(uiState.hadiths, selectedHadith) {
+        derivedStateOf { uiState.hadiths.find { it.id == selectedHadith } }
+    }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
                 CenterAlignedTopAppBar(
                     title = { Text("الأحاديث النبوية", fontWeight = FontWeight.Bold) },
@@ -70,6 +85,23 @@ fun HadithScreen(
                     onCategorySelected = { viewModel.onAction(HadithAction.OnCategorySelected(it)) }
                 )
 
+                // Hadith of the Day
+                uiState.hadithOfTheDay?.let { today ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(text = "حديث اليوم", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                            Spacer(Modifier.height(8.dp))
+                            Text(text = "« ${today.text} »", color = MaterialTheme.colorScheme.onPrimaryContainer)
+                        }
+                    }
+                }
+
                 if (uiState.isLoading && uiState.hadiths.isEmpty()) {
                     HadithShimmerList()
                 } else {
@@ -81,12 +113,22 @@ fun HadithScreen(
                         items(uiState.hadiths, key = { it.id }) { hadith ->
                             HadithCard(hadith = hadith, onToggleFavorite = {
                                 viewModel.onAction(HadithAction.OnToggleFavorite(hadith.id))
-                            })
+                            }, onOpenDetails = { selectedHadith = hadith.id })
+                            Spacer(modifier = Modifier.height(4.dp))
                         }
                     }
                 }
             }
         }
+    }
+
+    // Details sheet
+    selectedHadithObj?.let { hadith ->
+        HadithDetailsBottomSheet(hadith = hadith, onDismiss = { selectedHadith = null }, onCopied = {
+            coroutineScope.launch { snackbarHostState.showSnackbar("تم النسخ") }
+        }, onShared = {
+            // no-op
+        })
     }
 }
 
@@ -114,7 +156,7 @@ fun CategoryChips(
     selectedCategory: String?,
     onCategorySelected: (String?) -> Unit
 ) {
-    val categories = listOf("الكل", "الإيمان", "القرآن", "الأخلاق", "الصلاة")
+    val categories = listOf("الكل", "المفضلة", "الإيمان", "القرآن", "الأخلاق", "الصلاة")
     
     androidx.compose.foundation.lazy.LazyRow(
         modifier = Modifier.fillMaxWidth(),
@@ -138,9 +180,9 @@ fun CategoryChips(
 }
 
 @Composable
-fun HadithCard(hadith: Hadith, onToggleFavorite: () -> Unit) {
+fun HadithCard(hadith: Hadith, onToggleFavorite: () -> Unit, onOpenDetails: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable { onOpenDetails() },
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

@@ -6,13 +6,15 @@ import com.example.feature.hadith.domain.model.Hadith
 import com.example.feature.hadith.domain.repository.HadithRepository
 import com.example.feature.hadith.domain.usecase.GetHadithsUseCase
 import kotlinx.coroutines.flow.*
+import java.time.LocalDate
 import kotlinx.coroutines.launch
 
 data class HadithUiState(
     val hadiths: List<Hadith> = emptyList(),
     val isLoading: Boolean = false,
     val searchQuery: String = "",
-    val selectedCategory: String? = null
+    val selectedCategory: String? = null,
+    val hadithOfTheDay: Hadith? = null
 )
 
 sealed interface HadithAction {
@@ -35,13 +37,27 @@ class HadithViewModel(
         _selectedCategory
     ) { hadiths, query, category ->
         val filtered = hadiths.filter {
-            (category == null || it.category == category) &&
-            (query.isBlank() || it.text.contains(query, ignoreCase = true) || it.narrator.contains(query, ignoreCase = true))
+            val categoryOk = when (category) {
+                null -> true
+                "المفضلة" -> it.isFavorite
+                else -> it.category == category
+            }
+            categoryOk && (query.isBlank() || it.text.contains(query, ignoreCase = true)
+                    || it.narrator.contains(query, ignoreCase = true)
+                    || it.source.contains(query, ignoreCase = true)
+                    || it.category.contains(query, ignoreCase = true))
         }
+
+        val hadithOfTheDay = if (hadiths.isNotEmpty()) {
+            val day = LocalDate.now().toEpochDay()
+            val idx = (Math.abs(day) % hadiths.size).toInt()
+            hadiths[idx]
+        } else null
         HadithUiState(
             hadiths = filtered,
             searchQuery = query,
             selectedCategory = category
+            , hadithOfTheDay = hadithOfTheDay
         )
     }.stateIn(
         scope = viewModelScope,

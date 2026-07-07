@@ -34,30 +34,35 @@ class HadithRepositoryImpl(private val dao: HadithDao) : HadithRepository {
                     narrator = "عمر بن الخطاب",
                     source = "صحيح البخاري ومسلم",
                     category = "الإيمان"
+                    , explanation = "شرح مؤقت: يُعرف أن النية أهم عامل في قبول العمل. TODO: استبدال بشرح تفصيلي"
                 ),
                 HadithEntity(
                     text = "خيركم من تعلم القرآن وعلمه",
                     narrator = "عثمان بن عفان",
                     source = "صحيح البخاري",
                     category = "القرآن"
+                    , explanation = "شرح مؤقت: يحث على تعلم القرآن وتعليمه. TODO: استبدال بشرح تفصيلي"
                 ),
                 HadithEntity(
                     text = "لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه",
                     narrator = "أنس بن مالك",
                     source = "صحيح البخاري ومسلم",
                     category = "الأخلاق"
+                    , explanation = "شرح مؤقت: المبدأ الذاتي للعلاقات والأخلاق الإسلامية. TODO: استبدال بشرح تفصيلي"
                 ),
                 HadithEntity(
                     text = "من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت",
                     narrator = "أبو هريرة",
                     source = "صحيح البخاري ومسلم",
                     category = "الأخلاق"
+                    , explanation = "شرح مؤقت: أهمية ضبط اللسان والتزام الخير. TODO: استبدال بشرح تفصيلي"
                 ),
                 HadithEntity(
                     text = "الدين النصيحة",
                     narrator = "تميم الداري",
                     source = "صحيح مسلم",
                     category = "الإيمان"
+                    , explanation = "شرح مؤقت: الحث على النصيحة كجزء من الدين. TODO: استبدال بشرح تفصيلي"
                 )
             )
             dao.insertHadiths(initialHadiths)
