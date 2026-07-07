@@ -1,1 +1,2 @@
-# Consumer ProGuard rules for the feature module
+-keep class com.batoulapps.adhan.** { *; }
+-keep class com.batoulapps.adhan2.** { *; }

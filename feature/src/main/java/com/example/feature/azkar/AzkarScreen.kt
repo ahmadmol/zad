@@ -1,221 +1,78 @@
 package com.example.feature.azkar
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
+import androidx.compose.animation.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.TouchApp
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.designsystem.theme.*
-import com.example.feature.azkar.domain.usecase.GetAzkarUseCase
-import com.example.feature.azkar.domain.usecase.IncrementCounterUseCase
-import com.example.feature.azkar.domain.usecase.ResetCounterUseCase
+import com.example.designsystem.component.IhsanSearchBar
+import com.example.feature.azkar.domain.model.Zikr
 import com.example.feature.azkar.presentation.AzkarAction
 import com.example.feature.azkar.presentation.AzkarUiState
 import com.example.feature.azkar.presentation.AzkarViewModel
-import com.example.feature.azkar.presentation.AzkarViewModelFactory
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AzkarScreen(
-    getAzkarUseCase: GetAzkarUseCase,
-    incrementCounterUseCase: IncrementCounterUseCase,
-    resetCounterUseCase: ResetCounterUseCase
+    viewModel: AzkarViewModel = koinViewModel(),
+    onNavigateBack: () -> Unit = {}
 ) {
-    val viewModel: AzkarViewModel = viewModel(
-        factory = AzkarViewModelFactory(
-            getAzkarUseCase = getAzkarUseCase,
-            incrementCounterUseCase = incrementCounterUseCase,
-            resetCounterUseCase = resetCounterUseCase
-        )
-    )
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-        AzkarContent(
-            state = uiState,
-            onAction = viewModel::onAction
-        )
-    }
-}
-
-@Composable
-private fun AzkarContent(
-    state: AzkarUiState,
-    onAction: (AzkarAction) -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
-    ) {
-        if (state.isLoading) {
-            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-        } else if (state.error != null) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = "خطأ: ${state.error}",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyLarge
+        Scaffold(
+            topBar = {
+                AzkarTopBar(
+                    onBack = onNavigateBack,
+                    onSearch = { viewModel.onAction(AzkarAction.OnSearchQueryChanged(it)) },
+                    searchQuery = uiState.searchQuery,
+                    onToggleFavorites = { viewModel.onAction(AzkarAction.OnToggleShowFavorites(!uiState.showFavoritesOnly)) },
+                    isFavoritesOnly = uiState.showFavoritesOnly
                 )
-                Spacer(modifier = Modifier.height(MolTheme.spacing.medium))
-                Button(onClick = { /* ViewModel should handle refresh if needed */ }) {
-                    Text("إعادة المحاولة")
-                }
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(MolTheme.spacing.large),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceEvenly
-            ) {
-                // App Title
-                Text(
-                    text = "بركة",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary
+            },
+            containerColor = MaterialTheme.colorScheme.background
+        ) { padding ->
+            Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+                CategoryTabs(
+                    selectedCategory = uiState.selectedCategory,
+                    onCategorySelected = { viewModel.onAction(AzkarAction.OnCategorySelected(it)) }
                 )
-
-                // Zikr Text Section
-                Text(
-                    text = state.zikertext,
-                    style = MaterialTheme.typography.headlineLarge,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = MolTheme.spacing.medium)
-                )
-
-                // Counter Circle Section
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.size(280.dp)
-                ) {
-                    val progress by animateFloatAsState(
-                        targetValue = if (state.targetCount > 0) state.currentCount.toFloat() / state.targetCount else 0f,
-                        label = "progress"
-                    )
-                    
-                    val isCompleted = state.currentCount >= state.targetCount && state.targetCount > 0
-                    val activeColor = if (isCompleted) Accent else MaterialTheme.colorScheme.primary
-
-                    // Progress Ring
-                    Canvas(modifier = Modifier.fillMaxSize()) {
-                        drawArc(
-                            color = Grey.copy(alpha = 0.1f),
-                            startAngle = -90f,
-                            sweepAngle = 360f,
-                            useCenter = false,
-                            style = Stroke(width = 16.dp.toPx(), cap = StrokeCap.Round)
+                
+                Box(modifier = Modifier.weight(1f)) {
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    } else if (uiState.azkarList.isEmpty()) {
+                        EmptyState(
+                            message = if (uiState.showFavoritesOnly) "لا توجد أذكار في المفضلة" else "لا توجد أذكار متاحة",
+                            modifier = Modifier.align(Alignment.Center)
                         )
-                        drawArc(
-                            color = activeColor,
-                            startAngle = -90f,
-                            sweepAngle = 360f * progress,
-                            useCenter = false,
-                            style = Stroke(width = 16.dp.toPx(), cap = StrokeCap.Round)
-                        )
-                    }
-
-                    // Gradient Circle
-                    Box(
-                        modifier = Modifier
-                            .size(220.dp)
-                            .shadow(16.dp, CircleShape)
-                            .background(
-                                brush = if (isCompleted) 
-                                    Brush.linearGradient(listOf(Accent, Accent)) 
-                                    else Brush.linearGradient(listOf(GradientStart, GradientEnd)),
-                                shape = CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = state.currentCount.toString(),
-                                style = MaterialTheme.typography.headlineMedium.copy(
-                                    fontSize = 64.sp,
-                                    color = White,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            )
-                            Text(
-                                text = "/${state.targetCount}",
-                                style = MaterialTheme.typography.titleLarge.copy(color = White.copy(alpha = 0.8f))
-                            )
+                    } else {
+                        if (uiState.selectedCategory == "سبحة حرة") {
+                            FreeCounterScreen(uiState.azkarList.first(), viewModel::onAction)
+                        } else {
+                            AzkarList(uiState.azkarList, uiState.selectedCategory, uiState.fontSize, viewModel::onAction)
                         }
-                    }
-                }
-
-                // Action Buttons Section
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = MolTheme.spacing.medium),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Reset Button
-                    OutlinedButton(
-                        onClick = { onAction(AzkarAction.OnReset) },
-                        modifier = Modifier
-                            .height(64.dp)
-                            .weight(1f),
-                        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
-                        shape = MaterialTheme.shapes.medium
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(modifier = Modifier.width(MolTheme.spacing.small))
-                        Text("إعادة", color = MaterialTheme.colorScheme.primary)
-                    }
-
-                    Spacer(modifier = Modifier.width(MolTheme.spacing.medium))
-
-                    // Increment Button
-                    Button(
-                        onClick = { onAction(AzkarAction.OnIncrement) },
-                        modifier = Modifier
-                            .height(64.dp)
-                            .weight(2f),
-                        shape = MaterialTheme.shapes.medium,
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.TouchApp,
-                            contentDescription = null,
-                            tint = White
-                        )
-                        Spacer(modifier = Modifier.width(MolTheme.spacing.small))
-                        Text("تسبيح", style = MaterialTheme.typography.labelLarge.copy(color = White))
                     }
                 }
             }
@@ -223,57 +80,349 @@ private fun AzkarContent(
     }
 }
 
-// Previews
-@Preview(showBackground = true, name = "Normal State", locale = "ar")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AzkarContentNormalPreview() {
-    MolTheme {
-        AzkarContent(
-            state = AzkarUiState(
-                zikertext = "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
-                currentCount = 10,
-                targetCount = 33,
-                isLoading = false
-            ),
-            onAction = {}
+private fun AzkarTopBar(
+    onBack: () -> Unit,
+    onSearch: (String) -> Unit,
+    searchQuery: String,
+    onToggleFavorites: () -> Unit,
+    isFavoritesOnly: Boolean
+) {
+    Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
+        CenterAlignedTopAppBar(
+            title = { Text("الأذكار", fontWeight = FontWeight.Bold) },
+            navigationIcon = {
+                IconButton(onClick = onBack) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                }
+            },
+            actions = {
+                IconButton(onClick = onToggleFavorites) {
+                    Icon(
+                        imageVector = if (isFavoritesOnly) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorites",
+                        tint = if (isFavoritesOnly) Color.Red else Color.Gray
+                    )
+                }
+            }
+        )
+        IhsanSearchBar(
+            query = searchQuery,
+            onQueryChange = onSearch,
+            placeholder = "بحث في الأذكار...",
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
     }
 }
 
-@Preview(showBackground = true, name = "Completed State", locale = "ar")
 @Composable
-fun AzkarContentCompletedPreview() {
-    MolTheme {
-        AzkarContent(
-            state = AzkarUiState(
-                zikertext = "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
-                currentCount = 33,
-                targetCount = 33,
-                isLoading = false
-            ),
-            onAction = {}
-        )
+private fun CategoryTabs(
+    selectedCategory: String?,
+    onCategorySelected: (String?) -> Unit
+) {
+    val categories = listOf(
+        null to "الكل",
+        "أذكار الصباح" to "الصباح",
+        "أذكار المساء" to "المساء",
+        "أذكار بعد الصلاة" to "بعد الصلاة",
+        "أذكار النوم" to "النوم",
+        "تسابيح عامة" to "تسابيح",
+        "سبحة حرة" to "سبحة"
+    )
+
+    ScrollableTabRow(
+        selectedTabIndex = categories.indexOfFirst { it.first == selectedCategory }.coerceAtLeast(0),
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.primary,
+        edgePadding = 16.dp,
+        divider = {}
+    ) {
+        categories.forEach { (id, label) ->
+            Tab(
+                selected = selectedCategory == id,
+                onClick = { onCategorySelected(id) }
+            ) {
+                Text(
+                    text = label,
+                    modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
+                    fontWeight = if (selectedCategory == id) FontWeight.Bold else FontWeight.Normal
+                )
+            }
+        }
     }
 }
 
-@Preview(showBackground = true, name = "Loading State", locale = "ar")
 @Composable
-fun AzkarContentLoadingPreview() {
-    MolTheme {
-        AzkarContent(
-            state = AzkarUiState(isLoading = true),
-            onAction = {}
-        )
+private fun AzkarList(
+    azkar: List<Zikr>,
+    category: String?,
+    fontSize: Float,
+    onAction: (AzkarAction) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        if (category != null) {
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = { onAction(AzkarAction.OnResetCategory(category)) }) {
+                        Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("إعادة ضبط الكل", style = MaterialTheme.typography.labelLarge)
+                    }
+                }
+            }
+        }
+        
+        items(azkar, key = { it.id }) { zikr ->
+            ZikrCard(zikr = zikr, fontSize = fontSize, onAction = onAction)
+        }
     }
 }
 
-@Preview(showBackground = true, name = "Error State", locale = "ar")
 @Composable
-fun AzkarContentErrorPreview() {
-    MolTheme {
-        AzkarContent(
-            state = AzkarUiState(error = "فشل في جلب البيانات", isLoading = false),
-            onAction = {}
+private fun ZikrCard(zikr: Zikr, fontSize: Float, onAction: (AzkarAction) -> Unit) {
+    val haptic = LocalHapticFeedback.current
+    
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (zikr.isCompleted) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+            else MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(
+            width = 1.dp,
+            color = if (zikr.isCompleted) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+            else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
         )
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = zikr.title,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                IconButton(onClick = { onAction(AzkarAction.OnToggleFavorite(zikr.id)) }) {
+                    Icon(
+                        imageVector = if (zikr.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        tint = if (zikr.isFavorite) Color(0xFFE91E63) else Color.Gray,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            Text(
+                text = zikr.text,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    lineHeight = (fontSize * 1.5).sp,
+                    textAlign = TextAlign.Center,
+                    fontSize = fontSize.sp
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            
+            Spacer(modifier = Modifier.height(20.dp))
+            
+            Box(contentAlignment = Alignment.Center) {
+                LinearProgressIndicator(
+                    progress = { if (zikr.targetCount > 0) zikr.currentCount.toFloat() / zikr.targetCount.toFloat() else 0f },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(10.dp)
+                        .clip(CircleShape),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = zikr.currentCount.toString(),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = " / ${zikr.targetCount}",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
+                }
+                
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = { onAction(AzkarAction.OnReset(zikr.id)) },
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.RestartAlt, 
+                            contentDescription = "Reset", 
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(
+                        onClick = {
+                            if (!zikr.isCompleted) {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                onAction(AzkarAction.OnIncrement(zikr.id))
+                            }
+                        },
+                        enabled = !zikr.isCompleted,
+                        shape = RoundedCornerShape(16.dp),
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                        )
+                    ) {
+                        if (zikr.isCompleted) {
+                            Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(20.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("اكتمل")
+                        } else {
+                            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("تسبيح", fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FreeCounterScreen(zikr: Zikr, onAction: (AzkarAction) -> Unit) {
+    val haptic = LocalHapticFeedback.current
+    
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Surface(
+            modifier = Modifier.padding(bottom = 32.dp),
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Text(
+                "المسبحة الحرة",
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+        
+        Box(
+            modifier = Modifier
+                .size(300.dp)
+                .clip(CircleShape)
+                .background(
+                    brush = androidx.compose.ui.graphics.Brush.radialGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                        )
+                    )
+                )
+                .clickable {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onAction(AzkarAction.OnIncrement(zikr.id))
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = zikr.currentCount.toString(),
+                    style = MaterialTheme.typography.displayLarge.copy(
+                        fontSize = 80.sp,
+                        fontWeight = FontWeight.Black,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    "اضغط للتسبيح",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.White.copy(alpha = 0.7f)
+                )
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(48.dp))
+        
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            OutlinedButton(
+                onClick = { onAction(AzkarAction.OnReset(zikr.id)) },
+                modifier = Modifier
+                    .weight(1f)
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error
+                ),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
+            ) {
+                Icon(Icons.Default.RestartAlt, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("تصفير العداد", fontWeight = FontWeight.Bold)
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmptyState(message: String, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = Icons.Default.Info,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = message, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

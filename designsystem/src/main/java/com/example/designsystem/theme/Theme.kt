@@ -13,32 +13,48 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryOrange,
-    secondary = PrimaryBlue,
-    tertiary = Accent,
+    primary = PrimaryTeal,
+    onPrimary = OnPrimaryWhite,
+    primaryContainer = PrimaryTeal.copy(alpha = 0.3f),
+    onPrimaryContainer = OnPrimaryWhite,
+    secondary = SecondaryTeal,
+    onSecondary = OnSecondaryTeal,
+    secondaryContainer = SecondaryContainerTeal,
+    onSecondaryContainer = OnSecondaryContainerTeal,
+    tertiary = TertiaryCream,
+    onTertiary = OnTertiaryTeal,
+    tertiaryContainer = TertiaryContainerWhite,
     background = Dark,
-    surface = Dark,
-    onPrimary = White,
-    onSecondary = White,
-    onTertiary = White,
     onBackground = White,
-    onSurface = White
+    surface = Dark,
+    onSurface = White,
+    error = ErrorRed,
+    outline = OutlineGrey
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = PrimaryOrange,
-    secondary = PrimaryBlue,
-    tertiary = Accent,
-    background = Background,
-    surface = White,
-    onPrimary = White,
-    onSecondary = White,
-    onTertiary = White,
-    onBackground = Dark,
-    onSurface = Dark
+    primary = PrimaryTeal,
+    onPrimary = OnPrimaryWhite,
+    primaryContainer = PrimaryContainerTeal,
+    onPrimaryContainer = OnPrimaryContainerTeal,
+    secondary = SecondaryTeal,
+    onSecondary = OnSecondaryTeal,
+    secondaryContainer = SecondaryContainerTeal,
+    onSecondaryContainer = OnSecondaryContainerTeal,
+    tertiary = TertiaryCream,
+    onTertiary = OnTertiaryTeal,
+    tertiaryContainer = TertiaryContainerWhite,
+    background = BackgroundCream,
+    onBackground = OnBackgroundDark,
+    surface = SurfaceWhite,
+    onSurface = OnSurfaceDark,
+    surfaceVariant = SurfaceVariantLight,
+    onSurfaceVariant = OnSurfaceVariantGrey,
+    error = ErrorRed,
+    outline = OutlineGrey
 )
 
-object MolTheme {
+object IhsanTheme {
     val spacing: Spacing
         @Composable
         @ReadOnlyComposable
@@ -46,7 +62,7 @@ object MolTheme {
 }
 
 @Composable
-fun MolTheme(
+fun IhsanTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit

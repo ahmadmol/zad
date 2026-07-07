@@ -1,3 +1,47 @@
 <resources>
-    <string name="app_name">feature</string>
+    <string name="app_name">إحسان</string>
+    <string name="search_placeholder">بحث...</string>
+    <string name="category_all">الكل</string>
+    <string name="category_morning">أذكار الصباح</string>
+    <string name="category_evening">أذكار المساء</string>
+    <string name="category_prayer">أذكار الصلاة</string>
+    <string name="category_general">أذكار عامة</string>
+    <string name="category_sebha">سبحة</string>
+    <string name="category_custom">أذكاري الخاصة</string>
+    <string name="no_results">لا توجد نتائج</string>
+    <string name="add_zikr_title">إضافة ذكر جديد</string>
+    <string name="zikr_text_label">نص الذكر</string>
+    <string name="target_count_label">العدد المستهدف (0 للسبحة الحرة)</string>
+    <string name="btn_add">إضافة</string>
+    <string name="btn_cancel">إلغاء</string>
+    <string name="btn_tasbih">تسبيح</string>
+    <string name="btn_reset">إعادة</string>
+    <string name="completion_message">تقبل الله طاعتك ✨</string>
+    <string name="stats_title">إحصائيات الأذكار</string>
+    <string name="chart_title">نشاطك خلال آخر 7 أيام</string>
+    <string name="total_daily_count">إجمالي التسبيح اليوم:</string>
+    <string name="daily_details_title">تفاصيل الأذكار اليومية:</string>
+    <string name="settings_title">الإعدادات</string>
+    <string name="font_size_label">حجم الخط</string>
+    <string name="dark_mode_label">الوضع الليلي</string>
+    <string name="vibration_label">الاهتزاز عند الانتهاء</string>
+    <string name="reminders_title">التنبيهات</string>
+    <string name="reminders_subtitle">ضبط مواعيد الأذكار اليومية</string>
+    <string name="morning_reminder_msg">حان وقت أذكار الصباح ☀️</string>
+    <string name="evening_reminder_msg">حان وقت أذكار المساء 🌙</string>
+    <string name="coming_soon_reminders">قريباً: ضبط مواعيد الأذكار</string>
+
+    <!-- Dashboard -->
+    <string name="welcome_user">أهلاً بك، %1$s</string>
+    <string name="menu_desc">القائمة</string>
+    <string name="notifications_desc">الإشعارات</string>
+    <string name="default_city">حلب</string>
+    <string name="default_country">سوريا</string>
+    <string name="error_location">تعذر جلب الموقع</string>
+    <string name="daily_verse_default">إِنَّمَا الْمُؤْمِنُونَ إِخْوَةٌ فَأَصْلِحُوا بَيْنَ أَخَوَيْكُمْ</string>
+    <string name="daily_verse_source_default">سورة الحجرات، آية ١٠</string>
+    <string name="default_zikr_title">الورد اليومي</string>
+    <string name="default_allah_name">الرَّحْمَنُ</string>
+    <string name="default_allah_transliteration">Ar-Rahman</string>
+    <string name="default_allah_meaning">The Entirely Merciful</string>
 </resources>
