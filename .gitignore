@@ -13,3 +13,22 @@
 .externalNativeBuild
 .cxx
 local.properties
+ 
+# Additional ignores
+# Android Studio
+.idea/
+
+# Kotlin
+.kotlin/
+
+# Gradle
+.gradle/
+
+# Local configuration
+local.properties
+
+# Build
+**/build/
+
+# Logs
+*.log
