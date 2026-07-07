@@ -8,14 +8,16 @@ import androidx.lifecycle.viewModelScope
 import com.batoulapps.adhan2.CalculationMethod
 import com.batoulapps.adhan2.Madhab
 import com.example.feature.R
+import com.example.designsystem.component.DailyActivityItemData
 import com.example.feature.asma.domain.usecase.GetAsmaUseCase
+import com.example.feature.asma.domain.util.AsmaTodayResolver
 import com.example.feature.azkar.domain.usecase.GetAzkarUseCase
 import com.example.feature.azkar.data.local.SettingsManager
 import com.example.feature.core.preferences.UserPreferences
 import com.example.feature.core.util.HijriDateFormatter
 import com.example.feature.ehsan.domain.usecase.GetDonationsUseCase
-import com.example.feature.prayer.util.PrayerCalculator
 import com.example.feature.prayer.PrayerTime
+import com.example.feature.prayer.util.PrayerCalculator
 import com.example.feature.prayer.util.PrayerNotificationScheduler
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -57,12 +59,60 @@ class HomeDashboardViewModel(
     private var iqamahMins = 0
 
     private var dataObserveJob: Job? = null
+    private var dailyActivityJob: Job? = null
     private var countdownJob: Job? = null
     private val timeFormat = SimpleDateFormat("hh:mm:ss a", Locale("ar"))
+    private val activityDateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+    private val dailyActivityTemplates = listOf(
+        DailyActivityTemplate(
+            id = "quran_reading",
+            title = "قراءة قرآن",
+            targetCount = 1,
+            unit = "مرة",
+            route = "quran_list"
+        ),
+        DailyActivityTemplate(
+            id = "morning_azkar",
+            title = "أذكار الصباح",
+            targetCount = 1,
+            unit = "مرة",
+            route = "azkar_screen"
+        ),
+        DailyActivityTemplate(
+            id = "evening_azkar",
+            title = "أذكار المساء",
+            targetCount = 1,
+            unit = "مرة",
+            route = "azkar_screen"
+        ),
+        DailyActivityTemplate(
+            id = "tasbeeh",
+            title = "تسبيح",
+            targetCount = 100,
+            unit = "حبة",
+            route = "sebha_screen"
+        ),
+        DailyActivityTemplate(
+            id = "daily_dua",
+            title = "دعاء اليوم",
+            targetCount = 1,
+            unit = "مرة",
+            route = "dua_screen"
+        ),
+        DailyActivityTemplate(
+            id = "daily_name",
+            title = "اسم اليوم",
+            targetCount = 1,
+            unit = "مرة",
+            route = "asma_screen"
+        )
+    )
 
     init {
         observeSettings()
         observeData()
+        observeDailyActivities()
         startPrayerCountdown()
     }
 
@@ -229,6 +279,66 @@ class HomeDashboardViewModel(
         } catch (e: Exception) {}
     }
 
+    private fun todayDate(): String = activityDateFormatter.format(Date())
+
+    private fun observeDailyActivities() {
+        dailyActivityJob?.cancel()
+        dailyActivityJob = viewModelScope.launch {
+            combine(
+                userPreferences.dailyActivityDate,
+                userPreferences.dailyActivityCounts
+            ) { date, counts -> date to counts }
+                .collectLatest { (date, counts) ->
+                    val today = todayDate()
+                    if (date != today) {
+                        userPreferences.resetDailyActivityCounts(today)
+                        return@collectLatest
+                    }
+
+                    _uiState.update { state ->
+                        state.copy(
+                            data = state.data.copy(
+                                dailyActivities = createDailyActivities(counts)
+                            )
+                        )
+                    }
+                }
+        }
+    }
+
+    private fun createDailyActivities(counts: Map<String, Int>): List<DailyActivityItemData> {
+        return dailyActivityTemplates.map { template ->
+            val current = counts[template.id] ?: 0
+            DailyActivityItemData(
+                id = template.id,
+                title = template.title,
+                currentCount = current,
+                targetCount = template.targetCount,
+                unit = template.unit,
+                isCompleted = current >= template.targetCount,
+                route = template.route
+            )
+        }
+    }
+
+    private fun findTemplate(id: String): DailyActivityTemplate? =
+        dailyActivityTemplates.firstOrNull { it.id == id }
+
+    private suspend fun incrementDailyActivityCount(id: String) {
+        val template = findTemplate(id) ?: return
+        val current = _uiState.value.data.dailyActivities.firstOrNull { it.id == id }?.currentCount ?: 0
+        if (current >= template.targetCount) return
+        userPreferences.setDailyActivityCount(id, current + 1)
+    }
+
+    private data class DailyActivityTemplate(
+        val id: String,
+        val title: String,
+        val targetCount: Int,
+        val unit: String,
+        val route: String
+    )
+
     private fun observeData() {
         dataObserveJob?.cancel()
         dataObserveJob = viewModelScope.launch {
@@ -245,7 +355,7 @@ class HomeDashboardViewModel(
                     azkar.map { if (it.targetCount > 0) it.currentCount.toFloat() / it.targetCount else 0f }.average().toFloat()
                 } else 0f
                 
-                val randomAsma = asma.randomOrNull()
+                val dailyAsma = AsmaTodayResolver.selectDailyName(asma)
                 
                 val offers = donations.count { it.type == "OFFER" }
                 val requests = donations.count { it.type == "REQUEST" }
@@ -255,9 +365,9 @@ class HomeDashboardViewModel(
                         data = state.data.copy(
                             userName = userName,
                             hijriDate = HijriDateFormatter.nowFormatted(),
-                            spotlightAllahName = randomAsma?.name ?: applicationContext.getString(R.string.default_allah_name),
-                            spotlightTransliteration = randomAsma?.transliteration ?: applicationContext.getString(R.string.default_allah_transliteration),
-                            spotlightMeaning = randomAsma?.meaning ?: applicationContext.getString(R.string.default_allah_meaning),
+                            spotlightAllahName = dailyAsma?.name ?: applicationContext.getString(R.string.default_allah_name),
+                            spotlightTransliteration = dailyAsma?.transliteration ?: applicationContext.getString(R.string.default_allah_transliteration),
+                            spotlightMeaning = dailyAsma?.meaning ?: applicationContext.getString(R.string.default_allah_meaning),
                             dailyZikrTitle = dailyZikr?.text ?: applicationContext.getString(R.string.default_zikr_title),
                             dailyZikrProgress = totalProgress,
                             dailyZikrPercentage = "${(totalProgress * 100).toInt()}٪",
@@ -335,12 +445,18 @@ class HomeDashboardViewModel(
                     settingsManager.setNotificationSoundType(action.type)
                 }
             }
+            is HomeDashboardAction.OnDailyActivityClick -> {
+                viewModelScope.launch {
+                    incrementDailyActivityCount(action.activityId)
+                }
+            }
         }
     }
 
     override fun onCleared() {
         super.onCleared()
         dataObserveJob?.cancel()
+        dailyActivityJob?.cancel()
         countdownJob?.cancel()
     }
 }

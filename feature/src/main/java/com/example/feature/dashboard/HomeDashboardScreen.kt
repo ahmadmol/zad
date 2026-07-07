@@ -63,7 +63,9 @@ fun HomeDashboardScreen(
     onNavigateToDonations: () -> Unit = {},
     onNavigateToQibla: () -> Unit = {},
     onNavigateToSearch: () -> Unit = {},
-    onNavigateToPrayer: () -> Unit = {}
+    onNavigateToPrayer: () -> Unit = {},
+    onNavigateToAsma: () -> Unit = {},
+    onNavigateToDailyActivities: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -86,6 +88,7 @@ fun HomeDashboardScreen(
     val actions = remember {
         listOf(
             HomeIslamicAction("القبلة", Icons.Default.Explore, "qibla"),
+            HomeIslamicAction("أسماء الله", Icons.Default.AutoAwesome, "asma"),
             HomeIslamicAction("دعاء", Icons.Default.VolunteerActivism, "dua"),
             HomeIslamicAction("قرآن", Icons.AutoMirrored.Filled.MenuBook, "quran"),
             HomeIslamicAction("حديث", Icons.Default.AutoStories, "hadith"),
@@ -93,7 +96,7 @@ fun HomeDashboardScreen(
         )
     }
 
-    val onActionClick: (String) -> Unit = remember(onNavigateToQibla, onNavigateToQuran, onNavigateToAzkar, onNavigateToDua, onNavigateToHadith) {
+    val onActionClick: (String) -> Unit = remember(onNavigateToQibla, onNavigateToQuran, onNavigateToAzkar, onNavigateToDua, onNavigateToHadith, onNavigateToAsma) {
         { route ->
             when (route) {
                 "qibla" -> onNavigateToQibla()
@@ -101,6 +104,7 @@ fun HomeDashboardScreen(
                 "azkar" -> onNavigateToAzkar()
                 "dua" -> onNavigateToDua()
                 "hadith" -> onNavigateToHadith()
+                "asma" -> onNavigateToAsma()
                 else -> Toast.makeText(context, "قريبًا، سيتم تفعيل هذه الميزة لاحقًا", Toast.LENGTH_SHORT).show()
             }
         }
@@ -162,7 +166,8 @@ fun HomeDashboardScreen(
                     SpotlightAllahNameCard(
                         name = uiState.data.spotlightAllahName,
                         transliteration = uiState.data.spotlightTransliteration,
-                        meaning = uiState.data.spotlightMeaning
+                        meaning = uiState.data.spotlightMeaning,
+                        onClick = onNavigateToAsma
                     )
                 }
 
@@ -210,11 +215,21 @@ fun HomeDashboardScreen(
                 }
 
                 DailyActivityCard(
-                    activities = listOf(
-                        DailyActivityItemData("صدقات", uiState.data.communityOffersCount, 10),
-                        DailyActivityItemData("تلاوة القرآن", 8, 10)
-                    ),
-                    onGoToChecklist = onNavigateToAzkar
+                    activities = uiState.data.dailyActivities,
+                    onGoToChecklist = onNavigateToDailyActivities,
+                    onActivityClick = { activity ->
+                        viewModel.onAction(HomeDashboardAction.OnDailyActivityClick(activity.id))
+                    },
+                    onActivityOpenRoute = { route ->
+                        when (route) {
+                            "qibla_screen" -> onNavigateToQibla()
+                            "quran_list" -> onNavigateToQuran()
+                            "azkar_screen" -> onNavigateToAzkar()
+                            "dua_screen" -> onNavigateToDua()
+                            "asma_screen" -> onNavigateToAsma()
+                            else -> Toast.makeText(context, "قريبًا، سيتم تفعيل هذه الميزة لاحقًا", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 )
             }
         }
@@ -278,10 +293,11 @@ fun HomeDashboardScreen(
 fun SpotlightAllahNameCard(
     name: String,
     transliteration: String,
-    meaning: String
+    meaning: String,
+    onClick: () -> Unit = {}
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable { onClick() },
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F8F6))
     ) {

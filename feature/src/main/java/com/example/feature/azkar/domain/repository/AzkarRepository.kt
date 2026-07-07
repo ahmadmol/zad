@@ -13,5 +13,6 @@ interface AzkarRepository {
     suspend fun resetCounter(zikrId: Long)
     suspend fun resetCategoryCounter(category: String)
     suspend fun addZikr(zikr: Zikr)
+    suspend fun deleteZikr(zikrId: Long)
     fun getLast7DaysStats(): Flow<List<com.example.feature.azkar.domain.model.DailyStat>>
 }

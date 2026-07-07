@@ -149,6 +149,11 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
         title = "بحث شامل",
         icon = Icons.Default.Search
     )
+    object DailyActivities : Screen(
+        route = "daily_activities",
+        title = "النشاطات اليومية",
+        icon = Icons.Default.List
+    )
 
     companion object {
         val items = listOf(Home, Donations, Profile)

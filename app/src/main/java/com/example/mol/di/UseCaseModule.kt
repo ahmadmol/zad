@@ -17,6 +17,8 @@ val useCaseModule = module {
     single { ResetCounterUseCase(get()) }
     single { ToggleFavoriteUseCase(get()) }
     single { AddCustomZikrUseCase(get()) }
+    single { EditZikrUseCase(get()) }
+    single { DeleteZikrUseCase(get()) }
     single { GetLast7DaysStatsUseCase(get()) }
 
     single { GetHadithsUseCase(get()) }

@@ -18,7 +18,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val repositoryModule = module {
-    single { AsmaLocalDataSource(androidContext()) }
+    single { AsmaLocalDataSource(androidContext(), get()) }
     single<AsmaRepository> { AsmaRepositoryImpl(get()) }
 
     single<AzkarRepository> { AzkarRepositoryImpl(get(), get()) }

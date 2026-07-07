@@ -15,4 +15,8 @@ class AsmaRepositoryImpl(
     override suspend fun loadAsma() {
         localDataSource.loadAsmaIfNeeded()
     }
+
+    override suspend fun toggleFavorite(id: Int) {
+        localDataSource.toggleFavorite(id)
+    }
 }

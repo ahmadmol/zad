@@ -1,5 +1,6 @@
 package com.example.feature.dashboard.presentation
 
+import com.example.designsystem.component.DailyActivityItemData
 import com.example.feature.azkar.domain.model.Zikr
 import com.example.feature.prayer.PrayerTime
 
@@ -30,6 +31,7 @@ data class HomeDashboardData(
     val communityRequestsCount: Int = 0,
     val activeVolunteersCount: Int = 0,
     val dailyDuas: List<Zikr> = emptyList(),
+    val dailyActivities: List<DailyActivityItemData> = emptyList(),
     val selectedPrayerIndex: Int? = null,
     val isPrayerSettingsVisible: Boolean = false,
     val isCitySelectionVisible: Boolean = false
@@ -52,4 +54,5 @@ sealed interface HomeDashboardAction {
     data class OnUpdatePrePrayerNotification(val minutes: Int) : HomeDashboardAction
     data class OnUpdateIqamahNotification(val minutes: Int) : HomeDashboardAction
     data class OnUpdateNotificationSound(val type: String) : HomeDashboardAction
+    data class OnDailyActivityClick(val activityId: String) : HomeDashboardAction
 }

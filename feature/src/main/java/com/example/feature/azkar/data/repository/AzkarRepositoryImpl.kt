@@ -66,6 +66,10 @@ class AzkarRepositoryImpl(
         dao.insertZikr(zikr.toEntity(dateProvider.getCurrentDate()))
     }
 
+    override suspend fun deleteZikr(zikrId: Long) {
+        dao.deleteZikrById(zikrId)
+    }
+
     override fun getLast7DaysStats(): Flow<List<DailyStat>> {
         return dao.getLast7DaysStats().map { list ->
             list.map { DailyStat(it.date, it.totalCount) }

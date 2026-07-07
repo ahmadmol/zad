@@ -5,5 +5,6 @@ data class AllahName(
     val name: String,
     val transliteration: String,
     val meaning: String,
-    val explanation: String
+    val explanation: String,
+    val isFavorite: Boolean = false
 )

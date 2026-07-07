@@ -2,18 +2,17 @@ package com.example.feature.asma.data.local
 
 import android.content.Context
 import com.example.feature.asma.domain.model.AllahName
+import com.example.feature.core.preferences.UserPreferences
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.io.IOException
 
-// DTO لتحويل JSON إلى كائنات Kotlin
 @Serializable
 private data class AsmaJsonDto(
     val id: Int,
@@ -23,23 +22,21 @@ private data class AsmaJsonDto(
     val explanation: String
 )
 
-class AsmaLocalDataSource(private val context: Context) {
-
-    // 1. الـ Cache: StateFlow لتخزين القائمة في الذاكرة
+class AsmaLocalDataSource(
+    private val context: Context,
+    private val userPreferences: UserPreferences
+) {
     private val _asmaCache = MutableStateFlow<List<AllahName>>(emptyList())
-
-    // 2. نعرضها كـ StateFlow غير قابل للتعديل من الخارج
     val asmaFlow: StateFlow<List<AllahName>> = _asmaCache.asStateFlow()
 
-    // 3. دالة لتحميل البيانات مرة واحدة فقط
     suspend fun loadAsmaIfNeeded() {
-        // إذا كانت القائمة فارغة، نقوم بالتحميل
-        if (_asmaCache.value.isEmpty()) {
-            withContext(Dispatchers.IO) {
-                try {
+        withContext(Dispatchers.IO) {
+            try {
+                if (_asmaCache.value.isEmpty()) {
                     val jsonString = context.assets.open("asma.json").bufferedReader().use { it.readText() }
                     val json = Json { ignoreUnknownKeys = true }
                     val dtos = json.decodeFromString<List<AsmaJsonDto>>(jsonString)
+                    val favoriteIds = userPreferences.favoriteAsmaIds.first().toSet()
 
                     val asmaList = dtos.map { dto ->
                         AllahName(
@@ -47,16 +44,38 @@ class AsmaLocalDataSource(private val context: Context) {
                             name = dto.name,
                             transliteration = dto.transliteration,
                             meaning = dto.meaning,
-                            explanation = dto.explanation
+                            explanation = dto.explanation,
+                            isFavorite = favoriteIds.contains(dto.id.toString())
                         )
                     }
 
-                    // تحديث الـ Cache
                     _asmaCache.value = asmaList
-                } catch (e: IOException) {
-                    // في حالة فشل قراءة الملف، نطبع الخطأ (يمكن تحسينه لاحقاً)
-                    e.printStackTrace()
+                } else {
+                    val favoriteIds = userPreferences.favoriteAsmaIds.first().toSet()
+                    _asmaCache.value = _asmaCache.value.map { item ->
+                        item.copy(isFavorite = favoriteIds.contains(item.id.toString()))
+                    }
                 }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    suspend fun toggleFavorite(id: Int) {
+        val favoriteIds = userPreferences.favoriteAsmaIds.first().toMutableSet()
+        val idKey = id.toString()
+        if (favoriteIds.contains(idKey)) {
+            favoriteIds.remove(idKey)
+        } else {
+            favoriteIds.add(idKey)
+        }
+        userPreferences.setFavoriteAsmaIds(favoriteIds)
+        _asmaCache.value = _asmaCache.value.map { item ->
+            if (item.id == id) {
+                item.copy(isFavorite = favoriteIds.contains(idKey))
+            } else {
+                item
             }
         }
     }

@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface AsmaRepository {
     fun getAllAsma(): Flow<List<AllahName>>
     suspend fun loadAsma()
+    suspend fun toggleFavorite(id: Int)
 }

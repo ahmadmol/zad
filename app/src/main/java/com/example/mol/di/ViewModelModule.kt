@@ -12,12 +12,15 @@ import com.example.feature.qibla.presentation.QiblaViewModel
 import com.example.feature.prayer.presentation.PrayerViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
+import com.example.feature.azkar.presentation.SebhaViewModel
 
 val viewModelModule = module {
     viewModelOf(::AzkarViewModel)
     viewModelOf(::DuaViewModel)
     viewModelOf(::AsmaViewModel)
     viewModelOf(::HomeDashboardViewModel)
+    // Sebha
+    viewModelOf(::SebhaViewModel)
     viewModelOf(::PrayerViewModel)
     viewModelOf(::QiblaViewModel)
     viewModelOf(::HadithViewModel)

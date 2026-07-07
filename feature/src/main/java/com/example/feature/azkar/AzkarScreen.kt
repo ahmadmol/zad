@@ -36,7 +36,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AzkarScreen(
     viewModel: AzkarViewModel = koinViewModel(),
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onOpenSebha: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -69,7 +70,16 @@ fun AzkarScreen(
                         )
                     } else {
                         if (uiState.selectedCategory == "سبحة حرة") {
-                            FreeCounterScreen(uiState.azkarList.first(), viewModel::onAction)
+                            val free = uiState.azkarList.find { it.category == "سبحة حرة" }
+                            if (free != null) {
+                                FreeCounterScreen(free, viewModel::onAction)
+                            } else {
+                                Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                                    Text("لا توجد مسبحة حرة. افتح المسبحات لإدارة المزيد.")
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Button(onClick = onOpenSebha) { Text("فتح المسبحات") }
+                                }
+                            }
                         } else {
                             AzkarList(uiState.azkarList, uiState.selectedCategory, uiState.fontSize, viewModel::onAction)
                         }

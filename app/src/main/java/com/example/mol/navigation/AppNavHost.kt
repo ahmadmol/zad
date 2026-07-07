@@ -17,6 +17,7 @@ import androidx.navigation.navArgument
 import com.example.feature.asma.presentation.AsmaScreen
 import com.example.feature.azkar.AzkarScreen
 import com.example.feature.azkar.presentation.AzkarViewModel
+import com.example.feature.dashboard.DailyActivitiesScreen
 import com.example.feature.dashboard.GlobalSearchScreen
 import com.example.feature.dashboard.HomeDashboardScreen
 import com.example.feature.duas.DuaDetailScreen
@@ -42,6 +43,8 @@ import com.example.feature.quran.presentation.QuranViewModel
 import com.example.feature.reminders.RemindersScreen
 import androidx.compose.runtime.LaunchedEffect
 import com.example.feature.settings.SettingsScreen
+import com.example.feature.dashboard.presentation.HomeDashboardAction
+import com.example.feature.dashboard.presentation.HomeDashboardViewModel
 import com.example.feature.statistics.StatisticsScreen
 import com.example.feature.onboarding.OnboardingScreen
 import com.example.feature.splashScreen.SplashScreen
@@ -107,7 +110,9 @@ fun AppNavHost(
                 onNavigateToDonations = { navController.navigate(Screen.Donations.route) },
                 onNavigateToQibla = { navController.navigate(Screen.Qibla.route) },
                 onNavigateToSearch = { navController.navigate(Screen.GlobalSearch.route) },
-                onNavigateToPrayer = { navController.navigate(Screen.Prayer.route) }
+                onNavigateToPrayer = { navController.navigate(Screen.Prayer.route) },
+                onNavigateToAsma = { navController.navigate(Screen.Asma.route) },
+                onNavigateToDailyActivities = { navController.navigate(Screen.DailyActivities.route) }
             )
         }
 
@@ -121,6 +126,28 @@ fun AppNavHost(
                     navController.navigate(Screen.DuaDetail.createRoute(duaId))
                 },
                 onNavigateToZikr = { /* Navigate to Zikr Pager or List */ }
+            )
+        }
+
+        composable(route = Screen.DailyActivities.route) {
+            val viewModel: HomeDashboardViewModel = koinViewModel()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            DailyActivitiesScreen(
+                activities = uiState.data.dailyActivities,
+                onActivityIncrease = { id ->
+                    viewModel.onAction(HomeDashboardAction.OnDailyActivityClick(id))
+                },
+                onActivityOpenRoute = { route ->
+                    when (route) {
+                        Screen.Qibla.route -> navController.navigate(Screen.Qibla.route)
+                        Screen.Quran.route -> navController.navigate(Screen.Quran.route)
+                        Screen.Azkar.route -> navController.navigate(Screen.Azkar.route)
+                        Screen.Dua.route -> navController.navigate(Screen.Dua.route)
+                        Screen.Asma.route -> navController.navigate(Screen.Asma.route)
+                        else -> {}
+                    }
+                },
+                onBack = { navController.popBackStack() }
             )
         }
 

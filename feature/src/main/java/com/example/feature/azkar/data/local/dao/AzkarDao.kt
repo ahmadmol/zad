@@ -46,6 +46,9 @@ interface AzkarDao {
     @Query("DELETE FROM azkar_table")
     suspend fun deleteAllAzkar()
 
+    @Query("DELETE FROM azkar_table WHERE id = :zikrId")
+    suspend fun deleteZikrById(zikrId: Long)
+
     @Query("SELECT * FROM azkar_table WHERE id = :zikrId LIMIT 1")
     suspend fun getZikrById(zikrId: Long): ZikrEntity?
 
