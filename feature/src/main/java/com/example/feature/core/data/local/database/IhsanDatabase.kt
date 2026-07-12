@@ -34,7 +34,7 @@ import com.example.feature.quran.data.local.entity.SurahEntity
         DownloadedAyahEntity::class
     ],
     version = 5,
-    exportSchema = false
+    exportSchema = true
 )
 abstract class IhsanDatabase : RoomDatabase() {
     abstract fun azkarDao(): AzkarDao
