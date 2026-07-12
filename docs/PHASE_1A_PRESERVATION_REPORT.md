@@ -179,14 +179,23 @@ chore(wip): preserve Phase 0 verified working tree
 
 ## 10. Post-Preservation Integrity Verification
 
-Recorded after commit (see final section filled at execution time).
+| Check | Result |
+|-------|--------|
+| Branch | `wip/phase0-preserved-baseline` |
+| HEAD (preservation commit) | `223c540f25a9edc11f32afa4067715a69decd128` |
+| Parent HEAD (former main tip) | `a5b0fb89843edfd0506aa5521a47bf045b140104` |
+| Files in commit | 152 paths; 6433 insertions / 539 deletions |
+| Working tree after commit | Clean of product files; only `?? .project-preservation/` remains |
+| Preservation patches on disk | Present (unchanged by commit) |
+| `.project-preservation/` committed? | **No** |
+| Source semantic loss | **None** — WIP tree captured in commit; patches remain as dual backup |
 
-Expected:
+`git status -sb` after commit:
 
-- Branch remains `wip/phase0-preserved-baseline`
-- Preservation artifacts still on disk under `.project-preservation/phase-1a/`
-- No source-content edits beyond adding this report and committing the existing WIP tree
-- `.project-preservation/` remains untracked / uncommitted
+```text
+## wip/phase0-preserved-baseline
+?? .project-preservation/
+```
 
 ---
 
@@ -313,11 +322,14 @@ Get-Content .project-preservation/phase-1a/SHA256SUMS.txt | ForEach-Object {
 
 ---
 
-## Appendix — Post-Commit Fields (filled by agent)
+## Appendix — Post-Commit Fields
 
 | Field | Value |
 |-------|--------|
-| Branch after | _filled below_ |
-| HEAD after | _filled below_ |
-| Preservation commit hash | _filled below_ |
-| `git status -sb` summary after | _filled below_ |
+| Branch before | `main` |
+| Branch after | `wip/phase0-preserved-baseline` |
+| HEAD before | `a5b0fb89843edfd0506aa5521a47bf045b140104` |
+| HEAD after | `223c540f25a9edc11f32afa4067715a69decd128` |
+| Preservation commit | `223c540f25a9edc11f32afa4067715a69decd128` |
+| `git status -sb` after | `## wip/phase0-preserved-baseline` + `?? .project-preservation/` |
+| Remote push | **Not performed** |
