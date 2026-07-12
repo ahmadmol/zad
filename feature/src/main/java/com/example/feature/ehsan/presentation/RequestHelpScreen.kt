@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.designsystem.theme.PrimaryTeal
 import org.koin.androidx.compose.koinViewModel
@@ -39,12 +40,14 @@ fun RequestHelpScreen(
     onNavigateBack: () -> Unit,
     viewModel: AddEhsanViewModel = koinViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
     var title by remember { mutableStateOf("") }
     var details by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("طعام") }
     var selectedCity by remember { mutableStateOf("حلب، سوريا") }
     var imageUri by remember { mutableStateOf<String?>(null) }
-    var donorName by remember { mutableStateOf("") }
     var showCityDropdown by remember { mutableStateOf(false) }
 
     val categories = listOf(
@@ -62,9 +65,24 @@ fun RequestHelpScreen(
         imageUri = uri?.toString()
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.userName.collect { name ->
-            donorName = name
+    LaunchedEffect(uiState.phoneError) {
+        uiState.phoneError?.let {
+            snackbarHostState.showSnackbar(
+                message = it,
+                duration = SnackbarDuration.Long
+            )
+        }
+    }
+
+    LaunchedEffect(uiState.submissionError) {
+        uiState.submissionError?.let {
+            snackbarHostState.showSnackbar(it)
+        }
+    }
+
+    LaunchedEffect(uiState.submissionSuccess) {
+        if (uiState.submissionSuccess) {
+            onNavigateBack()
         }
     }
 
@@ -98,6 +116,7 @@ fun RequestHelpScreen(
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.White)
                 )
             },
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             containerColor = Color.White
         ) { padding ->
             Column(
@@ -180,31 +199,36 @@ fun RequestHelpScreen(
                 // Submit Button
                 Button(
                     onClick = {
-                        viewModel.addDonation(
+                        viewModel.submitRequest(
                             title = title,
                             description = details,
                             category = selectedCategory,
                             location = selectedCity,
                             type = "REQUEST",
-                            donorName = donorName.ifBlank { "مستخدم" },
-                            phoneNumber = "0000000000", // Default as it's not in the design yet
                             imageUrl = imageUri
                         )
-                        onNavigateBack()
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
                     shape = RoundedCornerShape(28.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = PrimaryTeal),
-                    enabled = title.isNotBlank() && details.isNotBlank()
+                    enabled = title.isNotBlank() && details.isNotBlank() && !uiState.isSubmitting
                 ) {
-                    Text(
-                        "إرسال الطلب",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
+                    if (uiState.isSubmitting) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = Color.White,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(
+                            "إرسال الطلب",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
                 }
                 
                 Spacer(modifier = Modifier.height(24.dp))

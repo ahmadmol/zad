@@ -31,4 +31,5 @@ val useCaseModule = module {
     single { GetMyDonationsUseCase(get()) }
     single { UpdateDonationStatusUseCase(get()) }
     single { DeleteDonationUseCase(get()) }
+    single { ValidatePhoneNumberUseCase() }
 }

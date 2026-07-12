@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.designsystem.theme.IhsanTheme
 import org.koin.androidx.compose.koinViewModel
@@ -31,13 +32,14 @@ fun AddEhsanScreen(
     initialType: String = "OFFER",
     viewModel: AddEhsanViewModel = koinViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("طعام") }
     var location by remember { mutableStateOf("") }
     var type by remember { mutableStateOf(initialType) }
-    var donorName by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<String?>(null) }
 
     val categories = listOf("طعام", "ملابس", "أثاث", "أجهزة", "أخرى")
@@ -50,20 +52,17 @@ fun AddEhsanScreen(
         imageUri = uri?.toString()
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.userName.collect { name ->
-            if (donorName.isBlank()) donorName = name
-        }
+    LaunchedEffect(uiState.phoneError) {
+        uiState.phoneError?.let { snackbarHostState.showSnackbar(it) }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.event.collect { event ->
-            when (event) {
-                is AddEhsanEvent.Success -> onNavigateBack()
-                is AddEhsanEvent.Error -> {
-                    // Show toast or snackbar
-                }
-            }
+    LaunchedEffect(uiState.submissionError) {
+        uiState.submissionError?.let { snackbarHostState.showSnackbar(it) }
+    }
+
+    LaunchedEffect(uiState.submissionSuccess) {
+        if (uiState.submissionSuccess) {
+            onNavigateBack()
         }
     }
 
@@ -82,7 +81,8 @@ fun AddEhsanScreen(
                     }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -213,18 +213,22 @@ fun AddEhsanScreen(
             Text("معلومات التواصل", fontWeight = FontWeight.Bold)
 
             OutlinedTextField(
-                value = donorName,
-                onValueChange = { donorName = it },
-                label = { Text("اسم المتبرع") },
+                value = uiState.currentUserName,
+                onValueChange = { },
+                label = { Text("اسم صاحب الطلب") },
                 modifier = Modifier.fillMaxWidth(),
+                readOnly = true,
+                enabled = false,
                 shape = RoundedCornerShape(12.dp)
             )
 
             OutlinedTextField(
-                value = phoneNumber,
-                onValueChange = { phoneNumber = it },
+                value = uiState.currentUserPhone,
+                onValueChange = { },
                 label = { Text("رقم الجوال") },
                 modifier = Modifier.fillMaxWidth(),
+                readOnly = true,
+                enabled = false,
                 shape = RoundedCornerShape(12.dp)
             )
 
@@ -232,17 +236,22 @@ fun AddEhsanScreen(
 
             Button(
                 onClick = {
-                    viewModel.addDonation(
-                        title, description, category, location, type, donorName, phoneNumber, imageUri
+                    viewModel.submitRequest(
+                        title, description, category, location, type, imageUri
                     )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                enabled = !uiState.isSubmitting && title.isNotBlank() && description.isNotBlank() && location.isNotBlank()
             ) {
-                Text("تأكيد الإضافة", color = Color.White, fontWeight = FontWeight.Bold)
+                if (uiState.isSubmitting) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                } else {
+                    Text("تأكيد الإضافة", color = Color.White, fontWeight = FontWeight.Bold)
+                }
             }
         }
     }

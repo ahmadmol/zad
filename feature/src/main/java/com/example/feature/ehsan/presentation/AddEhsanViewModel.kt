@@ -2,45 +2,78 @@ package com.example.feature.ehsan.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.feature.core.preferences.UserPreferences
 import com.example.feature.ehsan.domain.model.Donation
+import com.example.feature.ehsan.domain.repository.UserRepository
 import com.example.feature.ehsan.domain.usecase.AddDonationUseCase
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.first
+import com.example.feature.ehsan.domain.usecase.PhoneValidationResult
+import com.example.feature.ehsan.domain.usecase.ValidatePhoneNumberUseCase
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+
+data class RequestHelpUiState(
+    val isSubmitting: Boolean = false,
+    val phoneError: String? = null,
+    val submissionError: String? = null,
+    val submissionSuccess: Boolean = false,
+    val currentUserName: String = "",
+    val currentUserPhone: String = ""
+)
 
 class AddEhsanViewModel(
     private val addDonationUseCase: AddDonationUseCase,
-    private val userPreferences: UserPreferences
+    private val userRepository: UserRepository,
+    private val validatePhoneNumberUseCase: ValidatePhoneNumberUseCase
 ) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(RequestHelpUiState())
+    val uiState = _uiState.asStateFlow()
 
     private val _event = MutableSharedFlow<AddEhsanEvent>()
     val event = _event.asSharedFlow()
 
-    private val _userName = MutableSharedFlow<String>(replay = 1)
-    val userName = _userName.asSharedFlow()
-
     init {
         viewModelScope.launch {
-            _userName.emit(userPreferences.userName.first())
+            userRepository.getUser().collect { user ->
+                _uiState.update { 
+                    it.copy(
+                        currentUserName = "${user?.firstName ?: ""} ${user?.lastName ?: ""}".trim(),
+                        currentUserPhone = user?.phoneNumber ?: ""
+                    )
+                }
+            }
         }
     }
 
-    fun addDonation(
+    fun submitRequest(
         title: String,
         description: String,
         category: String,
         location: String,
-        type: String, // OFFER or REQUEST
-        donorName: String,
-        phoneNumber: String,
+        type: String = "REQUEST",
         imageUrl: String?
     ) {
-        if (title.isBlank() || donorName.isBlank() || phoneNumber.isBlank()) {
-            viewModelScope.launch { _event.emit(AddEhsanEvent.Error("يرجى ملء جميع الحقول الأساسية")) }
+        if (_uiState.value.isSubmitting) return
+
+        val phone = _uiState.value.currentUserPhone
+        val validationResult = validatePhoneNumberUseCase(phone)
+
+        if (validationResult !is PhoneValidationResult.Valid) {
+            val errorMsg = when (validationResult) {
+                PhoneValidationResult.Empty -> "تعذر إرسال الطلب لأن رقم الهاتف غير متوفر. يرجى تحديث رقم الهاتف في الملف الشخصي ثم المحاولة مرة أخرى."
+                PhoneValidationResult.Placeholder -> "تعذر إرسال الطلب لأن رقم الهاتف غير صالح. يرجى تحديث رقم الهاتف في الملف الشخصي ثم المحاولة مرة أخرى."
+                PhoneValidationResult.InvalidFormat -> "تعذر إرسال الطلب لأن تنسيق رقم الهاتف غير صالح. يرجى تحديث رقم الهاتف في الملف الشخصي ثم المحاولة مرة أخرى."
+                else -> "رقم الهاتف غير صالح."
+            }
+            _uiState.update { it.copy(phoneError = errorMsg) }
             return
         }
+
+        if (title.isBlank() || description.isBlank()) {
+            _uiState.update { it.copy(submissionError = "يرجى ملء جميع الحقول المطلوبة") }
+            return
+        }
+
+        _uiState.update { it.copy(isSubmitting = true, phoneError = null, submissionError = null) }
 
         viewModelScope.launch {
             try {
@@ -51,14 +84,20 @@ class AddEhsanViewModel(
                         category = category,
                         location = location,
                         type = type,
-                        donorName = donorName,
-                        phoneNumber = phoneNumber,
+                        donorName = _uiState.value.currentUserName.ifBlank { "مستخدم" },
+                        phoneNumber = validationResult.normalizedPhone,
                         imageUrl = imageUrl
                     )
                 )
+                _uiState.update { it.copy(isSubmitting = false, submissionSuccess = true) }
                 _event.emit(AddEhsanEvent.Success)
             } catch (e: Exception) {
-                _event.emit(AddEhsanEvent.Error(e.message ?: "حدث خطأ ما"))
+                _uiState.update { 
+                    it.copy(
+                        isSubmitting = false, 
+                        submissionError = e.message ?: "تعذر إرسال الطلب. يرجى المحاولة لاحقاً."
+                    )
+                }
             }
         }
     }
