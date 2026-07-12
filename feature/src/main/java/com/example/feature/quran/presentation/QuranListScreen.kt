@@ -150,6 +150,7 @@ fun QuranListScreen(
                                     LastReadCard(
                                         surahName = surah.name,
                                         surahNumber = surah.id,
+                                        ayahNumber = ayah,
                                         onContinueClick = { onSurahClick(surah.id, ayah) }
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
@@ -157,13 +158,38 @@ fun QuranListScreen(
                             }
 
                             items(state.surahs) { surah ->
-                                IhsanActionCard(
-                                    title = "سورة ${surah.name}",
-                                    subtitle = "${surah.revelationType} • ${surah.totalVerses} آية",
-                                    icon = Icons.AutoMirrored.Filled.MenuBook,
-                                    onClick = { onSurahClick(surah.id, null) },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
+                                val readingProgress = state.surahReadingProgress[surah.id]
+                                val lastAyah = state.lastRead
+                                    ?.takeIf { it.first.id == surah.id }
+                                    ?.second
+                                val subtitle = buildString {
+                                    append("${surah.revelationType} • ${surah.totalVerses} آية")
+                                    if (lastAyah != null) {
+                                        append(" • وصلت للآية $lastAyah")
+                                    }
+                                }
+                                Column(modifier = Modifier.fillMaxWidth()) {
+                                    IhsanActionCard(
+                                        title = "سورة ${surah.name}",
+                                        subtitle = subtitle,
+                                        icon = Icons.AutoMirrored.Filled.MenuBook,
+                                        onClick = { onSurahClick(surah.id, lastAyah) },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    if (readingProgress != null && readingProgress > 0f) {
+                                        Spacer(modifier = Modifier.height(6.dp))
+                                        LinearProgressIndicator(
+                                            progress = { readingProgress.coerceIn(0f, 1f) },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(6.dp)
+                                                .padding(horizontal = 4.dp),
+                                            color = MaterialTheme.colorScheme.primary,
+                                            trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                                        )
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                    }
+                                }
                             }
                         }
                     } else {

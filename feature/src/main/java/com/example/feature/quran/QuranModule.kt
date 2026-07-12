@@ -24,5 +24,5 @@ val quranModule = module {
     single { GetSurahUseCase(get()) }
     single { GetAyahsUseCase(get()) }
     single { SearchAyahsUseCase(get()) }
-    viewModel { QuranViewModel(get(), get(), androidContext()) }
+    viewModel { QuranViewModel(get(), get(), androidContext(), get()) }
 }

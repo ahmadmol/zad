@@ -2,12 +2,15 @@ package com.example.feature.duas.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.feature.core.preferences.DailyActivityIds
+import com.example.feature.core.preferences.UserPreferences
 import com.example.feature.duas.domain.repository.DuaRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class DuaViewModel(
-    private val repository: DuaRepository
+    private val repository: DuaRepository,
+    private val userPreferences: UserPreferences
 ) : ViewModel() {
 
     private val _selectedCategory = MutableStateFlow<String?>(null)
@@ -63,6 +66,11 @@ class DuaViewModel(
                 }
             }
             is DuaAction.OnToggleFavoritesOnly -> _showFavoritesOnly.value = action.show
+            is DuaAction.OnDuaOpened -> {
+                viewModelScope.launch {
+                    userPreferences.markDailyActivityComplete(DailyActivityIds.DAILY_DUA)
+                }
+            }
             DuaAction.Refresh -> loadData()
         }
     }

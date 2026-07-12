@@ -37,7 +37,7 @@ class QuranDownloadWorker(
                 val fileName = "${readerId}_${surahStr}_${ayahStr}.mp3"
                 val file = File(applicationContext.filesDir, "quran_audio/$fileName")
                 
-                if (!file.parentFile.exists()) file.parentFile.mkdirs()
+                file.parentFile?.let { if (!it.exists()) it.mkdirs() }
                 
                 if (!file.exists()) {
                     URL(urlString).openStream().use { input ->

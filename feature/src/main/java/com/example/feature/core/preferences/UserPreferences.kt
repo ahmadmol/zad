@@ -1,14 +1,24 @@
 package com.example.feature.core.preferences
 
 import android.content.Context
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.doublePreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 private val Context.dataStore by preferencesDataStore(name = "user_preferences")
 
 class UserPreferences(private val context: Context) {
+
+    private val activityDateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
     val userName: Flow<String> = context.dataStore.data
         .map { it[KEY_USER_NAME] ?: DEFAULT_USER_NAME }
@@ -39,7 +49,7 @@ class UserPreferences(private val context: Context) {
 
     val dailyActivityCounts: Flow<Map<String, Int>> = context.dataStore.data
         .map { prefs ->
-            DAILY_ACTIVITY_IDS.associateWith { id ->
+            DailyActivityIds.ALL.associateWith { id ->
                 prefs[keyForActivity(id)] ?: 0
             }
         }
@@ -49,7 +59,7 @@ class UserPreferences(private val context: Context) {
             val existingDate = prefs[KEY_DAILY_ACTIVITY_DATE] ?: ""
             if (existingDate != date) {
                 prefs[KEY_DAILY_ACTIVITY_DATE] = date
-                DAILY_ACTIVITY_IDS.forEach { id ->
+                DailyActivityIds.ALL.forEach { id ->
                     prefs[keyForActivity(id)] = 0
                 }
             }
@@ -57,24 +67,46 @@ class UserPreferences(private val context: Context) {
     }
 
     suspend fun setDailyActivityCount(id: String, count: Int) {
+        val today = todayDate()
         context.dataStore.edit { prefs ->
-            prefs[keyForActivity(id)] = count.coerceAtLeast(0)
-            prefs[KEY_DAILY_ACTIVITY_DATE] = prefs[KEY_DAILY_ACTIVITY_DATE] ?: ""
+            ensureTodayLocked(prefs, today)
+            val max = DailyActivityIds.targetFor(id)
+            prefs[keyForActivity(id)] = count.coerceIn(0, max)
         }
     }
 
+    /**
+     * Increments a daily activity for today, rolling the date forward if needed,
+     * and never exceeding the activity target.
+     */
     suspend fun incrementDailyActivityCount(id: String, delta: Int = 1) {
+        val today = todayDate()
+        val max = DailyActivityIds.targetFor(id)
         context.dataStore.edit { prefs ->
+            ensureTodayLocked(prefs, today)
             val current = prefs[keyForActivity(id)] ?: 0
-            prefs[keyForActivity(id)] = (current + delta).coerceAtLeast(0)
-            prefs[KEY_DAILY_ACTIVITY_DATE] = prefs[KEY_DAILY_ACTIVITY_DATE] ?: ""
+            if (current >= max) return@edit
+            prefs[keyForActivity(id)] = (current + delta).coerceIn(0, max)
+        }
+    }
+
+    /** Marks a once-per-day activity as done (sets count to target if still 0). */
+    suspend fun markDailyActivityComplete(id: String) {
+        val today = todayDate()
+        val max = DailyActivityIds.targetFor(id)
+        context.dataStore.edit { prefs ->
+            ensureTodayLocked(prefs, today)
+            val current = prefs[keyForActivity(id)] ?: 0
+            if (current < max) {
+                prefs[keyForActivity(id)] = max
+            }
         }
     }
 
     suspend fun resetDailyActivityCounts(date: String) {
         context.dataStore.edit { prefs ->
             prefs[KEY_DAILY_ACTIVITY_DATE] = date
-            DAILY_ACTIVITY_IDS.forEach { id ->
+            DailyActivityIds.ALL.forEach { id ->
                 prefs[keyForActivity(id)] = 0
             }
         }
@@ -118,6 +150,21 @@ class UserPreferences(private val context: Context) {
         }
     }
 
+    private fun todayDate(): String = activityDateFormatter.format(Date())
+
+    private fun ensureTodayLocked(
+        prefs: androidx.datastore.preferences.core.MutablePreferences,
+        today: String
+    ) {
+        val existingDate = prefs[KEY_DAILY_ACTIVITY_DATE] ?: ""
+        if (existingDate != today) {
+            prefs[KEY_DAILY_ACTIVITY_DATE] = today
+            DailyActivityIds.ALL.forEach { id ->
+                prefs[keyForActivity(id)] = 0
+            }
+        }
+    }
+
     private companion object {
         val KEY_USER_NAME = stringPreferencesKey("user_name")
         val KEY_HAS_COMPLETED_ONBOARDING = booleanPreferencesKey("has_completed_onboarding")
@@ -128,15 +175,6 @@ class UserPreferences(private val context: Context) {
         val KEY_ADHAN_SOUND_URI = stringPreferencesKey("adhan_sound_uri")
         val KEY_FAVORITE_ASMA_IDS = stringSetPreferencesKey("favorite_asma_ids")
         val KEY_DAILY_ACTIVITY_DATE = stringPreferencesKey("daily_activity_date")
-
-        val DAILY_ACTIVITY_IDS = listOf(
-            "quran_reading",
-            "morning_azkar",
-            "evening_azkar",
-            "tasbeeh",
-            "daily_dua",
-            "daily_name"
-        )
 
         fun keyForActivity(id: String) = intPreferencesKey("daily_activity_count_$id")
 

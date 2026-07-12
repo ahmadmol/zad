@@ -28,44 +28,61 @@ class HadithRepositoryImpl(private val dao: HadithDao) : HadithRepository {
 
     override suspend fun initialPopulation() {
         if (dao.getCount() == 0) {
-            val initialHadiths = listOf(
-                HadithEntity(
-                    text = "إنما الأعمال بالنيات، وإنما لكل امرئ ما نوى",
-                    narrator = "عمر بن الخطاب",
-                    source = "صحيح البخاري ومسلم",
-                    category = "الإيمان"
-                    , explanation = "شرح مؤقت: يُعرف أن النية أهم عامل في قبول العمل. TODO: استبدال بشرح تفصيلي"
-                ),
-                HadithEntity(
-                    text = "خيركم من تعلم القرآن وعلمه",
-                    narrator = "عثمان بن عفان",
-                    source = "صحيح البخاري",
-                    category = "القرآن"
-                    , explanation = "شرح مؤقت: يحث على تعلم القرآن وتعليمه. TODO: استبدال بشرح تفصيلي"
-                ),
-                HadithEntity(
-                    text = "لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه",
-                    narrator = "أنس بن مالك",
-                    source = "صحيح البخاري ومسلم",
-                    category = "الأخلاق"
-                    , explanation = "شرح مؤقت: المبدأ الذاتي للعلاقات والأخلاق الإسلامية. TODO: استبدال بشرح تفصيلي"
-                ),
-                HadithEntity(
-                    text = "من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت",
-                    narrator = "أبو هريرة",
-                    source = "صحيح البخاري ومسلم",
-                    category = "الأخلاق"
-                    , explanation = "شرح مؤقت: أهمية ضبط اللسان والتزام الخير. TODO: استبدال بشرح تفصيلي"
-                ),
-                HadithEntity(
-                    text = "الدين النصيحة",
-                    narrator = "تميم الداري",
-                    source = "صحيح مسلم",
-                    category = "الإيمان"
-                    , explanation = "شرح مؤقت: الحث على النصيحة كجزء من الدين. TODO: استبدال بشرح تفصيلي"
-                )
-            )
-            dao.insertHadiths(initialHadiths)
+            dao.insertHadiths(seedHadiths())
+        } else {
+            refreshPlaceholderExplanations()
         }
     }
+
+    private suspend fun refreshPlaceholderExplanations() {
+        val existing = dao.getAllHadiths().first()
+        val explanationsByText = seedHadiths().associate { it.text to it.explanation }
+        existing.forEach { entity ->
+            val improved = explanationsByText[entity.text]
+            val needsUpdate = entity.explanation.isNullOrBlank() ||
+                entity.explanation.contains("TODO") ||
+                entity.explanation.contains("شرح مؤقت")
+            if (improved != null && needsUpdate) {
+                dao.updateHadith(entity.copy(explanation = improved))
+            }
+        }
+    }
+
+    private fun seedHadiths(): List<HadithEntity> = listOf(
+        HadithEntity(
+            text = "إنما الأعمال بالنيات، وإنما لكل امرئ ما نوى",
+            narrator = "عمر بن الخطاب",
+            source = "صحيح البخاري ومسلم",
+            category = "الإيمان",
+            explanation = "يبيّن الحديث أن قبول العمل وترتّب الأجر عليه مرتبطان بنية صاحبه، فالعبرة بالمقاصد لا بظاهر الأفعال فقط."
+        ),
+        HadithEntity(
+            text = "خيركم من تعلم القرآن وعلمه",
+            narrator = "عثمان بن عفان",
+            source = "صحيح البخاري",
+            category = "القرآن",
+            explanation = "يرفع من شأن من يجمع بين تعلّم القرآن وتعليمه للناس، فالخيرية هنا في العلم والعمل وبذل النفع."
+        ),
+        HadithEntity(
+            text = "لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه",
+            narrator = "أنس بن مالك",
+            source = "صحيح البخاري ومسلم",
+            category = "الأخلاق",
+            explanation = "يربط كمال الإيمان بحسن الخلق، ومنه أن يتمنّى المسلم لأخيه من الخير ما يتمناه لنفسه دون حسد."
+        ),
+        HadithEntity(
+            text = "من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت",
+            narrator = "أبو هريرة",
+            source = "صحيح البخاري ومسلم",
+            category = "الأخلاق",
+            explanation = "يحثّ على ضبط اللسان؛ فإما كلام فيه نفع وخير، وإما صمت يسلم به المرء من الإثم."
+        ),
+        HadithEntity(
+            text = "الدين النصيحة",
+            narrator = "تميم الداري",
+            source = "صحيح مسلم",
+            category = "الإيمان",
+            explanation = "يجعل النصيحة أصلًا من أصول الدين: لله ولكتابه ولرسوله ولأئمة المسلمين وعامتهم، بالنصح الصادق لا بالتعيير."
+        )
+    )
 }

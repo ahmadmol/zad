@@ -81,12 +81,13 @@ fun HadithDetailsBottomSheet(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Divider()
+            HorizontalDivider()
 
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = hadith.explanation ?: "شرح مختصر مؤقت. TODO: إضافة شرح حقيقي.",
+                text = hadith.explanation
+                    ?: "لا يتوفر شرح مفصّل لهذا الحديث حاليًا.",
                 style = MaterialTheme.typography.bodyLarge.copy(lineHeight = 28.sp),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Justify

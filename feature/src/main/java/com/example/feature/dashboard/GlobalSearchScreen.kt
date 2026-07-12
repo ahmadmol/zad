@@ -5,9 +5,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -86,12 +86,12 @@ fun GlobalSearchScreen(
                 } else {
                     // Quran Results
                     if (quranState.searchResults.isNotEmpty()) {
-                        item { SearchSectionTitle("آيات قرآنية", Icons.Default.MenuBook) }
+                        item { SearchSectionTitle("آيات قرآنية", Icons.AutoMirrored.Filled.MenuBook) }
                         items(quranState.searchResults) { verse ->
                             IhsanActionCard(
                                 title = "سورة ${verse.surahId}", // Ideally would have name
                                 subtitle = verse.text,
-                                icon = Icons.Default.MenuBook,
+                                icon = Icons.AutoMirrored.Filled.MenuBook,
                                 onClick = { onNavigateToQuran(verse.surahId, verse.verseNumber) }
                             )
                         }

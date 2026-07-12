@@ -13,12 +13,14 @@ import com.example.feature.asma.domain.usecase.GetAsmaUseCase
 import com.example.feature.asma.domain.util.AsmaTodayResolver
 import com.example.feature.azkar.domain.usecase.GetAzkarUseCase
 import com.example.feature.azkar.data.local.SettingsManager
+import com.example.feature.core.preferences.DailyActivityIds
 import com.example.feature.core.preferences.UserPreferences
 import com.example.feature.core.util.HijriDateFormatter
 import com.example.feature.ehsan.domain.usecase.GetDonationsUseCase
 import com.example.feature.prayer.PrayerTime
 import com.example.feature.prayer.util.PrayerCalculator
 import com.example.feature.prayer.util.PrayerNotificationScheduler
+import com.example.feature.quran.domain.repository.QuranRepository
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +41,7 @@ class HomeDashboardViewModel(
     private val userPreferences: UserPreferences,
     private val settingsManager: SettingsManager,
     private val scheduler: PrayerNotificationScheduler,
+    private val quranRepository: QuranRepository,
     context: Context
 ) : ViewModel() {
 
@@ -66,53 +69,56 @@ class HomeDashboardViewModel(
 
     private val dailyActivityTemplates = listOf(
         DailyActivityTemplate(
-            id = "quran_reading",
+            id = DailyActivityIds.QURAN_READING,
             title = "قراءة قرآن",
-            targetCount = 1,
+            targetCount = DailyActivityIds.targetFor(DailyActivityIds.QURAN_READING),
             unit = "مرة",
             route = "quran_list"
         ),
         DailyActivityTemplate(
-            id = "morning_azkar",
+            id = DailyActivityIds.MORNING_AZKAR,
             title = "أذكار الصباح",
-            targetCount = 1,
+            targetCount = DailyActivityIds.targetFor(DailyActivityIds.MORNING_AZKAR),
             unit = "مرة",
             route = "azkar_screen"
         ),
         DailyActivityTemplate(
-            id = "evening_azkar",
+            id = DailyActivityIds.EVENING_AZKAR,
             title = "أذكار المساء",
-            targetCount = 1,
+            targetCount = DailyActivityIds.targetFor(DailyActivityIds.EVENING_AZKAR),
             unit = "مرة",
             route = "azkar_screen"
         ),
         DailyActivityTemplate(
-            id = "tasbeeh",
+            id = DailyActivityIds.TASBEEH,
             title = "تسبيح",
-            targetCount = 100,
+            targetCount = DailyActivityIds.targetFor(DailyActivityIds.TASBEEH),
             unit = "حبة",
-            route = "sebha_screen"
+            route = "tasbih_screen"
         ),
         DailyActivityTemplate(
-            id = "daily_dua",
+            id = DailyActivityIds.DAILY_DUA,
             title = "دعاء اليوم",
-            targetCount = 1,
+            targetCount = DailyActivityIds.targetFor(DailyActivityIds.DAILY_DUA),
             unit = "مرة",
             route = "dua_screen"
         ),
         DailyActivityTemplate(
-            id = "daily_name",
+            id = DailyActivityIds.DAILY_NAME,
             title = "اسم اليوم",
-            targetCount = 1,
+            targetCount = DailyActivityIds.targetFor(DailyActivityIds.DAILY_NAME),
             unit = "مرة",
             route = "asma_screen"
         )
     )
 
+    private var lastReadJob: Job? = null
+
     init {
         observeSettings()
         observeData()
         observeDailyActivities()
+        observeLastRead()
         startPrayerCountdown()
     }
 
@@ -126,7 +132,7 @@ class HomeDashboardViewModel(
                 settingsManager.manualLocationLngFlow,
                 settingsManager.prePrayerNotificationMinutesFlow,
                 settingsManager.iqamahNotificationMinutesFlow
-            ) { args ->
+            ) { args: Array<Any> ->
                 currentMethod = PrayerCalculator.getMethodFromString(args[0] as String)
                 currentMadhab = PrayerCalculator.getMadhabFromString(args[1] as String)
                 useAutoLocation = args[2] as Boolean
@@ -281,6 +287,43 @@ class HomeDashboardViewModel(
 
     private fun todayDate(): String = activityDateFormatter.format(Date())
 
+    private fun observeLastRead() {
+        lastReadJob?.cancel()
+        lastReadJob = viewModelScope.launch {
+            combine(
+                userPreferences.lastReadSurahId,
+                userPreferences.lastReadAyahNumber
+            ) { surahId, ayahNumber ->
+                if (surahId != null && ayahNumber != null) surahId to ayahNumber else null
+            }.collectLatest { pair ->
+                if (pair == null) {
+                    _uiState.update { state ->
+                        state.copy(
+                            data = state.data.copy(
+                                lastReadSurahId = null,
+                                lastReadSurahName = null,
+                                lastReadAyahNumber = null
+                            )
+                        )
+                    }
+                    return@collectLatest
+                }
+
+                val (surahId, ayahNumber) = pair
+                val surah = runCatching { quranRepository.getSurahById(surahId) }.getOrNull()
+                _uiState.update { state ->
+                    state.copy(
+                        data = state.data.copy(
+                            lastReadSurahId = surahId,
+                            lastReadSurahName = surah?.name ?: "سورة $surahId",
+                            lastReadAyahNumber = ayahNumber
+                        )
+                    )
+                }
+            }
+        }
+    }
+
     private fun observeDailyActivities() {
         dailyActivityJob?.cancel()
         dailyActivityJob = viewModelScope.launch {
@@ -321,14 +364,8 @@ class HomeDashboardViewModel(
         }
     }
 
-    private fun findTemplate(id: String): DailyActivityTemplate? =
-        dailyActivityTemplates.firstOrNull { it.id == id }
-
     private suspend fun incrementDailyActivityCount(id: String) {
-        val template = findTemplate(id) ?: return
-        val current = _uiState.value.data.dailyActivities.firstOrNull { it.id == id }?.currentCount ?: 0
-        if (current >= template.targetCount) return
-        userPreferences.setDailyActivityCount(id, current + 1)
+        userPreferences.incrementDailyActivityCount(id)
     }
 
     private data class DailyActivityTemplate(
@@ -457,6 +494,7 @@ class HomeDashboardViewModel(
         super.onCleared()
         dataObserveJob?.cancel()
         dailyActivityJob?.cancel()
+        lastReadJob?.cancel()
         countdownJob?.cancel()
     }
 }

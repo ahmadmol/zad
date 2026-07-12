@@ -17,5 +17,6 @@ sealed interface DuaAction {
     data class OnSearchQueryChanged(val query: String) : DuaAction
     data class OnToggleFavorite(val id: Long, val isFavorite: Boolean) : DuaAction
     data class OnToggleFavoritesOnly(val show: Boolean) : DuaAction
+    data class OnDuaOpened(val id: Long) : DuaAction
     object Refresh : DuaAction
 }

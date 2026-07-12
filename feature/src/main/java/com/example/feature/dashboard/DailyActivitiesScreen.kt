@@ -5,8 +5,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.OpenInNew
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,7 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.sp
 import com.example.designsystem.component.DailyActivityItemData
+import com.example.designsystem.component.IhsanEmptyState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,32 +27,52 @@ fun DailyActivitiesScreen(
     onActivityOpenRoute: (String) -> Unit,
     onBack: () -> Unit
 ) {
+    val overallProgress = if (activities.isNotEmpty()) {
+        activities.map { it.progress }.average().toFloat().coerceIn(0f, 1f)
+    } else 0f
+    
+    val percentage = (overallProgress * 100).toInt()
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = "النشاطات اليومية") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.Default.CheckCircle, contentDescription = "عودة")
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "عودة")
                     }
                 }
             )
         }
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
+                .padding(innerPadding),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = "اكتشف تقدمك اليومي وأكمل النشاطات",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            item {
+                SummaryCard(percentage = percentage, progress = overallProgress)
+            }
 
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            item {
+                Text(
+                    text = "قائمة النشاطات",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+
+            if (activities.isEmpty()) {
+                item {
+                    IhsanEmptyState(
+                        title = "لا توجد نشاطات بعد",
+                        message = "ستظهر قائمة النشاطات اليومية هنا بعد تحميل بياناتك."
+                    )
+                }
+            } else {
                 items(activities) { activity ->
                     DailyActivityDetailCard(
                         activity = activity,
@@ -58,6 +81,71 @@ fun DailyActivitiesScreen(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun SummaryCard(percentage: Int, progress: Float) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F8F6))
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "ملخص اليوم",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF0D4D3D)
+                    )
+                    Text(
+                        text = "استمر في نشاطاتك لتحقيق هدفك",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFF0D4D3D).copy(alpha = 0.7f)
+                    )
+                }
+
+                Surface(
+                    color = Color(0xFFC66927),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "$percentage%",
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            LinearProgressIndicator(
+                progress = { progress },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(10.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                color = Color(0xFF0D4D3D),
+                trackColor = Color(0xFF0D4D3D).copy(alpha = 0.1f)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = "التقدم العام: $percentage%",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF0D4D3D)
+            )
         }
     }
 }
@@ -93,14 +181,14 @@ private fun DailyActivityDetailCard(
                     )
                 }
                 IconButton(onClick = onOpenRoute) {
-                    Icon(imageVector = Icons.Default.OpenInNew, contentDescription = "فتح الموديول")
+                    Icon(imageVector = Icons.AutoMirrored.Filled.OpenInNew, contentDescription = "فتح الموديول")
                 }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
             LinearProgressIndicator(
-                progress = activity.progress.coerceIn(0f, 1f),
+                progress = { activity.progress.coerceIn(0f, 1f) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp)
@@ -115,7 +203,11 @@ private fun DailyActivityDetailCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Button(onClick = onIncrease, modifier = Modifier.weight(1f)) {
+                Button(
+                    onClick = onIncrease,
+                    enabled = !activity.isCompleted,
+                    modifier = Modifier.weight(1f)
+                ) {
                     Text(text = if (activity.isCompleted) "مكتمل" else "زيادة")
                 }
                 OutlinedButton(onClick = onOpenRoute, modifier = Modifier.weight(1f)) {

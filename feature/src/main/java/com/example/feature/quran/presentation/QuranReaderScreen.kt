@@ -5,8 +5,21 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -14,12 +27,42 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.CloudDone
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.HourglassTop
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
+import androidx.compose.material.icons.filled.TextFields
+import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
@@ -27,10 +70,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feature.quran.domain.model.Reader
 import com.example.feature.quran.domain.model.Verse
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
-
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,6 +88,8 @@ fun QuranReaderScreen(
     onTogglePlay: () -> Unit,
     onPlayNext: () -> Unit,
     onPlayPrevious: () -> Unit,
+    onPlayAyah: (Int) -> Unit = {},
+    onSelectReader: (Reader) -> Unit = {},
     onDownloadSurah: () -> Unit,
     onSeekTo: (Long) -> Unit,
     onUpdateFontSize: (Float) -> Unit
@@ -51,35 +97,53 @@ fun QuranReaderScreen(
     val listState = rememberLazyListState()
     var selectedVerseForTafsir by remember { mutableStateOf<Verse?>(null) }
     var showFontSettings by remember { mutableStateOf(false) }
+    var showReaderPicker by remember { mutableStateOf(false) }
+    var readyToTrackLastRead by remember { mutableStateOf(false) }
+    val ayahs by rememberUpdatedState(state.ayahs)
+    val saveLastRead by rememberUpdatedState(onSaveLastRead)
 
     LaunchedEffect(state.ayahs, state.initialAyahScroll) {
-        if (state.ayahs.isNotEmpty() && state.initialAyahScroll != null) {
-            val index = state.ayahs.indexOfFirst { it.verseNumber == state.initialAyahScroll }
-            if (index != -1) {
-                listState.scrollToItem(index)
+        readyToTrackLastRead = false
+        if (state.ayahs.isNotEmpty()) {
+            if (state.initialAyahScroll != null) {
+                val index = state.ayahs.indexOfFirst { it.verseNumber == state.initialAyahScroll }
+                if (index != -1) listState.scrollToItem(index)
             }
-        }
-    }
-    LaunchedEffect(state.currentPlayingAyah) {
-        if (state.currentPlayingAyah != null && state.isPlaying) {
-            val index = state.ayahs.indexOfFirst { it.verseNumber == state.currentPlayingAyah }
-            if (index != -1) {
-                listState.animateScrollToItem(index)
-            }
+            readyToTrackLastRead = true
         }
     }
 
-    // Save last read on scroll
-    LaunchedEffect(listState) {
+    LaunchedEffect(state.currentPlayingAyah, state.isPlaying) {
+        if (state.isPlaying && state.currentPlayingAyah != null && state.ayahs.isNotEmpty()) {
+            val index = state.ayahs.indexOfFirst { it.verseNumber == state.currentPlayingAyah }
+            if (index != -1) listState.animateScrollToItem(index)
+        }
+    }
+
+    LaunchedEffect(listState, readyToTrackLastRead) {
+        if (!readyToTrackLastRead) return@LaunchedEffect
         snapshotFlow { listState.firstVisibleItemIndex }
             .distinctUntilChanged()
-            .filter { state.ayahs.isNotEmpty() }
+            .debounce(350)
+            .filter { ayahs.isNotEmpty() }
             .collect { index ->
-                if (index < state.ayahs.size) {
-                    val verse = state.ayahs[index]
-                    onSaveLastRead(verse.surahId, verse.verseNumber)
+                if (index in ayahs.indices) {
+                    val verse = ayahs[index]
+                    saveLastRead(verse.surahId, verse.verseNumber)
                 }
             }
+    }
+
+    if (showReaderPicker) {
+        ReaderPickerSheet(
+            readers = state.availableReaders,
+            selected = state.selectedReader,
+            onSelect = {
+                onSelectReader(it)
+                showReaderPicker = false
+            },
+            onDismiss = { showReaderPicker = false }
+        )
     }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
@@ -87,10 +151,22 @@ fun QuranReaderScreen(
             topBar = {
                 CenterAlignedTopAppBar(
                     title = {
-                        Text(
-                            text = state.selectedSurah?.name ?: "تحميل...",
-                            fontWeight = FontWeight.Bold
-                        )
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = state.selectedSurah?.name ?: "تحميل...",
+                                fontWeight = FontWeight.Bold
+                            )
+                            val current = state.currentPlayingAyah
+                                ?: state.lastRead?.takeIf { it.first.id == state.selectedSurah?.id }?.second
+                            val total = state.selectedSurah?.totalVerses ?: state.ayahs.size
+                            if (current != null && total > 0) {
+                                Text(
+                                    text = "الآية $current من $total",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
                     },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
@@ -99,7 +175,10 @@ fun QuranReaderScreen(
                     },
                     actions = {
                         IconButton(onClick = onDownloadSurah) {
-                            Icon(Icons.Default.Download, contentDescription = "Download Surah")
+                            Icon(
+                                if (state.isDownloading) Icons.Default.HourglassTop else Icons.Default.Download,
+                                contentDescription = "Download Surah"
+                            )
                         }
                         IconButton(onClick = { showFontSettings = !showFontSettings }) {
                             Icon(Icons.Default.TextFields, contentDescription = "Font Settings")
@@ -139,59 +218,65 @@ fun QuranReaderScreen(
                             isPlaying = state.isPlaying,
                             playbackPosition = state.playbackPosition,
                             playbackDuration = state.playbackDuration,
+                            currentAyah = state.currentPlayingAyah,
+                            totalAyahs = state.selectedSurah?.totalVerses ?: state.ayahs.size,
                             onTogglePlay = onTogglePlay,
                             onNext = onPlayNext,
                             onPrevious = onPlayPrevious,
                             onSeek = onSeekTo,
-                            readerName = state.selectedReader?.name ?: ""
+                            readerName = state.selectedReader?.name ?: "",
+                            onReaderClick = { showReaderPicker = true }
                         )
                     }
                 }
             }
         ) { padding ->
             Box(modifier = Modifier.padding(padding).fillMaxSize()) {
-                if (state.isLoading && state.ayahs.isEmpty()) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                } else if (state.errorMessage != null) {
-                    Column(
-                        modifier = Modifier.align(Alignment.Center).padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = state.errorMessage,
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = onRetry) {
-                            Text("إعادة المحاولة")
+                when {
+                    state.isLoading && state.ayahs.isEmpty() -> {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                    state.errorMessage != null && state.ayahs.isEmpty() -> {
+                        Column(
+                            modifier = Modifier.align(Alignment.Center).padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = state.errorMessage.orEmpty(),
+                                color = MaterialTheme.colorScheme.error,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(onClick = onRetry) { Text("إعادة المحاولة") }
                         }
                     }
-                } else if (state.ayahs.isEmpty()) {
-                    Text(
-                        text = "لا توجد آيات",
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                } else {
-                    LazyColumn(
-                        state = listState,
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        itemsIndexed(state.ayahs) { _, verse ->
-                            val isBookmarked = state.bookmarks.any { it.surahId == verse.surahId && it.verseNumber == verse.verseNumber }
-                            val isPlaying = state.currentPlayingAyah == verse.verseNumber
-                            val isDownloaded = state.downloadedAyahs.contains(verse.verseNumber)
-                            VerseItem(
-                                verse = verse,
-                                isBookmarked = isBookmarked,
-                                isPlaying = isPlaying,
-                                isDownloaded = isDownloaded,
-                                fontSize = state.fontSize,
-                                onBookmarkClick = { onToggleBookmark(verse.surahId, verse.verseNumber) },
-                                onTafsirClick = { selectedVerseForTafsir = verse }
-                            )
+                    state.ayahs.isEmpty() -> {
+                        Text("لا توجد آيات", modifier = Modifier.align(Alignment.Center))
+                    }
+                    else -> {
+                        LazyColumn(
+                            state = listState,
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            itemsIndexed(state.ayahs) { _, verse ->
+                                val isBookmarked = state.bookmarks.any {
+                                    it.surahId == verse.surahId && it.verseNumber == verse.verseNumber
+                                }
+                                VerseItem(
+                                    verse = verse,
+                                    isBookmarked = isBookmarked,
+                                    isPlaying = state.currentPlayingAyah == verse.verseNumber,
+                                    isDownloaded = state.downloadedAyahs.contains(verse.verseNumber),
+                                    fontSize = state.fontSize,
+                                    onBookmarkClick = {
+                                        onToggleBookmark(verse.surahId, verse.verseNumber)
+                                    },
+                                    onTafsirClick = { selectedVerseForTafsir = verse },
+                                    onPlayClick = { onPlayAyah(verse.verseNumber) }
+                                )
+                            }
                         }
                     }
                 }
@@ -213,12 +298,19 @@ fun AudioBar(
     isPlaying: Boolean,
     playbackPosition: Long,
     playbackDuration: Long,
+    currentAyah: Int?,
+    totalAyahs: Int,
     onTogglePlay: () -> Unit,
     onNext: () -> Unit,
     onPrevious: () -> Unit,
     onSeek: (Long) -> Unit,
-    readerName: String
+    readerName: String,
+    onReaderClick: () -> Unit
 ) {
+    val surahProgress = if (currentAyah != null && totalAyahs > 0) {
+        currentAyah.toFloat() / totalAyahs.toFloat()
+    } else 0f
+
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.surface,
@@ -231,7 +323,11 @@ fun AudioBar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Column(modifier = Modifier.weight(1f)) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable(onClick = onReaderClick)
+                ) {
                     Text(
                         text = "القارئ الحالي",
                         style = MaterialTheme.typography.labelSmall,
@@ -239,17 +335,28 @@ fun AudioBar(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = readerName,
+                        text = readerName.ifBlank { "اختر قارئًا" },
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.ExtraBold
                     )
+                    if (currentAyah != null && totalAyahs > 0) {
+                        Text(
+                            text = "تقدم السورة: $currentAyah / $totalAyahs",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
-                
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = onPrevious) {
-                        Icon(Icons.Default.SkipPrevious, contentDescription = "Previous", modifier = Modifier.size(32.dp))
+                        Icon(
+                            Icons.Default.SkipPrevious,
+                            contentDescription = "Previous",
+                            modifier = Modifier.size(32.dp)
+                        )
                     }
-                    
+
                     Surface(
                         onClick = onTogglePlay,
                         shape = CircleShape,
@@ -265,14 +372,30 @@ fun AudioBar(
                             )
                         }
                     }
-                    
+
                     IconButton(onClick = onNext) {
-                        Icon(Icons.Default.SkipNext, contentDescription = "Next", modifier = Modifier.size(32.dp))
+                        Icon(
+                            Icons.Default.SkipNext,
+                            contentDescription = "Next",
+                            modifier = Modifier.size(32.dp)
+                        )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            if (totalAyahs > 0) {
+                Spacer(modifier = Modifier.height(10.dp))
+                LinearProgressIndicator(
+                    progress = { surahProgress.coerceIn(0f, 1f) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(6.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             Column {
                 Slider(
@@ -305,6 +428,56 @@ fun AudioBar(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ReaderPickerSheet(
+    readers: List<Reader>,
+    selected: Reader?,
+    onSelect: (Reader) -> Unit,
+    onDismiss: () -> Unit
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
+            Text(
+                text = "اختر القارئ",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(readers) { reader ->
+                    val isSelected = reader.id == selected?.id
+                    Surface(
+                        onClick = { onSelect(reader) },
+                        shape = RoundedCornerShape(16.dp),
+                        color = if (isSelected) {
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                        } else {
+                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = reader.name,
+                            modifier = Modifier.padding(16.dp),
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            color = if (isSelected) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            }
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+}
+
 private fun formatTime(ms: Long): String {
     val totalSeconds = ms / 1000
     val minutes = totalSeconds / 60
@@ -320,11 +493,13 @@ fun VerseItem(
     isDownloaded: Boolean,
     fontSize: Float,
     onBookmarkClick: () -> Unit,
-    onTafsirClick: () -> Unit
+    onTafsirClick: () -> Unit,
+    onPlayClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(onClick = onPlayClick)
             .background(
                 if (isPlaying) MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
                 else Color.Transparent,
@@ -332,7 +507,11 @@ fun VerseItem(
             )
             .border(
                 width = if (isPlaying) 1.dp else 0.dp,
-                color = if (isPlaying) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else Color.Transparent,
+                color = if (isPlaying) {
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                } else {
+                    Color.Transparent
+                },
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(12.dp)
@@ -349,17 +528,35 @@ fun VerseItem(
                             if (isPlaying) MaterialTheme.colorScheme.primary
                             else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                             CircleShape
-                        ),
+                        )
+                        .clickable(onClick = onPlayClick),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = verse.verseNumber.toString(),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = if (isPlaying) Color.White else MaterialTheme.colorScheme.primary
-                    )
+                    if (isPlaying) {
+                        Icon(
+                            Icons.Default.Pause,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    } else {
+                        Text(
+                            text = verse.verseNumber.toString(),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
+                IconButton(onClick = onPlayClick, modifier = Modifier.size(32.dp)) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = "تشغيل الآية",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
                 IconButton(onClick = onBookmarkClick, modifier = Modifier.size(32.dp)) {
                     Icon(
                         imageVector = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
@@ -397,7 +594,5 @@ fun VerseItem(
                 modifier = Modifier.weight(1f)
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     }
 }

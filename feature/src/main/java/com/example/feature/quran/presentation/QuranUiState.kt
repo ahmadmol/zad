@@ -19,7 +19,9 @@ data class QuranUiState(
     val searchQuery: String = "",
     val khatmaProgress: Float = 0f,
     val fontSize: Float = 28f,
-    
+    /** Progress (0..1) for surahs that have a tracked reading position. */
+    val surahReadingProgress: Map<Int, Float> = emptyMap(),
+
     // Audio State
     val isPlaying: Boolean = false,
     val currentPlayingAyah: Int? = null,
@@ -40,9 +42,10 @@ sealed interface QuranAction {
     data class Search(val query: String) : QuranAction
     object ClearSearch : QuranAction
     object LoadKhatmaProgress : QuranAction
-    
+
     // Audio Actions
     object TogglePlay : QuranAction
+    data class PlayAyah(val ayahNumber: Int) : QuranAction
     object PlayNext : QuranAction
     object PlayPrevious : QuranAction
     data class SeekTo(val position: Long) : QuranAction

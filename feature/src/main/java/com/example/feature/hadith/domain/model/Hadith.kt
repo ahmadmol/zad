@@ -7,6 +7,6 @@ data class Hadith(
     val source: String,
     val category: String,
     val isFavorite: Boolean = false,
-    val explanation: String? = null // TODO: temporary explanation placeholder
+    val explanation: String? = null
 )
 

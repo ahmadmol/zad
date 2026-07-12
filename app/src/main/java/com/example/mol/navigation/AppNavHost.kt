@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,6 +38,9 @@ import com.example.feature.profile.DonationHistoryScreen
 import com.example.feature.profile.ProfileScreen
 import com.example.feature.profile.presentation.EditProfileScreen
 import com.example.feature.qibla.presentation.QiblaScreen
+import com.example.feature.tasbih.presentation.TasbihScreen
+import com.example.feature.live.LiveStreamScreen
+import com.example.feature.live.LiveStreamSources
 import com.example.feature.quran.presentation.QuranAction
 import com.example.feature.quran.presentation.QuranListScreen
 import com.example.feature.quran.presentation.QuranReaderScreen
@@ -112,7 +117,37 @@ fun AppNavHost(
                 onNavigateToSearch = { navController.navigate(Screen.GlobalSearch.route) },
                 onNavigateToPrayer = { navController.navigate(Screen.Prayer.route) },
                 onNavigateToAsma = { navController.navigate(Screen.Asma.route) },
-                onNavigateToDailyActivities = { navController.navigate(Screen.DailyActivities.route) }
+                onNavigateToDailyActivities = { navController.navigate(Screen.DailyActivities.route) },
+                onNavigateToTasbih = { navController.navigate(Screen.Tasbih.route) },
+                onNavigateToHaramLive = { navController.navigate(Screen.HaramLive.route) },
+                onNavigateToNabawiLive = { navController.navigate(Screen.NabawiLive.route) },
+                onContinueLastRead = { surahId, ayahNumber ->
+                    navController.navigate(Screen.QuranReader.createRoute(surahId, ayahNumber))
+                }
+            )
+        }
+
+        composable(route = Screen.HaramLive.route) {
+            LiveStreamScreen(
+                title = Screen.HaramLive.title,
+                hlsUrl = LiveStreamSources.HARAM_HLS,
+                youtubeChannelId = LiveStreamSources.HARAM_YOUTUBE_CHANNEL_ID,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(route = Screen.NabawiLive.route) {
+            LiveStreamScreen(
+                title = Screen.NabawiLive.title,
+                hlsUrl = LiveStreamSources.NABAWI_HLS,
+                youtubeChannelId = LiveStreamSources.NABAWI_YOUTUBE_CHANNEL_ID,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(route = Screen.Tasbih.route) {
+            TasbihScreen(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
@@ -130,7 +165,12 @@ fun AppNavHost(
         }
 
         composable(route = Screen.DailyActivities.route) {
-            val viewModel: HomeDashboardViewModel = koinViewModel()
+            val dailyActivitiesEntry = checkNotNull(navController.currentBackStackEntry)
+            val sharedOwner = remember(dailyActivitiesEntry) {
+                runCatching { navController.getBackStackEntry(Screen.Home.route) }
+                    .getOrDefault(dailyActivitiesEntry)
+            }
+            val viewModel: HomeDashboardViewModel = koinViewModel(viewModelStoreOwner = sharedOwner)
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             DailyActivitiesScreen(
                 activities = uiState.data.dailyActivities,
@@ -144,6 +184,9 @@ fun AppNavHost(
                         Screen.Azkar.route -> navController.navigate(Screen.Azkar.route)
                         Screen.Dua.route -> navController.navigate(Screen.Dua.route)
                         Screen.Asma.route -> navController.navigate(Screen.Asma.route)
+                        Screen.Tasbih.route -> navController.navigate(Screen.Tasbih.route)
+                        Screen.HaramLive.route -> navController.navigate(Screen.HaramLive.route)
+                        Screen.NabawiLive.route -> navController.navigate(Screen.NabawiLive.route)
                         else -> {}
                     }
                 },
@@ -219,6 +262,8 @@ fun AppNavHost(
                 onTogglePlay = { viewModel.onAction(QuranAction.TogglePlay) },
                 onPlayNext = { viewModel.onAction(QuranAction.PlayNext) },
                 onPlayPrevious = { viewModel.onAction(QuranAction.PlayPrevious) },
+                onPlayAyah = { ayah -> viewModel.onAction(QuranAction.PlayAyah(ayah)) },
+                onSelectReader = { reader -> viewModel.onAction(QuranAction.SelectReader(reader)) },
                 onDownloadSurah = { viewModel.onAction(QuranAction.DownloadSurah) },
                 onSeekTo = { viewModel.onAction(QuranAction.SeekTo(it)) },
                 onUpdateFontSize = { viewModel.onAction(QuranAction.UpdateFontSize(it)) }
@@ -229,7 +274,8 @@ fun AppNavHost(
             val viewModel: AzkarViewModel = koinViewModel()
             AzkarScreen(
                 viewModel = viewModel,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onOpenSebha = { navController.navigate(Screen.Tasbih.route) }
             )
         }
 
@@ -260,6 +306,12 @@ fun AppNavHost(
             val viewModel: DuaViewModel = koinViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val dua = uiState.allDuas.find { it.id == duaId }
+
+            LaunchedEffect(duaId) {
+                if (duaId > 0L) {
+                    viewModel.onAction(DuaAction.OnDuaOpened(duaId))
+                }
+            }
             
             DuaDetailScreen(
                 dua = dua,
@@ -349,7 +401,9 @@ fun AppNavHost(
             ProfileScreen(
                 onBackClick = { navController.popBackStack() },
                 onEditProfileClick = { navController.navigate(Screen.EditProfile.route) },
-                onNavigateToDonationHistory = { navController.navigate(Screen.DonationHistory.route) }
+                onNavigateToDonationHistory = { navController.navigate(Screen.DonationHistory.route) },
+                onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
+                onNavigateToReminders = { navController.navigate(Screen.Reminders.route) }
             )
         }
 

@@ -13,6 +13,7 @@ import com.example.feature.prayer.presentation.PrayerViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 import com.example.feature.azkar.presentation.SebhaViewModel
+import com.example.feature.tasbih.presentation.TasbihViewModel
 
 val viewModelModule = module {
     viewModelOf(::AzkarViewModel)
@@ -21,6 +22,7 @@ val viewModelModule = module {
     viewModelOf(::HomeDashboardViewModel)
     // Sebha
     viewModelOf(::SebhaViewModel)
+    viewModelOf(::TasbihViewModel)
     viewModelOf(::PrayerViewModel)
     viewModelOf(::QiblaViewModel)
     viewModelOf(::HadithViewModel)

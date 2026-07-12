@@ -8,7 +8,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,14 +21,12 @@ import com.example.designsystem.R
 
 @Composable
 fun DashboardHeader(
-    userName: String,
     currentTime: String,
     hijriDate: String,
     location: String,
     nextPrayerInfo: String,
     prayerTimes: List<Pair<String, String>>,
     activePrayerIndex: Int,
-    onMenuClick: () -> Unit,
     onNotificationClick: () -> Unit,
     onPrayerClick: (Int) -> Unit = {},
     modifier: Modifier = Modifier
@@ -39,7 +36,7 @@ fun DashboardHeader(
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.primary)
             .statusBarsPadding() // Use system insets for status bar
-            .padding(bottom = 16.dp)
+            .padding(bottom = 8.dp)
     ) {
         Column(
             modifier = Modifier
@@ -51,13 +48,12 @@ fun DashboardHeader(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onMenuClick) {
-                    Icon(
-                        imageVector = Icons.Default.Menu,
-                        contentDescription = stringResource(id = R.string.menu_desc),
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
+                Text(
+                    text = "أهلاً بك يا مستخدم إحسان",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontWeight = FontWeight.Bold
+                )
                 IconButton(onClick = onNotificationClick) {
                     Icon(
                         imageVector = Icons.Default.Notifications,
@@ -67,16 +63,7 @@ fun DashboardHeader(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = stringResource(id = R.string.welcome_user, userName),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
-                fontWeight = FontWeight.Medium
-            )
-            
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -113,7 +100,7 @@ fun DashboardHeader(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
@@ -130,7 +117,7 @@ fun DashboardHeader(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),

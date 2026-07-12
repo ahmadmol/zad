@@ -1,10 +1,8 @@
 package com.example.feature.profile
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import android.widget.Toast
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -22,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
@@ -38,10 +37,16 @@ fun ProfileScreen(
     onBackClick: () -> Unit = {},
     onEditProfileClick: () -> Unit = {},
     onNavigateToDonationHistory: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToReminders: () -> Unit = {},
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showAuthSheet by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    var showPrivacyDialog by remember { mutableStateOf(false) }
+    var showHelpDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
@@ -70,6 +75,78 @@ fun ProfileScreen(
                 AuthBottomSheet(
                     onDismiss = { showAuthSheet = false },
                     onAuthSuccess = { showAuthSheet = false }
+                )
+            }
+
+            if (showLanguageDialog) {
+                AlertDialog(
+                    onDismissRequest = { showLanguageDialog = false },
+                    title = { Text("اللغة") },
+                    text = {
+                        Text("اللغة الحالية للتطبيق هي العربية. سيتم إضافة لغات أخرى في تحديث قادم.")
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showLanguageDialog = false }) {
+                            Text("حسناً")
+                        }
+                    }
+                )
+            }
+
+            if (showPrivacyDialog) {
+                AlertDialog(
+                    onDismissRequest = { showPrivacyDialog = false },
+                    title = { Text("الخصوصية والأمان") },
+                    text = {
+                        Text(
+                            "نحترم خصوصيتك. بيانات الملف والتبرعات تُحفظ محليًا على جهازك قدر الإمكان، " +
+                                "ولا نشارك معلوماتك الشخصية مع أطراف ثالثة دون موافقتك."
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showPrivacyDialog = false }) {
+                            Text("موافق")
+                        }
+                    }
+                )
+            }
+
+            if (showHelpDialog) {
+                AlertDialog(
+                    onDismissRequest = { showHelpDialog = false },
+                    title = { Text("مركز المساعدة") },
+                    text = {
+                        Text(
+                            "للدعم والاستفسارات تواصل معنا عبر البريد:\nsupport@ihsan.app\n\n" +
+                                "أو من خلال إعدادات التطبيق وقسم التنبيهات."
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showHelpDialog = false
+                                val intent = android.content.Intent(android.content.Intent.ACTION_SENDTO).apply {
+                                    data = android.net.Uri.parse("mailto:support@ihsan.app")
+                                    putExtra(android.content.Intent.EXTRA_SUBJECT, "دعم تطبيق إحسان")
+                                }
+                                runCatching { context.startActivity(intent) }
+                                    .onFailure {
+                                        Toast.makeText(
+                                            context,
+                                            "تعذر فتح تطبيق البريد",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                            }
+                        ) {
+                            Text("مراسلة الدعم")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showHelpDialog = false }) {
+                            Text("إغلاق")
+                        }
+                    }
                 )
             }
 
@@ -202,20 +279,26 @@ fun ProfileScreen(
                             ProfileMenuItem(
                                 icon = Icons.Default.Notifications,
                                 title = "إعدادات التنبيهات",
-                                onClick = { /* TODO */ }
+                                onClick = onNavigateToReminders
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color(0xFFF5F5F5))
+                            ProfileMenuItem(
+                                icon = Icons.Default.Settings,
+                                title = "إعدادات التطبيق",
+                                onClick = onNavigateToSettings
                             )
                             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color(0xFFF5F5F5))
                             ProfileMenuItem(
                                 icon = Icons.Default.Language,
                                 title = "اللغة",
                                 subtitle = "العربية",
-                                onClick = { /* TODO */ }
+                                onClick = { showLanguageDialog = true }
                             )
                             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color(0xFFF5F5F5))
                             ProfileMenuItem(
                                 icon = Icons.Default.Shield,
                                 title = "الخصوصية والأمان",
-                                onClick = { /* TODO */ }
+                                onClick = { showPrivacyDialog = true }
                             )
                         }
                     }
@@ -235,7 +318,7 @@ fun ProfileScreen(
                             ProfileMenuItem(
                                 icon = Icons.AutoMirrored.Filled.Chat,
                                 title = "مركز المساعدة",
-                                onClick = { /* TODO */ }
+                                onClick = { showHelpDialog = true }
                             )
                             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color(0xFFF5F5F5))
                             ProfileMenuItem(

@@ -2,6 +2,7 @@ package com.example.mol.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -152,7 +153,22 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object DailyActivities : Screen(
         route = "daily_activities",
         title = "النشاطات اليومية",
-        icon = Icons.Default.List
+        icon = Icons.AutoMirrored.Filled.List
+    )
+    object Tasbih : Screen(
+        route = "tasbih_screen",
+        title = "تسبيح",
+        icon = Icons.Default.BrightnessLow
+    )
+    object HaramLive : Screen(
+        route = "haram_live",
+        title = "بث مباشر الحرم المكي",
+        icon = Icons.Default.LiveTv
+    )
+    object NabawiLive : Screen(
+        route = "nabawi_live",
+        title = "بث مباشر المسجد النبوي",
+        icon = Icons.Default.LiveTv
     )
 
     companion object {

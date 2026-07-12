@@ -32,6 +32,9 @@ data class HomeDashboardData(
     val activeVolunteersCount: Int = 0,
     val dailyDuas: List<Zikr> = emptyList(),
     val dailyActivities: List<DailyActivityItemData> = emptyList(),
+    val lastReadSurahId: Int? = null,
+    val lastReadSurahName: String? = null,
+    val lastReadAyahNumber: Int? = null,
     val selectedPrayerIndex: Int? = null,
     val isPrayerSettingsVisible: Boolean = false,
     val isCitySelectionVisible: Boolean = false

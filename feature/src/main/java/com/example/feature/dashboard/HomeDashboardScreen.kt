@@ -65,7 +65,11 @@ fun HomeDashboardScreen(
     onNavigateToSearch: () -> Unit = {},
     onNavigateToPrayer: () -> Unit = {},
     onNavigateToAsma: () -> Unit = {},
-    onNavigateToDailyActivities: () -> Unit = {}
+    onNavigateToDailyActivities: () -> Unit = {},
+    onNavigateToTasbih: () -> Unit = {},
+    onNavigateToHaramLive: () -> Unit = {},
+    onNavigateToNabawiLive: () -> Unit = {},
+    onContinueLastRead: (surahId: Int, ayahNumber: Int) -> Unit = { _, _ -> }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -91,12 +95,19 @@ fun HomeDashboardScreen(
             HomeIslamicAction("أسماء الله", Icons.Default.AutoAwesome, "asma"),
             HomeIslamicAction("دعاء", Icons.Default.VolunteerActivism, "dua"),
             HomeIslamicAction("قرآن", Icons.AutoMirrored.Filled.MenuBook, "quran"),
+            HomeIslamicAction("بث الحرم", Icons.Default.LiveTv, "haram"),
+            HomeIslamicAction("بث النبوي", Icons.Default.LiveTv, "nabawi"),
             HomeIslamicAction("حديث", Icons.Default.AutoStories, "hadith"),
-            HomeIslamicAction("أذكار", Icons.Default.SelfImprovement, "azkar")
+            HomeIslamicAction("أذكار", Icons.Default.SelfImprovement, "azkar"),
+            HomeIslamicAction("تسبيح", Icons.Default.BrightnessLow, "tasbih")
         )
     }
 
-    val onActionClick: (String) -> Unit = remember(onNavigateToQibla, onNavigateToQuran, onNavigateToAzkar, onNavigateToDua, onNavigateToHadith, onNavigateToAsma) {
+    val onActionClick: (String) -> Unit = remember(
+        onNavigateToQibla, onNavigateToQuran, onNavigateToAzkar, 
+        onNavigateToDua, onNavigateToHadith, onNavigateToAsma, 
+        onNavigateToTasbih, onNavigateToHaramLive, onNavigateToNabawiLive
+    ) {
         { route ->
             when (route) {
                 "qibla" -> onNavigateToQibla()
@@ -105,6 +116,9 @@ fun HomeDashboardScreen(
                 "dua" -> onNavigateToDua()
                 "hadith" -> onNavigateToHadith()
                 "asma" -> onNavigateToAsma()
+                "tasbih" -> onNavigateToTasbih()
+                "haram" -> onNavigateToHaramLive()
+                "nabawi" -> onNavigateToNabawiLive()
                 else -> Toast.makeText(context, "قريبًا، سيتم تفعيل هذه الميزة لاحقًا", Toast.LENGTH_SHORT).show()
             }
         }
@@ -124,14 +138,12 @@ fun HomeDashboardScreen(
             .background(MaterialTheme.colorScheme.primary)
     ) {
         DashboardHeader(
-            userName = uiState.data.userName.ifBlank { "مستخدم" },
             currentTime = uiState.data.currentTime.ifBlank { "00:00" },
             hijriDate = uiState.data.hijriDate.ifBlank { HijriDateFormatter.nowFormatted() },
             location = uiState.data.location,
             nextPrayerInfo = "${uiState.data.nextPrayerName} خلال ${uiState.data.nextPrayerTimeLeft}",
             prayerTimes = prayerTimesDisplay,
             activePrayerIndex = activePrayerIndex,
-            onMenuClick = { Toast.makeText(context, "قريبًا، سيتم تفعيل هذه الميزة لاحقًا", Toast.LENGTH_SHORT).show() },
             onNotificationClick = onNavigateToSearch,
             onPrayerClick = { index -> viewModel.onAction(HomeDashboardAction.OnPrayerClick(index)) }
         )
@@ -171,11 +183,19 @@ fun HomeDashboardScreen(
                     )
                 }
 
-                LastReadCard(
-                    surahName = "سورة البقرة",
-                    surahNumber = 2,
-                    onContinueClick = onNavigateToQuran
-                )
+                uiState.data.lastReadSurahId?.let { surahId ->
+                    LastReadCard(
+                        surahName = uiState.data.lastReadSurahName.orEmpty(),
+                        surahNumber = surahId,
+                        ayahNumber = uiState.data.lastReadAyahNumber,
+                        onContinueClick = {
+                            onContinueLastRead(
+                                surahId,
+                                uiState.data.lastReadAyahNumber ?: 1
+                            )
+                        }
+                    )
+                }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -216,20 +236,7 @@ fun HomeDashboardScreen(
 
                 DailyActivityCard(
                     activities = uiState.data.dailyActivities,
-                    onGoToChecklist = onNavigateToDailyActivities,
-                    onActivityClick = { activity ->
-                        viewModel.onAction(HomeDashboardAction.OnDailyActivityClick(activity.id))
-                    },
-                    onActivityOpenRoute = { route ->
-                        when (route) {
-                            "qibla_screen" -> onNavigateToQibla()
-                            "quran_list" -> onNavigateToQuran()
-                            "azkar_screen" -> onNavigateToAzkar()
-                            "dua_screen" -> onNavigateToDua()
-                            "asma_screen" -> onNavigateToAsma()
-                            else -> Toast.makeText(context, "قريبًا، سيتم تفعيل هذه الميزة لاحقًا", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                    onGoToChecklist = onNavigateToDailyActivities
                 )
             }
         }

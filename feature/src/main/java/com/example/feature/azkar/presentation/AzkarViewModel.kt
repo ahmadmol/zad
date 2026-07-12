@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.feature.azkar.data.local.SettingsManager
 import com.example.feature.azkar.domain.repository.AzkarRepository
 import com.example.feature.azkar.domain.usecase.*
+import com.example.feature.core.preferences.DailyActivityIds
 import com.example.feature.core.preferences.UserPreferences
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -121,7 +122,15 @@ class AzkarViewModel(
     private fun handleIncrement(zikrId: Long) {
         viewModelScope.launch {
             try {
+                val category = uiState.value.azkarList.find { it.id == zikrId }?.category
+                    ?: uiState.value.selectedCategory
                 incrementCounterUseCase(zikrId)
+                when {
+                    category?.contains("صباح") == true ->
+                        userPreferences.markDailyActivityComplete(DailyActivityIds.MORNING_AZKAR)
+                    category?.contains("مساء") == true ->
+                        userPreferences.markDailyActivityComplete(DailyActivityIds.EVENING_AZKAR)
+                }
             } catch (e: Exception) {
                 _error.value = e.message
             }

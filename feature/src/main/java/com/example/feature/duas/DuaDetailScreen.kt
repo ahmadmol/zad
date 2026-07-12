@@ -53,8 +53,28 @@ fun DuaDetailScreen(
                         }
                     },
                     actions = {
-                        IconButton(onClick = { /* TODO: Save to Bookmark */ }) {
-                            Icon(Icons.Outlined.BookmarkBorder, contentDescription = "Bookmark")
+                        IconButton(
+                            onClick = {
+                                dua?.let { onToggleFavorite(it.id, it.isFavorite) }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = if (dua?.isFavorite == true) {
+                                    Icons.Default.Bookmark
+                                } else {
+                                    Icons.Outlined.BookmarkBorder
+                                },
+                                contentDescription = if (dua?.isFavorite == true) {
+                                    "إزالة من المفضلة"
+                                } else {
+                                    "إضافة للمفضلة"
+                                },
+                                tint = if (dua?.isFavorite == true) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    LocalContentColor.current
+                                }
+                            )
                         }
                     }
                 )

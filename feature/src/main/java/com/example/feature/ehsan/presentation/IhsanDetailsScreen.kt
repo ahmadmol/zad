@@ -19,6 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,9 +46,48 @@ fun IhsanDetailsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var showReportDialog by remember { mutableStateOf(false) }
+    var reportSent by remember { mutableStateOf(false) }
 
     LaunchedEffect(id) {
         viewModel.loadItem(id)
+    }
+
+    if (showReportDialog) {
+        AlertDialog(
+            onDismissRequest = { showReportDialog = false },
+            title = { Text("الإبلاغ عن الحالة") },
+            text = {
+                Text(
+                    if (reportSent) {
+                        "شكرًا لك. تم تسجيل البلاغ وسيتم مراجعته قريبًا."
+                    } else {
+                        "هل تريد الإبلاغ عن هذه الحالة كمحتوى غير مناسب أو غير دقيق؟"
+                    }
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        if (reportSent) {
+                            showReportDialog = false
+                            reportSent = false
+                        } else {
+                            reportSent = true
+                        }
+                    }
+                ) {
+                    Text(if (reportSent) "إغلاق" else "تأكيد البلاغ")
+                }
+            },
+            dismissButton = if (!reportSent) {
+                {
+                    TextButton(onClick = { showReportDialog = false }) {
+                        Text("إلغاء")
+                    }
+                }
+            } else null
+        )
     }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
@@ -59,8 +101,18 @@ fun IhsanDetailsScreen(
                         }
                     },
                     actions = {
-                        IconButton(onClick = { /* Share Logic */ }) {
-                            Icon(Icons.Outlined.Share, contentDescription = null)
+                        IconButton(
+                            onClick = {
+                                val item = uiState.item ?: return@IconButton
+                                val shareText = "${item.title}\n\n${item.description}"
+                                val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                                    type = "text/plain"
+                                    putExtra(Intent.EXTRA_TEXT, shareText)
+                                }
+                                context.startActivity(Intent.createChooser(sendIntent, "مشاركة الحالة"))
+                            }
+                        ) {
+                            Icon(Icons.Outlined.Share, contentDescription = "مشاركة")
                         }
                     }
                 )
@@ -241,7 +293,7 @@ fun IhsanDetailsScreen(
                             Spacer(modifier = Modifier.height(16.dp))
                             
                             OutlinedButton(
-                                onClick = { /* TODO: Report condition */ },
+                                onClick = { showReportDialog = true },
                                 modifier = Modifier.fillMaxWidth().height(56.dp),
                                 shape = RoundedCornerShape(12.dp),
                                 border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))

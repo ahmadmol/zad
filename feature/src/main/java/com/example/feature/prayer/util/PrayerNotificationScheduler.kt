@@ -20,17 +20,17 @@ class PrayerNotificationScheduler(private val context: Context) {
     ) {
         val now = System.currentTimeMillis()
 
-        prayers.forEach { prayer ->
-            // Skip Sunrise
-            if (prayer.nameEn == "Sunrise") return@forEach
+        prayers.forEachIndexed { index, prayer ->
+            // Skip Sunrise for notifications usually
+            val isSunrise = prayer.nameEn == "Sunrise"
 
-            // Generate unique day-based ID to avoid collisions between today and tomorrow
+            // Generate unique day-based ID
             val calendar = Calendar.getInstance().apply { timeInMillis = prayer.timestamp }
             val dayOfYear = calendar.get(Calendar.DAY_OF_YEAR)
             val baseId = prayer.nameEn.hashCode() + (dayOfYear * 10)
 
             // 1. Pre-prayer notification
-            if (prePrayerMinutes > 0) {
+            if (!isSunrise && prePrayerMinutes > 0) {
                 val triggerTime = prayer.timestamp - (prePrayerMinutes * 60 * 1000)
                 if (triggerTime > now) {
                     scheduleAlarm(
@@ -47,13 +47,13 @@ class PrayerNotificationScheduler(private val context: Context) {
                 scheduleAlarm(
                     id = baseId + 20000,
                     triggerTime = prayer.timestamp,
-                    title = "حان الآن موعد صلاة ${prayer.nameAr}",
-                    message = "الله أكبر، حان وقت صلاة ${prayer.nameAr}"
+                    title = if (isSunrise) "وقت الشروق" else "حان الآن موعد صلاة ${prayer.nameAr}",
+                    message = if (isSunrise) "حان الآن وقت شروق الشمس" else "الله أكبر، حان وقت صلاة ${prayer.nameAr}"
                 )
             }
 
             // 3. Iqamah notification
-            if (iqamahMinutes > 0) {
+            if (!isSunrise && iqamahMinutes > 0) {
                 val triggerTime = prayer.timestamp + (iqamahMinutes * 60 * 1000)
                 if (triggerTime > now) {
                     scheduleAlarm(
@@ -62,6 +62,23 @@ class PrayerNotificationScheduler(private val context: Context) {
                         title = "حان وقت إقامة صلاة ${prayer.nameAr}",
                         message = "استعدوا، حان وقت إقامة الصلاة"
                     )
+                }
+            }
+
+            // 4. End-of-prayer reminder (15 mins before next prayer/event)
+            if (!isSunrise) {
+                val nextEvent = prayers.getOrNull(index + 1)
+                if (nextEvent != null) {
+                    val triggerTime = nextEvent.timestamp - (15 * 60 * 1000)
+                    // Ensure we don't schedule a reminder that triggers before the prayer itself starts
+                    if (triggerTime > now && triggerTime > prayer.timestamp) {
+                        scheduleAlarm(
+                            id = baseId + 40000,
+                            triggerTime = triggerTime,
+                            title = "تذكير بالصلاة",
+                            message = "تذكير لمن لم يصلِّ ${prayer.nameAr}"
+                        )
+                    }
                 }
             }
         }

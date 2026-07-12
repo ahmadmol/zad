@@ -29,6 +29,7 @@ val databaseModule = module {
             IhsanDatabase::class.java,
             "ihsan_master_db"
         ).addMigrations(MIGRATION_2_3)
+        .fallbackToDestructiveMigration()
         .addCallback(object : RoomDatabase.Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
@@ -41,10 +42,16 @@ val databaseModule = module {
                         azkarDao.insertZikr(ZikrEntity(title = "المساء", text = "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ", targetCount = 1, category = "أذكار المساء"))
                         azkarDao.insertZikr(ZikrEntity(title = "بعد الصلاة", text = "أستغفر الله (3 مرات)", targetCount = 3, category = "أذكار بعد الصلاة"))
                         azkarDao.insertZikr(ZikrEntity(title = "بعد الصلاة", text = "اللهم أنت السلام ومنك السلام...", targetCount = 1, category = "أذكار بعد الصلاة"))
-                        azkarDao.insertZikr(ZikrEntity(title = "تسبيح", text = "سُبْحَانَ اللَّهِ", targetCount = 33, category = "تسابيح عامة"))
-                        azkarDao.insertZikr(ZikrEntity(title = "تحميد", text = "الْحَمْدُ لِلَّهِ", targetCount = 33, category = "تسابيح عامة"))
-                        azkarDao.insertZikr(ZikrEntity(title = "تكبير", text = "اللَّهُ أَكْبَرُ", targetCount = 33, category = "تسابيح عامة"))
-                        azkarDao.insertZikr(ZikrEntity(title = "سبحة", text = "سبحة حرة", targetCount = 0, category = "سبحة حرة"))
+                        
+                        // Tasbih Population
+                        azkarDao.insertZikr(ZikrEntity(title = "تسبيح", text = "سُبْحَانَ اللَّهِ", targetCount = 33, category = "تسبيح"))
+                        azkarDao.insertZikr(ZikrEntity(title = "تحميد", text = "الْحَمْدُ لِلَّهِ", targetCount = 33, category = "تسبيح"))
+                        azkarDao.insertZikr(ZikrEntity(title = "تكبير", text = "اللَّهُ أَكْبَرُ", targetCount = 33, category = "تسبيح"))
+                        azkarDao.insertZikr(ZikrEntity(title = "التهليل", text = "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ", targetCount = 10, category = "تسبيح"))
+                        azkarDao.insertZikr(ZikrEntity(title = "الحوقلة", text = "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", targetCount = 33, category = "تسبيح"))
+                        azkarDao.insertZikr(ZikrEntity(title = "الاستغفار", text = "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ", targetCount = 100, category = "تسبيح"))
+                        azkarDao.insertZikr(ZikrEntity(title = "تسبيح وبحمد", text = "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ ، سُبْحَانَ اللَّهِ الْعَظِيمِ", targetCount = 33, category = "تسبيح"))
+                        azkarDao.insertZikr(ZikrEntity(title = "سبحة حرة", text = "اضغط للبدء بالتسبيح الحر", targetCount = 0, category = "تسبيح"))
                     }
 
                     // Quran Population

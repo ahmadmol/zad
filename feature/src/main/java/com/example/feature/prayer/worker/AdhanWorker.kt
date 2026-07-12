@@ -4,6 +4,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.media.AudioAttributes
+import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
@@ -42,8 +43,13 @@ class AdhanWorker(
 
     private fun showAdhanNotification(prayerName: String, soundUri: String?) {
         val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val resolvedUri = resolveAdhanUri(soundUri)
         val baseChannelId = "adhan_notifications"
-        val channelId = if (soundUri != null) "${baseChannelId}_${soundUri.hashCode()}" else baseChannelId
+        val channelId = if (resolvedUri != null) {
+            "${baseChannelId}_${resolvedUri.toString().hashCode()}"
+        } else {
+            baseChannelId
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -52,13 +58,12 @@ class AdhanWorker(
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = "تنبيهات بمواعيد الأذان والصلوات الخمس"
-                if (soundUri != null) {
-                    val uri = Uri.parse(soundUri)
+                if (resolvedUri != null) {
                     val attributes = AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                         .build()
-                    setSound(uri, attributes)
+                    setSound(resolvedUri, attributes)
                 }
             }
             notificationManager.createNotificationChannel(channel)
@@ -69,13 +74,24 @@ class AdhanWorker(
             .setContentText("أقم صلاتك تنعم بحياتك")
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setAutoCancel(true)
 
-        if (soundUri != null) {
-            notificationBuilder.setSound(Uri.parse(soundUri))
+        if (resolvedUri != null) {
+            notificationBuilder.setSound(resolvedUri)
+        } else {
+            notificationBuilder.setDefaults(NotificationCompat.DEFAULT_ALL)
         }
 
         notificationManager.notify(prayerName.hashCode(), notificationBuilder.build())
+    }
+
+    private fun resolveAdhanUri(soundUri: String?): Uri? {
+        if (!soundUri.isNullOrBlank()) {
+            return Uri.parse(soundUri)
+        }
+        return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+            ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
     }
 
     private suspend fun scheduleDailyAdhans(context: Context) {

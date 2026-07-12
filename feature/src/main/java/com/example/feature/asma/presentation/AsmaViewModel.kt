@@ -3,6 +3,8 @@ package com.example.feature.asma.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.feature.asma.domain.repository.AsmaRepository
+import com.example.feature.core.preferences.DailyActivityIds
+import com.example.feature.core.preferences.UserPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +13,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AsmaViewModel(
-    private val repository: AsmaRepository
+    private val repository: AsmaRepository,
+    private val userPreferences: UserPreferences
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AsmaUiState())
     val uiState: StateFlow<AsmaUiState> = _uiState.asStateFlow()
@@ -62,6 +65,9 @@ class AsmaViewModel(
             is AsmaAction.OnRetry -> loadAsma()
             is AsmaAction.OnNameClick -> {
                 _uiState.update { it.copy(selectedName = action.name) }
+                viewModelScope.launch {
+                    userPreferences.markDailyActivityComplete(DailyActivityIds.DAILY_NAME)
+                }
             }
             is AsmaAction.OnToggleFavorite -> {
                 viewModelScope.launch {

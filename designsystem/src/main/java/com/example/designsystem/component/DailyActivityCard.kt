@@ -1,13 +1,11 @@
 package com.example.designsystem.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,136 +20,96 @@ import androidx.compose.ui.unit.sp
 fun DailyActivityCard(
     activities: List<DailyActivityItemData>,
     onGoToChecklist: () -> Unit,
-    onActivityClick: (DailyActivityItemData) -> Unit,
-    onActivityOpenRoute: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = "النشاط اليومي",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = "أكمل قائمة نشاطاتك اليومية",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+    val overallProgress = if (activities.isNotEmpty()) {
+        activities.map { it.progress }.average().toFloat().coerceIn(0f, 1f)
+    } else 0f
+    
+    val percentage = (overallProgress * 100).toInt()
 
-            Surface(
-                color = Color(0xFFC66927),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                val overallProgress = activities.map { it.progress }.average().toFloat().coerceIn(0f, 1f)
-                Text(
-                    text = "${(overallProgress * 100).toInt()}%",
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        val overallProgress = activities.map { it.progress }.average().toFloat().coerceIn(0f, 1f)
-        LinearProgressIndicator(
-            progress = overallProgress,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(8.dp)
-                .clip(RoundedCornerShape(12.dp)),
-            color = MaterialTheme.colorScheme.primary,
-            trackColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "التقدم العام ${((overallProgress) * 100).toInt()}%",
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.SemiBold
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        activities.forEach { activity ->
-            ActivityItem(
-                activity = activity,
-                onClick = { onActivityClick(activity) },
-                onOpenRoute = { onActivityOpenRoute(activity.route) }
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = onGoToChecklist,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            shape = RoundedCornerShape(24.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            Text(text = "الذهاب إلى القائمة", color = Color.White, fontWeight = FontWeight.Bold)
-        }
-    }
-}
-
-@Composable
-private fun ActivityItem(
-    activity: DailyActivityItemData,
-    onClick: () -> Unit,
-    onOpenRoute: () -> Unit
-) {
-    Surface(
-        modifier = Modifier
+    Card(
+        modifier = modifier
             .fillMaxWidth()
-            .clickable { onClick() },
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-        shape = RoundedCornerShape(16.dp)
+            .clickable { onGoToChecklist() },
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F8F6))
     ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = activity.title,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "${activity.currentCount} من ${activity.targetCount} ${activity.unit}",
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.primary
-                )
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "النشاط اليومي",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF0D4D3D)
+                    )
+                    Text(
+                        text = "تابع نشاطاتك اليومية",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFF0D4D3D).copy(alpha = 0.7f)
+                    )
+                }
+
+                Surface(
+                    color = Color(0xFFC66927),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "$percentage%",
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
             }
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onOpenRoute) {
+            Spacer(modifier = Modifier.height(20.dp))
+
+            LinearProgressIndicator(
+                progress = { overallProgress },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(10.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                color = Color(0xFF0D4D3D),
+                trackColor = Color(0xFF0D4D3D).copy(alpha = 0.1f)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "التقدم العام",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFF0D4D3D)
+                )
+                
+                TextButton(
+                    onClick = onGoToChecklist,
+                    contentPadding = PaddingValues(0.dp)
+                ) {
+                    Text(
+                        text = "فتح القائمة",
+                        color = Color(0xFFC66927),
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
                     Icon(
-                        imageVector = Icons.Default.ArrowForward,
-                        contentDescription = "فتح",
-                        tint = MaterialTheme.colorScheme.primary
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = Color(0xFFC66927)
                     )
                 }
             }
