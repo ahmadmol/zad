@@ -9,7 +9,7 @@
 | Starting branch | `refactor/design-localization-accessibility` |
 | Starting commit | `aa8196d` |
 | Working branch | `chore/integration-release-readiness` |
-| Final commit | `bbe8808` |
+| Final commit | `6c2b3dc` |
 
 ## 3. Baseline results (pre-change)
 
