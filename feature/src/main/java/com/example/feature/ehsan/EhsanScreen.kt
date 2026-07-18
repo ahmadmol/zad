@@ -90,6 +90,10 @@ fun EhsanScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                item {
+                    com.example.feature.ehsan.presentation.components.LocalCharityBoardNotice()
+                }
+
                 // Header / Impact Card
                 item {
                     ImpactSection(
