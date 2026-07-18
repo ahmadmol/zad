@@ -55,6 +55,8 @@ import com.example.feature.statistics.StatisticsScreen
 import com.example.feature.onboarding.OnboardingScreen
 import com.example.feature.splashScreen.SplashScreen
 import com.example.feature.ui.LocationPermissionScreen
+import com.example.feature.ihsanplus.integration.flags.IhsanPlusFeatureFlags
+import com.example.feature.ihsanplus.integration.presentation.ControlledDailyExperienceScreen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -122,10 +124,23 @@ fun AppNavHost(
                 onNavigateToTasbih = { navController.navigate(Screen.Tasbih.route) },
                 onNavigateToHaramLive = { navController.navigate(Screen.HaramLive.route) },
                 onNavigateToNabawiLive = { navController.navigate(Screen.NabawiLive.route) },
+                onNavigateToIhsanPlusDaily = if (IhsanPlusFeatureFlags.dailyEnabled) {
+                    { navController.navigate(Screen.IhsanPlusDaily.route) }
+                } else {
+                    null
+                },
                 onContinueLastRead = { surahId, ayahNumber ->
                     navController.navigate(Screen.QuranReader.createRoute(surahId, ayahNumber))
                 }
             )
+        }
+
+        if (IhsanPlusFeatureFlags.dailyEnabled) {
+            composable(route = Screen.IhsanPlusDaily.route) {
+                ControlledDailyExperienceScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
         }
 
         composable(route = Screen.HaramLive.route) {

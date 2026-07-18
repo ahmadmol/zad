@@ -32,6 +32,7 @@ val appModule = module {
         viewModelModule,
         quranModule,
         com.example.feature.prayer.di.prayerDomainModule,
-        com.example.feature.dashboard.di.homeDashboardModule
+        com.example.feature.dashboard.di.homeDashboardModule,
+        com.example.feature.ihsanplus.integration.di.ihsanPlusProductionModule
     )
 }

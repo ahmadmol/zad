@@ -69,6 +69,7 @@ fun HomeDashboardScreen(
     onNavigateToTasbih: () -> Unit = {},
     onNavigateToHaramLive: () -> Unit = {},
     onNavigateToNabawiLive: () -> Unit = {},
+    onNavigateToIhsanPlusDaily: (() -> Unit)? = null,
     onContinueLastRead: (surahId: Int, ayahNumber: Int) -> Unit = { _, _ -> }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -214,6 +215,16 @@ fun HomeDashboardScreen(
                         icon = Icons.Default.Place,
                         onClick = onNavigateToDonations,
                         modifier = Modifier.weight(1f)
+                    )
+                }
+
+                if (onNavigateToIhsanPlusDaily != null) {
+                    IhsanActionCard(
+                        title = "تجربة اليوم",
+                        subtitle = "ملخص محلي للقراءة فقط",
+                        icon = Icons.Default.Today,
+                        onClick = onNavigateToIhsanPlusDaily,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
 

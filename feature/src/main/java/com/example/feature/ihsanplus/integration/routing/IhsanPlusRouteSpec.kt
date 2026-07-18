@@ -12,13 +12,15 @@ sealed interface IhsanPlusRouteSpec {
 
     data object Daily : IhsanPlusRouteSpec {
         override val route: String = "ihsan_plus_daily"
-        override val productionApproved: Boolean = false
+        /** Approved for flag-gated controlled integration; release default remains disabled. */
+        override val productionApproved: Boolean = true
         override val requiredCapabilities: Set<IhsanPlusCapability> =
             setOf(IhsanPlusCapability.DailyReadOnly)
     }
 
     data object PrayerAssist : IhsanPlusRouteSpec {
         override val route: String = "ihsan_plus_prayer_assist"
+        /** Prefer embedding in Prayer screen; standalone route remains unregistered. */
         override val productionApproved: Boolean = false
         override val requiredCapabilities: Set<IhsanPlusCapability> =
             setOf(IhsanPlusCapability.PrayerReadOnly)

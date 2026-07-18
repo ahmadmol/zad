@@ -18,8 +18,14 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("boolean", "IHSANPLUS_DAILY_ENABLED", "true")
+            buildConfigField("boolean", "IHSANPLUS_PRAYER_ASSIST_ENABLED", "true")
+        }
         release {
             isMinifyEnabled = false
+            buildConfigField("boolean", "IHSANPLUS_DAILY_ENABLED", "false")
+            buildConfigField("boolean", "IHSANPLUS_PRAYER_ASSIST_ENABLED", "false")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -36,6 +42,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 ksp {

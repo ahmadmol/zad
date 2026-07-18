@@ -166,6 +166,15 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
         title = "تسبيح",
         icon = Icons.Default.BrightnessLow
     )
+    /**
+     * Controlled Daily read-only experience (Stage 1).
+     * Registered only when [com.example.feature.ihsanplus.integration.flags.IhsanPlusFeatureFlags.dailyEnabled].
+     */
+    object IhsanPlusDaily : Screen(
+        route = "ihsan_plus_daily",
+        title = "تجربة اليوم",
+        icon = Icons.Default.Today
+    )
     object HaramLive : Screen(
         route = "haram_live",
         title = "بث مباشر الحرم المكي",

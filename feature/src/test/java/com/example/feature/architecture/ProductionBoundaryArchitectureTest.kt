@@ -21,18 +21,18 @@ class ProductionBoundaryArchitectureTest {
     fun `no ihsan plus route appears in Screen or AppNavHost`() {
         val screen = read("app/src/main/java/com/example/mol/navigation/Screen.kt")
         val nav = read("app/src/main/java/com/example/mol/navigation/AppNavHost.kt")
-        IhsanPlusRouteSpec.ALL.forEach { route ->
-            assertFalse(screen.contains(route.route))
-            assertFalse(nav.contains(route.route))
-        }
-        assertFalse(screen.contains("ihsan_plus", ignoreCase = true))
-        assertFalse(nav.contains("ihsanPlus", ignoreCase = true))
-        assertFalse(nav.contains("IhsanPlusDaily"))
-        assertFalse(nav.contains("IhsanPlusPrayerAssist"))
+        // Charity Trust and standalone Prayer Assist routes must remain unregistered.
+        assertFalse(screen.contains(IhsanPlusRouteSpec.CharityTrust.route))
+        assertFalse(nav.contains(IhsanPlusRouteSpec.CharityTrust.route))
+        assertFalse(nav.contains(IhsanPlusRouteSpec.PrayerAssist.route))
         assertFalse(nav.contains("IhsanPlusCharityTrust"))
+        assertFalse(nav.contains("DemoIhsanPlus"))
+        // Daily is flag-gated; route constant may exist, but demo screen must not.
+        assertFalse(nav.contains("IhsanPlusDailyExperienceScreen"))
         assertFalse(screen.contains("inbox_screen"))
         assertTrue(screen.contains("tasbih_screen"))
         assertTrue(screen.contains("ihsan_details"))
+        assertTrue(nav.contains("IhsanPlusFeatureFlags.dailyEnabled"))
     }
 
     @Test
@@ -41,8 +41,8 @@ class ProductionBoundaryArchitectureTest {
         IhsanPlusDiSpec.forbiddenReleaseModuleNames.forEach { name ->
             assertFalse("appModule must not include $name", appModule.contains(name))
         }
-        assertFalse(appModule.contains("ihsanplus", ignoreCase = true))
         assertFalse(appModule.contains("DemoIhsanPlus"))
+        assertTrue(appModule.contains("ihsanPlusProductionModule"))
     }
 
     @Test

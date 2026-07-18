@@ -16,8 +16,10 @@ import org.junit.Test
 class IhsanPlusIntegrationContractTest {
 
     @Test
-    fun `all route specs are unapproved for production`() {
-        assertTrue(IhsanPlusRouteSpec.ALL.all { !it.productionApproved })
+    fun `daily route is approved for flag gated integration while charity trust is not`() {
+        assertTrue(IhsanPlusRouteSpec.Daily.productionApproved)
+        assertFalse(IhsanPlusRouteSpec.PrayerAssist.productionApproved)
+        assertFalse(IhsanPlusRouteSpec.CharityTrust.productionApproved)
         assertEquals("ihsan_plus_daily", IhsanPlusRouteSpec.Daily.route)
         assertEquals("ihsan_plus_prayer_assist", IhsanPlusRouteSpec.PrayerAssist.route)
         assertEquals("ihsan_plus_charity_trust", IhsanPlusRouteSpec.CharityTrust.route)

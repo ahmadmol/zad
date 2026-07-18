@@ -17,6 +17,7 @@ class AppProductionBoundaryArchitectureTest {
         val text = File(repoRoot, "app/src/main/java/com/example/mol/di/AppModule.kt").readText()
         assertFalse(text.contains("ihsanPlusDailyModule"))
         assertFalse(text.contains("ihsanPlusCharityTrustModule"))
+        assertTrue(text.contains("ihsanPlusProductionModule"))
         assertTrue(text.contains("prayerDomainModule"))
         assertTrue(text.contains("homeDashboardModule"))
     }

@@ -39,7 +39,7 @@ class ProductSurfaceNavigationCharacterizationTest {
 
     @Test
     @Suppress("DEPRECATION")
-    fun `no ihsan plus routes exist on known screens`() {
+    fun `canonical screens exclude charity trust and inbox`() {
         val routes = listOf(
             Screen.Home.route,
             Screen.Tasbih.route,
@@ -52,9 +52,9 @@ class ProductSurfaceNavigationCharacterizationTest {
             Screen.Azkar.route,
             Screen.Prayer.route
         )
-        assertTrue(routes.none { it.contains("ihsan_plus", ignoreCase = true) })
-        assertTrue(routes.none { it.contains("ihsanplus", ignoreCase = true) })
+        assertTrue(routes.none { it.contains("charity_trust", ignoreCase = true) })
         assertTrue(routes.none { it.contains("inbox", ignoreCase = true) })
+        assertEquals("ihsan_plus_daily", Screen.IhsanPlusDaily.route)
     }
 
     @Test
