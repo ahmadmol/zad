@@ -114,6 +114,7 @@ class ReconcilePrayerScheduleUseCaseTest {
             override suspend fun updateUseAutoLocation(enabled: Boolean) {}
             override suspend fun updatePrePrayerMinutes(minutes: Int) {}
             override suspend fun updateIqamahMinutes(minutes: Int) {}
+            override suspend fun updateNotificationSoundType(type: String) {}
         },
         calculator = AdhanPrayerCalculator(),
         alarmGateway = gateway,

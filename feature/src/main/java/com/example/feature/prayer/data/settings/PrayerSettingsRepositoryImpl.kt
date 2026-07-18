@@ -55,4 +55,8 @@ class PrayerSettingsRepositoryImpl(
     override suspend fun updateIqamahMinutes(minutes: Int) {
         settingsManager.setIqamahNotificationMinutes(minutes)
     }
+
+    override suspend fun updateNotificationSoundType(type: String) {
+        settingsManager.setNotificationSoundType(type)
+    }
 }

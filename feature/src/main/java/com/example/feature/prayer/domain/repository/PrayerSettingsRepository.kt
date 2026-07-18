@@ -20,4 +20,6 @@ interface PrayerSettingsRepository {
     suspend fun updatePrePrayerMinutes(minutes: Int)
 
     suspend fun updateIqamahMinutes(minutes: Int)
+
+    suspend fun updateNotificationSoundType(type: String)
 }

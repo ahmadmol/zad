@@ -1,33 +1,36 @@
 package com.example.feature.dashboard.presentation
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.designsystem.component.DailyActivityItemData
-import com.example.feature.R
-import com.example.feature.asma.domain.usecase.GetAsmaUseCase
-import com.example.feature.asma.domain.util.AsmaTodayResolver
-import com.example.feature.azkar.data.local.SettingsManager
-import com.example.feature.azkar.domain.usecase.GetAzkarUseCase
-import com.example.feature.core.preferences.DailyActivityIds
-import com.example.feature.core.preferences.UserPreferences
-import com.example.feature.core.util.HijriDateFormatter
-import com.example.feature.ehsan.domain.usecase.GetDonationsUseCase
-import com.example.feature.prayer.PrayerTime
-import com.example.feature.prayer.domain.calculator.NextPrayerSelector
-import com.example.feature.prayer.domain.facade.PrayerTimesFacade
-import com.example.feature.prayer.domain.model.PrayerLocationState
-import com.example.feature.prayer.domain.model.PrayerReconciliationReason
-import com.example.feature.quran.domain.repository.QuranRepository
+import com.example.feature.dashboard.domain.model.HomeAsmaSummary
+import com.example.feature.dashboard.domain.model.HomeCharitySummary
+import com.example.feature.dashboard.domain.model.HomeDailyActivitySummary
+import com.example.feature.dashboard.domain.model.HomeDhikrSummary
+import com.example.feature.dashboard.domain.model.HomePrayerSummary
+import com.example.feature.dashboard.domain.model.HomeProfileSummary
+import com.example.feature.dashboard.domain.model.HomeQuranSummary
+import com.example.feature.dashboard.domain.model.HomeSectionState
+import com.example.feature.dashboard.domain.repository.DailyActivityRepository
+import com.example.feature.dashboard.domain.usecase.ObserveHomeAsmaSummaryUseCase
+import com.example.feature.dashboard.domain.usecase.ObserveHomeCharitySummaryUseCase
+import com.example.feature.dashboard.domain.usecase.ObserveHomeDailyActivitiesUseCase
+import com.example.feature.dashboard.domain.usecase.ObserveHomeDhikrSummaryUseCase
+import com.example.feature.dashboard.domain.usecase.ObserveHomePrayerSummaryUseCase
+import com.example.feature.dashboard.domain.usecase.ObserveHomeProfileSummaryUseCase
+import com.example.feature.dashboard.domain.usecase.ObserveHomeQuranSummaryUseCase
+import com.example.feature.dashboard.domain.usecase.RefreshHomeDashboardUseCase
+import com.example.feature.dashboard.domain.usecase.currentHijriDate
+import com.example.feature.prayer.domain.model.PrayerCalculationMethod
+import com.example.feature.prayer.domain.model.PrayerMadhhab
+import com.example.feature.prayer.domain.repository.PrayerLocationRepository
+import com.example.feature.prayer.domain.usecase.UpdatePrayerSettingsUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -36,365 +39,186 @@ import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 
 class HomeDashboardViewModel(
-    private val getAzkarUseCase: GetAzkarUseCase,
-    private val getAsmaUseCase: GetAsmaUseCase,
-    private val getDonationsUseCase: GetDonationsUseCase,
-    private val userPreferences: UserPreferences,
-    private val settingsManager: SettingsManager,
-    private val prayerFacade: PrayerTimesFacade,
-    private val quranRepository: QuranRepository,
-    context: Context
+    observeHomeProfile: ObserveHomeProfileSummaryUseCase,
+    observeHomePrayer: ObserveHomePrayerSummaryUseCase,
+    observeHomeQuran: ObserveHomeQuranSummaryUseCase,
+    observeDailyActivities: ObserveHomeDailyActivitiesUseCase,
+    observeHomeDhikr: ObserveHomeDhikrSummaryUseCase,
+    observeHomeAsma: ObserveHomeAsmaSummaryUseCase,
+    observeHomeCharity: ObserveHomeCharitySummaryUseCase,
+    private val refreshHome: RefreshHomeDashboardUseCase,
+    private val updatePrayerSettings: UpdatePrayerSettingsUseCase,
+    private val prayerLocationRepository: PrayerLocationRepository,
+    private val dailyActivityRepository: DailyActivityRepository
 ) : ViewModel() {
 
-    private val applicationContext = context.applicationContext
-    private val _uiState = MutableStateFlow(HomeDashboardUiState())
-    val uiState: StateFlow<HomeDashboardUiState> = _uiState.asStateFlow()
-
-    private var dataObserveJob: Job? = null
-    private var dailyActivityJob: Job? = null
-    private var countdownJob: Job? = null
-    private var prayerObserveJob: Job? = null
-    private var lastReadJob: Job? = null
     private val timeFormat = SimpleDateFormat("hh:mm:ss a", Locale("ar"))
-    private val activityDateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    private val prayerTimeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+    private val ephemeral = MutableStateFlow(EphemeralUi())
+    private var clockJob: Job? = null
 
-    private val dailyActivityTemplates = listOf(
-        DailyActivityTemplate(
-            id = DailyActivityIds.QURAN_READING,
-            title = "قراءة قرآن",
-            targetCount = DailyActivityIds.targetFor(DailyActivityIds.QURAN_READING),
-            unit = "مرة",
-            route = "quran_list"
-        ),
-        DailyActivityTemplate(
-            id = DailyActivityIds.MORNING_AZKAR,
-            title = "أذكار الصباح",
-            targetCount = DailyActivityIds.targetFor(DailyActivityIds.MORNING_AZKAR),
-            unit = "مرة",
-            route = "azkar_screen"
-        ),
-        DailyActivityTemplate(
-            id = DailyActivityIds.EVENING_AZKAR,
-            title = "أذكار المساء",
-            targetCount = DailyActivityIds.targetFor(DailyActivityIds.EVENING_AZKAR),
-            unit = "مرة",
-            route = "azkar_screen"
-        ),
-        DailyActivityTemplate(
-            id = DailyActivityIds.TASBEEH,
-            title = "تسبيح",
-            targetCount = DailyActivityIds.targetFor(DailyActivityIds.TASBEEH),
-            unit = "حبة",
-            route = "tasbih_screen"
-        ),
-        DailyActivityTemplate(
-            id = DailyActivityIds.DAILY_DUA,
-            title = "دعاء اليوم",
-            targetCount = DailyActivityIds.targetFor(DailyActivityIds.DAILY_DUA),
-            unit = "مرة",
-            route = "dua_screen"
-        ),
-        DailyActivityTemplate(
-            id = DailyActivityIds.DAILY_NAME,
-            title = "اسم اليوم",
-            targetCount = DailyActivityIds.targetFor(DailyActivityIds.DAILY_NAME),
-            unit = "مرة",
-            route = "asma_screen"
+    private val coreSections = combine(
+        observeHomeProfile(),
+        observeHomePrayer(),
+        observeHomeQuran(),
+        observeDailyActivities(),
+        observeHomeDhikr()
+    ) { profile, prayer, quran, daily, dhikr ->
+        CoreSections(profile, prayer, quran, daily, dhikr)
+    }
+
+    private val sections = combine(
+        coreSections,
+        observeHomeAsma(),
+        observeHomeCharity()
+    ) { core, asma, charity ->
+        SectionBundle(
+            profile = core.profile,
+            prayer = core.prayer,
+            quran = core.quran,
+            dailyActivities = core.daily,
+            dhikr = core.dhikr,
+            asma = asma,
+            charity = charity
         )
+    }
+
+    private val combined = combine(sections, ephemeral) { bundle, epi ->
+        HomeDashboardUiState(
+            profile = bundle.profile,
+            prayer = bundle.prayer,
+            quran = bundle.quran,
+            dailyActivities = bundle.dailyActivities,
+            dhikr = bundle.dhikr,
+            asma = bundle.asma,
+            charity = bundle.charity,
+            currentTime = epi.currentTime,
+            hijriDate = epi.hijriDate,
+            isRefreshing = epi.isRefreshing,
+            selectedPrayerIndex = epi.selectedPrayerIndex,
+            isPrayerSettingsVisible = epi.isPrayerSettingsVisible,
+            isCitySelectionVisible = epi.isCitySelectionVisible
+        )
+    }
+
+    val uiState: StateFlow<HomeDashboardUiState> = combined.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = HomeDashboardUiState()
     )
 
     init {
-        observePrayerFacade()
-        observeData()
-        observeDailyActivities()
-        observeLastRead()
-        startClockTicker()
-        viewModelScope.launch {
-            prayerFacade.refreshLocation()
-            prayerFacade.reconcileSchedule(PrayerReconciliationReason.ApplicationStart)
-        }
+        startClock()
+        viewModelScope.launch { refreshHome() }
     }
 
-    private fun observePrayerFacade() {
-        prayerObserveJob?.cancel()
-        prayerObserveJob = viewModelScope.launch {
-            combine(
-                prayerFacade.nextPrayer,
-                prayerFacade.prayerDay,
-                prayerFacade.locationState
-            ) { next, day, location ->
-                Triple(next, day, location)
-            }.collectLatest { (next, day, location) ->
-                val now = System.currentTimeMillis()
-                val prayers = day?.instants?.map { instant ->
-                    val activeWindowEnd = instant.epochMillis + 45 * 60 * 1000
-                    val isActive = now >= instant.epochMillis && now < activeWindowEnd
-                    PrayerTime(
-                        nameAr = instant.name.arabic,
-                        nameEn = instant.name.english,
-                        time = prayerTimeFormat.format(Date(instant.epochMillis)),
-                        timestamp = instant.epochMillis,
-                        isPast = now > instant.epochMillis && !isActive,
-                        isActive = isActive
-                    )
-                }.orEmpty()
-
-                val timeLeft = next?.let { n ->
-                    val diff = n.remainingMillis
-                    val hours = diff / (1000 * 60 * 60)
-                    val minutes = (diff / (1000 * 60)) % 60
-                    val seconds = (diff / 1000) % 60
-                    String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds)
-                }.orEmpty()
-
-                val progress = next?.let { NextPrayerSelector.progressFraction(it, now) } ?: 0f
-                val locationLabel = when (location) {
-                    is PrayerLocationState.Available -> location.location.displayName
-                    is PrayerLocationState.Unavailable -> "الموقع غير متاح"
-                    PrayerLocationState.Loading -> "جاري تحديد الموقع..."
-                }
-
-                _uiState.update { state ->
-                    state.copy(
-                        data = state.data.copy(
-                            nextPrayerName = next?.name?.arabic.orEmpty(),
-                            nextPrayerTimeLeft = timeLeft,
-                            prayerProgress = progress,
-                            allPrayers = prayers,
-                            location = locationLabel
-                        )
-                    )
-                }
-            }
-        }
-    }
-
-    private fun startClockTicker() {
-        countdownJob?.cancel()
-        countdownJob = viewModelScope.launch {
+    private fun startClock() {
+        clockJob?.cancel()
+        clockJob = viewModelScope.launch {
             while (true) {
-                val currentTimeStr = timeFormat.format(Date())
-                _uiState.update { state ->
-                    state.copy(data = state.data.copy(currentTime = currentTimeStr))
+                ephemeral.update {
+                    it.copy(
+                        currentTime = timeFormat.format(Date()),
+                        hijriDate = currentHijriDate()
+                    )
                 }
                 delay(1.seconds)
             }
         }
     }
 
-    private fun todayDate(): String = activityDateFormatter.format(Date())
-
-    private fun observeLastRead() {
-        lastReadJob?.cancel()
-        lastReadJob = viewModelScope.launch {
-            combine(
-                userPreferences.lastReadSurahId,
-                userPreferences.lastReadAyahNumber
-            ) { surahId, ayahNumber ->
-                if (surahId != null && ayahNumber != null) surahId to ayahNumber else null
-            }.collectLatest { pair ->
-                if (pair == null) {
-                    _uiState.update { state ->
-                        state.copy(
-                            data = state.data.copy(
-                                lastReadSurahId = null,
-                                lastReadSurahName = null,
-                                lastReadAyahNumber = null
-                            )
-                        )
-                    }
-                    return@collectLatest
-                }
-
-                val (surahId, ayahNumber) = pair
-                val surah = runCatching { quranRepository.getSurahById(surahId) }.getOrNull()
-                _uiState.update { state ->
-                    state.copy(
-                        data = state.data.copy(
-                            lastReadSurahId = surahId,
-                            lastReadSurahName = surah?.name ?: "سورة $surahId",
-                            lastReadAyahNumber = ayahNumber
-                        )
-                    )
-                }
-            }
-        }
-    }
-
-    private fun observeDailyActivities() {
-        dailyActivityJob?.cancel()
-        dailyActivityJob = viewModelScope.launch {
-            combine(
-                userPreferences.dailyActivityDate,
-                userPreferences.dailyActivityCounts
-            ) { date, counts -> date to counts }
-                .collectLatest { (date, counts) ->
-                    val today = todayDate()
-                    if (date != today) {
-                        userPreferences.resetDailyActivityCounts(today)
-                        return@collectLatest
-                    }
-
-                    _uiState.update { state ->
-                        state.copy(
-                            data = state.data.copy(
-                                dailyActivities = createDailyActivities(counts)
-                            )
-                        )
-                    }
-                }
-        }
-    }
-
-    private fun createDailyActivities(counts: Map<String, Int>): List<DailyActivityItemData> {
-        return dailyActivityTemplates.map { template ->
-            val current = counts[template.id] ?: 0
-            DailyActivityItemData(
-                id = template.id,
-                title = template.title,
-                currentCount = current,
-                targetCount = template.targetCount,
-                unit = template.unit,
-                isCompleted = current >= template.targetCount,
-                route = template.route
-            )
-        }
-    }
-
-    private suspend fun incrementDailyActivityCount(id: String) {
-        userPreferences.incrementDailyActivityCount(id)
-    }
-
-    private data class DailyActivityTemplate(
-        val id: String,
-        val title: String,
-        val targetCount: Int,
-        val unit: String,
-        val route: String
-    )
-
-    private fun observeData() {
-        dataObserveJob?.cancel()
-        dataObserveJob = viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-
-            combine(
-                getAzkarUseCase(),
-                getAsmaUseCase(),
-                getDonationsUseCase(),
-                userPreferences.userName
-            ) { azkar, asma, donations, userName ->
-                val dailyZikr = azkar.firstOrNull { it.category == "أذكار الصباح" } ?: azkar.firstOrNull()
-                val totalProgress = if (azkar.isNotEmpty()) {
-                    azkar.map {
-                        if (it.targetCount > 0) it.currentCount.toFloat() / it.targetCount else 0f
-                    }.average().toFloat()
-                } else 0f
-
-                val dailyAsma = AsmaTodayResolver.selectDailyName(asma)
-
-                val offers = donations.count { it.type == "OFFER" }
-                val requests = donations.count { it.type == "REQUEST" }
-
-                _uiState.update { state ->
-                    state.copy(
-                        data = state.data.copy(
-                            userName = userName,
-                            hijriDate = HijriDateFormatter.nowFormatted(),
-                            spotlightAllahName = dailyAsma?.name
-                                ?: applicationContext.getString(R.string.default_allah_name),
-                            spotlightTransliteration = dailyAsma?.transliteration
-                                ?: applicationContext.getString(R.string.default_allah_transliteration),
-                            spotlightMeaning = dailyAsma?.meaning
-                                ?: applicationContext.getString(R.string.default_allah_meaning),
-                            dailyZikrTitle = dailyZikr?.text
-                                ?: applicationContext.getString(R.string.default_zikr_title),
-                            dailyZikrProgress = totalProgress,
-                            dailyZikrPercentage = "${(totalProgress * 100).toInt()}٪",
-                            communityOffersCount = offers,
-                            communityRequestsCount = requests,
-                            activeVolunteersCount = 12,
-                            dailyDuas = azkar.take(5)
-                        ),
-                        isLoading = false
-                    )
-                }
-            }.catch { e ->
-                _uiState.update { it.copy(isLoading = false, error = e.message) }
-            }.collect()
-        }
-    }
-
     fun onAction(action: HomeDashboardAction) {
         when (action) {
-            HomeDashboardAction.OnRefresh -> {
-                observeData()
-                viewModelScope.launch {
-                    prayerFacade.refreshLocation()
-                    prayerFacade.reconcileSchedule(PrayerReconciliationReason.ManualRetry)
-                }
+            HomeDashboardAction.OnRefresh -> viewModelScope.launch {
+                ephemeral.update { it.copy(isRefreshing = true) }
+                runCatching { refreshHome() }
+                ephemeral.update { it.copy(isRefreshing = false) }
             }
-            HomeDashboardAction.OnProfileClick -> { /* Handle profile navigation via event */ }
+            HomeDashboardAction.OnRetryPrayer -> viewModelScope.launch {
+                runCatching { refreshHome() }
+            }
+            HomeDashboardAction.OnProfileClick -> Unit
             is HomeDashboardAction.OnPrayerClick -> {
-                _uiState.update { it.copy(data = it.data.copy(selectedPrayerIndex = action.index)) }
+                ephemeral.update { it.copy(selectedPrayerIndex = action.index) }
             }
             HomeDashboardAction.OnDismissPrayerDetails -> {
-                _uiState.update { it.copy(data = it.data.copy(selectedPrayerIndex = null)) }
+                ephemeral.update { it.copy(selectedPrayerIndex = null) }
             }
             HomeDashboardAction.OnShowPrayerSettings -> {
-                _uiState.update { it.copy(data = it.data.copy(isPrayerSettingsVisible = true)) }
+                ephemeral.update { it.copy(isPrayerSettingsVisible = true) }
             }
             HomeDashboardAction.OnDismissPrayerSettings -> {
-                _uiState.update { it.copy(data = it.data.copy(isPrayerSettingsVisible = false)) }
+                ephemeral.update { it.copy(isPrayerSettingsVisible = false) }
             }
             HomeDashboardAction.OnShowCitySelection -> {
-                _uiState.update { it.copy(data = it.data.copy(isCitySelectionVisible = true)) }
+                ephemeral.update { it.copy(isCitySelectionVisible = true) }
             }
             HomeDashboardAction.OnDismissCitySelection -> {
-                _uiState.update { it.copy(data = it.data.copy(isCitySelectionVisible = false)) }
+                ephemeral.update { it.copy(isCitySelectionVisible = false) }
             }
-            is HomeDashboardAction.OnUpdateCalculationMethod -> {
-                viewModelScope.launch { settingsManager.setCalculationMethod(action.method) }
+            is HomeDashboardAction.OnUpdateCalculationMethod -> viewModelScope.launch {
+                updatePrayerSettings.updateMethod(parseMethod(action.method))
             }
-            is HomeDashboardAction.OnUpdateMadhab -> {
-                viewModelScope.launch { settingsManager.setMadhab(action.madhab) }
+            is HomeDashboardAction.OnUpdateMadhab -> viewModelScope.launch {
+                updatePrayerSettings.updateMadhhab(parseMadhhab(action.madhab))
             }
-            is HomeDashboardAction.OnUpdateLocationMode -> {
-                viewModelScope.launch { settingsManager.setUseAutoLocation(action.isAuto) }
+            is HomeDashboardAction.OnUpdateLocationMode -> viewModelScope.launch {
+                updatePrayerSettings.updateUseAutoLocation(action.isAuto)
             }
-            is HomeDashboardAction.OnSelectCity -> {
-                viewModelScope.launch {
-                    settingsManager.setManualLocation(action.name, action.lat, action.lng)
-                }
+            is HomeDashboardAction.OnSelectCity -> viewModelScope.launch {
+                prayerLocationRepository.saveManualLocation(action.lat, action.lng, action.name)
             }
-            is HomeDashboardAction.OnUpdatePrePrayerNotification -> {
-                viewModelScope.launch {
-                    settingsManager.setPrePrayerNotificationMinutes(action.minutes)
-                }
+            is HomeDashboardAction.OnUpdatePrePrayerNotification -> viewModelScope.launch {
+                updatePrayerSettings.updatePrePrayer(action.minutes)
             }
-            is HomeDashboardAction.OnUpdateIqamahNotification -> {
-                viewModelScope.launch {
-                    settingsManager.setIqamahNotificationMinutes(action.minutes)
-                }
+            is HomeDashboardAction.OnUpdateIqamahNotification -> viewModelScope.launch {
+                updatePrayerSettings.updateIqamah(action.minutes)
             }
-            is HomeDashboardAction.OnUpdateNotificationSound -> {
-                viewModelScope.launch {
-                    settingsManager.setNotificationSoundType(action.type)
-                }
+            is HomeDashboardAction.OnUpdateNotificationSound -> viewModelScope.launch {
+                updatePrayerSettings.updateNotificationSound(action.type)
             }
-            is HomeDashboardAction.OnDailyActivityClick -> {
-                viewModelScope.launch { incrementDailyActivityCount(action.activityId) }
+            is HomeDashboardAction.OnDailyActivityClick -> viewModelScope.launch {
+                dailyActivityRepository.increment(action.activityId)
             }
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-        dataObserveJob?.cancel()
-        dailyActivityJob?.cancel()
-        lastReadJob?.cancel()
-        countdownJob?.cancel()
-        prayerObserveJob?.cancel()
+        clockJob?.cancel()
     }
+
+    private fun parseMethod(raw: String): PrayerCalculationMethod =
+        runCatching { PrayerCalculationMethod.valueOf(raw) }
+            .getOrDefault(PrayerCalculationMethod.MUSLIM_WORLD_LEAGUE)
+
+    private fun parseMadhhab(raw: String): PrayerMadhhab =
+        runCatching { PrayerMadhhab.valueOf(raw) }
+            .getOrDefault(PrayerMadhhab.SHAFI)
+
+    private data class EphemeralUi(
+        val currentTime: String = "",
+        val hijriDate: String = "",
+        val isRefreshing: Boolean = false,
+        val selectedPrayerIndex: Int? = null,
+        val isPrayerSettingsVisible: Boolean = false,
+        val isCitySelectionVisible: Boolean = false
+    )
+
+    private data class CoreSections(
+        val profile: HomeSectionState<HomeProfileSummary>,
+        val prayer: HomeSectionState<HomePrayerSummary>,
+        val quran: HomeSectionState<HomeQuranSummary>,
+        val daily: HomeSectionState<HomeDailyActivitySummary>,
+        val dhikr: HomeSectionState<HomeDhikrSummary>
+    )
+
+    private data class SectionBundle(
+        val profile: HomeSectionState<HomeProfileSummary>,
+        val prayer: HomeSectionState<HomePrayerSummary>,
+        val quran: HomeSectionState<HomeQuranSummary>,
+        val dailyActivities: HomeSectionState<HomeDailyActivitySummary>,
+        val dhikr: HomeSectionState<HomeDhikrSummary>,
+        val asma: HomeSectionState<HomeAsmaSummary>,
+        val charity: HomeSectionState<HomeCharitySummary>
+    )
 }

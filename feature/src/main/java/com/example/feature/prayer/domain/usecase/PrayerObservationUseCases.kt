@@ -90,4 +90,7 @@ class UpdatePrayerSettingsUseCase(
 
     suspend fun updateUseAutoLocation(enabled: Boolean) =
         settingsRepository.updateUseAutoLocation(enabled)
+
+    suspend fun updateNotificationSound(type: String) =
+        settingsRepository.updateNotificationSoundType(type)
 }

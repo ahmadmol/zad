@@ -3,7 +3,6 @@ package com.example.mol.di
 import com.example.feature.asma.presentation.AsmaViewModel
 import com.example.feature.azkar.presentation.AzkarViewModel
 import com.example.feature.duas.presentation.DuaViewModel
-import com.example.feature.dashboard.presentation.HomeDashboardViewModel
 import com.example.feature.hadith.presentation.HadithViewModel
 import com.example.feature.components.AuthViewModel
 import com.example.feature.ehsan.presentation.*
@@ -19,8 +18,7 @@ val viewModelModule = module {
     viewModelOf(::AzkarViewModel)
     viewModelOf(::DuaViewModel)
     viewModelOf(::AsmaViewModel)
-    viewModelOf(::HomeDashboardViewModel)
-    // Sebha
+    // HomeDashboardViewModel registered in homeDashboardModule
     viewModelOf(::SebhaViewModel)
     viewModelOf(::TasbihViewModel)
     viewModelOf(::PrayerViewModel)

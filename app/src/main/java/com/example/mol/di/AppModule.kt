@@ -24,6 +24,7 @@ val appModule = module {
         useCaseModule,
         viewModelModule,
         quranModule,
-        com.example.feature.prayer.di.prayerDomainModule
+        com.example.feature.prayer.di.prayerDomainModule,
+        com.example.feature.dashboard.di.homeDashboardModule
     )
 }
