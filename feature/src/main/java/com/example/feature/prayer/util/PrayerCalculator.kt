@@ -9,6 +9,12 @@ import com.example.feature.prayer.PrayerTime
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Legacy Adhan wrapper retained for characterization tests and transitional callers.
+ * New production code must use [com.example.feature.prayer.data.calculator.AdhanPrayerCalculator]
+ * via [com.example.feature.prayer.domain.calculator.PrayerCalculator].
+ */
+@Deprecated("Use AdhanPrayerCalculator through the domain PrayerCalculator interface")
 @OptIn(kotlin.time.ExperimentalTime::class)
 object PrayerCalculator {
 

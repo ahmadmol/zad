@@ -12,7 +12,7 @@ data class HomeDashboardUiState(
 
 data class HomeDashboardData(
     val userName: String = "",
-    val location: String = "حلب، سوريا",
+    val location: String = "جاري تحديد الموقع...",
     val currentTime: String = "",
     val hijriDate: String = "",
     val nextPrayerName: String = "",

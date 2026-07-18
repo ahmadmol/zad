@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.feature.core.util.HijriDateFormatter
 import com.example.feature.prayer.presentation.PrayerAction
+import com.example.feature.prayer.presentation.PrayerUiState
 import com.example.feature.prayer.presentation.PrayerViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -99,8 +100,31 @@ fun PrayerScreen(
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
                     )
+                    uiState.locationSourceLabel?.let { source ->
+                        Text(
+                            text = source,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray)
+                        )
+                    }
+                    if (uiState.locationUnavailable) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = uiState.locationUnavailableMessage.orEmpty(),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFFB00020))
+                        )
+                        TextButton(onClick = { viewModel.onAction(PrayerAction.OnRefresh) }) {
+                            Text("إعادة المحاولة")
+                        }
+                    }
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    PrayerSystemStatusSection(uiState = uiState, onAction = viewModel::onAction)
+
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     Box(modifier = Modifier.fillMaxSize()) {
                         // Timeline vertical line
@@ -315,6 +339,52 @@ fun ActivePrayerCard(prayer: PrayerTime, countdown: String, location: String) {
                             style = MaterialTheme.typography.labelMedium.copy(color = Color.White, fontWeight = FontWeight.Bold)
                         )
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PrayerSystemStatusSection(
+    uiState: PrayerUiState,
+    onAction: (PrayerAction) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onAction(PrayerAction.OnToggleSystemStatus) },
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    "حالة نظام الصلاة",
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                )
+                Icon(
+                    imageVector = if (uiState.systemStatusExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                    contentDescription = null
+                )
+            }
+            if (uiState.systemStatusExpanded) {
+                Spacer(modifier = Modifier.height(8.dp))
+                uiState.locationSourceLabel?.let {
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                }
+                uiState.notificationPermissionLabel?.let {
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                }
+                uiState.lastScheduleSummary?.let {
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                }
+                TextButton(onClick = { onAction(PrayerAction.OnRetrySchedule) }) {
+                    Text("إعادة جدولة التنبيهات")
                 }
             }
         }

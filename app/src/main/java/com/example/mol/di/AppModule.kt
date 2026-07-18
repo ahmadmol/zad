@@ -23,6 +23,7 @@ val appModule = module {
         repositoryModule,
         useCaseModule,
         viewModelModule,
-        quranModule
+        quranModule,
+        com.example.feature.prayer.di.prayerDomainModule
     )
 }
