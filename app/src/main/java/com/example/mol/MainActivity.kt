@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.theme.IhsanTheme
-import com.example.feature.azkar.presentation.AzkarViewModel
+import com.example.feature.settings.presentation.SettingsViewModel
 import com.example.mol.ui.MainScreen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import android.content.Intent
@@ -37,10 +37,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val context = LocalContext.current
-            val viewModel: AzkarViewModel = koinViewModel()
-            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            val settingsViewModel: SettingsViewModel = koinViewModel()
+            val settingsState by settingsViewModel.uiState.collectAsStateWithLifecycle()
             
-            IhsanTheme(darkTheme = uiState.isDarkMode) {
+            IhsanTheme(darkTheme = settingsState.isDarkMode) {
                 val locationPermissionState = rememberPermissionState(
                     Manifest.permission.ACCESS_FINE_LOCATION
                 )

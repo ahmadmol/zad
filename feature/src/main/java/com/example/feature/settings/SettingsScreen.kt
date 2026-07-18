@@ -20,14 +20,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.feature.R
-import com.example.feature.azkar.presentation.AzkarAction
-import com.example.feature.azkar.presentation.AzkarUiState
+import com.example.feature.settings.presentation.SettingsAction
+import com.example.feature.settings.presentation.SettingsUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    state: AzkarUiState,
-    onAction: (AzkarAction) -> Unit,
+    uiState: SettingsUiState,
+    onAction: (SettingsAction) -> Unit,
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -43,7 +43,7 @@ fun SettingsScreen(
                 result.data?.getParcelableExtra<Uri>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
             }
             uri?.let {
-                onAction(AzkarAction.OnAdhanSoundChanged(it.toString()))
+                onAction(SettingsAction.SetAdhanSound(it.toString()))
             }
         }
     }
@@ -53,8 +53,8 @@ fun SettingsScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.settings_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { 
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") 
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -63,34 +63,33 @@ fun SettingsScreen(
         Column(modifier = Modifier.padding(padding).fillMaxSize().padding(16.dp)) {
             Text(stringResource(R.string.font_size_label), style = MaterialTheme.typography.titleMedium)
             Slider(
-                value = state.fontSize,
-                onValueChange = { onAction(AzkarAction.OnFontSizeChanged(it)) },
+                value = uiState.fontSize,
+                onValueChange = { onAction(SettingsAction.SetFontSize(it)) },
                 valueRange = 16f..42f
             )
-            
+
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
-            
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.dark_mode_label), modifier = Modifier.weight(1f))
                 Switch(
-                    checked = state.isDarkMode,
-                    onCheckedChange = { onAction(AzkarAction.OnDarkModeToggle(it)) }
+                    checked = uiState.isDarkMode,
+                    onCheckedChange = { onAction(SettingsAction.SetDarkMode(it)) }
                 )
             }
-            
+
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
-            
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.vibration_label), modifier = Modifier.weight(1f))
                 Switch(
-                    checked = state.isVibrationEnabled,
-                    onCheckedChange = { onAction(AzkarAction.OnVibrationToggle(it)) }
+                    checked = uiState.isVibrationEnabled,
+                    onCheckedChange = { onAction(SettingsAction.SetVibration(it)) }
                 )
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
-            // Adhan Sound Selection
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -98,7 +97,10 @@ fun SettingsScreen(
                         val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
                             putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION)
                             putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "اختر صوت الأذان")
-                            putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, state.adhanSoundUri?.let { Uri.parse(it) })
+                            putExtra(
+                                RingtoneManager.EXTRA_RINGTONE_EXISTING_URI,
+                                uiState.adhanSoundUri?.let { Uri.parse(it) }
+                            )
                             putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
                             putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false)
                         }
@@ -111,7 +113,7 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text("صوت الأذان", style = MaterialTheme.typography.titleMedium)
-                        val soundName = state.adhanSoundUri?.let {
+                        val soundName = uiState.adhanSoundUri?.let {
                             RingtoneManager.getRingtone(context, Uri.parse(it))?.getTitle(context)
                         } ?: "الافتراضي"
                         Text(soundName, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -121,12 +123,14 @@ fun SettingsScreen(
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
-            // Share App Button
             Button(
                 onClick = {
                     val sendIntent = Intent().apply {
                         action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, "جرب تطبيق إحسان الرائع للتكافل والعبادات: [رابط التطبيق هنا]")
+                        putExtra(
+                            Intent.EXTRA_TEXT,
+                            "جرب تطبيق إحسان الرائع للتكافل والعبادات: [رابط التطبيق هنا]"
+                        )
                         type = "text/plain"
                     }
                     val shareIntent = Intent.createChooser(sendIntent, null)
@@ -134,7 +138,10 @@ fun SettingsScreen(
                 },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             ) {
                 Icon(Icons.Default.Share, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))

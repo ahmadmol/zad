@@ -17,7 +17,6 @@ class AzkarViewModel(
     private val resetCounterUseCase: ResetCounterUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val addCustomZikrUseCase: AddCustomZikrUseCase,
-    private val getLast7DaysStatsUseCase: GetLast7DaysStatsUseCase,
     private val settingsManager: SettingsManager,
     private val userPreferences: UserPreferences
 ) : ViewModel() {
@@ -36,28 +35,20 @@ class AzkarViewModel(
         Triple(category, favoritesOnly, query)
     }
 
-    private val _settings = combine(
-        settingsManager.fontSizeFlow,
-        settingsManager.vibrationEnabledFlow,
-        settingsManager.darkModeFlow,
-        userPreferences.adhanSoundUri
-    ) { fontSize, vibration, darkMode, adhanSound ->
-        SettingsState(fontSize, vibration, darkMode, adhanSound)
-    }
-
     val uiState: StateFlow<AzkarUiState> = combine(
         getAzkarUseCase(),
         _filters,
-        getLast7DaysStatsUseCase(),
-        combine(_settings, _isLoading, _error) { s, l, e -> Triple(s, l, e) }
-    ) { allAzkar, filters, stats, other ->
+        settingsManager.fontSizeFlow,
+        settingsManager.vibrationEnabledFlow,
+        combine(_isLoading, _error) { loading, error -> loading to error }
+    ) { allAzkar, filters, fontSize, vibration, loadingError ->
         val (category, favoritesOnly, query) = filters
-        val (settings, loading, error) = other
-        
+        val (loading, error) = loadingError
+
         val filtered = allAzkar.filter { zikr ->
             (category == null || zikr.category == category) &&
-            (!favoritesOnly || zikr.isFavorite) &&
-            (query.isBlank() || zikr.text.contains(query, ignoreCase = true))
+                (!favoritesOnly || zikr.isFavorite) &&
+                (query.isBlank() || zikr.text.contains(query, ignoreCase = true))
         }
 
         AzkarUiState(
@@ -67,11 +58,8 @@ class AzkarViewModel(
             selectedCategory = category,
             showFavoritesOnly = favoritesOnly,
             searchQuery = query,
-            last7DaysStats = stats,
-            fontSize = settings.fontSize,
-            isVibrationEnabled = settings.vibrationEnabled,
-            isDarkMode = settings.darkMode,
-            adhanSoundUri = settings.adhanSoundUri
+            fontSize = fontSize,
+            isVibrationEnabled = vibration
         )
     }.stateIn(
         scope = viewModelScope,
@@ -103,18 +91,6 @@ class AzkarViewModel(
                         _error.value = e.message
                     }
                 }
-            }
-            is AzkarAction.OnFontSizeChanged -> {
-                viewModelScope.launch { settingsManager.setFontSize(action.size) }
-            }
-            is AzkarAction.OnVibrationToggle -> {
-                viewModelScope.launch { settingsManager.setVibrationEnabled(action.enabled) }
-            }
-            is AzkarAction.OnDarkModeToggle -> {
-                viewModelScope.launch { settingsManager.setDarkMode(action.enabled) }
-            }
-            is AzkarAction.OnAdhanSoundChanged -> {
-                viewModelScope.launch { userPreferences.setAdhanSoundUri(action.uri) }
             }
         }
     }
@@ -166,11 +142,4 @@ class AzkarViewModel(
             }
         }
     }
-
-    private data class SettingsState(
-        val fontSize: Float,
-        val vibrationEnabled: Boolean,
-        val darkMode: Boolean,
-        val adhanSoundUri: String?
-    )
 }
