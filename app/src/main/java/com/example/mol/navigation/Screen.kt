@@ -1,7 +1,6 @@
 package com.example.mol.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.*
@@ -84,11 +83,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
         title = "إحسان",
         icon = Icons.Default.Favorite
     )
-    object Inbox : Screen(
-        route = "inbox_screen",
-        title = "الرسائل",
-        icon = Icons.AutoMirrored.Filled.Chat
-    )
+    // Inbox deferred: no messaging implementation. Do not reintroduce without a real contract.
     object Profile : Screen(
         route = "profile_screen",
         title = "حسابي",
@@ -111,19 +106,30 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
         title = "طلب مساعدة",
         icon = Icons.Default.Handshake
     )
-    object DonationDetail : Screen(
-        route = "donation_detail_screen/{id}",
-        title = "تفاصيل الإحسان",
-        icon = Icons.Default.Info
-    ) {
-        fun createRoute(id: Long) = "donation_detail_screen/$id"
-    }
+    /**
+     * Canonical donation/request details destination.
+     * Legacy `donation_detail_screen/{id}` was unreachable and removed in Part 3.
+     */
     object IhsanDetails : Screen(
         route = "ihsan_details/{id}",
         title = "تفاصيل الإحسان",
         icon = Icons.Default.Info
     ) {
         fun createRoute(id: Long) = "ihsan_details/$id"
+    }
+
+    /**
+     * Compatibility redirect for any saved deep links to the legacy donation detail route.
+     * Renders nothing; [AppNavHost] immediately navigates to [IhsanDetails].
+     * Remove once no compatibility need remains.
+     */
+    @Deprecated("Use Screen.IhsanDetails; redirect-only legacy route")
+    object LegacyDonationDetail : Screen(
+        route = "donation_detail_screen/{id}",
+        title = "تفاصيل الإحسان",
+        icon = Icons.Default.Info
+    ) {
+        fun createRoute(id: Long) = "donation_detail_screen/$id"
     }
     object EditProfile : Screen(
         route = "edit_profile",
