@@ -27,6 +27,13 @@ local.properties
 # Local configuration
 local.properties
 
+# Signing secrets / keystores (never commit)
+*.jks
+*.keystore
+*.p12
+signing.properties
+keystore.properties
+
 # Build
 **/build/
 
