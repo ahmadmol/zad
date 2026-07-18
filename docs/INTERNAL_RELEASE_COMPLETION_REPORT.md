@@ -14,7 +14,7 @@ Store Publishing — Deferred by Owner
 | Starting branch | `release/final-controlled-integration` |
 | Starting commit | `8297bba` |
 | Final branch | `qa/final-runtime-hardening` |
-| Final tip | *(updated after commits)* |
+| Final tip | 57ad23c |
 
 ## 3. Baseline
 
