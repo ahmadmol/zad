@@ -20,6 +20,7 @@ data class IhsanDimens(
     val radiusMedium: Dp = 12.dp,
     val radiusLarge: Dp = 16.dp,
     val radiusPill: Dp = 24.dp,
+    val radiusSheet: Dp = 32.dp,
     val screenHorizontal: Dp = 16.dp,
     val sectionSpacing: Dp = 24.dp
 )

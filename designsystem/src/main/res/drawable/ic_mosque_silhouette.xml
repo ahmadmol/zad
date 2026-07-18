@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="360dp"
+    android:height="72dp"
+    android:viewportWidth="360"
+    android:viewportHeight="72">
+    <!-- Decorative mosque silhouette for prayer hero (not a photo crop). -->
+    <path
+        android:fillColor="#000000"
+        android:fillAlpha="0.22"
+        android:pathData="M0,72 L0,52 L18,52 L18,28 L28,18 L38,28 L38,52 L52,52 L52,34 L62,24 L72,34 L72,52 L90,52 L90,22 L105,8 L120,22 L120,52 L140,52 L140,30 L155,16 L170,30 L170,52 L190,52 L190,26 L210,6 L230,26 L230,52 L250,52 L250,32 L265,18 L280,32 L280,52 L300,52 L300,28 L315,14 L330,28 L330,52 L360,52 L360,72 Z" />
+    <path
+        android:fillColor="#000000"
+        android:fillAlpha="0.18"
+        android:pathData="M102,22 Q105,4 108,22 Z" />
+    <path
+        android:fillColor="#000000"
+        android:fillAlpha="0.18"
+        android:pathData="M207,10 Q210,-4 213,10 Z" />
+</vector>

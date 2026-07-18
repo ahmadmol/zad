@@ -27,6 +27,10 @@ data class IhsanSemanticColors(
     val progressActive: Color,
     val progressTrack: Color,
     val accentWarm: Color,
+    /** Soft circle behind quick-action icons on light surfaces. */
+    val quickActionSurface: Color,
+    /** Slightly lifted brand surface for active prayer chips on dark headers. */
+    val brandElevated: Color,
     /** Third-party WhatsApp brand — intentional exception, do not use as app primary. */
     val whatsapp: Color,
     val favorite: Color
@@ -50,6 +54,8 @@ val LightIhsanSemanticColors = IhsanSemanticColors(
     progressActive = PrimaryTeal,
     progressTrack = PrimaryTeal.copy(alpha = 0.12f),
     accentWarm = Color(0xFFC66927),
+    quickActionSurface = Color(0xFFF3F6F5),
+    brandElevated = Color(0xFF0C4036),
     whatsapp = Color(0xFF25D366),
     favorite = Color(0xFFE91E63)
 )
@@ -72,6 +78,8 @@ val DarkIhsanSemanticColors = IhsanSemanticColors(
     progressActive = Primary200,
     progressTrack = PrimaryTeal.copy(alpha = 0.35f),
     accentWarm = Color(0xFFFFB74D),
+    quickActionSurface = Neutral800,
+    brandElevated = Color(0xFF0C4036),
     whatsapp = Color(0xFF25D366),
     favorite = Color(0xFFF48FB1)
 )
