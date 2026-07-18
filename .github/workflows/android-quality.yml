@@ -2,7 +2,7 @@ name: Android Quality Gates
 
 on:
   push:
-    branches: [ main, master, 'chore/**', 'refactor/**', 'release/**' ]
+    branches: [ main, master, 'chore/**', 'refactor/**', 'release/**', 'qa/**' ]
   pull_request:
 
 jobs:
@@ -24,10 +24,10 @@ jobs:
       - name: Assemble debug
         run: ./gradlew :app:assembleDebug --stacktrace
 
-      - name: Assemble release (unsigned/debug-signed fallback; no secrets required)
+      - name: Assemble release with R8 (debug-signed fallback; no secrets)
         run: ./gradlew :app:assembleRelease --stacktrace
 
-      - name: Unit tests
+      - name: Unit tests (architecture, migration matrix, demo isolation included)
         run: |
           ./gradlew :designsystem:testDebugUnitTest \
             :feature:testDebugUnitTest \
@@ -49,4 +49,5 @@ jobs:
             **/build/outputs/mapping/
           if-no-files-found: ignore
 
-  # Instrumented tests remain manual/scheduled (device cost; no secrets).
+  # Instrumented / connected tests: run manually when a device is attached.
+  # Do not require Play Console, keystores, or store secrets.
