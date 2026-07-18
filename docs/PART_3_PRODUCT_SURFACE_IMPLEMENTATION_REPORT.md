@@ -21,7 +21,7 @@
 | Item | Value |
 |------|--------|
 | Branch | `refactor/product-surface-ownership-cleanup` |
-| Final commit | *(see `git log` after commits)* |
+| Final commit | `12fb6d0` |
 
 ---
 
