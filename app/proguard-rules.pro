@@ -1,5 +1,4 @@
-# Add project specific ProGuard rules here.
-# Kept ready for a future verified R8 enablement.
+# Add project specific ProGuard / R8 rules.
 
 -keep class com.batoulapps.adhan.** { *; }
 -keep class com.batoulapps.adhan2.** { *; }
@@ -15,8 +14,7 @@
 
 # WorkManager
 -keep class * extends androidx.work.Worker
--keep class * extends androidx.work.ListenableWorker
--keepclassmembers class * extends androidx.work.Worker {
+-keep class * extends androidx.work.ListenableWorker {
     public <init>(android.content.Context,androidx.work.WorkerParameters);
 }
 
@@ -24,8 +22,21 @@
 -keep class com.example.feature.quran.service.QuranAudioService { *; }
 -keep class com.example.feature.prayer.worker.PrayerNotificationReceiver { *; }
 -keep class com.example.feature.prayer.worker.PrayerSystemReconciliationReceiver { *; }
+-keep class com.example.mol.MainActivity { *; }
+-keep class com.example.mol.IhsanApp { *; }
+-keep class com.example.mol.BarakahApp { *; }
 
-# Koin constructors used via reflection
--keepclassmembers class * {
-    @org.koin.core.annotation.* <init>(...);
+# ViewModels / Koin constructor injection
+-keep class * extends androidx.lifecycle.ViewModel {
+    <init>(...);
+}
+-keep class com.example.feature.** { <init>(...); }
+-keep class com.example.mol.di.** { *; }
+
+# Kotlin Serialization (if used by feature models)
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.AnnotationsKt
+-keep,includedescriptorclasses class com.example.feature.**$$serializer { *; }
+-keepclassmembers class com.example.feature.** {
+    *** Companion;
 }

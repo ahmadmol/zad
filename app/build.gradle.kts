@@ -50,9 +50,8 @@ android {
 
     buildTypes {
         release {
-            // R8 kept disabled: DeviceVerificationMissing — do not claim R8 readiness.
-            isMinifyEnabled = false
-            isShrinkResources = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             signingConfig = signingConfigs.findByName("release")
                 ?.takeIf { it.storeFile != null }
                 ?: signingConfigs.getByName("debug")
