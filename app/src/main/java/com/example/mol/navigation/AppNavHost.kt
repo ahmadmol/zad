@@ -30,9 +30,10 @@ import com.example.feature.hadith.presentation.HadithScreen
 import com.example.feature.hadith.presentation.HadithViewModel
 import com.example.feature.ehsan.EhsanScreen
 import com.example.feature.ehsan.presentation.AddEhsanScreen
-import com.example.feature.ehsan.presentation.DonationDetailScreen
 import com.example.feature.ehsan.presentation.IhsanDetailsScreen
 import com.example.feature.ehsan.presentation.RequestHelpScreen
+import com.example.feature.settings.presentation.SettingsViewModel
+import com.example.feature.statistics.presentation.StatisticsViewModel
 import com.example.feature.prayer.PrayerScreen
 import com.example.feature.profile.DonationHistoryScreen
 import com.example.feature.profile.ProfileScreen
@@ -323,17 +324,17 @@ fun AppNavHost(
         }
 
         composable(route = Screen.Settings.route) {
-            val viewModel: AzkarViewModel = koinViewModel()
+            val viewModel: SettingsViewModel = koinViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             SettingsScreen(
-                state = uiState,
+                uiState = uiState,
                 onAction = viewModel::onAction,
                 onBack = { navController.popBackStack() }
             )
         }
 
         composable(route = Screen.Statistics.route) {
-            val viewModel: AzkarViewModel = koinViewModel()
+            val viewModel: StatisticsViewModel = koinViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             StatisticsScreen(state = uiState, onBack = { navController.popBackStack() })
         }
@@ -375,15 +376,19 @@ fun AppNavHost(
             )
         }
 
+        @Suppress("DEPRECATION")
         composable(
-            route = Screen.DonationDetail.route,
+            route = Screen.LegacyDonationDetail.route,
             arguments = listOf(navArgument("id") { type = NavType.LongType })
         ) { backStackEntry ->
             val donationId = backStackEntry.arguments?.getLong("id") ?: 0L
-            DonationDetailScreen(
-                donationId = donationId,
-                onNavigateBack = { navController.popBackStack() }
-            )
+            // Compatibility redirect: never render the obsolete DonationDetailScreen.
+            LaunchedEffect(donationId) {
+                navController.navigate(Screen.IhsanDetails.createRoute(donationId)) {
+                    popUpTo(backStackEntry.destination.id) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
         }
 
         composable(

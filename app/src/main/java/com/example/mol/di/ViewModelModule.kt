@@ -11,7 +11,8 @@ import com.example.feature.qibla.presentation.QiblaViewModel
 import com.example.feature.prayer.presentation.PrayerViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
-import com.example.feature.azkar.presentation.SebhaViewModel
+import com.example.feature.settings.presentation.SettingsViewModel
+import com.example.feature.statistics.presentation.StatisticsViewModel
 import com.example.feature.tasbih.presentation.TasbihViewModel
 
 val viewModelModule = module {
@@ -19,14 +20,14 @@ val viewModelModule = module {
     viewModelOf(::DuaViewModel)
     viewModelOf(::AsmaViewModel)
     // HomeDashboardViewModel registered in homeDashboardModule
-    viewModelOf(::SebhaViewModel)
     viewModelOf(::TasbihViewModel)
+    viewModelOf(::SettingsViewModel)
+    viewModelOf(::StatisticsViewModel)
     viewModelOf(::PrayerViewModel)
     viewModelOf(::QiblaViewModel)
     viewModelOf(::HadithViewModel)
     viewModelOf(::EhsanViewModel)
     viewModelOf(::AddEhsanViewModel)
-    viewModelOf(::DonationDetailViewModel)
     viewModelOf(::IhsanDetailsViewModel)
     viewModelOf(::ProfileViewModel)
     viewModelOf(::EditProfileViewModel)

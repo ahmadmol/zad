@@ -14,6 +14,8 @@ import com.example.feature.ehsan.domain.repository.UserRepository
 import com.example.feature.hadith.data.repository.HadithRepositoryImpl
 import com.example.feature.hadith.domain.repository.HadithRepository
 import com.example.feature.qibla.util.QiblaManager
+import com.example.feature.statistics.data.StatisticsRepositoryImpl
+import com.example.feature.statistics.domain.StatisticsRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -22,6 +24,7 @@ val repositoryModule = module {
     single<AsmaRepository> { AsmaRepositoryImpl(get()) }
 
     single<AzkarRepository> { AzkarRepositoryImpl(get(), get()) }
+    single<StatisticsRepository> { StatisticsRepositoryImpl(get()) }
     single<DuaRepository> { DuaRepositoryImpl(androidContext(), get()) }
 
     single<EhsanRepository> { EhsanRepositoryImpl(get()) }
