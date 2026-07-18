@@ -75,14 +75,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.designsystem.theme.IhsanTheme
+import com.example.feature.R
 import com.example.feature.azkar.domain.model.Zikr
 import org.koin.androidx.compose.koinViewModel
-
-private val BrandGreen = Color(0xFF0D4D3D)
-private val MintSurface = Color(0xFFF1F8F6)
-private val ScreenBackground = Color(0xFFF9F9F9)
-private val AccentOrange = Color(0xFFC66927)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -105,22 +106,26 @@ fun TasbihScreen(
                 CenterAlignedTopAppBar(
                     title = {
                         Text(
-                            text = "المسبحة",
+                            text = stringResource(R.string.tasbih_title),
                             fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
+                            style = MaterialTheme.typography.titleLarge
                         )
                     },
                     navigationIcon = {
-                        IconButton(onClick = onNavigateBack) {
+                        IconButton(
+                            onClick = onNavigateBack,
+                            modifier = Modifier.size(IhsanTheme.dimens.minTouchTarget)
+                        ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "رجوع"
+                                contentDescription = stringResource(R.string.cd_back)
                             )
                         }
                     },
                     actions = {
                         IconButton(
-                            onClick = { viewModel.onAction(TasbihAction.OnToggleVibration) }
+                            onClick = { viewModel.onAction(TasbihAction.OnToggleVibration) },
+                            modifier = Modifier.size(IhsanTheme.dimens.minTouchTarget)
                         ) {
                             Icon(
                                 imageVector = if (uiState.isVibrationEnabled) {
@@ -128,9 +133,9 @@ fun TasbihScreen(
                                 } else {
                                     Icons.Outlined.Vibration
                                 },
-                                contentDescription = "الاهتزاز",
+                                contentDescription = stringResource(R.string.cd_tasbih_vibration),
                                 tint = if (uiState.isVibrationEnabled) {
-                                    BrandGreen
+                                    IhsanTheme.colors.brand
                                 } else {
                                     Color.Gray
                                 }
@@ -139,12 +144,12 @@ fun TasbihScreen(
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                         containerColor = Color.White,
-                        titleContentColor = BrandGreen,
-                        navigationIconContentColor = BrandGreen
+                        titleContentColor = IhsanTheme.colors.brand,
+                        navigationIconContentColor = IhsanTheme.colors.brand
                     )
                 )
             },
-            containerColor = ScreenBackground
+            containerColor = IhsanTheme.colors.surfaceMuted
         ) { padding ->
             Column(
                 modifier = Modifier
@@ -196,16 +201,19 @@ fun TasbihScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp)
                         .padding(bottom = 24.dp)
-                        .height(56.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    border = BorderStroke(1.dp, BrandGreen.copy(alpha = 0.35f)),
+                        .height(IhsanTheme.dimens.controlHeight),
+                    shape = RoundedCornerShape(IhsanTheme.dimens.radiusLarge),
+                    border = BorderStroke(1.dp, IhsanTheme.colors.brand.copy(alpha = 0.35f)),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = BrandGreen
+                        contentColor = IhsanTheme.colors.brand
                     )
                 ) {
-                    Icon(Icons.Default.RestartAlt, contentDescription = null)
+                    Icon(
+                        Icons.Default.RestartAlt,
+                        contentDescription = stringResource(R.string.cd_tasbih_reset)
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("تصفير العداد", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.tasbih_reset_label), fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -231,14 +239,14 @@ private fun DhikrChipsRow(
             Surface(
                 onClick = { onSelect(index) },
                 shape = RoundedCornerShape(20.dp),
-                color = if (selected) BrandGreen else Color.White,
+                color = if (selected) IhsanTheme.colors.brand else Color.White,
                 border = if (selected) null else BorderStroke(1.dp, Color(0xFFE0E0E0)),
                 shadowElevation = 0.dp
             ) {
                 Text(
                     text = item.title.ifBlank { item.text.take(16) },
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                    color = if (selected) Color.White else BrandGreen,
+                    color = if (selected) Color.White else IhsanTheme.colors.brand,
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
@@ -258,7 +266,7 @@ private fun DhikrTextCard(
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MintSurface),
+        colors = CardDefaults.cardColors(containerColor = IhsanTheme.colors.surfaceMint),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
@@ -280,7 +288,7 @@ private fun DhikrTextCard(
                         fontWeight = FontWeight.Bold,
                         lineHeight = 36.sp
                     ),
-                    color = BrandGreen,
+                    color = IhsanTheme.colors.brand,
                     textAlign = TextAlign.Center
                 )
             }
@@ -296,10 +304,10 @@ private fun DhikrTextCard(
                     Text(
                         text = "التقدم",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = BrandGreen.copy(alpha = 0.7f)
+                        color = IhsanTheme.colors.brand.copy(alpha = 0.7f)
                     )
                     Surface(
-                        color = AccentOrange,
+                        color = IhsanTheme.colors.accentWarm,
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
@@ -320,8 +328,8 @@ private fun DhikrTextCard(
                         .fillMaxWidth()
                         .height(10.dp)
                         .clip(RoundedCornerShape(12.dp)),
-                    color = BrandGreen,
-                    trackColor = BrandGreen.copy(alpha = 0.12f)
+                    color = IhsanTheme.colors.brand,
+                    trackColor = IhsanTheme.colors.brand.copy(alpha = 0.12f)
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -330,7 +338,7 @@ private fun DhikrTextCard(
                     text = "${tasbih.currentCount} / ${tasbih.targetCount}",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
-                    color = BrandGreen
+                    color = IhsanTheme.colors.brand
                 )
             }
         }
@@ -359,11 +367,19 @@ private fun TasbihCounterButton(
         animationSpec = tween(300),
         label = "ringProgress"
     )
+    val countDescription = stringResource(R.string.tasbih_count_semantics, count, target)
+    val incrementCd = stringResource(R.string.cd_tasbih_increment)
+    val brand = IhsanTheme.colors.brand
+    val accent = IhsanTheme.colors.accentWarm
 
     Box(
         modifier = Modifier
             .size(260.dp)
             .scale(scale)
+            .semantics {
+                contentDescription = "$incrementCd. $countDescription"
+                stateDescription = countDescription
+            }
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -382,7 +398,7 @@ private fun TasbihCounterButton(
             val topLeft = Offset(inset, inset)
 
             drawArc(
-                color = BrandGreen.copy(alpha = 0.12f),
+                color = brand.copy(alpha = 0.12f),
                 startAngle = -90f,
                 sweepAngle = 360f,
                 useCenter = false,
@@ -393,7 +409,7 @@ private fun TasbihCounterButton(
 
             if (target > 0) {
                 drawArc(
-                    color = if (progress >= 1f) AccentOrange else BrandGreen,
+                    color = if (progress >= 1f) accent else brand,
                     startAngle = -90f,
                     sweepAngle = 360f * animatedProgress,
                     useCenter = false,
@@ -407,13 +423,13 @@ private fun TasbihCounterButton(
         Box(
             modifier = Modifier
                 .size(210.dp)
-                .shadow(8.dp, CircleShape, ambientColor = BrandGreen.copy(alpha = 0.2f))
+                .shadow(8.dp, CircleShape, ambientColor = brand.copy(alpha = 0.2f))
                 .clip(CircleShape)
                 .background(
                     Brush.radialGradient(
                         colors = listOf(
-                            BrandGreen,
-                            BrandGreen.copy(alpha = 0.88f)
+                            brand,
+                            brand.copy(alpha = 0.88f)
                         )
                     )
                 ),

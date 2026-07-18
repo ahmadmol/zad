@@ -103,12 +103,12 @@ private fun SummaryCard(percentage: Int, progress: Float) {
                         text = "ملخص اليوم",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0D4D3D)
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         text = "استمر في نشاطاتك لتحقيق هدفك",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF0D4D3D).copy(alpha = 0.7f)
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                     )
                 }
 
@@ -134,8 +134,8 @@ private fun SummaryCard(percentage: Int, progress: Float) {
                     .fillMaxWidth()
                     .height(10.dp)
                     .clip(RoundedCornerShape(12.dp)),
-                color = Color(0xFF0D4D3D),
-                trackColor = Color(0xFF0D4D3D).copy(alpha = 0.1f)
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -144,7 +144,7 @@ private fun SummaryCard(percentage: Int, progress: Float) {
                 text = "التقدم العام: $percentage%",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF0D4D3D)
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }

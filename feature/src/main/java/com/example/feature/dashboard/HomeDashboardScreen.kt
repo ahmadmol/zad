@@ -319,20 +319,20 @@ fun SpotlightAllahNameCard(
                 Text(
                     text = "أسماء الله الحسنى",
                     style = MaterialTheme.typography.labelMedium,
-                    color = Color(0xFF0D4D3D).copy(alpha = 0.6f)
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = name,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0D4D3D)
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = transliteration,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF0D4D3D).copy(alpha = 0.8f)
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
                 )
             }
             
@@ -340,14 +340,14 @@ fun SpotlightAllahNameCard(
                 modifier = Modifier
                     .size(80.dp)
                     .background(Color.White, RoundedCornerShape(16.dp))
-                    .border(1.dp, Color(0xFF0D4D3D).copy(alpha = 0.1f), RoundedCornerShape(16.dp)),
+                    .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), RoundedCornerShape(16.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = meaning,
                     style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Center,
-                    color = Color(0xFF0D4D3D),
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(8.dp)
                 )
             }
@@ -374,7 +374,7 @@ fun IslamicActionItem(action: HomeIslamicAction, onClick: (String) -> Unit) {
             Icon(
                 imageVector = action.icon,
                 contentDescription = action.title,
-                tint = Color(0xFF0D4D3D),
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .size(24.dp)
                     .rotate(-45f)
@@ -385,7 +385,7 @@ fun IslamicActionItem(action: HomeIslamicAction, onClick: (String) -> Unit) {
             text = action.title,
             fontSize = 11.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF0D4D3D),
+            color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center
         )
     }
@@ -406,7 +406,7 @@ fun SupplicationCard(zikr: Zikr) {
                 .background(
                     brush = Brush.horizontalGradient(
                         colors = listOf(
-                            Color(0xFF0D4D3D),
+                            MaterialTheme.colorScheme.primary,
                             Color(0xFF1E824C)
                         )
                     )

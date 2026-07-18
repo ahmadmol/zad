@@ -20,7 +20,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.designsystem.component.IhsanEmptyState
+import com.example.designsystem.component.IhsanErrorState
+import com.example.designsystem.component.IhsanLoadingState
 import com.example.designsystem.theme.Grey
+import com.example.designsystem.theme.IhsanTheme
 import com.example.designsystem.theme.White
 import com.example.feature.R
 import com.example.feature.azkar.domain.model.DailyStat
@@ -37,8 +41,14 @@ fun StatisticsScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.stats_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier.size(IhsanTheme.dimens.minTouchTarget)
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.cd_back)
+                        )
                     }
                 }
             )
@@ -46,54 +56,56 @@ fun StatisticsScreen(
     ) { padding ->
         when {
             state.isLoading -> {
-                Box(
+                IhsanLoadingState(
                     modifier = Modifier
                         .padding(padding)
                         .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+                    message = stringResource(R.string.common_loading)
+                )
             }
             state.error != null -> {
-                Box(
+                IhsanErrorState(
+                    title = stringResource(R.string.statistics_load_error),
+                    message = null,
                     modifier = Modifier
                         .padding(padding)
                         .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(state.error, color = MaterialTheme.colorScheme.error)
-                }
+                    retryLabel = stringResource(R.string.common_retry),
+                    onRetry = null
+                )
             }
             else -> {
                 LazyColumn(
                     modifier = Modifier
                         .padding(padding)
                         .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(24.dp)
+                        .padding(IhsanTheme.dimens.screenHorizontal),
+                    verticalArrangement = Arrangement.spacedBy(IhsanTheme.dimens.sectionSpacing)
                 ) {
                     item {
                         Text(stringResource(R.string.chart_title), style = MaterialTheme.typography.titleLarge)
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(IhsanTheme.spacing.medium))
                         DailyProgressChart(stats = state.last7DaysStats)
                     }
 
                     item {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
+                            shape = RoundedCornerShape(IhsanTheme.dimens.radiusLarge),
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                             )
                         ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
+                            Column(modifier = Modifier.padding(IhsanTheme.spacing.medium)) {
                                 Text(
                                     stringResource(R.string.total_daily_count),
                                     style = MaterialTheme.typography.titleMedium
                                 )
                                 Text(
-                                    text = state.summary.totalDailyCount.toString(),
+                                    text = stringResource(
+                                        R.string.statistics_total_count_value,
+                                        state.summary.totalDailyCount
+                                    ),
                                     style = MaterialTheme.typography.displayMedium.copy(
                                         color = MaterialTheme.colorScheme.primary,
                                         fontWeight = FontWeight.Bold
@@ -112,10 +124,9 @@ fun StatisticsScreen(
 
                     if (state.isEmpty) {
                         item {
-                            Text(
-                                text = "لا توجد إحصائيات محفوظة بعد",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            IhsanEmptyState(
+                                title = stringResource(R.string.statistics_empty_title),
+                                message = stringResource(R.string.statistics_empty_body)
                             )
                         }
                     }
@@ -124,15 +135,15 @@ fun StatisticsScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 8.dp),
+                                .padding(vertical = IhsanTheme.spacing.small),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(item.text, modifier = Modifier.weight(1f), fontSize = 18.sp)
+                            Text(item.text, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
                             Badge(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = White,
-                                modifier = Modifier.padding(start = 8.dp)
+                                modifier = Modifier.padding(start = IhsanTheme.spacing.small)
                             ) {
                                 Text("${item.dailyProgress}", modifier = Modifier.padding(4.dp))
                             }

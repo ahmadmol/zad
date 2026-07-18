@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.designsystem.theme.IhsanTheme
 
 @Composable
 fun DailyActivityCard(
@@ -33,7 +34,7 @@ fun DailyActivityCard(
             .fillMaxWidth()
             .clickable { onGoToChecklist() },
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F8F6))
+        colors = CardDefaults.cardColors(containerColor = IhsanTheme.colors.surfaceMint)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(
@@ -46,17 +47,17 @@ fun DailyActivityCard(
                         text = "النشاط اليومي",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0D4D3D)
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         text = "تابع نشاطاتك اليومية",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF0D4D3D).copy(alpha = 0.7f)
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                     )
                 }
 
                 Surface(
-                    color = Color(0xFFC66927),
+                    color = IhsanTheme.colors.accentWarm,
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
@@ -77,8 +78,8 @@ fun DailyActivityCard(
                     .fillMaxWidth()
                     .height(10.dp)
                     .clip(RoundedCornerShape(12.dp)),
-                color = Color(0xFF0D4D3D),
-                trackColor = Color(0xFF0D4D3D).copy(alpha = 0.1f)
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -92,7 +93,7 @@ fun DailyActivityCard(
                     text = "التقدم العام",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
-                    color = Color(0xFF0D4D3D)
+                    color = MaterialTheme.colorScheme.primary
                 )
                 
                 TextButton(
@@ -101,7 +102,7 @@ fun DailyActivityCard(
                 ) {
                     Text(
                         text = "فتح القائمة",
-                        color = Color(0xFFC66927),
+                        color = IhsanTheme.colors.accentWarm,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.width(4.dp))
@@ -109,7 +110,7 @@ fun DailyActivityCard(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = Color(0xFFC66927)
+                        tint = IhsanTheme.colors.accentWarm
                     )
                 }
             }
