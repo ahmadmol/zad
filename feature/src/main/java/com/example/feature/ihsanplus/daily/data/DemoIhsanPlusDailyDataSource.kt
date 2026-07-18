@@ -2,7 +2,11 @@ package com.example.feature.ihsanplus.daily.data
 
 import com.example.feature.ihsanplus.daily.domain.model.*
 
-class IhsanPlusDailyFakeDataSource {
+/**
+ * Demo-only daily experience payload.
+ * Classification: Demo. Must not be registered in production / release DI.
+ */
+class DemoIhsanPlusDailyDataSource {
     fun getDailyExperience(): IhsanPlusDailyExperience {
         return IhsanPlusDailyExperience(
             greetingName = "أهلاً بك يا محسن",

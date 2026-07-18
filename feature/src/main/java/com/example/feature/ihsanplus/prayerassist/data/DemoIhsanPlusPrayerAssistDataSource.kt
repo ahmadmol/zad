@@ -2,7 +2,11 @@ package com.example.feature.ihsanplus.prayerassist.data
 
 import com.example.feature.ihsanplus.prayerassist.domain.model.*
 
-class IhsanPlusPrayerAssistFakeDataSource {
+/**
+ * Demo-only prayer assist dashboard payload.
+ * Classification: Demo. Must not be registered in production / release DI.
+ */
+class DemoIhsanPlusPrayerAssistDataSource {
     fun getDashboard(): IhsanPlusPrayerAssistDashboard {
         return IhsanPlusPrayerAssistDashboard(
             locationLabel = "حلب، سوريا",

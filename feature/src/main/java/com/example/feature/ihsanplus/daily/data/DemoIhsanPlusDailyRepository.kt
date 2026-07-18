@@ -5,10 +5,14 @@ import com.example.feature.ihsanplus.daily.domain.repository.IhsanPlusDailyRepos
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class IhsanPlusDailyRepositoryImpl(
-    private val fakeDataSource: IhsanPlusDailyFakeDataSource = IhsanPlusDailyFakeDataSource()
+/**
+ * Demo-only repository wrapping [DemoIhsanPlusDailyDataSource].
+ * Classification: Demo. Must not be registered in production / release DI.
+ */
+class DemoIhsanPlusDailyRepository(
+    private val demoDataSource: DemoIhsanPlusDailyDataSource = DemoIhsanPlusDailyDataSource()
 ) : IhsanPlusDailyRepository {
     override fun getDailyExperience(): Flow<IhsanPlusDailyExperience> = flow {
-        emit(fakeDataSource.getDailyExperience())
+        emit(demoDataSource.getDailyExperience())
     }
 }

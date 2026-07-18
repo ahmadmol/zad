@@ -2,7 +2,11 @@ package com.example.feature.ihsanplus.charitytrust.data
 
 import com.example.feature.ihsanplus.charitytrust.domain.model.*
 
-object IhsanPlusCharityTrustFakeDataSource {
+/**
+ * Demo-only charity trust dashboard with fabricated verification claims.
+ * Classification: Demo. Must not ship as production trust UI or release DI.
+ */
+object DemoIhsanPlusCharityTrustDataSource {
     fun getDashboard(): IhsanPlusCharityTrustDashboard {
         return IhsanPlusCharityTrustDashboard(
             title = "طبقة الثقة في إحسان",
