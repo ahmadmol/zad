@@ -6,6 +6,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.feature.azkar.data.local.entity.ZikrEntity
 import com.example.feature.core.data.local.database.IhsanDatabase
 import com.example.feature.core.data.local.database.IhsanDatabaseMigrations
+import com.example.feature.core.observability.AppLogger
+import com.example.feature.core.observability.AppOperationalCategory
+import com.example.feature.core.observability.AppOperationalEvent
+import com.example.feature.core.observability.AppEventReporter
 import com.example.feature.quran.data.local.QuranAssetLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +21,10 @@ import org.koin.dsl.module
 val databaseModule = module {
     single<IhsanDatabase> {
         val context = androidContext()
+        val logger = get<AppLogger>()
+        val reporter = get<AppEventReporter>()
 
+        try {
         Room.databaseBuilder(
             context,
             IhsanDatabase::class.java,
@@ -54,6 +61,17 @@ val databaseModule = module {
                 }
             }
         }).build()
+        } catch (t: Throwable) {
+            logger.error("IhsanDatabase", "database_open_or_migration_failed", t)
+            reporter.report(
+                AppOperationalEvent(
+                    name = "database_open_failed",
+                    category = AppOperationalCategory.DatabaseMigration,
+                    attributes = mapOf("errorType" to (t::class.simpleName ?: "Throwable"))
+                )
+            )
+            throw t
+        }
     }
 
     single { get<IhsanDatabase>().azkarDao() }

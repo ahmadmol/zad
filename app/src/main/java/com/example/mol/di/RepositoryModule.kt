@@ -27,7 +27,7 @@ val repositoryModule = module {
     single<StatisticsRepository> { StatisticsRepositoryImpl(get()) }
     single<DuaRepository> { DuaRepositoryImpl(androidContext(), get()) }
 
-    single<EhsanRepository> { EhsanRepositoryImpl(get()) }
+    single<EhsanRepository> { EhsanRepositoryImpl(get(), get()) }
     single<UserRepository> { UserRepositoryImpl(get()) }
     single<HadithRepository> { HadithRepositoryImpl(get()) }
 

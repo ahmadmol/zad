@@ -1,5 +1,11 @@
 package com.example.feature.prayer.domain.usecase
 
+import com.example.feature.core.observability.AppEventReporter
+import com.example.feature.core.observability.AppLogger
+import com.example.feature.core.observability.AppOperationalCategory
+import com.example.feature.core.observability.AppOperationalEvent
+import com.example.feature.core.observability.NoOpAppEventReporter
+import com.example.feature.core.observability.NoOpAppLogger
 import com.example.feature.prayer.domain.scheduler.PrayerScheduleBuilder
 import com.example.feature.prayer.domain.calculator.PrayerCalculator
 import com.example.feature.prayer.domain.clock.PrayerClock
@@ -27,7 +33,9 @@ class ReconcilePrayerScheduleUseCase(
     private val alarmGateway: PrayerAlarmGateway,
     private val eventRepository: PrayerEventRepository,
     private val clock: PrayerClock,
-    private val systemStatusStore: PrayerSystemStatusStore
+    private val systemStatusStore: PrayerSystemStatusStore,
+    private val appLogger: AppLogger = NoOpAppLogger,
+    private val appEventReporter: AppEventReporter = NoOpAppEventReporter
 ) {
     suspend operator fun invoke(reason: PrayerReconciliationReason): PrayerScheduleResult {
         val now = clock.nowEpochMillis()
@@ -177,6 +185,16 @@ class ReconcilePrayerScheduleUseCase(
                 epochMillis = clock.nowEpochMillis()
             )
         )
+        if (result is PrayerScheduleResult.Failed) {
+            appLogger.error("PrayerReconcile", "schedule_failed reason=${reason.name}")
+            appEventReporter.report(
+                AppOperationalEvent(
+                    name = "prayer_schedule_failed",
+                    category = AppOperationalCategory.PrayerScheduling,
+                    attributes = mapOf("reason" to reason.name)
+                )
+            )
+        }
     }
 }
 

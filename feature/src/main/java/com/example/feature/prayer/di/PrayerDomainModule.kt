@@ -44,7 +44,9 @@ val prayerDomainModule = module {
             alarmGateway = get(),
             eventRepository = get(),
             clock = get(),
-            systemStatusStore = get()
+            systemStatusStore = get(),
+            appLogger = get(),
+            appEventReporter = get()
         )
     }
     single { ObservePrayerDayUseCase(get(), get(), get(), get()) }
