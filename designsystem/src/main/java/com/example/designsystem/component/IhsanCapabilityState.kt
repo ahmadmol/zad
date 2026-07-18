@@ -26,11 +26,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.designsystem.theme.IhsanTheme
 
+/**
+ * Non-error capability/permission unavailable state (location, notifications, sensors, network).
+ */
 @Composable
-fun IhsanEmptyState(
-    message: String,
+fun IhsanCapabilityState(
+    title: String,
+    body: String,
     modifier: Modifier = Modifier,
-    title: String? = null,
     icon: ImageVector = Icons.Outlined.Info,
     primaryActionLabel: String? = null,
     onPrimaryAction: (() -> Unit)? = null,
@@ -40,15 +43,9 @@ fun IhsanEmptyState(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(IhsanTheme.spacing.extraLarge)
+            .padding(IhsanTheme.spacing.large)
             .semantics {
-                contentDescription = buildString {
-                    if (!title.isNullOrBlank()) {
-                        append(title)
-                        append(". ")
-                    }
-                    append(message)
-                }
+                contentDescription = "$title. $body"
             },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -57,39 +54,35 @@ fun IhsanEmptyState(
             imageVector = icon,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f)
+            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.75f)
         )
         Spacer(modifier = Modifier.height(IhsanTheme.spacing.medium))
-        if (!title.isNullOrBlank()) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(IhsanTheme.spacing.small))
-        }
         Text(
-            text = message,
-            style = MaterialTheme.typography.bodyMedium,
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(IhsanTheme.spacing.small))
+        Text(
+            text = body,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
         if (onPrimaryAction != null && !primaryActionLabel.isNullOrBlank()) {
             Spacer(modifier = Modifier.height(IhsanTheme.spacing.large))
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+            IhsanButton(
+                onClick = onPrimaryAction,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                IhsanButton(onClick = onPrimaryAction) {
-                    Text(primaryActionLabel)
-                }
-                if (onSecondaryAction != null && !secondaryActionLabel.isNullOrBlank()) {
-                    Spacer(modifier = Modifier.width(IhsanTheme.spacing.small))
-                    TextButton(onClick = onSecondaryAction) {
-                        Text(secondaryActionLabel)
-                    }
+                Text(primaryActionLabel)
+            }
+            if (onSecondaryAction != null && !secondaryActionLabel.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(IhsanTheme.spacing.small))
+                TextButton(onClick = onSecondaryAction) {
+                    Text(secondaryActionLabel)
                 }
             }
         }
