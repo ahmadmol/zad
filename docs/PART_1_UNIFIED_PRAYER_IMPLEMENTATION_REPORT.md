@@ -20,7 +20,7 @@
 | Item | Value |
 |------|--------|
 | Final branch | `refactor/unified-prayer-domain` |
-| Final commit | cdc1948 |
+| Final commit | `cdc1948` (report hash note `17810c1`) |
 
 ---
 
