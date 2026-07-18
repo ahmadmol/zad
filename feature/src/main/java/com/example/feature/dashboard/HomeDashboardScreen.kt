@@ -1,50 +1,59 @@
 package com.example.feature.dashboard
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.designsystem.component.DailyActivityItemData
-import com.example.designsystem.component.DailyActivityCard
-import com.example.designsystem.component.DashboardHeader
-import com.example.designsystem.component.IhsanActionCard
-import com.example.designsystem.component.LastReadCard
-import com.example.feature.azkar.domain.model.Zikr
-import com.example.feature.core.notification.UserMessageNotifier
-import com.example.feature.core.util.HijriDateFormatter
-import com.example.feature.dashboard.presentation.HomeDashboardAction
-import com.example.feature.dashboard.presentation.HomeDashboardViewModel
-import com.example.feature.prayer.presentation.CitySelectionBottomSheet
-import com.example.feature.prayer.presentation.PrayerDetailsBottomSheet
-import com.example.feature.prayer.presentation.PrayerSettingsBottomSheet
 import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.AutoStories
+import androidx.compose.material.icons.filled.BrightnessLow
+import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.filled.LiveTv
+import androidx.compose.material.icons.filled.SelfImprovement
+import androidx.compose.material.icons.filled.VolunteerActivism
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.designsystem.component.DailyActivityCard
+import com.example.designsystem.component.DailyActivityItemData
+import com.example.designsystem.component.DashboardHeader
+import com.example.designsystem.component.LastReadCard
+import com.example.designsystem.theme.IhsanTheme
+import com.example.feature.core.notification.UserMessageNotifier
+import com.example.feature.core.util.HijriDateFormatter
+import com.example.feature.dashboard.presentation.HomeDashboardAction
+import com.example.feature.dashboard.presentation.HomeDashboardViewModel
+import com.example.feature.dashboard.presentation.components.AsmaHighlightCard
+import com.example.feature.dashboard.presentation.components.DailyExperienceCard
+import com.example.feature.dashboard.presentation.components.HomeQuickActions
+import com.example.feature.dashboard.presentation.components.NearbyCharityCard
+import com.example.feature.dashboard.presentation.components.QiblaShortcutCard
+import com.example.feature.prayer.presentation.CitySelectionBottomSheet
+import com.example.feature.prayer.presentation.PrayerDetailsBottomSheet
+import com.example.feature.prayer.presentation.PrayerSettingsBottomSheet
 import org.koin.androidx.compose.koinViewModel
 
 data class HomeIslamicAction(
@@ -76,7 +85,6 @@ fun HomeDashboardScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    // Notification Permission Launcher
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -98,11 +106,11 @@ fun HomeDashboardScreen(
 
     val actions = remember {
         listOf(
-            HomeIslamicAction("القبلة", Icons.Default.Explore, "qibla"),
+            HomeIslamicAction("البوصلة", Icons.Default.Explore, "qibla"),
             HomeIslamicAction("أسماء الله", Icons.Default.AutoAwesome, "asma"),
             HomeIslamicAction("دعاء", Icons.Default.VolunteerActivism, "dua"),
-            HomeIslamicAction("قرآن", Icons.AutoMirrored.Filled.MenuBook, "quran"),
-            HomeIslamicAction("بث الحرم", Icons.Default.LiveTv, "haram"),
+            HomeIslamicAction("القرآن", Icons.AutoMirrored.Filled.MenuBook, "quran"),
+            HomeIslamicAction("بث مباشر", Icons.Default.LiveTv, "haram"),
             HomeIslamicAction("بث النبوي", Icons.Default.LiveTv, "nabawi"),
             HomeIslamicAction("حديث", Icons.Default.AutoStories, "hadith"),
             HomeIslamicAction("أذكار", Icons.Default.SelfImprovement, "azkar"),
@@ -111,8 +119,8 @@ fun HomeDashboardScreen(
     }
 
     val onActionClick: (String) -> Unit = remember(
-        onNavigateToQibla, onNavigateToQuran, onNavigateToAzkar, 
-        onNavigateToDua, onNavigateToHadith, onNavigateToAsma, 
+        onNavigateToQibla, onNavigateToQuran, onNavigateToAzkar,
+        onNavigateToDua, onNavigateToHadith, onNavigateToAsma,
         onNavigateToTasbih, onNavigateToHaramLive, onNavigateToNabawiLive
     ) {
         { route ->
@@ -142,18 +150,37 @@ fun HomeDashboardScreen(
         uiState.data.allPrayers.indexOfFirst { it.isActive }.takeIf { it != -1 } ?: 0
     }
 
+    val greeting = remember(uiState.data.userName) {
+        val name = uiState.data.userName.trim()
+        if (name.isNotEmpty()) "أهلاً بك يا $name" else "أهلاً بك في إحسان"
+    }
+
+    val nextPrayerInfo = remember(
+        uiState.data.nextPrayerName,
+        uiState.data.nextPrayerTimeLeft
+    ) {
+        val name = uiState.data.nextPrayerName
+        val left = uiState.data.nextPrayerTimeLeft
+        when {
+            name.isNotBlank() && left.isNotBlank() -> "$name خلال $left"
+            name.isNotBlank() -> name
+            else -> ""
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.primary)
     ) {
         DashboardHeader(
-            currentTime = uiState.data.currentTime.ifBlank { "00:00" },
+            currentTime = uiState.data.currentTime.ifBlank { "—" },
             hijriDate = uiState.data.hijriDate.ifBlank { HijriDateFormatter.nowFormatted() },
             location = uiState.data.location,
-            nextPrayerInfo = "${uiState.data.nextPrayerName} خلال ${uiState.data.nextPrayerTimeLeft}",
+            nextPrayerInfo = nextPrayerInfo,
             prayerTimes = prayerTimesDisplay,
             activePrayerIndex = activePrayerIndex,
+            greeting = greeting,
             onNotificationClick = onNavigateToReminders,
             onPrayerClick = { index -> viewModel.onAction(HomeDashboardAction.OnPrayerClick(index)) }
         )
@@ -162,34 +189,58 @@ fun HomeDashboardScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(1f),
-            color = MaterialTheme.colorScheme.surface,
-            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+            color = IhsanTheme.colors.surfaceMuted,
+            shape = RoundedCornerShape(
+                topStart = IhsanTheme.dimens.radiusSheet,
+                topEnd = IhsanTheme.dimens.radiusSheet
+            )
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+                    .padding(horizontal = 20.dp, vertical = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Islamic Actions Section
-                LazyRow(
+                HomeQuickActions(
+                    actions = actions,
+                    onActionClick = onActionClick
+                )
+
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    contentPadding = PaddingValues(horizontal = 4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(actions) { action ->
-                        IslamicActionItem(action, onActionClick)
+                    if (uiState.data.spotlightAllahName.isNotBlank()) {
+                        AsmaHighlightCard(
+                            name = uiState.data.spotlightAllahName,
+                            transliteration = uiState.data.spotlightTransliteration,
+                            meaning = uiState.data.spotlightMeaning,
+                            onClick = onNavigateToAsma,
+                            modifier = Modifier.weight(1f)
+                        )
                     }
+                    NearbyCharityCard(
+                        offersCount = uiState.data.communityOffersCount,
+                        requestsCount = uiState.data.communityRequestsCount,
+                        onClick = onNavigateToDonations,
+                        modifier = Modifier.weight(1f)
+                    )
                 }
 
-                // Spotlight Allah Name Card
-                if (uiState.data.spotlightAllahName.isNotEmpty()) {
-                    SpotlightAllahNameCard(
-                        name = uiState.data.spotlightAllahName,
-                        transliteration = uiState.data.spotlightTransliteration,
-                        meaning = uiState.data.spotlightMeaning,
-                        onClick = onNavigateToAsma
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    if (onNavigateToIhsanPlusDaily != null) {
+                        DailyExperienceCard(
+                            onClick = onNavigateToIhsanPlusDaily,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    QiblaShortcutCard(
+                        onClick = onNavigateToQibla,
+                        modifier = Modifier.weight(1f)
                     )
                 }
 
@@ -207,62 +258,16 @@ fun HomeDashboardScreen(
                     )
                 }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    IhsanActionCard(
-                        title = "القبلة",
-                        subtitle = "تحديد الاتجاه",
-                        icon = Icons.Default.Explore,
-                        onClick = onNavigateToQibla,
-                        modifier = Modifier.weight(1f)
-                    )
-                    IhsanActionCard(
-                        title = "تبرع قريب",
-                        subtitle = "ابحث الآن",
-                        icon = Icons.Default.Place,
-                        onClick = onNavigateToDonations,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                if (onNavigateToIhsanPlusDaily != null) {
-                    IhsanActionCard(
-                        title = "تجربة اليوم",
-                        subtitle = "ملخص محلي للقراءة فقط",
-                        icon = Icons.Default.Today,
-                        onClick = onNavigateToIhsanPlusDaily,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-
-                // New Supplications Section
-                Text(
-                    text = "دعاء اليوم",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    contentPadding = PaddingValues(horizontal = 0.dp)
-                ) {
-                    items(uiState.data.dailyDuas) { zikr ->
-                        SupplicationCard(zikr)
-                    }
-                }
-
                 DailyActivityCard(
                     activities = uiState.data.dailyActivities,
                     onGoToChecklist = onNavigateToDailyActivities
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
 
-    // Prayer Details Bottom Sheet
     uiState.data.selectedPrayerIndex?.let { index ->
         val selectedPrayer = uiState.data.allPrayers.getOrNull(index)
         if (selectedPrayer != null) {
@@ -290,7 +295,6 @@ fun HomeDashboardScreen(
         }
     }
 
-    // Prayer Settings Bottom Sheet
     if (uiState.data.isPrayerSettingsVisible) {
         PrayerSettingsBottomSheet(
             onDismiss = { viewModel.onAction(HomeDashboardAction.OnDismissPrayerSettings) },
@@ -305,7 +309,6 @@ fun HomeDashboardScreen(
         )
     }
 
-    // City Selection Bottom Sheet
     if (uiState.data.isCitySelectionVisible) {
         CitySelectionBottomSheet(
             onDismiss = { viewModel.onAction(HomeDashboardAction.OnDismissCitySelection) },
@@ -317,144 +320,117 @@ fun HomeDashboardScreen(
 }
 
 @Composable
-fun SpotlightAllahNameCard(
-    name: String,
-    transliteration: String,
-    meaning: String,
-    onClick: () -> Unit = {}
+private fun HomeDashboardPreviewContent(
+    showDailyExperience: Boolean = true
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() },
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F8F6))
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(20.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "أسماء الله الحسنى",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = name,
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = transliteration,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
-                )
-            }
-            
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .background(Color.White, RoundedCornerShape(16.dp))
-                    .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), RoundedCornerShape(16.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = meaning,
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun IslamicActionItem(action: HomeIslamicAction, onClick: (String) -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clickable { onClick(action.route) }
-            .width(65.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(50.dp)
-                .rotate(45f)
-                .background(Color.White, RoundedCornerShape(12.dp))
-                .border(1.dp, Color(0xFFE8F5E9), RoundedCornerShape(12.dp)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = action.icon,
-                contentDescription = action.title,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .size(24.dp)
-                    .rotate(-45f)
-            )
-        }
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(
-            text = action.title,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-fun SupplicationCard(zikr: Zikr) {
-    Card(
-        modifier = Modifier
-            .width(280.dp)
-            .height(140.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
-    ) {
-        Box(
+    IhsanTheme {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary,
-                            Color(0xFF1E824C)
-                        )
-                    )
-                )
-                .padding(16.dp)
+                .background(MaterialTheme.colorScheme.primary)
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.Center
+            DashboardHeader(
+                currentTime = "04:23 م",
+                hijriDate = "السبت، ٤ صفر ١٤٤٨",
+                location = "حلب",
+                nextPrayerInfo = "العصر خلال 00:03:40",
+                prayerTimes = listOf(
+                    "الفجر" to "03:42 ص",
+                    "الشروق" to "05:28 ص",
+                    "الظهر" to "12:39 م",
+                    "العصر" to "04:27 م",
+                    "العشاء" to "09:07 م"
+                ),
+                activePrayerIndex = 0,
+                greeting = "أهلاً بك في إحسان",
+                onNotificationClick = {}
+            )
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f),
+                color = IhsanTheme.colors.surfaceMuted,
+                shape = RoundedCornerShape(
+                    topStart = IhsanTheme.dimens.radiusSheet,
+                    topEnd = IhsanTheme.dimens.radiusSheet
+                )
             ) {
-                Text(
-                    text = zikr.category,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.End
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = zikr.text,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.9f),
-                    maxLines = 3,
-                    textAlign = TextAlign.End,
-                    lineHeight = 18.sp
-                )
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    HomeQuickActions(
+                        actions = listOf(
+                            HomeIslamicAction("البوصلة", Icons.Default.Explore, "qibla"),
+                            HomeIslamicAction("أسماء الله", Icons.Default.AutoAwesome, "asma"),
+                            HomeIslamicAction("دعاء", Icons.Default.VolunteerActivism, "dua"),
+                            HomeIslamicAction("القرآن", Icons.AutoMirrored.Filled.MenuBook, "quran"),
+                            HomeIslamicAction("بث مباشر", Icons.Default.LiveTv, "haram")
+                        ),
+                        onActionClick = {}
+                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        AsmaHighlightCard(
+                            name = "الرَّحْمَنُ",
+                            transliteration = "Ar-Rahman",
+                            meaning = "The Entirely Merciful",
+                            onClick = {},
+                            modifier = Modifier.weight(1f)
+                        )
+                        NearbyCharityCard(
+                            offersCount = 3,
+                            requestsCount = 2,
+                            onClick = {},
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        if (showDailyExperience) {
+                            DailyExperienceCard(onClick = {}, modifier = Modifier.weight(1f))
+                        }
+                        QiblaShortcutCard(onClick = {}, modifier = Modifier.weight(1f))
+                    }
+                    DailyActivityCard(
+                        activities = listOf(
+                            DailyActivityItemData("1", "أذكار", 1, 6, "مرة", false, "azkar")
+                        ),
+                        onGoToChecklist = {}
+                    )
+                }
             }
         }
     }
+}
+
+@Preview(name = "Home Light 360", locale = "ar", widthDp = 360, heightDp = 800, showBackground = true)
+@Composable
+private fun HomeDashboardPreviewLight360() {
+    HomeDashboardPreviewContent()
+}
+
+@Preview(name = "Home Light 430", locale = "ar", widthDp = 430, heightDp = 900, showBackground = true)
+@Composable
+private fun HomeDashboardPreviewLight430() {
+    HomeDashboardPreviewContent()
+}
+
+@Preview(
+    name = "Home Dark",
+    locale = "ar",
+    widthDp = 360,
+    heightDp = 800,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
+    showBackground = true
+)
+@Composable
+private fun HomeDashboardPreviewDark() {
+    HomeDashboardPreviewContent()
+}
+
+@Preview(name = "Home FontScale", locale = "ar", widthDp = 360, heightDp = 800, fontScale = 1.3f)
+@Composable
+private fun HomeDashboardPreviewFontScale() {
+    HomeDashboardPreviewContent(showDailyExperience = false)
 }
