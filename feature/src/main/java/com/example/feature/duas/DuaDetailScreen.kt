@@ -189,9 +189,9 @@ fun DuaDetailScreen(
                             shape = RoundedCornerShape(12.dp),
                             border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
                         ) {
-                            Icon(Icons.Default.Share, contentDescription = null, tint = Color(0xFF0D4D3D))
+                            Icon(Icons.Default.Share, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                             Spacer(Modifier.width(8.dp))
-                            Text("مشاركة", color = Color(0xFF0D4D3D))
+                            Text("مشاركة", color = MaterialTheme.colorScheme.primary)
                         }
                         
                         OutlinedButton(
@@ -200,9 +200,9 @@ fun DuaDetailScreen(
                             shape = RoundedCornerShape(12.dp),
                             border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
                         ) {
-                            Icon(Icons.Default.ContentCopy, contentDescription = null, tint = Color(0xFF0D4D3D))
+                            Icon(Icons.Default.ContentCopy, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                             Spacer(Modifier.width(8.dp))
-                            Text("نسخ", color = Color(0xFF0D4D3D))
+                            Text("نسخ", color = MaterialTheme.colorScheme.primary)
                         }
                     }
 
@@ -214,7 +214,7 @@ fun DuaDetailScreen(
                         modifier = Modifier.fillMaxWidth().height(56.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF0D4D3D)
+                            containerColor = MaterialTheme.colorScheme.primary
                         )
                     ) {
                         Icon(

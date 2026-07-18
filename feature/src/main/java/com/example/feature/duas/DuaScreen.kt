@@ -65,11 +65,11 @@ fun DuaScreen(
                     TabRow(
                         selectedTabIndex = selectedTab,
                         containerColor = Color.White,
-                        contentColor = Color(0xFF0D4D3D),
+                        contentColor = MaterialTheme.colorScheme.primary,
                         indicator = { tabPositions ->
                             TabRowDefaults.SecondaryIndicator(
                                 Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                                color = Color(0xFF0D4D3D)
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     ) {
@@ -97,7 +97,7 @@ fun DuaScreen(
 
                 Box(modifier = Modifier.weight(1f)) {
                     if (uiState.isLoading) {
-                        CircularProgressIndicator(Modifier.align(Alignment.Center), color = Color(0xFF0D4D3D))
+                        CircularProgressIndicator(Modifier.align(Alignment.Center), color = MaterialTheme.colorScheme.primary)
                     } else if (uiState.duas.isEmpty()) {
                         EmptyState(
                             query = uiState.searchQuery,
@@ -170,7 +170,7 @@ private fun CategoryChips(
     ScrollableTabRow(
         selectedTabIndex = categories.indexOfFirst { it.first == selectedCategory }.coerceAtLeast(0),
         containerColor = Color.Transparent,
-        contentColor = Color(0xFF0D4D3D),
+        contentColor = MaterialTheme.colorScheme.primary,
         edgePadding = 16.dp,
         divider = {},
         indicator = {}
@@ -183,8 +183,8 @@ private fun CategoryChips(
                 modifier = Modifier
                     .padding(vertical = 8.dp, horizontal = 4.dp)
                     .clip(RoundedCornerShape(20.dp))
-                    .background(if (isSelected) Color(0xFF0D4D3D) else Color.White)
-                    .border(1.dp, if (isSelected) Color(0xFF0D4D3D) else Color.LightGray.copy(alpha = 0.5f), RoundedCornerShape(20.dp))
+                    .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.White)
+                    .border(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray.copy(alpha = 0.5f), RoundedCornerShape(20.dp))
             ) {
                 Text(
                     text = label,
@@ -238,7 +238,7 @@ private fun DuaCard(
                         text = dua.category.split(" ").last(),
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         fontSize = 11.sp,
-                        color = Color(0xFF0D4D3D),
+                        color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Medium
                     )
                 }

@@ -134,8 +134,8 @@ private fun SearchSectionTitle(title: String, icon: ImageVector) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(vertical = 8.dp)
     ) {
-        Icon(icon, contentDescription = null, tint = Color(0xFF0D4D3D), modifier = Modifier.size(18.dp))
+        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(8.dp))
-        Text(text = title, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF0D4D3D))
+        Text(text = title, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
     }
 }
