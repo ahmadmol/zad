@@ -9,7 +9,7 @@
 | Starting branch | `refactor/design-localization-accessibility` |
 | Starting commit | `aa8196d` |
 | Working branch | `chore/integration-release-readiness` |
-| Final commit | *(see `git log` after Part 5 commits)* |
+| Final commit | `bbe8808` |
 
 ## 3. Baseline results (pre-change)
 
@@ -134,6 +134,37 @@ Rollback documented in controlled integration plan. Parts 1–4 unit suites expe
 * Vendor crash reporting
 * Moving demo sources into `debug` source set (architecture tests currently enforce naming + DI isolation)
 
+## Git snapshot
+
+```text
+## chore/integration-release-readiness
+?? .project-preservation/
+
+(no staged/unstaged code diff — clean aside from local preservation folder)
+
+bbe8808 docs(integration): define controlled rollout and rollback plan
+878d503 feat(core): add privacy-safe operational observability
+149a59a chore(release): document and harden release configuration
+2d6b221 ci(android): add build test lint and architecture gates
+e3d5946 test(core): expand critical workflow coverage
+4f83dd1 test(architecture): enforce production dependency boundaries
+13ccf6e feat(integration): add read-only production source adapters
+6107cd4 refactor(ihsanplus): isolate demo and preview data
+8eb1bc0 feat(integration): enforce readiness and trust policies
+f49a540 feat(integration): define ihsanplus source and route contracts
+e9b3950 docs(readiness): inventory integration and release boundaries
+aa8196d docs: record Part 4 final commit hash
+```
+
+### Final verification notes
+
+* `:app:assembleDebug` — PASS
+* `:feature:testDebugUnitTest` / `:app:testDebugUnitTest` — PASS
+* `:designsystem:testDebugUnitTest` — PASS
+* `:app:lintDebug` + `:app:assembleRelease` — exit 0 (release APK produced; **not** signed-store verification)
+* `connectedDebugAndroidTest` — not run
+* IhsanPlus routes / fake modules — not in production navigation or `appModule`
+
 ## 35. Acceptance checklist
 
 | Criterion | Status |
@@ -152,3 +183,4 @@ Rollback documented in controlled integration plan. Parts 1–4 unit suites expe
 | Observability privacy-safe | Yes |
 | IhsanPlus unreachable in production | Yes |
 | Production release readiness claimed | **No** (blockers remain) |
+
