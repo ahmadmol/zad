@@ -35,4 +35,15 @@
 
 ## Decision status
 
-**BLOCKER:** Application identity remains `com.example.mol` until product approves a production package name.
+**BLOCKER retained:** Application identity remains `com.example.mol`.
+
+No approved production package name was found in project/store/signing documentation during final completion.
+
+### Proposals requiring owner approval (not applied)
+
+1. `com.ihsan.app` — only if brand/domain ownership is confirmed
+2. `org.ihsan.android` — organizational style alternative
+3. Keep `com.example.mol` for internal demos only
+
+Do not rename until product explicitly approves one option.
+

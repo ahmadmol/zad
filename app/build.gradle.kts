@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -19,9 +21,41 @@ android {
         multiDexEnabled = true
     }
 
+    signingConfigs {
+        create("release") {
+            val localProps = Properties().apply {
+                val f = rootProject.file("local.properties")
+                if (f.exists()) f.inputStream().use { load(it) }
+            }
+            fun prop(name: String): String? =
+                System.getenv(name) ?: localProps.getProperty(name)
+
+            val storeFilePath = prop("IHSAN_KEYSTORE_PATH") ?: prop("IHSAN_STORE_FILE")
+            val storePasswordValue = prop("IHSAN_KEYSTORE_PASSWORD") ?: prop("IHSAN_STORE_PASSWORD")
+            val keyAliasValue = prop("IHSAN_KEY_ALIAS")
+            val keyPasswordValue = prop("IHSAN_KEY_PASSWORD")
+
+            if (!storeFilePath.isNullOrBlank() &&
+                !storePasswordValue.isNullOrBlank() &&
+                !keyAliasValue.isNullOrBlank() &&
+                !keyPasswordValue.isNullOrBlank()
+            ) {
+                storeFile = file(storeFilePath)
+                storePassword = storePasswordValue
+                keyAlias = keyAliasValue
+                keyPassword = keyPasswordValue
+            }
+        }
+    }
+
     buildTypes {
         release {
+            // R8 kept disabled: DeviceVerificationMissing — do not claim R8 readiness.
             isMinifyEnabled = false
+            isShrinkResources = false
+            signingConfig = signingConfigs.findByName("release")
+                ?.takeIf { it.storeFile != null }
+                ?: signingConfigs.getByName("debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -38,21 +72,19 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
 dependencies {
     implementation(project(":designsystem"))
     implementation(project(":feature"))
-    
-    // Core library desugaring for java.time on API < 26
+
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
 
-    // Koin
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
 
