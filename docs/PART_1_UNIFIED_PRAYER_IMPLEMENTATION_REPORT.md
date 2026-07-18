@@ -20,7 +20,7 @@
 | Item | Value |
 |------|--------|
 | Final branch | `refactor/unified-prayer-domain` |
-| Final commit | *(filled after commit)* |
+| Final commit | cdc1948 |
 
 ---
 
