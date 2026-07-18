@@ -182,7 +182,7 @@ fun ProfileScreen(
                             }
                             Spacer(modifier = Modifier.height(24.dp))
                             Text(
-                                "سجل دخولك لتتمكن من إدارة تبرعاتك ومتابعة تأثيرك",
+                                "أنشئ ملفاً شخصياً على الجهاز لإدارة تبرعاتك ومتابعة طلباتك. البيانات محلية وليست حساباً عبر الإنترنت",
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                                 color = Color.Gray
                             )
@@ -193,7 +193,7 @@ fun ProfileScreen(
                                 shape = RoundedCornerShape(16.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0D4D3D))
                             ) {
-                                Text("تسجيل الدخول / إنشاء حساب", fontWeight = FontWeight.Bold)
+                                Text("إنشاء / فتح ملف شخصي", fontWeight = FontWeight.Bold)
                             }
                         }
                     }

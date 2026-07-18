@@ -48,7 +48,7 @@ fun AuthBottomSheet(
             if (success) {
                 onAuthSuccess()
             } else {
-                snackbarHostState.showSnackbar("رقم الهاتف غير مسجل")
+                snackbarHostState.showSnackbar("لا يوجد ملف شخصي بهذا الرقم على الجهاز")
             }
         }
     }
@@ -107,14 +107,14 @@ fun LoginContent(
     var phone by remember { mutableStateOf("") }
 
     Text(
-        text = "تسجيل الدخول للمتابعة",
+        text = "الوصول إلى ملفك الشخصي",
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Bold,
         color = PrimaryTeal,
         modifier = Modifier.padding(top = 8.dp)
     )
     Text(
-        text = "لتتمكن من إضافة تبرعك أو طلبك بأمان",
+        text = "البيانات تُحفظ على جهازك فقط — لا يوجد تسجيل دخول عبر الإنترنت حالياً",
         style = MaterialTheme.typography.bodyMedium,
         color = Color.Gray,
         textAlign = TextAlign.Center,
@@ -137,7 +137,7 @@ fun LoginContent(
         containerColor = PrimaryTeal,
         enabled = phone.isNotBlank()
     ) {
-        Text("تسجيل الدخول", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        Text("فتح الملف الشخصي", fontWeight = FontWeight.Bold, fontSize = 18.sp)
     }
 
     Spacer(modifier = Modifier.height(24.dp))
@@ -148,9 +148,9 @@ fun LoginContent(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Text("ليس لديك حساب؟ ", color = Color.Gray)
+        Text("ليس لديك ملف؟ ", color = Color.Gray)
         Text(
-            "إنشاء حساب جديد",
+            "إنشاء ملف شخصي",
             color = PrimaryTeal,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.clickable { onSignUpClick() }
@@ -168,14 +168,14 @@ fun SignUpContent(
     var phone by remember { mutableStateOf("") }
 
     Text(
-        text = "إنشاء حساب جديد",
+        text = "إنشاء ملف شخصي محلي",
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Bold,
         color = PrimaryTeal,
         modifier = Modifier.padding(top = 8.dp)
     )
     Text(
-        text = "أنشئ حسابك بسرعة لمتابعة التبرع أو طلب المساعدة بأمان",
+        text = "احفظ اسمك ورقم هاتفك على الجهاز لمتابعة التبرع أو طلب المساعدة. لا يتم إرسال البيانات إلى خادم حالياً",
         style = MaterialTheme.typography.bodyMedium,
         color = Color.Gray,
         textAlign = TextAlign.Center,
@@ -212,7 +212,7 @@ fun SignUpContent(
         containerColor = PrimaryTeal,
         enabled = firstName.isNotBlank() && lastName.isNotBlank() && phone.isNotBlank()
     ) {
-        Text("إنشاء الحساب والاشتراك", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        Text("حفظ الملف الشخصي", fontWeight = FontWeight.Bold, fontSize = 18.sp)
     }
 
     Spacer(modifier = Modifier.height(24.dp))
@@ -223,9 +223,9 @@ fun SignUpContent(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Text("لديك حساب بالفعل؟ ", color = Color.Gray)
+        Text("لديك ملف بالفعل؟ ", color = Color.Gray)
         Text(
-            "تسجيل الدخول",
+            "فتح الملف الشخصي",
             color = PrimaryTeal,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.clickable { onLoginClick() }

@@ -34,9 +34,12 @@
             </intent-filter>
         </activity>
 
+        <!-- exported=false: in-app MediaController binds via SessionToken(ComponentName).
+             External apps must not control Quran playback. Android Auto / cross-app
+             media discovery is intentionally not supported in this phase. -->
         <service
             android:name="com.example.feature.quran.service.QuranAudioService"
-            android:exported="true"
+            android:exported="false"
             android:foregroundServiceType="mediaPlayback">
             <intent-filter>
                 <action android:name="androidx.media3.session.MediaSessionService" />
