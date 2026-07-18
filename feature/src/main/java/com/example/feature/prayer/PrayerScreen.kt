@@ -30,6 +30,7 @@ import com.example.feature.core.util.HijriDateFormatter
 import com.example.feature.prayer.presentation.PrayerAction
 import com.example.feature.prayer.presentation.PrayerUiState
 import com.example.feature.prayer.presentation.PrayerViewModel
+import com.example.feature.ihsanplus.integration.presentation.ControlledPrayerAssistSection
 import org.koin.androidx.compose.koinViewModel
 
 data class PrayerTime(
@@ -125,6 +126,7 @@ fun PrayerScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
                     PrayerSystemStatusSection(uiState = uiState, onAction = viewModel::onAction)
+                    ControlledPrayerAssistSection()
 
                     Spacer(modifier = Modifier.height(24.dp))
 
