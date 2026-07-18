@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Explicit Arabic locale for high-risk / shared feature strings. -->
+<resources>
+    <string name="common_back">رجوع</string>
+    <string name="common_retry">إعادة المحاولة</string>
+    <string name="common_save">حفظ</string>
+    <string name="common_cancel">إلغاء</string>
+    <string name="common_share">مشاركة</string>
+    <string name="common_loading">جارٍ التحميل…</string>
+    <string name="common_open_settings">فتح الإعدادات</string>
+    <string name="cd_back">رجوع</string>
+    <string name="settings_adhan_sound_title">صوت الأذان</string>
+    <string name="settings_share_app">مشاركة التطبيق مع الأصدقاء</string>
+    <string name="statistics_empty_body">لا توجد إحصائيات محفوظة بعد</string>
+    <string name="ehsan_details_title">تفاصيل الإحسان</string>
+    <string name="ehsan_offer_label">تبرع متاح</string>
+    <string name="ehsan_request_label">طلب مساعدة</string>
+    <string name="ehsan_not_found">لم يتم العثور على الحالة</string>
+    <string name="ehsan_call_phone">اتصال هاتفي</string>
+    <string name="common_whatsapp">واتساب</string>
+    <string name="profile_local_notice">الملف الشخصي محلي على هذا الجهاز وغير مرتبط بحساب سحابي.</string>
+    <string name="tasbih_count_semantics">العدد الحالي %1$d من الهدف %2$d</string>
+    <string name="prayer_retry_location">إعادة المحاولة</string>
+    <string name="prayer_reschedule_alarms">إعادة جدولة التنبيهات</string>
+</resources>

@@ -44,4 +44,72 @@
     <string name="default_allah_name">الرَّحْمَنُ</string>
     <string name="default_allah_transliteration">Ar-Rahman</string>
     <string name="default_allah_meaning">The Entirely Merciful</string>
+
+    <!-- Part 4 common / high-risk -->
+    <string name="common_back">رجوع</string>
+    <string name="common_retry">إعادة المحاولة</string>
+    <string name="common_save">حفظ</string>
+    <string name="common_cancel">إلغاء</string>
+    <string name="common_delete">حذف</string>
+    <string name="common_edit">تعديل</string>
+    <string name="common_continue">متابعة</string>
+    <string name="common_share">مشاركة</string>
+    <string name="common_call">اتصال</string>
+    <string name="common_whatsapp">واتساب</string>
+    <string name="common_search">بحث</string>
+    <string name="common_loading">جارٍ التحميل…</string>
+    <string name="common_open_settings">فتح الإعدادات</string>
+    <string name="common_enable">تفعيل</string>
+    <string name="common_disable">إيقاف</string>
+    <string name="common_close">إغلاق</string>
+    <string name="cd_back">رجوع</string>
+    <string name="cd_share">مشاركة</string>
+    <string name="cd_notifications">الإشعارات</string>
+    <string name="cd_settings">الإعدادات</string>
+
+    <string name="prayer_location_unavailable_title">تعذر تحديد الموقع</string>
+    <string name="prayer_retry_location">إعادة المحاولة</string>
+    <string name="prayer_reschedule_alarms">إعادة جدولة التنبيهات</string>
+
+    <string name="settings_adhan_sound_title">صوت الأذان</string>
+    <string name="settings_adhan_sound_default">الافتراضي</string>
+    <string name="settings_adhan_sound_picker_title">اختر صوت الأذان</string>
+    <string name="settings_share_app">مشاركة التطبيق مع الأصدقاء</string>
+    <string name="settings_share_message">جرب تطبيق إحسان للتكافل والعبادات</string>
+
+    <string name="statistics_empty_title">لا توجد إحصائيات</string>
+    <string name="statistics_empty_body">لا توجد إحصائيات محفوظة بعد</string>
+    <string name="statistics_load_error">تعذر تحميل الإحصائيات</string>
+    <string name="statistics_total_count_value">%1$d</string>
+
+    <string name="ehsan_details_title">تفاصيل الإحسان</string>
+    <string name="ehsan_offer_label">تبرع متاح</string>
+    <string name="ehsan_request_label">طلب مساعدة</string>
+    <string name="ehsan_case_owner">صاحب الفرصة</string>
+    <string name="ehsan_local_only_notice">البيانات محلية على جهازك وليست شبكة تبرعات عامة.</string>
+    <string name="ehsan_not_found">لم يتم العثور على الحالة</string>
+    <string name="ehsan_unexpected_error">حدث خطأ غير متوقع</string>
+    <string name="ehsan_call_phone">اتصال هاتفي</string>
+    <string name="ehsan_report_case">الإبلاغ عن الحالة</string>
+    <string name="ehsan_report_title">الإبلاغ عن الحالة</string>
+    <string name="ehsan_report_confirm_body">هل تريد الإبلاغ عن هذه الحالة كمحتوى غير مناسب أو غير دقيق؟</string>
+    <string name="ehsan_report_thanks">شكرًا لك. تم تسجيل البلاغ وسيتم مراجعته قريبًا.</string>
+    <string name="ehsan_report_confirm">تأكيد البلاغ</string>
+    <string name="ehsan_description_label">وصف الحالة</string>
+    <string name="ehsan_share_chooser">مشاركة الحالة</string>
+    <string name="ehsan_share_template">%1$s\n\n%2$s</string>
+    <string name="cd_call_phone">اتصال هاتفي</string>
+    <string name="cd_open_whatsapp">فتح واتساب</string>
+    <string name="cd_report_case">الإبلاغ عن الحالة</string>
+
+    <string name="profile_local_notice">الملف الشخصي محلي على هذا الجهاز وغير مرتبط بحساب سحابي.</string>
+    <string name="profile_edit_title">تعديل الملف الشخصي</string>
+    <string name="cd_edit_profile">تعديل الملف الشخصي</string>
+
+    <string name="tasbih_title">تسبيح</string>
+    <string name="tasbih_count_semantics">العدد الحالي %1$d من الهدف %2$d</string>
+    <string name="cd_tasbih_increment">زيادة العداد</string>
+    <string name="cd_tasbih_reset">إعادة تعيين العداد</string>
+    <string name="cd_tasbih_vibration">تبديل الاهتزاز</string>
+    <string name="tasbih_reset_label">تصفير العداد</string>
 </resources>

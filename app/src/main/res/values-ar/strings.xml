@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Explicit Arabic locale mirror of high-risk app shell strings. Default values/ remains Arabic. -->
 <resources>
     <string name="app_name">إحسان</string>
     <string name="common_back">رجوع</string>
