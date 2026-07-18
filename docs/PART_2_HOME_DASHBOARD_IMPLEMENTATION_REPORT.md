@@ -21,7 +21,7 @@
 | Item | Value |
 |------|--------|
 | Branch | `refactor/home-dashboard-decomposition` |
-| Final commit | *(filled after commit)* |
+| Final commit | c5dec6e |
 
 ---
 
