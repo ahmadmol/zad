@@ -21,7 +21,7 @@
 | Item | Value |
 |------|--------|
 | Branch | `refactor/product-surface-ownership-cleanup` |
-| Final commit | `12fb6d0` |
+| Final commit | `4261981` |
 
 ---
 
@@ -185,12 +185,9 @@ Part 1/2 existing tests retained (`ReconcilePrayerScheduleUseCaseTest`, `HomeDas
 
 ## 21. Lint
 
-Not claimed as pass in this report unless `:app:lintDebug` is run separately after final commits. Run:
-
-```bash
-./gradlew :app:lintDebug --no-parallel
-```
-
+| Check | Result |
+|-------|--------|
+| `./gradlew :app:lintDebug --no-parallel` | **PASS** (HTML report written) |
 ---
 
 ## 22. Device/emulator
