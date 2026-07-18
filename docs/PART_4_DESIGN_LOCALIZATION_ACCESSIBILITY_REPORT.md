@@ -12,7 +12,7 @@
 | Start branch | `refactor/product-surface-ownership-cleanup` |
 | Start commit | `19bf2ff` |
 | Final branch | `refactor/design-localization-accessibility` |
-| Final commit | *(see tip after commits)* |
+| Final commit | `31963ba` |
 
 ---
 
