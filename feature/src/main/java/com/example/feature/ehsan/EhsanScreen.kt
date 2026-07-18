@@ -64,7 +64,7 @@ fun EhsanScreen(
                         pendingActionType = "OFFER"
                         if (currentUser == null) showAuthSheet = true else onAddEhsanClick("OFFER")
                     },
-                    containerColor = Color(0xFF0D4D3D),
+                    containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = Color.White,
                     shape = RoundedCornerShape(16.dp),
                     icon = { Icon(Icons.Default.Add, contentDescription = null) },
@@ -108,7 +108,7 @@ fun EhsanScreen(
                             title = "أرغب بالتبرع",
                             subtitle = "عرض فائض لديك",
                             icon = Icons.Default.VolunteerActivism,
-                            containerColor = Color(0xFF0D4D3D),
+                            containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = Color.White,
                             modifier = Modifier.weight(1f),
                             onClick = {
@@ -121,7 +121,7 @@ fun EhsanScreen(
                             subtitle = "اطلب ما ينقصك",
                             icon = Icons.Default.Handshake,
                             containerColor = Color.White,
-                            contentColor = Color(0xFF0D4D3D),
+                            contentColor = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.weight(1f),
                             onClick = {
                                 pendingActionType = "REQUEST"
@@ -166,7 +166,7 @@ fun EhsanScreen(
                 if (uiState.isLoading) {
                     item {
                         Box(Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator(color = Color(0xFF0D4D3D))
+                            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                         }
                     }
                 } else if (uiState.filteredDonations.isEmpty()) {
@@ -217,7 +217,7 @@ private fun ImpactSection(donorCount: Int, completedCount: Int) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        color = Color(0xFF0D4D3D)
+        color = MaterialTheme.colorScheme.primary
     ) {
         Column(
             modifier = Modifier.padding(24.dp),
@@ -333,7 +333,7 @@ private fun LocationAndCategoryFilters(
                     label = { Text(loc) },
                     shape = RoundedCornerShape(20.dp),
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFF0D4D3D),
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
                         selectedLabelColor = Color.White
                     ),
                     border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
@@ -367,7 +367,7 @@ private fun TypeSelectionTabs(selectedType: String, onTypeSelected: (String) -> 
         indicator = { tabPositions ->
             TabRowDefaults.SecondaryIndicator(
                 Modifier.tabIndicatorOffset(tabPositions[when(selectedType) { "OFFER" -> 1; "REQUEST" -> 2; else -> 0 }]),
-                color = Color(0xFF0D4D3D)
+                color = MaterialTheme.colorScheme.primary
             )
         }
     ) {
@@ -467,7 +467,7 @@ private fun DonationListItem(donation: Donation, onClick: () -> Unit) {
                 Spacer(modifier = Modifier.height(8.dp))
                 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(12.dp), tint = Color(0xFF0D4D3D))
+                    Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(donation.donorName, fontSize = 11.sp, fontWeight = FontWeight.Medium)
                     Spacer(modifier = Modifier.weight(1f))

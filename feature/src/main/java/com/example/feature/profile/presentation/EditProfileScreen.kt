@@ -79,7 +79,7 @@ fun EditProfileScreen(
                     Surface(
                         modifier = Modifier.size(100.dp),
                         shape = CircleShape,
-                        color = Color(0xFF0D4D3D)
+                        color = MaterialTheme.colorScheme.primary
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
@@ -159,7 +159,7 @@ fun EditProfileScreen(
                     onClick = viewModel::saveChanges,
                     modifier = Modifier.fillMaxWidth().height(56.dp),
                     shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0D4D3D)),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     enabled = !uiState.isLoading
                 ) {
                     if (uiState.isLoading) {

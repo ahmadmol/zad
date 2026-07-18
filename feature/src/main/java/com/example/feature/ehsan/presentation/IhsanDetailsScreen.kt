@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
@@ -35,6 +36,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.example.designsystem.component.IhsanErrorState
+import com.example.designsystem.component.IhsanLoadingState
+import com.example.designsystem.theme.IhsanTheme
+import com.example.feature.R
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,13 +61,13 @@ fun IhsanDetailsScreen(
     if (showReportDialog) {
         AlertDialog(
             onDismissRequest = { showReportDialog = false },
-            title = { Text("الإبلاغ عن الحالة") },
+            title = { Text(stringResource(R.string.ehsan_report_title)) },
             text = {
                 Text(
                     if (reportSent) {
-                        "شكرًا لك. تم تسجيل البلاغ وسيتم مراجعته قريبًا."
+                        stringResource(R.string.ehsan_report_thanks)
                     } else {
-                        "هل تريد الإبلاغ عن هذه الحالة كمحتوى غير مناسب أو غير دقيق؟"
+                        stringResource(R.string.ehsan_report_confirm_body)
                     }
                 )
             },
@@ -77,13 +82,16 @@ fun IhsanDetailsScreen(
                         }
                     }
                 ) {
-                    Text(if (reportSent) "إغلاق" else "تأكيد البلاغ")
+                    Text(
+                        if (reportSent) stringResource(R.string.common_close)
+                        else stringResource(R.string.ehsan_report_confirm)
+                    )
                 }
             },
             dismissButton = if (!reportSent) {
                 {
                     TextButton(onClick = { showReportDialog = false }) {
-                        Text("إلغاء")
+                        Text(stringResource(R.string.common_cancel))
                     }
                 }
             } else null
@@ -94,25 +102,44 @@ fun IhsanDetailsScreen(
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text("تفاصيل الإحسان", fontWeight = FontWeight.Bold) },
+                    title = { Text(stringResource(R.string.ehsan_details_title), fontWeight = FontWeight.Bold) },
                     navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                        IconButton(
+                            onClick = onBack,
+                            modifier = Modifier.size(IhsanTheme.dimens.minTouchTarget)
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.cd_back)
+                            )
                         }
                     },
                     actions = {
                         IconButton(
                             onClick = {
                                 val item = uiState.item ?: return@IconButton
-                                val shareText = "${item.title}\n\n${item.description}"
+                                val shareText = context.getString(
+                                    R.string.ehsan_share_template,
+                                    item.title,
+                                    item.description
+                                )
                                 val sendIntent = Intent(Intent.ACTION_SEND).apply {
                                     type = "text/plain"
                                     putExtra(Intent.EXTRA_TEXT, shareText)
                                 }
-                                context.startActivity(Intent.createChooser(sendIntent, "مشاركة الحالة"))
-                            }
+                                context.startActivity(
+                                    Intent.createChooser(
+                                        sendIntent,
+                                        context.getString(R.string.ehsan_share_chooser)
+                                    )
+                                )
+                            },
+                            modifier = Modifier.size(IhsanTheme.dimens.minTouchTarget)
                         ) {
-                            Icon(Icons.Outlined.Share, contentDescription = "مشاركة")
+                            Icon(
+                                Icons.Outlined.Share,
+                                contentDescription = stringResource(R.string.cd_share)
+                            )
                         }
                     }
                 )
@@ -121,7 +148,15 @@ fun IhsanDetailsScreen(
         ) { padding ->
             Box(modifier = Modifier.padding(padding).fillMaxSize()) {
                 if (uiState.isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color(0xFF0D4D3D))
+                    IhsanLoadingState(
+                        modifier = Modifier.align(Alignment.Center),
+                        message = stringResource(R.string.common_loading)
+                    )
+                } else if (uiState.errorMessage != null && uiState.item == null) {
+                    IhsanErrorState(
+                        title = uiState.errorMessage ?: stringResource(R.string.ehsan_unexpected_error),
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 } else if (uiState.item != null) {
                     val item = uiState.item!!
                     Column(
@@ -157,7 +192,7 @@ fun IhsanDetailsScreen(
                                         },
                                         contentDescription = null,
                                         modifier = Modifier.size(80.dp),
-                                        tint = Color(0xFF0D4D3D).copy(alpha = 0.2f)
+                                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                                     )
                                 }
                             }
@@ -166,11 +201,15 @@ fun IhsanDetailsScreen(
                                 modifier = Modifier
                                     .padding(16.dp)
                                     .align(Alignment.TopEnd),
-                                color = if (item.type == "OFFER") Color(0xFF2E7D32) else Color(0xFFE65100),
+                                color = if (item.type == "OFFER") IhsanTheme.colors.charityOffer else IhsanTheme.colors.charityRequest,
                                 shape = RoundedCornerShape(8.dp)
                             ) {
                                 Text(
-                                    text = if (item.type == "OFFER") "تبرع متاح" else "طلب مساعدة",
+                                    text = if (item.type == "OFFER") {
+                                        stringResource(R.string.ehsan_offer_label)
+                                    } else {
+                                        stringResource(R.string.ehsan_request_label)
+                                    },
                                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                                     color = Color.White,
                                     fontSize = 12.sp,
@@ -205,7 +244,7 @@ fun IhsanDetailsScreen(
 
                             Spacer(modifier = Modifier.height(24.dp))
                             
-                            Text("وصف الحالة", fontWeight = FontWeight.Bold, color = Color.Black)
+                            Text(stringResource(R.string.ehsan_description_label), fontWeight = FontWeight.Bold, color = Color.Black)
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = item.description,
@@ -230,12 +269,12 @@ fun IhsanDetailsScreen(
                                     Surface(
                                         modifier = Modifier.size(48.dp),
                                         shape = CircleShape,
-                                        color = Color(0xFF0D4D3D).copy(alpha = 0.1f)
+                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                                     ) {
                                         Box(contentAlignment = Alignment.Center) {
                                             Text(
                                                 text = item.donorName.take(1),
-                                                color = Color(0xFF0D4D3D),
+                                                color = MaterialTheme.colorScheme.primary,
                                                 fontWeight = FontWeight.Bold,
                                                 fontSize = 20.sp
                                             )
@@ -244,7 +283,7 @@ fun IhsanDetailsScreen(
                                     Spacer(modifier = Modifier.width(16.dp))
                                     Column {
                                         Text(text = item.donorName, fontWeight = FontWeight.Bold)
-                                        Text(text = "صاحب الفرصة", fontSize = 12.sp, color = Color.Gray)
+                                        Text(text = stringResource(R.string.ehsan_case_owner), fontSize = 12.sp, color = Color.Gray)
                                     }
                                 }
                             }
@@ -263,13 +302,16 @@ fun IhsanDetailsScreen(
                                         val intent = Intent(Intent.ACTION_DIAL, uri)
                                         context.startActivity(intent)
                                     },
-                                    modifier = Modifier.weight(1f).height(56.dp),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0D4D3D))
+                                    modifier = Modifier.weight(1f).height(IhsanTheme.dimens.controlHeight),
+                                    shape = RoundedCornerShape(IhsanTheme.dimens.radiusMedium),
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                                 ) {
-                                    Icon(Icons.Default.Call, contentDescription = null)
+                                    Icon(
+                                        Icons.Default.Call,
+                                        contentDescription = stringResource(R.string.cd_call_phone)
+                                    )
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    Text("اتصال هاتفي")
+                                    Text(stringResource(R.string.ehsan_call_phone))
                                 }
                                 
                                 Button(
@@ -280,13 +322,16 @@ fun IhsanDetailsScreen(
                                         intent.data = Uri.parse(url)
                                         context.startActivity(intent)
                                     },
-                                    modifier = Modifier.weight(1f).height(56.dp),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366))
+                                    modifier = Modifier.weight(1f).height(IhsanTheme.dimens.controlHeight),
+                                    shape = RoundedCornerShape(IhsanTheme.dimens.radiusMedium),
+                                    colors = ButtonDefaults.buttonColors(containerColor = IhsanTheme.colors.whatsapp)
                                 ) {
-                                    Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = null)
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.Chat,
+                                        contentDescription = stringResource(R.string.cd_open_whatsapp)
+                                    )
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    Text("واتساب")
+                                    Text(stringResource(R.string.common_whatsapp))
                                 }
                             }
                             
@@ -294,13 +339,17 @@ fun IhsanDetailsScreen(
                             
                             OutlinedButton(
                                 onClick = { showReportDialog = true },
-                                modifier = Modifier.fillMaxWidth().height(56.dp),
-                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.fillMaxWidth().height(IhsanTheme.dimens.controlHeight),
+                                shape = RoundedCornerShape(IhsanTheme.dimens.radiusMedium),
                                 border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
                             ) {
-                                Icon(Icons.Default.Flag, contentDescription = null, tint = Color.Gray)
+                                Icon(
+                                    Icons.Default.Flag,
+                                    contentDescription = stringResource(R.string.cd_report_case),
+                                    tint = Color.Gray
+                                )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("الإبلاغ عن الحالة", color = Color.Gray)
+                                Text(stringResource(R.string.ehsan_report_case), color = Color.Gray)
                             }
                         }
                     }

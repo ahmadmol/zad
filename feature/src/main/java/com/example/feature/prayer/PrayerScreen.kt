@@ -18,12 +18,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.feature.R
 import com.example.feature.core.util.HijriDateFormatter
 import com.example.feature.prayer.presentation.PrayerAction
 import com.example.feature.prayer.presentation.PrayerUiState
@@ -117,7 +119,7 @@ fun PrayerScreen(
                             style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFFB00020))
                         )
                         TextButton(onClick = { viewModel.onAction(PrayerAction.OnRefresh) }) {
-                            Text("إعادة المحاولة")
+                            Text(stringResource(R.string.prayer_retry_location))
                         }
                     }
 
@@ -384,7 +386,7 @@ private fun PrayerSystemStatusSection(
                     Text(it, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                 }
                 TextButton(onClick = { onAction(PrayerAction.OnRetrySchedule) }) {
-                    Text("إعادة جدولة التنبيهات")
+                    Text(stringResource(R.string.prayer_reschedule_alarms))
                 }
             }
         }

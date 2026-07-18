@@ -191,7 +191,7 @@ fun ProfileScreen(
                                 onClick = { showAuthSheet = true },
                                 modifier = Modifier.fillMaxWidth().height(56.dp),
                                 shape = RoundedCornerShape(16.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0D4D3D))
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                             ) {
                                 Text("إنشاء / فتح ملف شخصي", fontWeight = FontWeight.Bold)
                             }
@@ -210,7 +210,7 @@ fun ProfileScreen(
                                 Surface(
                                     modifier = Modifier.size(100.dp),
                                     shape = CircleShape,
-                                    color = Color(0xFF0D4D3D)
+                                    color = MaterialTheme.colorScheme.primary
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
                                         Text(
@@ -351,7 +351,7 @@ fun ImpactCard(donationsCount: Int, requestsCount: Int) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(24.dp),
-        color = Color(0xFF0D4D3D)
+        color = MaterialTheme.colorScheme.primary
     ) {
         Row(
             modifier = Modifier
@@ -406,7 +406,7 @@ fun ProfileMenuItem(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = if (textColor != Color.Black) textColor else Color(0xFF0D4D3D),
+                tint = if (textColor != Color.Black) textColor else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(20.dp)
             )
         }
