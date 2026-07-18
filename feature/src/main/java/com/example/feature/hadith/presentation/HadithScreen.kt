@@ -34,6 +34,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import com.example.feature.core.notification.UserMessageNotifier
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,6 +45,7 @@ fun HadithScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
     var selectedHadith by rememberSaveable { mutableStateOf<Long?>(null) }
     val selectedHadithObj by remember(uiState.hadiths, selectedHadith) {
         derivedStateOf { uiState.hadiths.find { it.id == selectedHadith } }
@@ -125,7 +127,10 @@ fun HadithScreen(
     // Details sheet
     selectedHadithObj?.let { hadith ->
         HadithDetailsBottomSheet(hadith = hadith, onDismiss = { selectedHadith = null }, onCopied = {
-            coroutineScope.launch { snackbarHostState.showSnackbar("تم النسخ") }
+            coroutineScope.launch {
+                UserMessageNotifier.notify(context, "تم النسخ")
+                snackbarHostState.showSnackbar("تم النسخ")
+            }
         }, onShared = {
             // no-op
         })

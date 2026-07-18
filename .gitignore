@@ -39,3 +39,6 @@ keystore.properties
 
 # Logs
 *.log
+
+# Local phase backups / working-tree snapshots (do not commit)
+.project-preservation/

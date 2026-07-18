@@ -1,6 +1,5 @@
 package com.example.feature.profile
 
-import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -28,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.feature.components.AuthBottomSheet
+import com.example.feature.core.notification.UserMessageNotifier
 import com.example.feature.profile.presentation.ProfileViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -131,11 +131,10 @@ fun ProfileScreen(
                                 }
                                 runCatching { context.startActivity(intent) }
                                     .onFailure {
-                                        Toast.makeText(
+                                        UserMessageNotifier.notify(
                                             context,
-                                            "تعذر فتح تطبيق البريد",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                            "تعذر فتح تطبيق البريد"
+                                        )
                                     }
                             }
                         ) {

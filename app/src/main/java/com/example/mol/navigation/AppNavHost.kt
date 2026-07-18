@@ -118,6 +118,7 @@ fun AppNavHost(
                 onNavigateToDonations = { navController.navigate(Screen.Donations.route) },
                 onNavigateToQibla = { navController.navigate(Screen.Qibla.route) },
                 onNavigateToSearch = { navController.navigate(Screen.GlobalSearch.route) },
+                onNavigateToReminders = { navController.navigate(Screen.Reminders.route) },
                 onNavigateToPrayer = { navController.navigate(Screen.Prayer.route) },
                 onNavigateToAsma = { navController.navigate(Screen.Asma.route) },
                 onNavigateToDailyActivities = { navController.navigate(Screen.DailyActivities.route) },

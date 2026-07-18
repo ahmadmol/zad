@@ -18,11 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.designsystem.theme.IhsanTheme
+import com.example.feature.core.notification.UserMessageNotifier
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,6 +36,7 @@ fun AddEhsanScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -53,11 +56,17 @@ fun AddEhsanScreen(
     }
 
     LaunchedEffect(uiState.phoneError) {
-        uiState.phoneError?.let { snackbarHostState.showSnackbar(it) }
+        uiState.phoneError?.let {
+            UserMessageNotifier.notify(context, it)
+            snackbarHostState.showSnackbar(it)
+        }
     }
 
     LaunchedEffect(uiState.submissionError) {
-        uiState.submissionError?.let { snackbarHostState.showSnackbar(it) }
+        uiState.submissionError?.let {
+            UserMessageNotifier.notify(context, it)
+            snackbarHostState.showSnackbar(it)
+        }
     }
 
     LaunchedEffect(uiState.submissionSuccess) {

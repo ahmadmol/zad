@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import android.widget.Toast
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -32,6 +31,7 @@ import com.example.designsystem.component.DashboardHeader
 import com.example.designsystem.component.IhsanActionCard
 import com.example.designsystem.component.LastReadCard
 import com.example.feature.azkar.domain.model.Zikr
+import com.example.feature.core.notification.UserMessageNotifier
 import com.example.feature.core.util.HijriDateFormatter
 import com.example.feature.dashboard.presentation.HomeDashboardAction
 import com.example.feature.dashboard.presentation.HomeDashboardViewModel
@@ -63,6 +63,7 @@ fun HomeDashboardScreen(
     onNavigateToDonations: () -> Unit = {},
     onNavigateToQibla: () -> Unit = {},
     onNavigateToSearch: () -> Unit = {},
+    onNavigateToReminders: () -> Unit = {},
     onNavigateToPrayer: () -> Unit = {},
     onNavigateToAsma: () -> Unit = {},
     onNavigateToDailyActivities: () -> Unit = {},
@@ -80,11 +81,16 @@ fun HomeDashboardScreen(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (!isGranted) {
-            Toast.makeText(context, "يجب منح إذن الإشعارات لتفعيل التنبيهات", Toast.LENGTH_LONG).show()
+            UserMessageNotifier.notify(
+                context,
+                "يجب منح إذن الإشعارات لتفعيل التنبيهات",
+                title = "التنبيهات"
+            )
         }
     }
 
     LaunchedEffect(Unit) {
+        UserMessageNotifier.ensureChannel(context)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
@@ -120,7 +126,10 @@ fun HomeDashboardScreen(
                 "tasbih" -> onNavigateToTasbih()
                 "haram" -> onNavigateToHaramLive()
                 "nabawi" -> onNavigateToNabawiLive()
-                else -> Toast.makeText(context, "قريبًا، سيتم تفعيل هذه الميزة لاحقًا", Toast.LENGTH_SHORT).show()
+                else -> UserMessageNotifier.notify(
+                    context,
+                    "قريبًا، سيتم تفعيل هذه الميزة لاحقًا"
+                )
             }
         }
     }
@@ -145,7 +154,7 @@ fun HomeDashboardScreen(
             nextPrayerInfo = "${uiState.data.nextPrayerName} خلال ${uiState.data.nextPrayerTimeLeft}",
             prayerTimes = prayerTimesDisplay,
             activePrayerIndex = activePrayerIndex,
-            onNotificationClick = onNavigateToSearch,
+            onNotificationClick = onNavigateToReminders,
             onPrayerClick = { index -> viewModel.onAction(HomeDashboardAction.OnPrayerClick(index)) }
         )
 

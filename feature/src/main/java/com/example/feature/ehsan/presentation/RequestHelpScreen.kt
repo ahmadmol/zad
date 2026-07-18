@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -32,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.designsystem.theme.PrimaryTeal
+import com.example.feature.core.notification.UserMessageNotifier
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,6 +44,7 @@ fun RequestHelpScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     var title by remember { mutableStateOf("") }
     var details by remember { mutableStateOf("") }
@@ -67,6 +70,7 @@ fun RequestHelpScreen(
 
     LaunchedEffect(uiState.phoneError) {
         uiState.phoneError?.let {
+            UserMessageNotifier.notify(context, it)
             snackbarHostState.showSnackbar(
                 message = it,
                 duration = SnackbarDuration.Long
@@ -76,6 +80,7 @@ fun RequestHelpScreen(
 
     LaunchedEffect(uiState.submissionError) {
         uiState.submissionError?.let {
+            UserMessageNotifier.notify(context, it)
             snackbarHostState.showSnackbar(it)
         }
     }

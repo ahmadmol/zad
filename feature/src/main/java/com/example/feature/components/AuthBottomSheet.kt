@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.designsystem.component.IhsanButton
 import com.example.designsystem.theme.PrimaryTeal
+import com.example.feature.core.notification.UserMessageNotifier
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,6 +36,7 @@ fun AuthBottomSheet(
 ) {
     var isLogin by remember { mutableStateOf(true) }
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.signUpEvent.collect { success ->
@@ -48,7 +51,9 @@ fun AuthBottomSheet(
             if (success) {
                 onAuthSuccess()
             } else {
-                snackbarHostState.showSnackbar("لا يوجد ملف شخصي بهذا الرقم على الجهاز")
+                val message = "لا يوجد ملف شخصي بهذا الرقم على الجهاز"
+                UserMessageNotifier.notify(context, message)
+                snackbarHostState.showSnackbar(message)
             }
         }
     }

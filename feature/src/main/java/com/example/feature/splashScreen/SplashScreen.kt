@@ -2,26 +2,26 @@ package com.example.feature.splashScreen
 
 import android.Manifest
 import android.content.pm.PackageManager
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Mosque
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.painterResource
 import androidx.core.content.ContextCompat
+import com.example.feature.R
 import com.example.feature.core.preferences.UserPreferences
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import org.koin.compose.koinInject
+
+/** Brand splash green from the إحسان logo artwork. */
+private val SplashBackground = Color(0xFF0B3026)
 
 @Composable
 fun SplashScreen(
@@ -55,14 +55,13 @@ fun SplashScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary),
-        contentAlignment = Alignment.Center
+            .background(SplashBackground)
     ) {
-        Icon(
-            imageVector = Icons.Default.Mosque,
-            contentDescription = "Ihsan Logo",
-            modifier = Modifier.size(120.dp),
-            tint = Color.White
+        Image(
+            painter = painterResource(id = R.drawable.splash_ihsan_logo),
+            contentDescription = "إحسان",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
         )
     }
 }
