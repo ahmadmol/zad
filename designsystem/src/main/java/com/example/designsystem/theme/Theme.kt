@@ -59,6 +59,16 @@ object IhsanTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalSpacing.current
+
+    val colors: IhsanSemanticColors
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalIhsanColors.current
+
+    val dimens: IhsanDimens
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalIhsanDimens.current
 }
 
 @Composable
@@ -75,9 +85,12 @@ fun IhsanTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+    val semanticColors = if (darkTheme) DarkIhsanSemanticColors else LightIhsanSemanticColors
 
     CompositionLocalProvider(
-        LocalSpacing provides Spacing()
+        LocalSpacing provides Spacing(),
+        LocalIhsanColors provides semanticColors,
+        LocalIhsanDimens provides IhsanDimens()
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
