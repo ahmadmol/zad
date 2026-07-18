@@ -9,7 +9,7 @@
 | Starting branch | `chore/integration-release-readiness` |
 | Starting commit | `e977d7a` |
 | Final branch | `release/final-controlled-integration` |
-| Final commit | *(set after commits)* |
+| Final commit | `4258f04` |
 
 ## 3. Baseline
 
@@ -139,4 +139,21 @@ Created under `docs/store/`:
 
 ```text
 Complete — Technically Ready, Store Blocked
+```
+
+## Git snapshot
+
+```text
+## release/final-controlled-integration
+?? .project-preservation/
+
+4258f04 docs(release): add final project completion report
+0d2d390 ci(android): complete final project quality gates
+fb77e8b docs(store): add privacy and data safety disclosures
+703ca9a chore(release): configure external release signing
+d22aba2 docs(charity): finalize safe charity integration boundary
+78084e3 feat(integration): add controlled prayer assist experience
+37f445f feat(integration): add controlled daily read-only experience
+6cee0f5 test(runtime): verify parts one through five on device
+e977d7a docs(readiness): record Part 5 tip commit hash
 ```
