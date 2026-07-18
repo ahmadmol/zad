@@ -2,7 +2,7 @@ name: Android Quality Gates
 
 on:
   push:
-    branches: [ main, master, 'chore/**', 'refactor/**' ]
+    branches: [ main, master, 'chore/**', 'refactor/**', 'release/**' ]
   pull_request:
 
 jobs:
@@ -24,6 +24,9 @@ jobs:
       - name: Assemble debug
         run: ./gradlew :app:assembleDebug --stacktrace
 
+      - name: Assemble release (unsigned/debug-signed fallback; no secrets required)
+        run: ./gradlew :app:assembleRelease --stacktrace
+
       - name: Unit tests
         run: |
           ./gradlew :designsystem:testDebugUnitTest \
@@ -43,7 +46,7 @@ jobs:
             **/build/reports/tests/
             **/build/reports/lint-results*.html
             **/build/reports/lint-results*.xml
+            **/build/outputs/mapping/
           if-no-files-found: ignore
 
-  # Instrumented / connected tests are intentionally omitted from PR CI
-  # (device/emulator cost). Run manually or via a scheduled workflow when available.
+  # Instrumented tests remain manual/scheduled (device cost; no secrets).
