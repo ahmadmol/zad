@@ -1,37 +1,57 @@
 package com.example.feature.profile
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Chat
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.components.AuthBottomSheet
 import com.example.feature.core.notification.UserMessageNotifier
 import com.example.feature.profile.presentation.ProfileViewModel
+import com.example.feature.profile.presentation.components.ProfileHeader
+import com.example.feature.profile.presentation.components.ProfileImpactCard
+import com.example.feature.profile.presentation.components.ProfileSettingsCard
+import com.example.feature.profile.presentation.components.ProfileSupportCard
+import com.example.feature.profile.presentation.components.ProfileTopBar
+import com.example.feature.profile.presentation.components.ProfileVersionText
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     onBackClick: () -> Unit = {},
@@ -48,29 +68,94 @@ fun ProfileScreen(
     var showHelpDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
+    val appVersion = remember(context) {
+        runCatching {
+            val info = context.packageManager.getPackageInfo(context.packageName, 0)
+            info.versionName
+        }.getOrNull().orEmpty().ifBlank { "—" }
+    }
+
+    val donationsCount = remember(uiState.myDonations) {
+        uiState.myDonations.count { it.type == "OFFER" }
+    }
+    val requestsCount = remember(uiState.myDonations) {
+        uiState.myDonations.count { it.type == "REQUEST" }
+    }
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-        Scaffold(
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            "الملف الشخصي",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = onBackClick) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                        }
-                    },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = Color.Transparent
-                    )
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = IhsanTheme.colors.surfaceMuted
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                ProfileTopBar(
+                    title = "الملف الشخصي",
+                    onBackClick = onBackClick
                 )
-            },
-            containerColor = Color(0xFFF9F9F9)
-        ) { padding ->
+
+                when {
+                    uiState.isLoading && !uiState.isUserLoggedIn -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .navigationBarsPadding(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                        }
+                    }
+
+                    !uiState.isUserLoggedIn -> {
+                        MissingLocalProfileContent(
+                            onCreateProfile = { showAuthSheet = true },
+                            appVersion = appVersion
+                        )
+                    }
+
+                    else -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState())
+                                .navigationBarsPadding()
+                                .padding(horizontal = 20.dp)
+                                .padding(bottom = 24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            ProfileHeader(
+                                userName = uiState.userName,
+                                userPhone = uiState.userPhone,
+                                onEditClick = onEditProfileClick
+                            )
+                            Spacer(modifier = Modifier.height(20.dp))
+                            ProfileImpactCard(
+                                donationsCount = donationsCount,
+                                requestsCount = requestsCount,
+                                levelLabel = "نشاطك المحلي"
+                            )
+                            Spacer(modifier = Modifier.height(20.dp))
+                            ProfileSettingsCard(
+                                onDonationHistory = onNavigateToDonationHistory,
+                                onReminders = onNavigateToReminders,
+                                onSettings = onNavigateToSettings,
+                                onLanguage = { showLanguageDialog = true },
+                                onPrivacy = { showPrivacyDialog = true },
+                                languageSubtitle = "العربية"
+                            )
+                            Spacer(modifier = Modifier.height(14.dp))
+                            ProfileSupportCard(
+                                onHelp = { showHelpDialog = true },
+                                onLogout = { viewModel.logout() }
+                            )
+                            Spacer(modifier = Modifier.height(24.dp))
+                            ProfileVersionText(versionLabel = appVersion)
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                    }
+                }
+            }
+
             if (showAuthSheet) {
                 AuthBottomSheet(
                     onDismiss = { showAuthSheet = false },
@@ -148,293 +233,181 @@ fun ProfileScreen(
                     }
                 )
             }
+        }
+    }
+}
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally
+@Composable
+private fun MissingLocalProfileContent(
+    onCreateProfile: () -> Unit,
+    appVersion: String
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .navigationBarsPadding()
+            .padding(horizontal = 24.dp, vertical = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.weight(1f, fill = true))
+        Surface(
+            modifier = Modifier.size(120.dp),
+            shape = CircleShape,
+            color = IhsanTheme.colors.quickActionSurface
+        ) {
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = null,
+                    modifier = Modifier.size(56.dp),
+                    tint = IhsanTheme.colors.textSecondaryMuted
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            text = "أنشئ ملفاً شخصياً على الجهاز لإدارة تبرعاتك ومتابعة طلباتك. البيانات محلية وليست حساباً عبر الإنترنت",
+            textAlign = TextAlign.Center,
+            color = IhsanTheme.colors.textSecondaryMuted,
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Spacer(modifier = Modifier.height(28.dp))
+        Button(
+            onClick = onCreateProfile,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        ) {
+            Text("إنشاء / فتح ملف شخصي", fontWeight = FontWeight.Bold)
+        }
+        Spacer(modifier = Modifier.weight(1f, fill = true))
+        ProfileVersionText(versionLabel = appVersion)
+    }
+}
+
+@Composable
+private fun ProfileContentPreviewBody(
+    userName: String,
+    userPhone: String,
+    donations: Int,
+    requests: Int
+) {
+    IhsanTheme {
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = IhsanTheme.colors.surfaceMuted
             ) {
-                if (!uiState.isUserLoggedIn) {
-                    Box(
+                Column(modifier = Modifier.fillMaxSize()) {
+                    ProfileTopBar(title = "الملف الشخصي", onBackClick = {})
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                        contentAlignment = Alignment.Center
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(32.dp)
-                        ) {
-                            Surface(
-                                modifier = Modifier.size(120.dp),
-                                shape = CircleShape,
-                                color = Color(0xFFF5F5F5)
-                            ) {
-                                Icon(
-                                    Icons.Default.Person,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(64.dp).padding(24.dp),
-                                    tint = Color.LightGray
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(24.dp))
-                            Text(
-                                "أنشئ ملفاً شخصياً على الجهاز لإدارة تبرعاتك ومتابعة طلباتك. البيانات محلية وليست حساباً عبر الإنترنت",
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                                color = Color.Gray
-                            )
-                            Spacer(modifier = Modifier.height(32.dp))
-                            Button(
-                                onClick = { showAuthSheet = true },
-                                modifier = Modifier.fillMaxWidth().height(56.dp),
-                                shape = RoundedCornerShape(16.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                            ) {
-                                Text("إنشاء / فتح ملف شخصي", fontWeight = FontWeight.Bold)
-                            }
-                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        ProfileHeader(
+                            userName = userName,
+                            userPhone = userPhone,
+                            onEditClick = {}
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
+                        ProfileImpactCard(
+                            donationsCount = donations,
+                            requestsCount = requests,
+                            levelLabel = "نشاطك المحلي"
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
+                        ProfileSettingsCard(
+                            onDonationHistory = {},
+                            onReminders = {},
+                            onSettings = {},
+                            onLanguage = {},
+                            onPrivacy = {},
+                            languageSubtitle = "العربية"
+                        )
+                        Spacer(modifier = Modifier.height(14.dp))
+                        ProfileSupportCard(onHelp = {}, onLogout = {})
+                        Spacer(modifier = Modifier.height(24.dp))
+                        ProfileVersionText(versionLabel = "1.0.0")
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
-                } else {
-                    // Profile Header
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Box(contentAlignment = Alignment.BottomEnd) {
-                                Surface(
-                                    modifier = Modifier.size(100.dp),
-                                    shape = CircleShape,
-                                    color = MaterialTheme.colorScheme.primary
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Text(
-                                            text = uiState.userName.take(1),
-                                            color = Color.White,
-                                            fontSize = 40.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                }
-                                Surface(
-                                    modifier = Modifier
-                                        .size(32.dp)
-                                        .border(2.dp, Color.White, CircleShape)
-                                        .clickable { onEditProfileClick() },
-                                    shape = CircleShape,
-                                    color = Color(0xFF6B9080)
-                                ) {
-                                    Icon(
-                                        Icons.Default.Edit,
-                                        contentDescription = null,
-                                        tint = Color.White,
-                                        modifier = Modifier.padding(6.dp)
-                                    )
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = uiState.userName,
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = uiState.userPhone,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.Gray
-                            )
-                        }
-                    }
-
-                    // Impact Card
-                    ImpactCard(
-                        donationsCount = uiState.myDonations.count { it.type == "OFFER" },
-                        requestsCount = uiState.myDonations.count { it.type == "REQUEST" }
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Menu Section
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        color = Color.White,
-                        shadowElevation = 1.dp
-                    ) {
-                        Column {
-                            ProfileMenuItem(
-                                icon = Icons.Default.History,
-                                title = "سجل التبرعات",
-                                onClick = onNavigateToDonationHistory
-                            )
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color(0xFFF5F5F5))
-                            ProfileMenuItem(
-                                icon = Icons.Default.Notifications,
-                                title = "إعدادات التنبيهات",
-                                onClick = onNavigateToReminders
-                            )
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color(0xFFF5F5F5))
-                            ProfileMenuItem(
-                                icon = Icons.Default.Settings,
-                                title = "إعدادات التطبيق",
-                                onClick = onNavigateToSettings
-                            )
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color(0xFFF5F5F5))
-                            ProfileMenuItem(
-                                icon = Icons.Default.Language,
-                                title = "اللغة",
-                                subtitle = "العربية",
-                                onClick = { showLanguageDialog = true }
-                            )
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color(0xFFF5F5F5))
-                            ProfileMenuItem(
-                                icon = Icons.Default.Shield,
-                                title = "الخصوصية والأمان",
-                                onClick = { showPrivacyDialog = true }
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Support Section
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        color = Color.White,
-                        shadowElevation = 1.dp
-                    ) {
-                        Column {
-                            ProfileMenuItem(
-                                icon = Icons.AutoMirrored.Filled.Chat,
-                                title = "مركز المساعدة",
-                                onClick = { showHelpDialog = true }
-                            )
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = Color(0xFFF5F5F5))
-                            ProfileMenuItem(
-                                icon = Icons.AutoMirrored.Filled.Logout,
-                                title = "تسجيل الخروج",
-                                textColor = Color(0xFFE57373),
-                                showChevron = false,
-                                onClick = { viewModel.logout() }
-                            )
-                        }
-                    }
-                    
-                    Spacer(modifier = Modifier.height(32.dp))
-                    Text(
-                        "إصدار التطبيق 1.0.0",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.LightGray
-                    )
-                    Spacer(modifier = Modifier.height(32.dp))
                 }
             }
         }
     }
 }
 
+@Preview(name = "Profile Light 360", locale = "ar", widthDp = 360, heightDp = 840, showBackground = true)
 @Composable
-fun ImpactCard(donationsCount: Int, requestsCount: Int) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(24.dp),
-        color = MaterialTheme.colorScheme.primary
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(24.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text("مستوى التأثير", color = Color.White.copy(alpha = 0.7f), fontSize = 12.sp)
-                Text("محسن متميز", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-            }
-            
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                StatItem(label = "تبرع", value = donationsCount.toString())
-                StatItem(label = "طلب", value = requestsCount.toString())
-            }
-        }
-    }
+private fun ProfilePreviewLight360() {
+    ProfileContentPreviewBody(
+        userName = "عن نت",
+        userPhone = "0967225762",
+        donations = 0,
+        requests = 0
+    )
 }
 
+@Preview(name = "Profile Light 430", locale = "ar", widthDp = 430, heightDp = 900, showBackground = true)
 @Composable
-fun StatItem(label: String, value: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(value, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-        Text(label, color = Color.White.copy(alpha = 0.7f), fontSize = 11.sp)
-    }
+private fun ProfilePreviewLight430() {
+    ProfileContentPreviewBody(
+        userName = "مستخدم إحسان",
+        userPhone = "0999999999",
+        donations = 3,
+        requests = 1
+    )
 }
 
+@Preview(
+    name = "Profile Dark",
+    locale = "ar",
+    widthDp = 360,
+    heightDp = 840,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
+    showBackground = true
+)
 @Composable
-fun ProfileMenuItem(
-    icon: ImageVector,
-    title: String,
-    subtitle: String? = null,
-    onClick: () -> Unit,
-    textColor: Color = Color.Black,
-    showChevron: Boolean = true
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .background(Color(0xFFF9F9F9), CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = if (textColor != Color.Black) textColor else MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(20.dp)
-            )
-        }
-        
-        Spacer(modifier = Modifier.width(16.dp))
-        
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                color = textColor,
-                fontWeight = FontWeight.Medium
-            )
-            if (subtitle != null) {
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.Gray
-                )
+private fun ProfilePreviewDark() {
+    ProfileContentPreviewBody(
+        userName = "أحمد",
+        userPhone = "0912345678",
+        donations = 2,
+        requests = 2
+    )
+}
+
+@Preview(name = "Profile FontScale", locale = "ar", widthDp = 360, heightDp = 900, fontScale = 1.3f)
+@Composable
+private fun ProfilePreviewFontScale() {
+    ProfileContentPreviewBody(
+        userName = "مستخدم",
+        userPhone = "0900000000",
+        donations = 1,
+        requests = 0
+    )
+}
+
+@Preview(name = "Profile Missing", locale = "ar", widthDp = 360, heightDp = 720, showBackground = true)
+@Composable
+private fun ProfilePreviewMissing() {
+    IhsanTheme {
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = IhsanTheme.colors.surfaceMuted
+            ) {
+                Column {
+                    ProfileTopBar(title = "الملف الشخصي", onBackClick = {})
+                    MissingLocalProfileContent(onCreateProfile = {}, appVersion = "1.0.0")
+                }
             }
-        }
-        
-        if (showChevron) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                contentDescription = null,
-                tint = Color.LightGray,
-                modifier = Modifier.size(20.dp)
-            )
         }
     }
 }
