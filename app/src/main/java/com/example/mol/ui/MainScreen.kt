@@ -42,7 +42,10 @@ fun MainScreen() {
         NavigationItem(Screen.Profile, "حسابي", Icons.Outlined.Person, Icons.Filled.Person)
     )
 
-    val showBottomBar = mainItems.any { it.screen.route == currentDestination?.route }
+    // Presentation-only: hide bottom bar on Profile to match reference UI.
+    // Tab destinations and navigation logic remain unchanged.
+    val showBottomBar = currentDestination?.route == Screen.Home.route ||
+        currentDestination?.route == Screen.Donations.route
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
