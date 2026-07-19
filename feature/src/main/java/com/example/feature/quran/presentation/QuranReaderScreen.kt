@@ -70,6 +70,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.quran.domain.model.Reader
 import com.example.feature.quran.domain.model.Verse
 import kotlinx.coroutines.flow.debounce
@@ -367,7 +368,7 @@ fun AudioBar(
                             Icon(
                                 imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                                 contentDescription = "Play/Pause",
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.size(32.dp)
                             )
                         }
@@ -496,6 +497,8 @@ fun VerseItem(
     onTafsirClick: () -> Unit,
     onPlayClick: () -> Unit = {}
 ) {
+    val colors = IhsanTheme.colors
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -536,7 +539,7 @@ fun VerseItem(
                         Icon(
                             Icons.Default.Pause,
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(16.dp)
                         )
                     } else {
@@ -561,7 +564,7 @@ fun VerseItem(
                     Icon(
                         imageVector = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
                         contentDescription = "Bookmark",
-                        tint = if (isBookmarked) Color.Red else Color.Gray,
+                        tint = if (isBookmarked) colors.favorite else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(22.dp)
                     )
                 }
@@ -577,7 +580,7 @@ fun VerseItem(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.MenuBook,
                         contentDescription = "Tafsir",
-                        tint = Color.Gray,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(22.dp)
                     )
                 }
