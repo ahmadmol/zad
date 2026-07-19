@@ -75,6 +75,8 @@ fun AddEhsanScreen(
         }
     }
 
+    val colors = IhsanTheme.colors
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -107,7 +109,7 @@ fun AddEhsanScreen(
                     .fillMaxWidth()
                     .height(200.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFFF1F3F4))
+                    .background(colors.surfaceMuted)
                     .clickable { launcher.launch("image/*") },
                 contentAlignment = Alignment.Center
             ) {
@@ -120,9 +122,9 @@ fun AddEhsanScreen(
                     )
                 } else {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(Icons.Default.AddAPhoto, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(48.dp))
+                        Icon(Icons.Default.AddAPhoto, contentDescription = null, tint = colors.textSecondary, modifier = Modifier.size(48.dp))
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("إضافة صورة للغرض", color = Color.Gray)
+                        Text("إضافة صورة للغرض", color = colors.textSecondary)
                     }
                 }
             }
@@ -194,7 +196,7 @@ fun AddEhsanScreen(
                     enabled = false,
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        disabledTextColor = if (location.isBlank()) Color.Gray else MaterialTheme.colorScheme.onSurface,
+                        disabledTextColor = if (location.isBlank()) colors.textSecondary else MaterialTheme.colorScheme.onSurface,
                         disabledBorderColor = MaterialTheme.colorScheme.outline,
                         disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -257,9 +259,9 @@ fun AddEhsanScreen(
                 enabled = !uiState.isSubmitting && title.isNotBlank() && description.isNotBlank() && location.isNotBlank()
             ) {
                 if (uiState.isSubmitting) {
-                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
                 } else {
-                    Text("تأكيد الإضافة", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text("تأكيد الإضافة", fontWeight = FontWeight.Bold)
                 }
             }
         }

@@ -98,6 +98,8 @@ fun IhsanDetailsScreen(
         )
     }
 
+    val colors = IhsanTheme.colors
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
             topBar = {
@@ -144,7 +146,7 @@ fun IhsanDetailsScreen(
                     }
                 )
             },
-            containerColor = Color(0xFFF9F9F9)
+            containerColor = colors.surfaceMuted
         ) { padding ->
             Box(modifier = Modifier.padding(padding).fillMaxSize()) {
                 if (uiState.isLoading) {
@@ -169,7 +171,7 @@ fun IhsanDetailsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(280.dp)
-                                .background(Color.White)
+                                .background(colors.surfaceElevated)
                         ) {
                             if (item.imageUrl != null) {
                                 AsyncImage(
@@ -180,7 +182,7 @@ fun IhsanDetailsScreen(
                                 )
                             } else {
                                 Box(
-                                    modifier = Modifier.fillMaxSize().background(Color(0xFFE8F5E9)),
+                                    modifier = Modifier.fillMaxSize().background(colors.charityOfferContainer),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
@@ -211,7 +213,7 @@ fun IhsanDetailsScreen(
                                         stringResource(R.string.ehsan_request_label)
                                     },
                                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                    color = Color.White,
+                                    color = if (item.type == "OFFER") colors.onSuccess else colors.onWarning,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -227,29 +229,33 @@ fun IhsanDetailsScreen(
                                 text = item.title,
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Black
+                                color = colors.textPrimary
                             )
                             
                             Spacer(modifier = Modifier.height(12.dp))
                             
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.LocationOn, contentDescription = null, size16(), tint = Color.Gray)
+                                Icon(Icons.Default.LocationOn, contentDescription = null, size16(), tint = colors.textSecondary)
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = item.location, color = Color.Gray, fontSize = 14.sp)
+                                Text(text = item.location, color = colors.textSecondary, fontSize = 14.sp)
                                 Spacer(modifier = Modifier.width(16.dp))
-                                Icon(Icons.Default.Schedule, contentDescription = null, size16(), tint = Color.Gray)
+                                Icon(Icons.Default.Schedule, contentDescription = null, size16(), tint = colors.textSecondary)
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = "منذ يومين", color = Color.Gray, fontSize = 14.sp)
+                                Text(text = "منذ يومين", color = colors.textSecondary, fontSize = 14.sp)
                             }
 
                             Spacer(modifier = Modifier.height(24.dp))
                             
-                            Text(stringResource(R.string.ehsan_description_label), fontWeight = FontWeight.Bold, color = Color.Black)
+                            Text(
+                                stringResource(R.string.ehsan_description_label),
+                                fontWeight = FontWeight.Bold,
+                                color = colors.textPrimary
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = item.description,
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = Color.DarkGray,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 lineHeight = 28.sp
                             )
 
@@ -258,9 +264,9 @@ fun IhsanDetailsScreen(
                             // Contact Info Card
                             Surface(
                                 modifier = Modifier.fillMaxWidth(),
-                                color = Color.White,
+                                color = colors.surfaceElevated,
                                 shape = RoundedCornerShape(16.dp),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF1F3F4))
+                                border = androidx.compose.foundation.BorderStroke(1.dp, colors.borderSubtle)
                             ) {
                                 Row(
                                     modifier = Modifier.padding(16.dp),
@@ -283,7 +289,7 @@ fun IhsanDetailsScreen(
                                     Spacer(modifier = Modifier.width(16.dp))
                                     Column {
                                         Text(text = item.donorName, fontWeight = FontWeight.Bold)
-                                        Text(text = stringResource(R.string.ehsan_case_owner), fontSize = 12.sp, color = Color.Gray)
+                                        Text(text = stringResource(R.string.ehsan_case_owner), fontSize = 12.sp, color = colors.textSecondary)
                                     }
                                 }
                             }
@@ -341,15 +347,15 @@ fun IhsanDetailsScreen(
                                 onClick = { showReportDialog = true },
                                 modifier = Modifier.fillMaxWidth().height(IhsanTheme.dimens.controlHeight),
                                 shape = RoundedCornerShape(IhsanTheme.dimens.radiusMedium),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
+                                border = androidx.compose.foundation.BorderStroke(1.dp, colors.borderSubtle)
                             ) {
                                 Icon(
                                     Icons.Default.Flag,
                                     contentDescription = stringResource(R.string.cd_report_case),
-                                    tint = Color.Gray
+                                    tint = colors.textSecondary
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(stringResource(R.string.ehsan_report_case), color = Color.Gray)
+                                Text(stringResource(R.string.ehsan_report_case), color = colors.textSecondary)
                             }
                         }
                     }

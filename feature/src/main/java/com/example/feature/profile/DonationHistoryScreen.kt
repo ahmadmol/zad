@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.component.IhsanActionCard
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.profile.presentation.ProfileViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -30,6 +31,8 @@ fun DonationHistoryScreen(
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val colors = IhsanTheme.colors
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
@@ -43,11 +46,11 @@ fun DonationHistoryScreen(
                     }
                 )
             },
-            containerColor = Color(0xFFF9F9F9)
+            containerColor = colors.surfaceMuted
         ) { padding ->
             if (uiState.myDonations.isEmpty()) {
                 Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                    Text("لا يوجد سجل تبرعات حالياً", color = Color.Gray)
+                    Text("لا يوجد سجل تبرعات حالياً", color = colors.textSecondary)
                 }
             } else {
                 LazyColumn(

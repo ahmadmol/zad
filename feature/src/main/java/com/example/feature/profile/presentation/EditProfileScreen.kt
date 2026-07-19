@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.core.notification.UserMessageNotifier
 import org.koin.androidx.compose.koinViewModel
 
@@ -52,6 +53,8 @@ fun EditProfileScreen(
         }
     }
 
+    val colors = IhsanTheme.colors
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
             topBar = {
@@ -64,7 +67,7 @@ fun EditProfileScreen(
                     }
                 )
             },
-            containerColor = Color(0xFFF9F9F9)
+            containerColor = colors.surfaceMuted
         ) { padding ->
             Column(
                 modifier = Modifier
@@ -84,7 +87,7 @@ fun EditProfileScreen(
                         Box(contentAlignment = Alignment.Center) {
                             Text(
                                 text = uiState.name.take(1).ifBlank { "م" },
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 fontSize = 40.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -96,7 +99,7 @@ fun EditProfileScreen(
                             .clip(CircleShape),
                         color = Color(0xFF6B9080)
                     ) {
-                        Icon(Icons.Default.CameraAlt, contentDescription = null, tint = Color.White, modifier = Modifier.padding(6.dp))
+                        Icon(Icons.Default.CameraAlt, contentDescription = null, tint = colors.onBrand, modifier = Modifier.padding(6.dp))
                     }
                 }
 
@@ -111,8 +114,12 @@ fun EditProfileScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
                         colors = TextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.White,
-                            focusedContainerColor = Color.White
+                            unfocusedContainerColor = colors.fieldContainer,
+                            focusedContainerColor = colors.fieldContainer,
+                            unfocusedIndicatorColor = colors.fieldBorder,
+                            focusedIndicatorColor = colors.fieldFocusedBorder,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                         )
                     )
 
@@ -124,7 +131,7 @@ fun EditProfileScreen(
                         shape = RoundedCornerShape(16.dp),
                         enabled = false,
                         colors = TextFieldDefaults.colors(
-                            disabledContainerColor = Color(0xFFF5F5F5)
+                            disabledContainerColor = colors.surfaceMuted
                         )
                     )
 
@@ -135,8 +142,12 @@ fun EditProfileScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
                         colors = TextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.White,
-                            focusedContainerColor = Color.White
+                            unfocusedContainerColor = colors.fieldContainer,
+                            focusedContainerColor = colors.fieldContainer,
+                            unfocusedIndicatorColor = colors.fieldBorder,
+                            focusedIndicatorColor = colors.fieldFocusedBorder,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                         )
                     )
 
@@ -147,8 +158,12 @@ fun EditProfileScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
                         colors = TextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.White,
-                            focusedContainerColor = Color.White
+                            unfocusedContainerColor = colors.fieldContainer,
+                            focusedContainerColor = colors.fieldContainer,
+                            unfocusedIndicatorColor = colors.fieldBorder,
+                            focusedIndicatorColor = colors.fieldFocusedBorder,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                         )
                     )
                 }
@@ -163,7 +178,7 @@ fun EditProfileScreen(
                     enabled = !uiState.isLoading
                 ) {
                     if (uiState.isLoading) {
-                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
                     } else {
                         Text("حفظ التغييرات", fontWeight = FontWeight.Bold)
                     }
@@ -172,7 +187,7 @@ fun EditProfileScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 TextButton(onClick = onBack) {
-                    Text("إلغاء", color = Color.Gray)
+                    Text("إلغاء", color = colors.textSecondary)
                 }
             }
         }

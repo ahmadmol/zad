@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.designsystem.component.IhsanButton
-import com.example.designsystem.theme.PrimaryTeal
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.core.notification.UserMessageNotifier
 import org.koin.androidx.compose.koinViewModel
 
@@ -58,6 +58,8 @@ fun AuthBottomSheet(
         }
     }
 
+    val sheetColors = IhsanTheme.colors
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         modifier = modifier,
@@ -66,15 +68,15 @@ fun AuthBottomSheet(
             BottomSheetDefaults.DragHandle(
                 width = 40.dp,
                 height = 4.dp,
-                color = Color.LightGray.copy(alpha = 0.5f)
+                color = sheetColors.borderSubtle
             )
         },
-        containerColor = Color.White
+        containerColor = sheetColors.surfaceElevated
     ) {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             Scaffold(
                 snackbarHost = { SnackbarHost(snackbarHostState) },
-                containerColor = Color.White,
+                containerColor = sheetColors.surfaceElevated,
                 modifier = Modifier.heightIn(max = 600.dp)
             ) { padding ->
                 Column(
@@ -111,17 +113,19 @@ fun LoginContent(
 ) {
     var phone by remember { mutableStateOf("") }
 
+    val colors = IhsanTheme.colors
+
     Text(
         text = "الوصول إلى ملفك الشخصي",
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Bold,
-        color = PrimaryTeal,
+        color = colors.brand,
         modifier = Modifier.padding(top = 8.dp)
     )
     Text(
         text = "البيانات تُحفظ على جهازك فقط — لا يوجد تسجيل دخول عبر الإنترنت حالياً",
         style = MaterialTheme.typography.bodyMedium,
-        color = Color.Gray,
+        color = colors.textSecondary,
         textAlign = TextAlign.Center,
         modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)
     )
@@ -130,7 +134,7 @@ fun LoginContent(
         value = phone,
         onValueChange = { phone = it },
         placeholder = "رقم الهاتف",
-        leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = Color.Gray) },
+        leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = colors.textSecondary) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
     )
 
@@ -139,7 +143,7 @@ fun LoginContent(
     IhsanButton(
         onClick = { onLoginClick(phone) },
         modifier = Modifier.fillMaxWidth(),
-        containerColor = PrimaryTeal,
+        containerColor = colors.brand,
         enabled = phone.isNotBlank()
     ) {
         Text("فتح الملف الشخصي", fontWeight = FontWeight.Bold, fontSize = 18.sp)
@@ -153,10 +157,10 @@ fun LoginContent(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Text("ليس لديك ملف؟ ", color = Color.Gray)
+        Text("ليس لديك ملف؟ ", color = colors.textSecondary)
         Text(
             "إنشاء ملف شخصي",
-            color = PrimaryTeal,
+            color = colors.brand,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.clickable { onSignUpClick() }
         )
@@ -172,17 +176,19 @@ fun SignUpContent(
     var lastName by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
 
+    val colors = IhsanTheme.colors
+
     Text(
         text = "إنشاء ملف شخصي محلي",
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Bold,
-        color = PrimaryTeal,
+        color = colors.brand,
         modifier = Modifier.padding(top = 8.dp)
     )
     Text(
         text = "احفظ اسمك ورقم هاتفك على الجهاز لمتابعة التبرع أو طلب المساعدة. لا يتم إرسال البيانات إلى خادم حالياً",
         style = MaterialTheme.typography.bodyMedium,
-        color = Color.Gray,
+        color = colors.textSecondary,
         textAlign = TextAlign.Center,
         modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)
     )
@@ -191,21 +197,21 @@ fun SignUpContent(
         value = firstName,
         onValueChange = { firstName = it },
         placeholder = "الاسم الأول",
-        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray) }
+        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = colors.textSecondary) }
     )
     Spacer(modifier = Modifier.height(16.dp))
     AuthTextField(
         value = lastName,
         onValueChange = { lastName = it },
         placeholder = "الكنية",
-        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray) }
+        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = colors.textSecondary) }
     )
     Spacer(modifier = Modifier.height(16.dp))
     AuthTextField(
         value = phone,
         onValueChange = { phone = it },
         placeholder = "رقم الهاتف",
-        leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = Color.Gray) },
+        leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = colors.textSecondary) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
     )
 
@@ -214,7 +220,7 @@ fun SignUpContent(
     IhsanButton(
         onClick = { onSignUpClick(firstName, lastName, phone) },
         modifier = Modifier.fillMaxWidth(),
-        containerColor = PrimaryTeal,
+        containerColor = colors.brand,
         enabled = firstName.isNotBlank() && lastName.isNotBlank() && phone.isNotBlank()
     ) {
         Text("حفظ الملف الشخصي", fontWeight = FontWeight.Bold, fontSize = 18.sp)
@@ -228,10 +234,10 @@ fun SignUpContent(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Text("لديك ملف بالفعل؟ ", color = Color.Gray)
+        Text("لديك ملف بالفعل؟ ", color = colors.textSecondary)
         Text(
             "فتح الملف الشخصي",
-            color = PrimaryTeal,
+            color = colors.brand,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.clickable { onLoginClick() }
         )
@@ -248,21 +254,25 @@ fun AuthTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
+    val fieldColors = IhsanTheme.colors
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = Modifier.fillMaxWidth(),
-        placeholder = { Text(placeholder, color = Color.Gray) },
+        placeholder = { Text(placeholder, color = fieldColors.textSecondary) },
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
         shape = RoundedCornerShape(12.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedBorderColor = Color.LightGray.copy(alpha = 0.5f),
-            focusedBorderColor = PrimaryTeal,
-            unfocusedContainerColor = Color(0xFFF9F9F9),
-            focusedContainerColor = Color(0xFFF9F9F9)
+            unfocusedBorderColor = fieldColors.fieldBorder,
+            focusedBorderColor = fieldColors.fieldFocusedBorder,
+            unfocusedContainerColor = fieldColors.fieldContainer,
+            focusedContainerColor = fieldColors.fieldContainer,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
         ),
         singleLine = true
     )
@@ -270,6 +280,8 @@ fun AuthTextField(
 
 @Composable
 fun OrDivider() {
+    val colors = IhsanTheme.colors
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -277,18 +289,18 @@ fun OrDivider() {
         HorizontalDivider(
             modifier = Modifier.weight(1f),
             thickness = 1.dp,
-            color = Color.LightGray.copy(alpha = 0.5f)
+            color = colors.divider
         )
         Text(
             "أو",
             modifier = Modifier.padding(horizontal = 16.dp),
-            color = Color.Gray,
+            color = colors.textSecondary,
             fontSize = 14.sp
         )
         HorizontalDivider(
             modifier = Modifier.weight(1f),
             thickness = 1.dp,
-            color = Color.LightGray.copy(alpha = 0.5f)
+            color = colors.divider
         )
     }
 }

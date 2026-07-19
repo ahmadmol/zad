@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.example.designsystem.theme.PrimaryTeal
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.core.notification.UserMessageNotifier
 import org.koin.androidx.compose.koinViewModel
 
@@ -91,6 +91,8 @@ fun RequestHelpScreen(
         }
     }
 
+    val colors = IhsanTheme.colors
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
             topBar = {
@@ -100,7 +102,7 @@ fun RequestHelpScreen(
                             "طلب مساعدة",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
-                            color = PrimaryTeal
+                            color = colors.brand
                         )
                     },
                     navigationIcon = {
@@ -109,20 +111,22 @@ fun RequestHelpScreen(
                             modifier = Modifier
                                 .padding(8.dp)
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(PrimaryTeal)
+                                .background(colors.brand)
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Back",
-                                tint = Color.White
+                                tint = colors.onBrand
                             )
                         }
                     },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.White)
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
                 )
             },
             snackbarHost = { SnackbarHost(snackbarHostState) },
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ) { padding ->
             Column(
                 modifier = Modifier
@@ -217,13 +221,13 @@ fun RequestHelpScreen(
                         .fillMaxWidth()
                         .height(56.dp),
                     shape = RoundedCornerShape(28.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryTeal),
+                    colors = ButtonDefaults.buttonColors(containerColor = colors.brand),
                     enabled = title.isNotBlank() && details.isNotBlank() && !uiState.isSubmitting
                 ) {
                     if (uiState.isSubmitting) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
-                            color = Color.White,
+                            color = colors.onBrand,
                             strokeWidth = 2.dp
                         )
                     } else {
@@ -231,7 +235,7 @@ fun RequestHelpScreen(
                             "إرسال الطلب",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = colors.onBrand
                         )
                     }
                 }
@@ -248,11 +252,13 @@ fun CategoryChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
+    val colors = IhsanTheme.colors
+
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(20.dp),
-        color = if (isSelected) Color(0xFFFDF2E9) else Color.White,
-        border = if (isSelected) null else BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
+        color = if (isSelected) colors.charityRequestContainer else colors.surfaceElevated,
+        border = if (isSelected) null else BorderStroke(1.dp, colors.borderSubtle)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -260,14 +266,14 @@ fun CategoryChip(
         ) {
             Text(
                 text = item.name,
-                color = if (isSelected) Color(0xFFE67E22) else Color.Gray,
+                color = if (isSelected) colors.charityRequest else colors.textSecondary,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
             )
             Spacer(modifier = Modifier.width(8.dp))
             Icon(
                 imageVector = item.icon,
                 contentDescription = null,
-                tint = if (isSelected) Color(0xFFE67E22) else Color.Gray,
+                tint = if (isSelected) colors.charityRequest else colors.textSecondary,
                 modifier = Modifier.size(18.dp)
             )
         }
@@ -282,6 +288,8 @@ fun EhsanRequestTextField(
     minLines: Int = 1,
     singleLine: Boolean = true
 ) {
+    val fieldColors = IhsanTheme.colors
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -291,15 +299,17 @@ fun EhsanRequestTextField(
                 placeholder,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start,
-                color = Color.Gray
+                color = fieldColors.textSecondary
             )
         },
         shape = RoundedCornerShape(16.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedBorderColor = Color.Black,
-            focusedBorderColor = PrimaryTeal,
-            unfocusedContainerColor = Color.White,
-            focusedContainerColor = Color.White
+            unfocusedBorderColor = fieldColors.fieldBorder,
+            focusedBorderColor = fieldColors.fieldFocusedBorder,
+            unfocusedContainerColor = fieldColors.fieldContainer,
+            focusedContainerColor = fieldColors.fieldContainer,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
         ),
         minLines = minLines,
         singleLine = singleLine
@@ -311,12 +321,14 @@ fun LocationSelector(
     location: String,
     onClick: () -> Unit
 ) {
+    val colors = IhsanTheme.colors
+
     Surface(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, Color.Black),
-        color = Color.White
+        border = BorderStroke(1.dp, colors.fieldBorder),
+        color = colors.fieldContainer
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -325,9 +337,9 @@ fun LocationSelector(
         ) {
             Icon(Icons.Default.ArrowDropDown, contentDescription = null)
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(location, color = Color.Black)
+                Text(location, color = MaterialTheme.colorScheme.onSurface)
                 Spacer(modifier = Modifier.width(8.dp))
-                Icon(Icons.Default.LocationOn, contentDescription = null, tint = Color(0xFFE67E22))
+                Icon(Icons.Default.LocationOn, contentDescription = null, tint = colors.charityRequest)
             }
         }
     }
@@ -338,12 +350,14 @@ fun FileUploadSection(
     imageUri: String?,
     onClick: () -> Unit
 ) {
+    val colors = IhsanTheme.colors
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
-            .border(1.dp, Color.Gray, RoundedCornerShape(16.dp)) 
-            .background(Color.White)
+            .border(1.dp, colors.fieldBorder, RoundedCornerShape(16.dp))
+            .background(colors.fieldContainer)
             .clip(RoundedCornerShape(16.dp))
             .clickable { onClick() }
             .padding(8.dp),
@@ -363,13 +377,13 @@ fun FileUploadSection(
             ) {
                 Surface(
                     shape = RoundedCornerShape(8.dp),
-                    color = Color(0xFFE8F5E9),
+                    color = colors.charityOfferContainer,
                     modifier = Modifier.size(40.dp)
                 ) {
                     Icon(
                         Icons.Default.Upload,
                         contentDescription = null,
-                        tint = PrimaryTeal,
+                        tint = colors.brand,
                         modifier = Modifier.padding(8.dp)
                     )
                 }
@@ -377,7 +391,7 @@ fun FileUploadSection(
                 Text(
                     "إرفاق الأوراق أو الإثباتات الداعمة\n(اختياري)",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray,
+                    color = colors.textSecondary,
                     textAlign = TextAlign.Center
                 )
             }
