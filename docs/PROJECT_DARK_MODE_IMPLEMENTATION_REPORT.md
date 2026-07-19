@@ -15,7 +15,7 @@
 | Item | Value |
 |------|--------|
 | Branch | `ui/project-dark-mode-polish` |
-| Tip | `899dd89` |
+| Tip | `27e1449` |
 
 ## 3. Working-tree handling
 
