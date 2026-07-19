@@ -57,7 +57,7 @@ fun IhsanEmptyState(
             imageVector = icon,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f)
+            tint = IhsanTheme.colors.textSecondary.copy(alpha = 0.65f)
         )
         Spacer(modifier = Modifier.height(IhsanTheme.spacing.medium))
         if (!title.isNullOrBlank()) {
@@ -73,7 +73,7 @@ fun IhsanEmptyState(
         Text(
             text = message,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = IhsanTheme.colors.textSecondary,
             textAlign = TextAlign.Center
         )
         if (onPrimaryAction != null && !primaryActionLabel.isNullOrBlank()) {

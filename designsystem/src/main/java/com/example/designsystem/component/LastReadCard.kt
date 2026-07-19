@@ -1,5 +1,7 @@
 package com.example.designsystem.component
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,10 +24,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.designsystem.theme.IhsanTheme
 
 @Composable
 fun LastReadCard(
@@ -35,11 +37,17 @@ fun LastReadCard(
     modifier: Modifier = Modifier,
     ayahNumber: Int? = null
 ) {
+    val isDark = isSystemInDarkTheme()
+    val cardColors = IhsanTheme.colors
+
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        colors = CardDefaults.cardColors(
+            containerColor = if (isDark) cardColors.surfaceElevated else MaterialTheme.colorScheme.surface
+        ),
+        border = if (isDark) BorderStroke(1.dp, cardColors.borderSubtle) else null,
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isDark) 0.dp else 2.dp)
     ) {
         Row(
             modifier = Modifier
@@ -63,7 +71,7 @@ fun LastReadCard(
                     Text(
                         text = "آخر قراءة",
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = IhsanTheme.colors.textSecondary
                     )
                     Text(
                         text = "$surahNumber. $surahName",
@@ -86,7 +94,7 @@ fun LastReadCard(
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {

@@ -68,7 +68,7 @@ fun IhsanCapabilityState(
         Text(
             text = body,
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = IhsanTheme.colors.textSecondary,
             textAlign = TextAlign.Center
         )
         if (onPrimaryAction != null && !primaryActionLabel.isNullOrBlank()) {

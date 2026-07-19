@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -106,6 +107,8 @@ fun IhsanBottomNavigation(
     val layoutDirection = LocalLayoutDirection.current
     val density = LocalDensity.current
     val barShape = RoundedCornerShape(IhsanTheme.dimens.radiusPill)
+    val isDark = isSystemInDarkTheme()
+    val navColors = IhsanTheme.colors
 
     var containerWidthPx by remember { mutableFloatStateOf(0f) }
     var containerHeightPx by remember { mutableFloatStateOf(0f) }
@@ -113,9 +116,10 @@ fun IhsanBottomNavigation(
     Box(
         modifier = modifier
             .semantics { testTag = "ihsan_bottom_navigation" }
-            .shadow(8.dp, barShape, clip = false)
+            .shadow(if (isDark) 2.dp else 8.dp, barShape, clip = false)
             .clip(barShape)
-            .background(MaterialTheme.colorScheme.surface)
+            .background(navColors.navigationSurface)
+            .border(width = 1.dp, color = navColors.navigationOutline, shape = barShape)
             .defaultMinSize(minHeight = 72.dp)
             .onSizeChanged {
                 containerWidthPx = it.width.toFloat()
@@ -162,8 +166,9 @@ internal fun AnimatedSelectionIndicator(
     layoutDirection: LayoutDirection,
     density: Density
 ) {
-    val brand = IhsanTheme.colors.brand
-    val shadowTint = brand.copy(alpha = 0.28f)
+    val navColors = IhsanTheme.colors
+    val isDark = isSystemInDarkTheme()
+    val shadowTint = navColors.navigationIndicator.copy(alpha = if (isDark) 0.12f else 0.28f)
     val pillWidthPx = with(density) { IndicatorPillWidth.toPx() }
     val pillHeightPx = with(density) { IndicatorPillHeight.toPx() }
     val slotWidthPx = containerWidthPx / itemCount.coerceAtLeast(1)
@@ -198,7 +203,12 @@ internal fun AnimatedSelectionIndicator(
     }
 
     val elevation by animateDpAsState(
-        targetValue = if (isMoving) 9.dp else 5.dp,
+        targetValue = when {
+            isDark && isMoving -> 3.dp
+            isDark -> 1.dp
+            isMoving -> 9.dp
+            else -> 5.dp
+        },
         animationSpec = IndicatorDpMotion,
         label = "bottomNavIndicatorElevation"
     )
@@ -223,7 +233,7 @@ internal fun AnimatedSelectionIndicator(
                 spotShadowColor = shadowTint
             }
             .clip(RoundedCornerShape(IndicatorCorner))
-            .background(brand)
+            .background(navColors.navigationIndicator)
     )
 }
 
@@ -258,11 +268,12 @@ fun IhsanBottomNavigationItem(
         animationSpec = IndicatorDpMotion,
         label = "bottomNavIconSize"
     )
+    val navColors = IhsanTheme.colors
     val iconTint by animateColorAsState(
         targetValue = if (selected) {
-            MaterialTheme.colorScheme.onPrimary
+            navColors.selectedContent
         } else {
-            MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)
+            navColors.unselectedContent
         },
         animationSpec = ColorMotion,
         label = "bottomNavIconTint"
@@ -336,9 +347,10 @@ internal fun SelectedIconCircle(
         animationSpec = IndicatorDpMotion,
         label = "selectedIconCircleElevation"
     )
-    val circleFill = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.16f)
-    val circleBorder = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.22f)
-    val shadowTint = IhsanTheme.colors.brand.copy(alpha = 0.2f)
+    val navColors = IhsanTheme.colors
+    val circleFill = navColors.navigationIconHalo
+    val circleBorder = navColors.selectedContent.copy(alpha = 0.22f)
+    val shadowTint = navColors.navigationIndicator.copy(alpha = 0.2f)
 
     if (circleAlpha <= 0.01f) return
 
@@ -365,11 +377,12 @@ internal fun BottomNavigationLabel(
     selected: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val navColors = IhsanTheme.colors
     val labelColor by animateColorAsState(
         targetValue = if (selected) {
             MaterialTheme.colorScheme.primary
         } else {
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f)
+            navColors.unselectedContent
         },
         animationSpec = ColorMotion,
         label = "bottomNavLabelColor"

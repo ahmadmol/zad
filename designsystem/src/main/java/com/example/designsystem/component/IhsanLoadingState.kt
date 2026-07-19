@@ -44,7 +44,7 @@ fun IhsanLoadingState(
             Text(
                 text = message,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = IhsanTheme.colors.textSecondary,
                 textAlign = TextAlign.Center
             )
         }

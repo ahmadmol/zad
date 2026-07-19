@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -53,8 +52,8 @@ fun DashboardHeader(
     greeting: String = "أهلاً بك في إحسان",
     modifier: Modifier = Modifier
 ) {
-    val brand = MaterialTheme.colorScheme.primary
-    val onBrand = MaterialTheme.colorScheme.onPrimary
+    val brand = IhsanTheme.colors.brand
+    val onBrand = IhsanTheme.colors.onBrand
 
     Box(
         modifier = modifier
@@ -209,7 +208,7 @@ fun PrayerTimeCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val onBrand = MaterialTheme.colorScheme.onPrimary
+    val onBrand = IhsanTheme.colors.onBrand
     val shape = RoundedCornerShape(14.dp)
     val description = if (isActive) "$name، $time، الصلاة الحالية أو القادمة" else "$name، $time"
 

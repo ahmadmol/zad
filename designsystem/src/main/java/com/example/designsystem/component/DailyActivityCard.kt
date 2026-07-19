@@ -1,6 +1,8 @@
 package com.example.designsystem.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -30,6 +32,8 @@ fun DailyActivityCard(
     } else 0f
 
     val percentage = (overallProgress * 100).toInt()
+    val isDark = isSystemInDarkTheme()
+    val cardColors = IhsanTheme.colors
 
     Card(
         modifier = modifier
@@ -39,8 +43,11 @@ fun DailyActivityCard(
             }
             .clickable { onGoToChecklist() },
         shape = RoundedCornerShape(IhsanTheme.dimens.radiusPill),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        colors = CardDefaults.cardColors(
+            containerColor = if (isDark) cardColors.surfaceElevated else MaterialTheme.colorScheme.surface
+        ),
+        border = if (isDark) BorderStroke(1.dp, cardColors.borderSubtle) else null,
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isDark) 0.dp else 2.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(
