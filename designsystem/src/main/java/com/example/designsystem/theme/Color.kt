@@ -26,8 +26,8 @@ val Neutral700 = Color(0xFF374151)
 val Neutral800 = Color(0xFF1F2937)
 val Neutral900 = Color(0xFF111827)
 
-// Functional Colors
-val PrimaryTeal = Color(0xFF073028) // Brand dark green (was Primary500 teal)
+// Brand fill for large green surfaces (heroes, emphasized cards) — same in Light/Dark.
+val PrimaryTeal = Color(0xFF073028)
 val OnPrimaryWhite = Color(0xFFFFFFFF)
 val PrimaryContainerTeal = Primary100
 val OnPrimaryContainerTeal = Primary900
@@ -45,6 +45,11 @@ val NeutralGrey = Neutral500
 val NeutralVariantGrey = Neutral100
 
 val ErrorRed = Color(0xFFBA1A1A)
+val OnErrorWhite = Color(0xFFFFFFFF)
+val ErrorContainerLight = Color(0xFFFFDAD6)
+val OnErrorContainerLight = Color(0xFF410002)
+val ErrorContainerDark = Color(0xFF93000A)
+val OnErrorContainerDark = Color(0xFFFFDAD6)
 
 val BackgroundCream = Neutral50
 val OnBackgroundDark = Neutral900
@@ -55,6 +60,23 @@ val SurfaceVariantLight = Neutral50
 val OnSurfaceVariantGrey = Neutral500
 
 val OutlineGrey = Neutral300
+val OutlineVariantLight = Neutral200
+
+// Dark Mode — warm charcoal green foundation
+val DarkBackground = Color(0xFF0E1714)
+val DarkSurface = Color(0xFF16201C)
+val DarkSurfaceElevated = Color(0xFF1E2A25)
+val DarkSurfaceMuted = Color(0xFF202A26)
+val DarkSurfaceWarm = Color(0xFF3A312B)
+val DarkOnSurface = Color(0xFFF3F5F4)
+val DarkOnSurfaceVariant = Color(0xFFAAB5B0)
+val DarkInteractivePrimary = Color(0xFF8FD0C2)
+val DarkInteractivePrimaryContainer = Color(0xFF0C4036)
+val OnDarkInteractivePrimary = Color(0xFF06251F)
+val DarkOutline = Color(0xFF53605B)
+val DarkOutlineVariant = Color(0xFF34413C)
+val DarkScrim = Color(0x80000000)
+val DarkBrandElevated = Color(0xFF0C4036)
 
 // Legacy / Utility Colors
 val White = Color(0xFFFFFFFF)

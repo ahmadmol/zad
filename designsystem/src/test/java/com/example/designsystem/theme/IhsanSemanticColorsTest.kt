@@ -8,9 +8,31 @@ import org.junit.Test
 class IhsanSemanticColorsTest {
 
     @Test
-    fun `canonical brand matches PrimaryTeal`() {
+    fun `brand fill stays PrimaryTeal in light and dark`() {
         assertEquals(PrimaryTeal, LightIhsanSemanticColors.brand)
         assertEquals(PrimaryTeal, DarkIhsanSemanticColors.brand)
+    }
+
+    @Test
+    fun `dark surface hierarchy is distinct`() {
+        assertNotEquals(DarkIhsanSemanticColors.surfaceBase, DarkIhsanSemanticColors.surfaceElevated)
+        assertNotEquals(DarkBackground, DarkSurface)
+        assertNotEquals(DarkSurface, DarkSurfaceElevated)
+    }
+
+    @Test
+    fun `dark interactive primary differs from dark background`() {
+        assertNotEquals(DarkInteractivePrimary, DarkBackground)
+        assertNotEquals(DarkIhsanSemanticColors.selectedContent, DarkIhsanSemanticColors.surfaceBase)
+    }
+
+    @Test
+    fun `semantic tokens have distinct light and dark mappings where required`() {
+        assertNotEquals(LightIhsanSemanticColors.surfaceMuted, DarkIhsanSemanticColors.surfaceMuted)
+        assertNotEquals(LightIhsanSemanticColors.navigationSurface, DarkIhsanSemanticColors.navigationSurface)
+        assertNotEquals(LightIhsanSemanticColors.selectedContent, DarkIhsanSemanticColors.selectedContent)
+        assertNotEquals(LightIhsanSemanticColors.fieldContainer, DarkIhsanSemanticColors.fieldContainer)
+        assertNotEquals(LightIhsanSemanticColors.textPrimary, DarkIhsanSemanticColors.textPrimary)
     }
 
     @Test
@@ -25,14 +47,6 @@ class IhsanSemanticColorsTest {
         assertNotEquals(
             LightIhsanSemanticColors.charityOffer,
             LightIhsanSemanticColors.charityRequest
-        )
-    }
-
-    @Test
-    fun `dark surface muted differs from light`() {
-        assertNotEquals(
-            LightIhsanSemanticColors.surfaceMuted,
-            DarkIhsanSemanticColors.surfaceMuted
         )
     }
 
