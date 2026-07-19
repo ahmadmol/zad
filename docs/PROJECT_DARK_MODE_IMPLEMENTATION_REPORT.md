@@ -139,13 +139,13 @@ Dark interactive primary separated from charcoal surfaces; secondary text uses t
 
 ## 24. Device verification
 
-Not fully exercised on a physical device in this session (install/screenshot pass deferred). Emulator/device checklist remains recommended for theme toggle with open sheets and font scales.
+See **Final Device Visual QA** below.
 
 ## 25. Remaining minor issues
 
 - Decorative accent hex in a few hero/card ornaments
 - Live/Splash intentional fixed colors
-- Full device font-scale matrix + visual screenshot comparison not captured here
+- Full device Dark Mode matrix blocked by Xiaomi NotificationShade (see QA section)
 
 ## 26. Files intentionally unchanged
 
@@ -157,20 +157,184 @@ Business logic and architecture were not modified. Changes are presentation/them
 
 ---
 
-### Git evidence (captured at report time)
+# Final Device Visual QA
+
+**Session tip at QA start:** `011b1b3` on `ui/project-dark-mode-polish`  
+**Working tree note:** untracked `docs/screenshots/` only (not auto-committed).
+
+## 1. Device or emulator
+
+Physical device via ADB (not emulator).
+
+| Field | Value |
+|------|--------|
+| Model | `23129RAA4G` (Xiaomi / Redmi, product `sapphire_global`) |
+| Serial | `ac190123` |
+
+## 2. Android version
+
+15
+
+## 3. API level
+
+35
+
+## 4. Screen size and density
+
+- Physical size: `1080 x 2400`
+- Density: `440`
+- Orientation during capture: portrait (`ROTATION_0`, user rotation locked)
+- System locale: `en-US` (app forces Arabic RTL in Compose)
+- Navigation: gesture navigation (Xiaomi)
+
+## 5. Screens actually opened
+
+| Screen | Opened? | Theme observed |
+|--------|---------|----------------|
+| Home | Yes | Light |
+| Ehsan | Yes | Light |
+| Splash / Onboarding / Prayer / Quran / Azkar / Tasbih / Dua / Hadith / Asma / Qibla / Live / Details / Add / Request / Auth / Profile / Edit Profile / Settings / Statistics / Reminders / Search / Daily activities | **No** (automation blocked) | — |
+| Dark Mode on any screen | **No** | — |
+| Prayer/Auth sheets | **No** | — |
+| Font scale matrix | **Not run** | — |
+| Theme switching while running | **Not run** | — |
+
+Valid captures retained under `docs/screenshots/dark-mode/` (untracked):
+
+- `home-light.png` (restored from early `_boot.png`)
+- `ehsan-dark.png` filename is misleading — content is **Ehsan Light** from an earlier successful capture window
+
+Many later files are launcher wallpaper / 15KB shade stubs and must **not** be treated as app Dark Mode evidence.
+
+## 6. Light Mode result
+
+**Partial Pass (Home + Ehsan only).**
+
+- Home Light: brand header `#073028`, cream/white content, RTL OK, status icons white on brand header.
+- Ehsan Light: local-board notice, brand hero, action cards, search/filters visible; brand fill preserved.
+- Bottom Navigation Light: pill/selected treatment visible; selected icon contrast needs manual re-check (possible faint icon inside halo — see P2).
+- No evidence of Dark tokens leaking into these Light captures.
+
+## 7. Dark Mode result
+
+**Not verified on device.** App Dark Mode toggle was never confirmed after install because `NotificationShade` retained `mCurrentFocus` and blocked reliable taps/screenshots.
+
+## 8. Theme switching result
+
+Not performed (shade blocker).
+
+## 9. System bars result
+
+On Home Light: status bar matches brand header; icons readable (white). Navigation bar / Dark bars not verified.
+
+## 10. Bottom Navigation result
+
+- Destinations still Home / Ehsan / Profile; no route changes observed in code/QA scope.
+- Light captures show three tabs and selected treatment.
+- Gesture nav + bottom taps often dismissed app to launcher — device environment risk, not product route bug.
+- Code QA finding (P1): nav used `isSystemInDarkTheme()` for shadow/elevation branching while app theme is settings-driven — **fixed** to `MaterialTheme.colorScheme.background.luminance() < 0.5f`.
+
+## 11. RTL result
+
+Home and Ehsan Light captures show correct Arabic RTL composition (greeting/actions/filters). Full RTL matrix not completed.
+
+## 12. Font-scale result
+
+Not performed.
+
+## 13. Dialog and sheet result
+
+Not performed on device.
+
+## 14. Input-field result
+
+Ehsan Light search field visible and themed for Light; Dark fields not verified on device.
+
+## 15. Accessibility observations
+
+- Home Light text/icons on brand header: strong contrast.
+- Selected bottom-nav icon contrast in Light: needs human re-check (P2).
+- TalkBack / large font: not exercised.
+
+## 16. Screenshots captured
+
+Organized under `docs/screenshots/dark-mode/` (kept untracked unless owner wants them committed):
+
+- Reliable: `home-light.png`, early `_boot.png`, Ehsan Light content in `ehsan-dark.png` (rename recommended if committing later)
+- Unreliable / discard candidates: `*-light.png` / `*-dark.png` that are launcher wallpaper (~2.2MB) or shade stubs (~15KB)
+
+## 17. P0 findings
+
+None confirmed on the screens successfully opened.
+
+## 18. P1 findings
+
+1. **Shared UI dark-branching used OS system night mode** (`isSystemInDarkTheme()`) instead of the app settings-driven Material scheme, so app-Dark + system-Light could apply wrong elevation/border policy.  
+   - Files: `IhsanBottomNavigation.kt`, `DailyActivityCard.kt`, `IhsanActionCard.kt`, `LastReadCard.kt`  
+   - Fix applied (presentation-only): detect dark via `MaterialTheme.colorScheme.background.luminance() < 0.5f`.
+
+## 19. P2 findings
+
+- Selected Home icon may appear low-contrast inside white halo on Light bottom nav (needs human eyeball on device after shade is dismissed).
+- Xiaomi NotificationShade repeatedly stole focus (`mCurrentFocus=NotificationShade`) despite collapse/`CLOSE_SYSTEM_DIALOGS` — environment blocker for automated visual matrix.
+
+## 20. P3 findings
+
+- Misleading screenshot filenames produced during failed automation (`*-dark.png` while still Light).
+
+## 21. Fixes applied during QA
+
+- Shared components: replace `isSystemInDarkTheme()` with scheme luminance checks for dark surface/elevation branching.
+
+## 22. Files changed during QA
+
+- `designsystem/.../IhsanBottomNavigation.kt`
+- `designsystem/.../DailyActivityCard.kt`
+- `designsystem/.../IhsanActionCard.kt`
+- `designsystem/.../LastReadCard.kt`
+- `docs/PROJECT_DARK_MODE_IMPLEMENTATION_REPORT.md`
+- Untracked screenshots under `docs/screenshots/dark-mode/` (not staged)
+
+## 23. Remaining limitations
+
+- Full Dark Mode device matrix, theme toggle, sheets, font scales, and RTL stress not completed due to stuck NotificationShade on the Xiaomi device.
+- Manual QA required: collapse shade, open Settings → enable Dark, walk the screen checklist, capture the requested Light/Dark pairs.
+
+## 24. Final acceptance decision
+
+**Classification C**
+
+Project Dark Mode Implementation Complete  
+Automated Verification Passed  
+Physical Device Visual QA Not Performed  
+
+(Device was connected and `installDebug` succeeded; interactive visual matrix could not be completed because of a stuck system NotificationShade. Only Home/Ehsan Light were reliably observed.)
+
+### Automated re-verification this session
+
+| Check | Result |
+|-------|--------|
+| `assembleDebug` | PASS |
+| `assembleRelease` | PASS |
+| Unit tests (designsystem/feature/app) | PASS |
+| `lintDebug` | PASS |
+| `installDebug` | PASS (device `23129RAA4G`) |
+
+### Git evidence (refresh at end of QA)
 
 ```
-git branch --show-current
-ui/project-dark-mode-polish
+git status --short
+git diff --stat
+git log --oneline --decorate -15
+```
 
-git log --oneline --decorate -20
-3a692fa test(dark-ui): guard theme foundation and sheet surfaces
-e4584b0 fix(dark-ui): complete remaining feature surfaces
-9effe6f fix(dark-ui): align ehsan and profile flows
-2bb1f7e fix(dark-ui): align quran presentation
-783f18d fix(dark-ui): align home and prayer surfaces
-70c3876 refactor(design): make shared components dark-theme complete
-eb9de85 refactor(theme): establish complete dark color foundation
-65995d2 refactor(navigation-ui): polish bottom navigation motion
-…
+```
+git status --short
+ M designsystem/src/main/java/com/example/designsystem/component/DailyActivityCard.kt  M designsystem/src/main/java/com/example/designsystem/component/IhsanActionCard.kt  M designsystem/src/main/java/com/example/designsystem/component/IhsanBottomNavigation.kt  M designsystem/src/main/java/com/example/designsystem/component/LastReadCard.kt  M docs/PROJECT_DARK_MODE_IMPLEMENTATION_REPORT.md ?? docs/screenshots/
+
+git diff --stat
+ .../designsystem/component/DailyActivityCard.kt    |   4 +-  .../designsystem/component/IhsanActionCard.kt      |   4 +-  .../component/IhsanBottomNavigation.kt             |   7 +-  .../example/designsystem/component/LastReadCard.kt |   4 +-  docs/PROJECT_DARK_MODE_IMPLEMENTATION_REPORT.md    | 185 +++++++++++++++++++--  5 files changed, 179 insertions(+), 25 deletions(-)
+
+git log --oneline --decorate -15
+011b1b3 (HEAD -> ui/project-dark-mode-polish) docs(dark-ui): finalize report tip hash 27e1449 docs(dark-ui): set report tip to docs HEAD 899dd89 docs(dark-ui): sync report tip to HEAD ddf2eef docs(dark-ui): add project dark mode implementation report 3a692fa test(dark-ui): guard theme foundation and sheet surfaces e4584b0 fix(dark-ui): complete remaining feature surfaces 9effe6f fix(dark-ui): align ehsan and profile flows 2bb1f7e fix(dark-ui): align quran presentation 783f18d fix(dark-ui): align home and prayer surfaces 70c3876 refactor(design): make shared components dark-theme complete eb9de85 refactor(theme): establish complete dark color foundation 65995d2 (ui/bottom-nav-motion-polish) refactor(navigation-ui): polish bottom navigation motion 18fede4 (ui/ehsan-reference-redesign) docs(ehsan-ui): anchor report tip to implementation commit 2fe80f2 docs(ehsan-ui): sync report tip to HEAD 7fa589b docs(ehsan-ui): clarify implementation vs tip commits
 ```

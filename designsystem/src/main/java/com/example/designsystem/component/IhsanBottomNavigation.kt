@@ -9,7 +9,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -54,6 +53,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -107,7 +107,8 @@ fun IhsanBottomNavigation(
     val layoutDirection = LocalLayoutDirection.current
     val density = LocalDensity.current
     val barShape = RoundedCornerShape(IhsanTheme.dimens.radiusPill)
-    val isDark = isSystemInDarkTheme()
+    // Follow app IhsanTheme / Material scheme, not the OS system night setting.
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val navColors = IhsanTheme.colors
 
     var containerWidthPx by remember { mutableFloatStateOf(0f) }
@@ -167,7 +168,7 @@ internal fun AnimatedSelectionIndicator(
     density: Density
 ) {
     val navColors = IhsanTheme.colors
-    val isDark = isSystemInDarkTheme()
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     val shadowTint = navColors.navigationIndicator.copy(alpha = if (isDark) 0.12f else 0.28f)
     val pillWidthPx = with(density) { IndicatorPillWidth.toPx() }
     val pillHeightPx = with(density) { IndicatorPillHeight.toPx() }
