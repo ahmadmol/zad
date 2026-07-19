@@ -25,8 +25,8 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.designsystem.component.IhsanBottomNavDestination
 import com.example.designsystem.component.IhsanBottomNavigation
-import com.example.designsystem.component.IhsanBottomNavigationItem
 import com.example.mol.navigation.AppNavHost
 import com.example.mol.navigation.Screen
 
@@ -47,6 +47,10 @@ fun MainScreen() {
     val showBottomBar = currentDestination?.route == Screen.Home.route ||
         currentDestination?.route == Screen.Donations.route
 
+    val selectedIndex = mainItems.indexOfFirst { item ->
+        currentDestination?.hierarchy?.any { it.route == item.screen.route } == true
+    }.coerceAtLeast(0)
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
             bottomBar = {
@@ -62,31 +66,28 @@ fun MainScreen() {
                             )
                     ) {
                         IhsanBottomNavigation(
+                            destinations = mainItems.map {
+                                IhsanBottomNavDestination(
+                                    label = it.label,
+                                    icon = it.unselectedIcon,
+                                    selectedIcon = it.selectedIcon
+                                )
+                            },
+                            selectedIndex = selectedIndex,
+                            onDestinationSelected = { index ->
+                                val item = mainItems[index]
+                                navController.navigate(item.screen.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(72.dp)
-                        ) {
-                            mainItems.forEach { item ->
-                                val isSelected =
-                                    currentDestination?.hierarchy?.any { it.route == item.screen.route } == true
-
-                                IhsanBottomNavigationItem(
-                                    selected = isSelected,
-                                    onClick = {
-                                        navController.navigate(item.screen.route) {
-                                            popUpTo(navController.graph.findStartDestination().id) {
-                                                saveState = true
-                                            }
-                                            launchSingleTop = true
-                                            restoreState = true
-                                        }
-                                    },
-                                    icon = item.unselectedIcon,
-                                    selectedIcon = item.selectedIcon,
-                                    label = item.label
-                                )
-                            }
-                        }
+                        )
                     }
                 }
             },
