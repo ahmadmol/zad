@@ -18,7 +18,7 @@ Untracked `docs/screenshots/` left intact (not discarded).
 | Item | Value |
 |------|--------|
 | Branch | `ui/ehsan-reference-redesign` |
-| Tip | `a97bc36` |
+| Tip | `7fa589b` |
 | Implementation commit | `6ca79ac` |
 
 ## 3. Reference image used
