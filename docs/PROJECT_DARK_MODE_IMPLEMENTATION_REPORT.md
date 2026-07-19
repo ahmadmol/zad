@@ -15,7 +15,7 @@
 | Item | Value |
 |------|--------|
 | Branch | `ui/project-dark-mode-polish` |
-| Tip | `3a692fa` (report tip synced in follow-up docs commit if needed) |
+| Tip | `ddf2eef` |
 
 ## 3. Working-tree handling
 
