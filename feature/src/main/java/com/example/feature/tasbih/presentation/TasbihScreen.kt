@@ -137,13 +137,13 @@ fun TasbihScreen(
                                 tint = if (uiState.isVibrationEnabled) {
                                     IhsanTheme.colors.brand
                                 } else {
-                                    Color.Gray
+                                    IhsanTheme.colors.textSecondaryMuted
                                 }
                             )
                         }
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = Color.White,
+                        containerColor = MaterialTheme.colorScheme.surface,
                         titleContentColor = IhsanTheme.colors.brand,
                         navigationIconContentColor = IhsanTheme.colors.brand
                     )
@@ -229,7 +229,7 @@ private fun DhikrChipsRow(
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(vertical = 12.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -239,14 +239,14 @@ private fun DhikrChipsRow(
             Surface(
                 onClick = { onSelect(index) },
                 shape = RoundedCornerShape(20.dp),
-                color = if (selected) IhsanTheme.colors.brand else Color.White,
-                border = if (selected) null else BorderStroke(1.dp, Color(0xFFE0E0E0)),
+                color = if (selected) IhsanTheme.colors.brand else MaterialTheme.colorScheme.surface,
+                border = if (selected) null else BorderStroke(1.dp, IhsanTheme.colors.borderSubtle),
                 shadowElevation = 0.dp
             ) {
                 Text(
                     text = item.title.ifBlank { item.text.take(16) },
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                    color = if (selected) Color.White else IhsanTheme.colors.brand,
+                    color = if (selected) IhsanTheme.colors.onBrand else IhsanTheme.colors.brand,
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
@@ -315,7 +315,7 @@ private fun DhikrTextCard(
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = IhsanTheme.colors.onWarning
                         )
                     }
                 }
@@ -450,13 +450,13 @@ private fun TasbihCounterButton(
                             fontSize = 68.sp,
                             fontWeight = FontWeight.Black
                         ),
-                        color = Color.White
+                        color = IhsanTheme.colors.onBrand
                     )
                 }
                 Text(
                     text = if (target > 0) "من $target" else "اضغط للتسبيح",
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.White.copy(alpha = 0.75f)
+                    color = IhsanTheme.colors.onBrand.copy(alpha = 0.75f)
                 )
             }
         }

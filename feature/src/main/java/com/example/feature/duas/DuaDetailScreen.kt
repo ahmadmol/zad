@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.duas.domain.model.Dua
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,6 +42,7 @@ fun DuaDetailScreen(
 ) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
+    val colors = IhsanTheme.colors
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
@@ -111,7 +113,7 @@ fun DuaDetailScreen(
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             // Category Badge with icon
                             Surface(
-                                color = Color(0xFF6B9080).copy(alpha = 0.9f),
+                                color = colors.brand.copy(alpha = 0.9f),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 Row(
@@ -121,13 +123,13 @@ fun DuaDetailScreen(
                                     Icon(
                                         Icons.Default.Nightlight,
                                         contentDescription = null,
-                                        tint = Color.White,
+                                        tint = colors.onBrand,
                                         modifier = Modifier.size(14.dp)
                                     )
                                     Spacer(Modifier.width(8.dp))
                                     Text(
                                         text = dua.title,
-                                        color = Color.White,
+                                        color = colors.onBrand,
                                         fontSize = 13.sp,
                                         fontWeight = FontWeight.Medium
                                     )
@@ -142,7 +144,7 @@ fun DuaDetailScreen(
                                     lineHeight = 46.sp,
                                     textAlign = TextAlign.Center,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF2D3436)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 ),
                                 modifier = Modifier.fillMaxWidth()
                             )
@@ -155,15 +157,21 @@ fun DuaDetailScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             DetailRow(label = "التصنيف", value = dua.category)
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = Color.LightGray.copy(alpha = 0.3f))
+                            HorizontalDivider(
+                                modifier = Modifier.padding(vertical = 12.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                            )
                             DetailRow(label = "المصدر", value = dua.source, icon = Icons.AutoMirrored.Filled.MenuBook)
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = Color.LightGray.copy(alpha = 0.3f))
+                            HorizontalDivider(
+                                modifier = Modifier.padding(vertical = 12.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                            )
                             DetailRow(label = "المرجع", value = dua.reference.ifBlank { "رواه البخاري" }, icon = Icons.Default.GridView)
                         }
                     }
@@ -187,7 +195,7 @@ fun DuaDetailScreen(
                             },
                             modifier = Modifier.weight(1f).height(56.dp),
                             shape = RoundedCornerShape(12.dp),
-                            border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
+                            border = BorderStroke(1.dp, colors.borderSubtle)
                         ) {
                             Icon(Icons.Default.Share, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                             Spacer(Modifier.width(8.dp))
@@ -198,7 +206,7 @@ fun DuaDetailScreen(
                             onClick = { clipboardManager.setText(AnnotatedString(dua.text)) },
                             modifier = Modifier.weight(1f).height(56.dp),
                             shape = RoundedCornerShape(12.dp),
-                            border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
+                            border = BorderStroke(1.dp, colors.borderSubtle)
                         ) {
                             Icon(Icons.Default.ContentCopy, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                             Spacer(Modifier.width(8.dp))
@@ -220,12 +228,12 @@ fun DuaDetailScreen(
                         Icon(
                             if (dua.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = null,
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                         Spacer(Modifier.width(12.dp))
                         Text(
                             if (dua.isFavorite) "إزالة من المفضلة" else "إضافة إلى المفضلة",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -237,17 +245,24 @@ fun DuaDetailScreen(
 
 @Composable
 private fun DetailRow(label: String, value: String, icon: androidx.compose.ui.graphics.vector.ImageVector? = null) {
+    val colors = IhsanTheme.colors
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = value, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.DarkGray)
+        Text(
+            text = value,
+            fontWeight = FontWeight.Bold,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurface
+        )
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = label, color = Color.Gray, fontSize = 14.sp)
+            Text(text = label, color = colors.textSecondaryMuted, fontSize = 14.sp)
             if (icon != null) {
                 Spacer(Modifier.width(8.dp))
-                Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp), tint = Color.Gray)
+                Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp), tint = colors.textSecondaryMuted)
             }
         }
     }

@@ -592,7 +592,7 @@ fun VerseItem(
                     fontSize = fontSize.sp,
                     lineHeight = (fontSize * 1.6).sp,
                     textAlign = TextAlign.Justify,
-                    color = if (isPlaying) MaterialTheme.colorScheme.primary else Color.Black
+                    color = if (isPlaying) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 ),
                 modifier = Modifier.weight(1f)
             )

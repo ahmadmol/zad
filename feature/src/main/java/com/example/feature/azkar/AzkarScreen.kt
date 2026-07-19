@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.component.IhsanSearchBar
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.azkar.domain.model.Zikr
 import com.example.feature.azkar.presentation.AzkarAction
 import com.example.feature.azkar.presentation.AzkarUiState
@@ -112,7 +113,7 @@ private fun AzkarTopBar(
                     Icon(
                         imageVector = if (isFavoritesOnly) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = "Favorites",
-                        tint = if (isFavoritesOnly) Color.Red else Color.Gray
+                        tint = if (isFavoritesOnly) IhsanTheme.colors.favorite else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -236,7 +237,7 @@ private fun ZikrCard(zikr: Zikr, fontSize: Float, onAction: (AzkarAction) -> Uni
                     Icon(
                         imageVector = if (zikr.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = "Favorite",
-                        tint = if (zikr.isFavorite) Color(0xFFE91E63) else Color.Gray,
+                        tint = if (zikr.isFavorite) IhsanTheme.colors.favorite else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(22.dp)
                     )
                 }
@@ -382,13 +383,13 @@ private fun FreeCounterScreen(zikr: Zikr, onAction: (AzkarAction) -> Unit) {
                     style = MaterialTheme.typography.displayLarge.copy(
                         fontSize = 80.sp,
                         fontWeight = FontWeight.Black,
-                        color = Color.White
+                        color = IhsanTheme.colors.onBrand
                     )
                 )
                 Text(
                     "اضغط للتسبيح",
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.White.copy(alpha = 0.7f)
+                    color = IhsanTheme.colors.onBrand.copy(alpha = 0.7f)
                 )
             }
         }

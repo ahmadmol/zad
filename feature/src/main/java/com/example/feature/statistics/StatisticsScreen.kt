@@ -23,9 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.example.designsystem.component.IhsanEmptyState
 import com.example.designsystem.component.IhsanErrorState
 import com.example.designsystem.component.IhsanLoadingState
-import com.example.designsystem.theme.Grey
 import com.example.designsystem.theme.IhsanTheme
-import com.example.designsystem.theme.White
 import com.example.feature.R
 import com.example.feature.azkar.domain.model.DailyStat
 import com.example.feature.statistics.presentation.StatisticsUiState
@@ -142,13 +140,13 @@ fun StatisticsScreen(
                             Text(item.text, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
                             Badge(
                                 containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = White,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.padding(start = IhsanTheme.spacing.small)
                             ) {
                                 Text("${item.dailyProgress}", modifier = Modifier.padding(4.dp))
                             }
                         }
-                        HorizontalDivider(color = Grey.copy(alpha = 0.2f))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                     }
                 }
             }
@@ -159,7 +157,7 @@ fun StatisticsScreen(
 @Composable
 fun DailyProgressChart(stats: List<DailyStat>) {
     val primaryColor = MaterialTheme.colorScheme.primary
-    val labelColor = Grey
+    val labelColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     Canvas(modifier = Modifier.fillMaxWidth().height(200.dp)) {
         val spacing = 16.dp.toPx()

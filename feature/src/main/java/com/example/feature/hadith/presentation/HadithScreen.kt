@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.component.IhsanSearchBar
 import com.example.designsystem.component.shimmerEffect
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.hadith.domain.model.Hadith
 import org.koin.androidx.compose.koinViewModel
 import kotlinx.coroutines.launch
@@ -214,7 +215,7 @@ fun HadithCard(hadith: Hadith, onToggleFavorite: () -> Unit, onOpenDetails: () -
                     Icon(
                         imageVector = if (hadith.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = "Favorite",
-                        tint = if (hadith.isFavorite) Color(0xFFE91E63) else Color.Gray,
+                        tint = if (hadith.isFavorite) IhsanTheme.colors.favorite else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
                 }

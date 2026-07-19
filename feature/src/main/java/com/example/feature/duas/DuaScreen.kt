@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.component.IhsanSearchBar
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.duas.domain.model.Dua
 import com.example.feature.duas.presentation.DuaAction
 import com.example.feature.duas.presentation.DuaViewModel
@@ -47,6 +48,8 @@ fun DuaScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var selectedTab by remember { mutableIntStateOf(0) } // 0: All, 1: Favorites
 
+    val colors = IhsanTheme.colors
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
             topBar = {
@@ -57,14 +60,14 @@ fun DuaScreen(
                     title = if (selectedTab == 1) "المفضلة" else "الأدعية"
                 )
             },
-            containerColor = Color(0xFFF9F9F9)
+            containerColor = colors.surfaceMuted
         ) { padding ->
             Column(modifier = Modifier.padding(padding).fillMaxSize()) {
                 
                 if (uiState.searchQuery.isEmpty()) {
                     TabRow(
                         selectedTabIndex = selectedTab,
-                        containerColor = Color.White,
+                        containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.primary,
                         indicator = { tabPositions ->
                             TabRowDefaults.SecondaryIndicator(
@@ -128,7 +131,7 @@ fun DuaScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DuaTopBar(onBack: () -> Unit, onSearch: (String) -> Unit, searchQuery: String, title: String) {
-    Column(modifier = Modifier.background(Color.White)) {
+    Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
         CenterAlignedTopAppBar(
             title = { Text(title, fontWeight = FontWeight.Bold, fontSize = 20.sp) },
             navigationIcon = {
@@ -167,6 +170,8 @@ private fun CategoryChips(
         "الهم والحزن" to "الهم"
     )
 
+    val colors = IhsanTheme.colors
+
     ScrollableTabRow(
         selectedTabIndex = categories.indexOfFirst { it.first == selectedCategory }.coerceAtLeast(0),
         containerColor = Color.Transparent,
@@ -183,13 +188,17 @@ private fun CategoryChips(
                 modifier = Modifier
                     .padding(vertical = 8.dp, horizontal = 4.dp)
                     .clip(RoundedCornerShape(20.dp))
-                    .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.White)
-                    .border(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray.copy(alpha = 0.5f), RoundedCornerShape(20.dp))
+                    .background(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
+                    .border(
+                        1.dp,
+                        if (isSelected) MaterialTheme.colorScheme.primary else colors.borderSubtle,
+                        RoundedCornerShape(20.dp)
+                    )
             ) {
                 Text(
                     text = label,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    color = if (isSelected) Color.White else Color.Gray,
+                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else colors.textSecondaryMuted,
                     fontSize = 13.sp,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                 )
@@ -206,12 +215,13 @@ private fun DuaCard(
 ) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
+    val colors = IhsanTheme.colors
 
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -223,7 +233,7 @@ private fun DuaCard(
                 Text(
                     text = dua.title,
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -231,7 +241,7 @@ private fun DuaCard(
                 )
                 
                 Surface(
-                    color = Color(0xFFE8F5E9),
+                    color = colors.surfaceMint,
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
@@ -255,7 +265,7 @@ private fun DuaCard(
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth(),
-                color = Color.DarkGray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -270,14 +280,14 @@ private fun DuaCard(
                         Icon(
                             imageVector = if (dua.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = "Favorite",
-                            tint = if (dua.isFavorite) Color.Red else Color.Gray,
+                            tint = if (dua.isFavorite) colors.favorite else colors.textSecondaryMuted,
                             modifier = Modifier.size(20.dp)
                         )
                     }
                     IconButton(onClick = {
                         clipboardManager.setText(AnnotatedString(dua.text))
                     }, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Default.ContentCopy, contentDescription = "Copy", tint = Color.Gray, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.ContentCopy, contentDescription = "Copy", tint = colors.textSecondaryMuted, modifier = Modifier.size(18.dp))
                     }
                     IconButton(onClick = {
                         val sendIntent: Intent = Intent().apply {
@@ -288,14 +298,14 @@ private fun DuaCard(
                         val shareIntent = Intent.createChooser(sendIntent, null)
                         context.startActivity(shareIntent)
                     }, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Default.Share, contentDescription = "Share", tint = Color.Gray, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Share, contentDescription = "Share", tint = colors.textSecondaryMuted, modifier = Modifier.size(18.dp))
                     }
                 }
                 
                 Text(
                     text = dua.source,
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color.Gray,
+                    color = colors.textSecondaryMuted,
                     fontSize = 10.sp
                 )
             }
@@ -305,6 +315,8 @@ private fun DuaCard(
 
 @Composable
 private fun EmptyState(query: String, isFavorite: Boolean, modifier: Modifier = Modifier) {
+    val colors = IhsanTheme.colors
+
     Column(
         modifier = modifier.padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -313,14 +325,14 @@ private fun EmptyState(query: String, isFavorite: Boolean, modifier: Modifier = 
         Box(
             modifier = Modifier
                 .size(120.dp)
-                .background(Color(0xFFF5F5F5), CircleShape),
+                .background(colors.quickActionSurface, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = if (query.isNotEmpty()) Icons.Default.SearchOff else if (isFavorite) Icons.Default.FavoriteBorder else Icons.Default.Info,
                 contentDescription = null,
                 modifier = Modifier.size(60.dp),
-                tint = Color.LightGray
+                tint = colors.textSecondaryMuted.copy(alpha = 0.6f)
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
@@ -331,14 +343,14 @@ private fun EmptyState(query: String, isFavorite: Boolean, modifier: Modifier = 
                 else -> "لا توجد أدعية متاحة حالياً"
             },
             style = MaterialTheme.typography.titleMedium,
-            color = Color.Gray,
+            color = colors.textSecondaryMuted,
             textAlign = TextAlign.Center
         )
         if (query.isNotEmpty()) {
             Text(
                 text = "جرب كلمة بحث أخرى أو تصفح الأقسام المختلفة",
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.LightGray,
+                color = colors.textSecondaryMuted.copy(alpha = 0.7f),
                 modifier = Modifier.padding(top = 8.dp),
                 textAlign = TextAlign.Center
             )

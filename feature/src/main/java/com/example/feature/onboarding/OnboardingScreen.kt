@@ -73,8 +73,8 @@ fun OnboardingScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 repeat(3) { index ->
-                    val color = if (pagerState.currentPage == index) 
-                        MaterialTheme.colorScheme.primary else Color.LightGray
+                    val color = if (pagerState.currentPage == index)
+                        MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
                     Box(
                         modifier = Modifier
                             .size(if (pagerState.currentPage == index) 10.dp else 8.dp)

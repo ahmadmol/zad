@@ -385,9 +385,9 @@ fun ProfileSupportCard(
                 icon = Icons.AutoMirrored.Filled.Logout,
                 title = "تسجيل الخروج",
                 onClick = onLogout,
-                titleColor = Color(0xFFC62828),
-                iconTint = Color(0xFFC62828),
-                iconBackground = Color(0xFFFFEBEE),
+                titleColor = MaterialTheme.colorScheme.error,
+                iconTint = MaterialTheme.colorScheme.error,
+                iconBackground = MaterialTheme.colorScheme.errorContainer,
                 showChevron = true
             )
         }

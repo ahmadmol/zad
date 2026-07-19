@@ -79,7 +79,7 @@ fun LocationPermissionScreen(
             onClick = onPermissionGranted,
             modifier = Modifier.padding(top = 16.dp)
         ) {
-            Text("تخطى الآن", color = Color.Gray)
+            Text("تخطى الآن", color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
