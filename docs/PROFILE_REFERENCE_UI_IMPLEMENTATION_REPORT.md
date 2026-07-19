@@ -17,7 +17,7 @@ Working tree note at start: untracked `docs/screenshots/` left intact (not disca
 | Item | Value |
 |------|--------|
 | Branch | `ui/profile-reference-redesign` |
-| Tip | `25bebc2` |
+| Tip | `f45c59b` |
 
 ## 3. Reference image used
 
