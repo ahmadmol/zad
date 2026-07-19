@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.designsystem.component.IhsanButton
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.azkar.data.local.SettingsManager
 import com.example.feature.prayer.util.BatteryOptimizationHelper
 import org.koin.compose.koinInject
@@ -45,14 +46,16 @@ fun PrayerSettingsBottomSheet(
     
     val isIgnoringOptimizations = remember { BatteryOptimizationHelper.isIgnoringBatteryOptimizations(context) }
 
+    val colors = IhsanTheme.colors
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         modifier = modifier,
         shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
         dragHandle = {
-            BottomSheetDefaults.DragHandle(color = Color.LightGray.copy(alpha = 0.5f))
+            BottomSheetDefaults.DragHandle(color = colors.borderSubtle)
         },
-        containerColor = Color.White
+        containerColor = colors.surfaceElevated
     ) {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             Column(
@@ -163,11 +166,11 @@ fun PrayerSettingsBottomSheet(
                             Icon(Icons.Default.LocationCity, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
-                                Text("المدينة المختارة", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+                                Text("المدينة المختارة", style = MaterialTheme.typography.labelSmall, color = colors.textSecondary)
                                 Text(cityName, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
                             }
                             Spacer(modifier = Modifier.weight(1f))
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color.Gray)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = colors.textSecondary)
                         }
                     }
                 }
@@ -230,7 +233,7 @@ fun SettingsSectionTitle(title: String) {
         text = title,
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold,
-        color = Color.Black,
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier.padding(bottom = 12.dp)
     )
 }
@@ -247,7 +250,7 @@ fun SelectableItem(label: String, isSelected: Boolean, onClick: () -> Unit) {
     ) {
         Text(
             text = label,
-            color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Black,
+            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
         )
         RadioButton(selected = isSelected, onClick = onClick)

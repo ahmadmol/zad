@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
 import com.example.feature.core.util.HijriDateFormatter
 import com.example.feature.prayer.presentation.PrayerAction
@@ -49,6 +50,8 @@ fun PrayerScreen(
     onNavigateBack: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val colors = IhsanTheme.colors
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
@@ -76,7 +79,7 @@ fun PrayerScreen(
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
                 )
             },
-            containerColor = Color(0xFFF8F9FA)
+            containerColor = colors.surfaceMuted
         ) { padding ->
             if (uiState.isLoading && uiState.prayerTimes.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -101,14 +104,14 @@ fun PrayerScreen(
                         text = uiState.locationName,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
+                        style = MaterialTheme.typography.bodyMedium.copy(color = colors.textSecondary)
                     )
                     uiState.locationSourceLabel?.let { source ->
                         Text(
                             text = source,
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray)
+                            style = MaterialTheme.typography.labelSmall.copy(color = colors.textSecondary)
                         )
                     }
                     if (uiState.locationUnavailable) {
@@ -137,7 +140,7 @@ fun PrayerScreen(
                                 .fillMaxHeight()
                                 .padding(start = 12.dp)
                                 .width(1.dp)
-                                .background(Color.LightGray.copy(alpha = 0.5f))
+                                .background(colors.divider)
                                 .align(Alignment.CenterStart)
                         )
 
@@ -167,7 +170,7 @@ fun PrayerScreen(
                                     )
                                     Text(
                                         uiState.hijriDate.ifBlank { HijriDateFormatter.nowFormatted() },
-                                        style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
+                                        style = MaterialTheme.typography.bodySmall.copy(color = colors.textSecondary)
                                     )
                                 }
                             }
@@ -181,6 +184,8 @@ fun PrayerScreen(
 
 @Composable
 fun PrayerTimelineItem(prayer: PrayerTime, countdown: String?, location: String) {
+    val colors = IhsanTheme.colors
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -189,7 +194,7 @@ fun PrayerTimelineItem(prayer: PrayerTime, countdown: String?, location: String)
         Box(
             modifier = Modifier
                 .size(12.dp)
-                .border(2.dp, if (countdown != null) MaterialTheme.colorScheme.primary else Color.LightGray, CircleShape)
+                .border(2.dp, if (countdown != null) MaterialTheme.colorScheme.primary else colors.borderSubtle, CircleShape)
                 .background(if (countdown != null) MaterialTheme.colorScheme.primary else Color.Transparent, CircleShape)
         )
 
@@ -208,13 +213,19 @@ fun PrayerTimelineItem(prayer: PrayerTime, countdown: String?, location: String)
 
 @Composable
 fun StandardPrayerCard(prayer: PrayerTime) {
+    val colors = IhsanTheme.colors
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (prayer.isPast) Color.White.copy(alpha = 0.6f) else Color.White
+            containerColor = if (prayer.isPast) {
+                colors.surfaceElevated.copy(alpha = 0.6f)
+            } else {
+                colors.surfaceElevated
+            }
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = if (prayer.isPast) 0.dp else 2.dp)
     ) {
@@ -232,7 +243,7 @@ fun StandardPrayerCard(prayer: PrayerTime) {
                 )
                 Text(
                     text = prayer.nameEn.uppercase(),
-                    style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray)
+                    style = MaterialTheme.typography.labelSmall.copy(color = colors.textSecondary)
                 )
             }
             
@@ -240,14 +251,14 @@ fun StandardPrayerCard(prayer: PrayerTime) {
                 text = prayer.time,
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    color = if (prayer.isPast) Color.Gray else MaterialTheme.colorScheme.onSurface
+                    color = if (prayer.isPast) colors.textSecondary else MaterialTheme.colorScheme.onSurface
                 )
             )
 
             Icon(
                 imageVector = if (prayer.isPast) Icons.Default.NotificationsOff else Icons.Default.NotificationsNone,
                 contentDescription = null,
-                tint = if (prayer.isPast) Color.LightGray else Color.Gray,
+                tint = if (prayer.isPast) colors.textDisabled else colors.textSecondary,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -278,18 +289,23 @@ fun ActivePrayerCard(prayer: PrayerTime, countdown: String, location: String) {
                     Column {
                         Text(
                             text = prayer.nameAr,
-                            style = MaterialTheme.typography.headlineSmall.copy(color = Color.White, fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.headlineSmall.copy(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontWeight = FontWeight.Bold
+                            )
                         )
                         Text(
                             text = prayer.nameEn.uppercase(),
-                            style = MaterialTheme.typography.labelSmall.copy(color = Color.White.copy(alpha = 0.7f))
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                            )
                         )
                     }
                     
                     IconButton(
                         onClick = {},
                         modifier = Modifier
-                            .background(Color.White.copy(alpha = 0.1f), CircleShape)
+                            .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f), CircleShape)
                             .size(36.dp)
                     ) {
                         Icon(
@@ -305,7 +321,10 @@ fun ActivePrayerCard(prayer: PrayerTime, countdown: String, location: String) {
 
                 Text(
                     text = "الوقت المتبقي",
-                    style = MaterialTheme.typography.labelSmall.copy(color = Color.White.copy(alpha = 0.6f), letterSpacing = 2.sp)
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+                        letterSpacing = 2.sp
+                    )
                 )
                 
                 Text(
@@ -325,11 +344,18 @@ fun ActivePrayerCard(prayer: PrayerTime, countdown: String, location: String) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.LocationOn, contentDescription = null, tint = Color.White.copy(alpha = 0.5f), modifier = Modifier.size(14.dp))
+                        Icon(
+                            Icons.Default.LocationOn,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
+                            modifier = Modifier.size(14.dp)
+                        )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = location,
-                            style = MaterialTheme.typography.labelSmall.copy(color = Color.White.copy(alpha = 0.5f))
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+                            )
                         )
                     }
 
@@ -340,7 +366,10 @@ fun ActivePrayerCard(prayer: PrayerTime, countdown: String, location: String) {
                         Text(
                             text = "جاري الآن",
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelMedium.copy(color = Color.White, fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontWeight = FontWeight.Bold
+                            )
                         )
                     }
                 }
@@ -354,9 +383,11 @@ private fun PrayerSystemStatusSection(
     uiState: PrayerUiState,
     onAction: (PrayerAction) -> Unit
 ) {
+    val colors = IhsanTheme.colors
+
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = colors.surfaceElevated),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
@@ -379,13 +410,13 @@ private fun PrayerSystemStatusSection(
             if (uiState.systemStatusExpanded) {
                 Spacer(modifier = Modifier.height(8.dp))
                 uiState.locationSourceLabel?.let {
-                    Text(it, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
                 }
                 uiState.notificationPermissionLabel?.let {
-                    Text(it, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
                 }
                 uiState.lastScheduleSummary?.let {
-                    Text(it, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
                 }
                 TextButton(onClick = { onAction(PrayerAction.OnRetrySchedule) }) {
                     Text(stringResource(R.string.prayer_reschedule_alarms))

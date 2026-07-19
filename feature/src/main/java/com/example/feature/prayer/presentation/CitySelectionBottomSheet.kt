@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.prayer.domain.model.City
 import com.example.feature.prayer.domain.model.CityProvider
 
@@ -28,14 +29,16 @@ fun CitySelectionBottomSheet(
     onCitySelected: (City) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = IhsanTheme.colors
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         modifier = modifier,
         shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
         dragHandle = {
-            BottomSheetDefaults.DragHandle(color = Color.LightGray.copy(alpha = 0.5f))
+            BottomSheetDefaults.DragHandle(color = colors.borderSubtle)
         },
-        containerColor = Color.White
+        containerColor = colors.surfaceElevated
     ) {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             Column(
@@ -61,7 +64,7 @@ fun CitySelectionBottomSheet(
                             onCitySelected(city)
                             onDismiss()
                         })
-                        HorizontalDivider(color = Color.LightGray.copy(alpha = 0.2f))
+                        HorizontalDivider(color = colors.divider)
                     }
                 }
             }
@@ -71,6 +74,8 @@ fun CitySelectionBottomSheet(
 
 @Composable
 fun CityItem(city: City, onClick: () -> Unit) {
+    val colors = IhsanTheme.colors
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -90,12 +95,12 @@ fun CityItem(city: City, onClick: () -> Unit) {
                 text = city.name,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = city.country,
                 fontSize = 12.sp,
-                color = Color.Gray
+                color = colors.textSecondary
             )
         }
     }

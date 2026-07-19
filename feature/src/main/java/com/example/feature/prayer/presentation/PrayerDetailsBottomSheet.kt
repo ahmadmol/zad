@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.designsystem.component.IhsanButton
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.azkar.data.local.SettingsManager
 import com.example.feature.core.util.HijriDateFormatter
 import com.example.feature.prayer.PrayerTime
@@ -43,14 +44,16 @@ fun PrayerDetailsBottomSheet(
     val prePrayerMins by settingsManager.prePrayerNotificationMinutesFlow.collectAsState(initial = 0)
     val iqamahMins by settingsManager.iqamahNotificationMinutesFlow.collectAsState(initial = 0)
 
+    val colors = IhsanTheme.colors
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         modifier = modifier,
         shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
         dragHandle = {
-            BottomSheetDefaults.DragHandle(color = Color.LightGray.copy(alpha = 0.5f))
+            BottomSheetDefaults.DragHandle(color = colors.borderSubtle)
         },
-        containerColor = Color.White
+        containerColor = colors.surfaceElevated
     ) {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             Column(
@@ -75,7 +78,11 @@ fun PrayerDetailsBottomSheet(
                         Text(
                             text = if (selectedPrayer.isActive) "الصلاة القادمة" else "وقت الصلاة",
                             style = MaterialTheme.typography.bodySmall,
-                            color = if (selectedPrayer.isActive) MaterialTheme.colorScheme.primary else Color.Gray
+                            color = if (selectedPrayer.isActive) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                colors.textSecondary
+                            }
                         )
                     }
                     Text(
@@ -108,7 +115,7 @@ fun PrayerDetailsBottomSheet(
                 )
 
                 Surface(
-                    color = Color(0xFFF8F9FA),
+                    color = colors.surfaceMuted,
                     shape = RoundedCornerShape(20.dp)
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
@@ -117,7 +124,7 @@ fun PrayerDetailsBottomSheet(
                             if (index < allPrayers.size - 1) {
                                 HorizontalDivider(
                                     modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp),
-                                    color = Color.LightGray.copy(alpha = 0.3f)
+                                    color = colors.divider
                                 )
                             }
                         }
@@ -156,7 +163,7 @@ fun PrayerDetailsBottomSheet(
                     onClick = onSettingsClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("إعدادات طريقة الحساب", color = Color.Gray)
+                    Text("إعدادات طريقة الحساب", color = colors.textSecondary)
                 }
             }
         }
@@ -165,6 +172,8 @@ fun PrayerDetailsBottomSheet(
 
 @Composable
 fun CountdownSection(countdown: String) {
+    val colors = IhsanTheme.colors
+
     Surface(
         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
         shape = RoundedCornerShape(16.dp),
@@ -174,7 +183,7 @@ fun CountdownSection(countdown: String) {
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("الوقت المتبقي للأذان", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+            Text("الوقت المتبقي للأذان", style = MaterialTheme.typography.labelSmall, color = colors.textSecondary)
             Text(
                 text = countdown,
                 style = MaterialTheme.typography.displaySmall,
@@ -187,13 +196,15 @@ fun CountdownSection(countdown: String) {
 
 @Composable
 fun InfoRow(icon: androidx.compose.ui.graphics.vector.ImageVector, text: String) {
+    val colors = IhsanTheme.colors
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(vertical = 4.dp)
     ) {
-        Icon(icon, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
+        Icon(icon, contentDescription = null, tint = colors.textSecondary, modifier = Modifier.size(16.dp))
         Spacer(modifier = Modifier.width(8.dp))
-        Text(text, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+        Text(text, style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
     }
 }
 
@@ -214,13 +225,13 @@ fun PrayerItemRow(prayer: PrayerTime, isNext: Boolean) {
             Text(
                 text = prayer.nameAr,
                 fontWeight = if (isNext) FontWeight.Bold else FontWeight.Normal,
-                color = if (isNext) MaterialTheme.colorScheme.primary else Color.Black
+                color = if (isNext) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
             )
         }
         Text(
             text = prayer.time,
             fontWeight = if (isNext) FontWeight.Bold else FontWeight.Normal,
-            color = if (isNext) MaterialTheme.colorScheme.primary else Color.Black
+            color = if (isNext) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -232,8 +243,10 @@ fun NotificationSettings(
     onUpdatePrePrayer: (Int) -> Unit,
     onUpdateIqamah: (Int) -> Unit
 ) {
+    val colors = IhsanTheme.colors
+
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("تنبيه قبل الصلاة بـ:", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+        Text("تنبيه قبل الصلاة بـ:", style = MaterialTheme.typography.labelSmall, color = colors.textSecondary)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -244,8 +257,11 @@ fun NotificationSettings(
                 
                 Surface(
                     onClick = { onUpdatePrePrayer(mins) },
-                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.White,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray.copy(alpha = 0.5f)),
+                    color = if (isSelected) MaterialTheme.colorScheme.primary else colors.surfaceElevated,
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        if (isSelected) MaterialTheme.colorScheme.primary else colors.borderSubtle
+                    ),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.weight(1f)
                 ) {
@@ -254,7 +270,11 @@ fun NotificationSettings(
                         modifier = Modifier.padding(vertical = 8.dp),
                         textAlign = TextAlign.Center,
                         fontSize = 12.sp,
-                        color = if (isSelected) Color.White else Color.Gray,
+                        color = if (isSelected) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            colors.textSecondary
+                        },
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                     )
                 }
@@ -262,7 +282,7 @@ fun NotificationSettings(
         }
         
         Spacer(modifier = Modifier.height(8.dp))
-        Text("تنبيه الإقامة بعد:", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+        Text("تنبيه الإقامة بعد:", style = MaterialTheme.typography.labelSmall, color = colors.textSecondary)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -273,8 +293,11 @@ fun NotificationSettings(
                 
                 Surface(
                     onClick = { onUpdateIqamah(mins) },
-                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.White,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray.copy(alpha = 0.5f)),
+                    color = if (isSelected) MaterialTheme.colorScheme.primary else colors.surfaceElevated,
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        if (isSelected) MaterialTheme.colorScheme.primary else colors.borderSubtle
+                    ),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.weight(1f)
                 ) {
@@ -283,7 +306,11 @@ fun NotificationSettings(
                         modifier = Modifier.padding(vertical = 8.dp),
                         textAlign = TextAlign.Center,
                         fontSize = 12.sp,
-                        color = if (isSelected) Color.White else Color.Gray,
+                        color = if (isSelected) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            colors.textSecondary
+                        },
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                     )
                 }

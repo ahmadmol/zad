@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.example.designsystem.component.DailyActivityItemData
 import com.example.designsystem.component.IhsanEmptyState
+import com.example.designsystem.theme.IhsanTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -121,7 +122,7 @@ private fun SummaryCard(percentage: Int, progress: Float) {
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = IhsanTheme.colors.onWarning
                     )
                 }
             }

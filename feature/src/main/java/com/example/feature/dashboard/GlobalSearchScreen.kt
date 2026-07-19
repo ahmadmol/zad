@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.component.IhsanActionCard
 import com.example.designsystem.component.IhsanSearchBar
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.azkar.presentation.AzkarViewModel
 import com.example.feature.duas.presentation.DuaViewModel
 import com.example.feature.quran.presentation.QuranViewModel
@@ -80,7 +81,7 @@ fun GlobalSearchScreen(
                 if (query.isEmpty()) {
                     item {
                         Box(Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("ابحث في كل محتوى التطبيق", color = Color.Gray)
+                            Text("ابحث في كل محتوى التطبيق", color = IhsanTheme.colors.textSecondary)
                         }
                     }
                 } else {
