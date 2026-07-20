@@ -9,24 +9,27 @@ import org.junit.Test
 class AdhanNotificationChannelFactoryTest {
 
     @Test
-    fun `channel id differs from legacy prayer notification id`() {
-        val sound = "content://settings/system/alarm_alert"
-        val legacy = "prayer_notifications_DEFAULT_ATHAN_${sound.hashCode()}"
+    fun `channel id uses adhan v3 and differs from legacy ids`() {
+        val sound = "android.resource://com.example.mol/2131820544"
+        val legacyV1 = "prayer_notifications_DEFAULT_ATHAN_${sound.hashCode()}"
+        val legacyV2 = "prayer_notifications_alarm_v2_DEFAULT_ATHAN_${sound.hashCode()}"
         val next = AdhanNotificationChannelFactory.buildChannelId("DEFAULT_ATHAN", sound)
-        assertNotEquals(legacy, next)
-        assertTrue(next.contains("alarm_v2"))
-        assertTrue(AdhanNotificationChannelFactory.isLegacyChannelId(legacy))
+        assertNotEquals(legacyV1, next)
+        assertNotEquals(legacyV2, next)
+        assertTrue(next.startsWith("prayer_notifications_adhan_v3_"))
+        assertTrue(AdhanNotificationChannelFactory.isLegacyChannelId(legacyV1))
+        assertTrue(AdhanNotificationChannelFactory.isLegacyChannelId(legacyV2))
         assertFalse(AdhanNotificationChannelFactory.isLegacyChannelId(next))
     }
 
     @Test
     fun `same sound and version produce stable channel id`() {
-        val sound = "content://media/internal/audio/media/42"
+        val sound = "android.resource://com.example.mol/2131820544"
         val first = AdhanNotificationChannelFactory.buildChannelId("DEFAULT_ATHAN", sound)
         val second = AdhanNotificationChannelFactory.buildChannelId("DEFAULT_ATHAN", sound)
         assertEquals(first, second)
         assertEquals(
-            "prayer_notifications_alarm_v2_DEFAULT_ATHAN_${sound.hashCode()}",
+            "prayer_notifications_adhan_v3_DEFAULT_ATHAN_${sound.hashCode()}",
             first
         )
     }
@@ -35,11 +38,11 @@ class AdhanNotificationChannelFactoryTest {
     fun `different sound produces different channel id`() {
         val a = AdhanNotificationChannelFactory.buildChannelId(
             "DEFAULT_ATHAN",
-            "content://settings/system/alarm_alert"
+            "android.resource://com.example.mol/1"
         )
         val b = AdhanNotificationChannelFactory.buildChannelId(
             "DEFAULT_ATHAN",
-            "content://settings/system/notification_sound"
+            "content://settings/system/alarm_alert"
         )
         assertNotEquals(a, b)
     }
@@ -53,14 +56,12 @@ class AdhanNotificationChannelFactoryTest {
         )
         assertNotEquals(silent, shortTone)
         assertTrue(silent.endsWith("_0"))
+        assertTrue(silent.contains("adhan_v3"))
     }
 
     @Test
-    fun `worker legacy adhan channel prefix is treated as legacy`() {
-        val workerLegacy = "adhan_notifications_-12345"
-        // Worker-specific legacy IDs are outside prayer_notifications_*; ensure we do not
-        // accidentally rewrite unrelated media/message channel strategies in this helper.
-        assertFalse(AdhanNotificationChannelFactory.isLegacyChannelId(workerLegacy))
+    fun `unrelated channel strategies are not treated as prayer legacy`() {
+        assertFalse(AdhanNotificationChannelFactory.isLegacyChannelId("adhan_notifications_-12345"))
         assertFalse(
             AdhanNotificationChannelFactory.isLegacyChannelId("media3_playback_channel")
         )
