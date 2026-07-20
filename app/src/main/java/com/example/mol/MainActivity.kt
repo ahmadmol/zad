@@ -33,6 +33,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        maybeTriggerDebugAdhanTest(intent)
         setContent {
             val context = LocalContext.current
             val settingsViewModel: SettingsViewModel = koinViewModel()
@@ -66,6 +67,32 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        maybeTriggerDebugAdhanTest(intent)
+    }
+
+    /**
+     * Debug-only adhan sound verification path (no production UI).
+     * adb shell am start -n com.example.mol/.MainActivity -a com.example.mol.DEBUG_ADHAN_TEST
+     */
+    private fun maybeTriggerDebugAdhanTest(intent: Intent?) {
+        if (!BuildConfig.DEBUG) return
+        if (intent?.action != ACTION_DEBUG_ADHAN_TEST) return
+        com.example.feature.prayer.util.AdhanNotificationChannelFactory.showNotification(
+            context = this,
+            title = intent.getStringExtra("title") ?: "AdhanTest",
+            message = intent.getStringExtra("message") ?: "AlarmUsageCheck",
+            soundType = "DEFAULT_ATHAN",
+            customAdhanUri = null
+        )
+    }
+
+    companion object {
+        const val ACTION_DEBUG_ADHAN_TEST = "com.example.mol.DEBUG_ADHAN_TEST"
     }
 }
 
