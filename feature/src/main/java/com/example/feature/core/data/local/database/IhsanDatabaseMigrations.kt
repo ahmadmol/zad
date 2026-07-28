@@ -11,6 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
  * - a5b0fb8: version 3 + MIGRATION_2_3 (hadiths.explanation)
  * - 223c540: version bumped 3 → 5 with identical entity list (no schema SQL change)
  * - Version 4: never existed as a committed [IhsanDatabase] version (docs only)
+ * - Version 6: UserEntity gained non-null [users.role] (no SQLite DEFAULT in final schema)
  */
 object IhsanDatabaseMigrations {
 
@@ -37,6 +38,44 @@ object IhsanDatabaseMigrations {
         }
     }
 
+    /**
+     * v5 → v6: add non-null [users.role] without a SQLite DEFAULT clause.
+     *
+     * Table-rebuild preserves all existing user rows and fills role = 'USER'.
+     * Evidence: UserEntity + schema export identity change
+     * 835d171ca156c029f2adb5df88a5c532 → 56390874ec553eb23c1300d91f52bfcd.
+     * users has no indices / foreign keys in schema 5 or 6.
+     */
+    val MIGRATION_5_6 = object : Migration(5, 6) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `users_new` (
+                  `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                  `firstName` TEXT NOT NULL,
+                  `lastName` TEXT NOT NULL,
+                  `phoneNumber` TEXT NOT NULL,
+                  `city` TEXT NOT NULL,
+                  `address` TEXT NOT NULL,
+                  `role` TEXT NOT NULL
+                )
+                """.trimIndent()
+            )
+            database.execSQL(
+                """
+                INSERT INTO `users_new` (
+                  `id`, `firstName`, `lastName`, `phoneNumber`, `city`, `address`, `role`
+                )
+                SELECT
+                  `id`, `firstName`, `lastName`, `phoneNumber`, `city`, `address`, 'USER'
+                FROM `users`
+                """.trimIndent()
+            )
+            database.execSQL("DROP TABLE `users`")
+            database.execSQL("ALTER TABLE `users_new` RENAME TO `users`")
+        }
+    }
+
     /** All migrations required to reach the current database version from supported sources. */
-    val ALL: Array<Migration> = arrayOf(MIGRATION_2_3, MIGRATION_3_5)
+    val ALL: Array<Migration> = arrayOf(MIGRATION_2_3, MIGRATION_3_5, MIGRATION_5_6)
 }

@@ -2,14 +2,18 @@ package com.example.feature.core.data.local.database
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -18,39 +22,85 @@ import org.junit.runner.RunWith
  *
  * Historical schemas are created with SQL derived from entity definitions at the
  * corresponding git versions (v2 vs v3/v5), not fabricated Room schema JSON.
+ * v5 → v6 uses [MigrationTestHelper] against exported schema JSON.
  */
 @RunWith(AndroidJUnit4::class)
 class IhsanDatabaseMigrationTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
     private val dbName = "ihsan_migration_test.db"
+    private val helperDbName = "ihsan_migration_helper_5_6.db"
+
+    @get:Rule
+    val migrationTestHelper = MigrationTestHelper(
+        InstrumentationRegistry.getInstrumentation(),
+        IhsanDatabase::class.java,
+        emptyList(),
+        FrameworkSQLiteOpenHelperFactory()
+    )
 
     @After
     fun tearDown() {
         context.deleteDatabase(dbName)
+        context.deleteDatabase(helperDbName)
     }
 
     @Test
-    fun migrate3To5_preservesRepresentativeData() {
+    fun migrate5To6_withMigrationTestHelper_preservesUserRowsAndAddsRole() {
+        migrationTestHelper.createDatabase(helperDbName, 5).apply {
+            execSQL(
+                """
+                INSERT INTO users (id, firstName, lastName, phoneNumber, city, address)
+                VALUES (42, 'MigFirst', 'MigLast', '0500999888', 'TestCity', 'TestAddress')
+                """.trimIndent()
+            )
+            close()
+        }
+
+        migrationTestHelper.runMigrationsAndValidate(
+            helperDbName,
+            6,
+            true,
+            IhsanDatabaseMigrations.MIGRATION_5_6
+        ).use { db ->
+            db.query(
+                "SELECT firstName, lastName, phoneNumber, city, address, role FROM users WHERE id = 42"
+            ).use { c ->
+                assertTrue(c.moveToFirst())
+                assertEquals("MigFirst", c.getString(0))
+                assertEquals("MigLast", c.getString(1))
+                assertEquals("0500999888", c.getString(2))
+                assertEquals("TestCity", c.getString(3))
+                assertEquals("TestAddress", c.getString(4))
+                assertEquals("USER", c.getString(5))
+            }
+            assertTrue(hasColumn(db, "users", "role"))
+            assertFalse(hasDefaultValueOnColumn(db, "users", "role"))
+        }
+    }
+
+    @Test
+    fun migrate3To6_preservesRepresentativeData() {
         createDatabaseAtVersion(3) { db -> insertV3RepresentativeData(db) }
 
         val roomDb = openMigratedDatabase()
         try {
             assertPreservedV3Data(roomDb)
-            assertEquals(5, roomDb.openHelper.readableDatabase.version)
+            assertEquals(6, roomDb.openHelper.readableDatabase.version)
+            assertUserRoleIsUser(roomDb)
         } finally {
             roomDb.close()
         }
     }
 
     @Test
-    fun migrate2To5_addsExplanationAndPreservesData() {
+    fun migrate2To6_addsExplanationAndPreservesData() {
         createDatabaseAtVersion(2) { db -> insertV2RepresentativeData(db) }
 
         val roomDb = openMigratedDatabase()
         try {
             val sqlite = roomDb.openHelper.readableDatabase
-            assertEquals(5, sqlite.version)
+            assertEquals(6, sqlite.version)
             assertTrue(hasColumn(sqlite, "hadiths", "explanation"))
 
             sqlite.query("SELECT text, explanation FROM hadiths WHERE id = 201").use { c ->
@@ -58,9 +108,10 @@ class IhsanDatabaseMigrationTest {
                 assertEquals("حديث تجريبي", c.getString(0))
                 assertTrue(c.isNull(1))
             }
-            sqlite.query("SELECT phoneNumber FROM users WHERE id = 1").use { c ->
+            sqlite.query("SELECT phoneNumber, role FROM users WHERE id = 1").use { c ->
                 assertTrue(c.moveToFirst())
                 assertEquals("0500000001", c.getString(0))
+                assertEquals("USER", c.getString(1))
             }
             sqlite.query("SELECT currentCount FROM azkar_table WHERE id = 11").use { c ->
                 assertTrue(c.moveToFirst())
@@ -72,13 +123,14 @@ class IhsanDatabaseMigrationTest {
     }
 
     @Test
-    fun migrate3To5_secondOpenDoesNotWipeData() {
+    fun migrate3To6_secondOpenDoesNotWipeData() {
         createDatabaseAtVersion(3) { db -> insertV3RepresentativeData(db) }
         openMigratedDatabase().close()
 
         val roomDb = openMigratedDatabase()
         try {
             assertPreservedV3Data(roomDb)
+            assertUserRoleIsUser(roomDb)
         } finally {
             roomDb.close()
         }
@@ -343,11 +395,40 @@ class IhsanDatabaseMigrationTest {
         assertTrue(hasColumn(db, "hadiths", "explanation"))
     }
 
+    private fun assertUserRoleIsUser(roomDb: IhsanDatabase) {
+        val db = roomDb.openHelper.readableDatabase
+        db.query("SELECT role FROM users WHERE id = 1").use { c ->
+            assertTrue(c.moveToFirst())
+            assertEquals("USER", c.getString(0))
+        }
+    }
+
     private fun hasColumn(db: SupportSQLiteDatabase, table: String, column: String): Boolean {
         db.query("PRAGMA table_info(`$table`)").use { c ->
             val nameIndex = c.getColumnIndex("name")
             while (c.moveToNext()) {
                 if (c.getString(nameIndex) == column) return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * Ensures [users.role] was created without a SQLite DEFAULT clause
+     * (matches Room export: `role TEXT NOT NULL` with no defaultValue).
+     */
+    private fun hasDefaultValueOnColumn(
+        db: SupportSQLiteDatabase,
+        table: String,
+        column: String
+    ): Boolean {
+        db.query("PRAGMA table_info(`$table`)").use { c ->
+            val nameIndex = c.getColumnIndex("name")
+            val dfltIndex = c.getColumnIndex("dflt_value")
+            while (c.moveToNext()) {
+                if (c.getString(nameIndex) == column) {
+                    return !c.isNull(dfltIndex)
+                }
             }
         }
         return false

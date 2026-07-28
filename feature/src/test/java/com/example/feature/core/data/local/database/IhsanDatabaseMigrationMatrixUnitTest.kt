@@ -14,24 +14,36 @@ class IhsanDatabaseMigrationMatrixUnitTest {
     }
 
     @Test
-    fun `supported migrations cover 2_3 and 3_5 only`() {
+    fun `supported migrations cover 2_3 and 3_5 and 5_6`() {
         val migrations = IhsanDatabaseMigrations.ALL
-        assertEquals(2, migrations.size)
+        assertEquals(3, migrations.size)
         assertEquals(2, migrations[0].startVersion)
         assertEquals(3, migrations[0].endVersion)
         assertEquals(3, migrations[1].startVersion)
         assertEquals(5, migrations[1].endVersion)
+        assertEquals(5, migrations[2].startVersion)
+        assertEquals(6, migrations[2].endVersion)
     }
 
     @Test
-    fun `current schema export exists for version 5`() {
-        val schema = File(
+    fun `schema exports exist for versions 5 and 6`() {
+        val schema5 = File(
             repoRoot,
             "feature/schemas/com.example.feature.core.data.local.database.IhsanDatabase/5.json"
         )
-        assertTrue(schema.exists())
-        val text = schema.readText()
-        assertTrue(text.contains("\"version\": 5") || text.contains("\"identityHash\""))
+        val schema6 = File(
+            repoRoot,
+            "feature/schemas/com.example.feature.core.data.local.database.IhsanDatabase/6.json"
+        )
+        assertTrue(schema5.exists())
+        assertTrue(schema6.exists())
+        val text5 = schema5.readText()
+        val text6 = schema6.readText()
+        assertTrue(text5.contains("\"version\": 5"))
+        assertTrue(text5.contains("835d171ca156c029f2adb5df88a5c532"))
+        assertFalse(text5.contains("\"columnName\": \"role\""))
+        assertTrue(text6.contains("\"version\": 6"))
+        assertTrue(text6.contains("\"columnName\": \"role\""))
     }
 
     @Test
@@ -51,8 +63,9 @@ class IhsanDatabaseMigrationMatrixUnitTest {
         )
         assertTrue(test.exists())
         val text = test.readText()
-        assertTrue(text.contains("migrate2To5"))
-        assertTrue(text.contains("migrate3To5"))
+        assertTrue(text.contains("migrate2To5") || text.contains("migrate2To6"))
+        assertTrue(text.contains("migrate3To5") || text.contains("migrate3To6"))
+        assertTrue(text.contains("migrate5To6") || text.contains("MigrationTestHelper"))
         assertTrue(text.contains("IhsanDatabaseMigrations.ALL"))
     }
 }
