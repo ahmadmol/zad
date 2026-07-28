@@ -5,14 +5,21 @@ import android.content.pm.PackageManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.feature.R
 import com.example.feature.core.preferences.UserPreferences
@@ -35,7 +42,7 @@ fun SplashScreen(
     LaunchedEffect(Unit) {
         delay(1500L)
         val hasCompletedOnboarding = userPreferences.hasCompletedOnboarding.first()
-        
+
         if (!hasCompletedOnboarding) {
             onNavigateToOnboarding()
         } else {
@@ -43,7 +50,7 @@ fun SplashScreen(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
-            
+
             if (hasLocationPermission) {
                 onNavigateToMain()
             } else {
@@ -55,13 +62,25 @@ fun SplashScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(SplashBackground)
+            .background(SplashBackground),
+        contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.splash_ihsan_logo),
-            contentDescription = "إحسان",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            val maxLogoWidth = minOf(maxWidth * 0.72f, 280.dp)
+            Image(
+                painter = painterResource(id = R.drawable.splash_ihsan_logo),
+                contentDescription = "إحسان",
+                modifier = Modifier
+                    .widthIn(max = maxLogoWidth)
+                    .fillMaxWidth(0.72f)
+                    .aspectRatio(1f),
+                contentScale = ContentScale.Fit
+            )
+        }
     }
 }
