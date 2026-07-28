@@ -23,6 +23,7 @@ data class HomeDashboardUiState(
     val currentTime: String = "",
     val hijriDate: String = "",
     val isRefreshing: Boolean = false,
+    val refreshErrorMessage: String? = null,
     val selectedPrayerIndex: Int? = null,
     val isPrayerSettingsVisible: Boolean = false,
     val isCitySelectionVisible: Boolean = false
@@ -64,7 +65,6 @@ data class HomeDashboardUiState(
                 dailyZikrPercentage = dhikrContent?.percentageLabel ?: "٠٪",
                 communityOffersCount = charityContent?.offersCount ?: 0,
                 communityRequestsCount = charityContent?.requestsCount ?: 0,
-                activeVolunteersCount = charityContent?.activeVolunteersCount ?: 0,
                 dailyDuas = dhikrContent?.previewItems?.map {
                     Zikr(
                         id = it.id,
@@ -123,7 +123,6 @@ data class HomeDashboardData(
     val dailyZikrPercentage: String = "٠٪",
     val communityOffersCount: Int = 0,
     val communityRequestsCount: Int = 0,
-    val activeVolunteersCount: Int = 0,
     val dailyDuas: List<Zikr> = emptyList(),
     val dailyActivities: List<DailyActivityItemData> = emptyList(),
     val lastReadSurahId: Int? = null,

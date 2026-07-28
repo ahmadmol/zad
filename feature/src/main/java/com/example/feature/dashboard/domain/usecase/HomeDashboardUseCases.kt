@@ -18,6 +18,7 @@ import com.example.feature.dashboard.domain.model.HomeSectionState
 import com.example.feature.dashboard.domain.repository.DailyActivityRepository
 import com.example.feature.ehsan.domain.usecase.GetDonationsUseCase
 import com.example.feature.prayer.domain.calculator.NextPrayerSelector
+import com.example.feature.prayer.domain.calculator.PrayerActivityWindow
 import com.example.feature.prayer.domain.facade.PrayerTimesFacade
 import com.example.feature.prayer.domain.model.PrayerLocationState
 import com.example.feature.quran.domain.repository.QuranRepository
@@ -25,7 +26,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
@@ -33,7 +33,6 @@ private const val DEFAULT_ASMA_NAME = "الرَّحْمَنُ"
 private const val DEFAULT_ASMA_TRANSLIT = "Ar-Rahman"
 private const val DEFAULT_ASMA_MEANING = "The Entirely Merciful"
 private const val DEFAULT_ZIKR_TITLE = "الورد اليومي"
-private const val HARDCODED_VOLUNTEERS = 12
 
 class ObserveHomeProfileSummaryUseCase(
     private val userPreferences: UserPreferences
@@ -56,8 +55,6 @@ class ObserveHomeProfileSummaryUseCase(
 class ObserveHomePrayerSummaryUseCase(
     private val prayerFacade: PrayerTimesFacade
 ) {
-    private val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
-
     operator fun invoke(): Flow<HomeSectionState<HomePrayerSummary>> =
         combine(
             prayerFacade.nextPrayer,
@@ -66,12 +63,12 @@ class ObserveHomePrayerSummaryUseCase(
         ) { next, day, location ->
             val now = System.currentTimeMillis()
             val prayers = day?.instants?.map { instant ->
-                val activeEnd = instant.epochMillis + 45 * 60 * 1000
-                val isActive = now >= instant.epochMillis && now < activeEnd
+                val isActive = PrayerActivityWindow.isActive(instant.epochMillis, now)
                 HomePrayerItem(
                     nameAr = instant.name.arabic,
                     nameEn = instant.name.english,
-                    timeLabel = timeFormat.format(Date(instant.epochMillis)),
+                    timeLabel = com.example.feature.dashboard.presentation.ArabicClockFormatter
+                        .format(Date(instant.epochMillis)),
                     timestamp = instant.epochMillis,
                     isPast = now > instant.epochMillis && !isActive,
                     isActive = isActive
@@ -121,7 +118,7 @@ class ObserveHomeQuranSummaryUseCase(
             if (surahId == null || ayahNumber == null || surahId <= 0 || ayahNumber <= 0) {
                 HomeSectionState.Empty()
             } else {
-                val surah = runCatching { quranRepository.getSurahById(surahId) }.getOrNull()
+                val surah = quranRepository.getSurahById(surahId)
                 HomeSectionState.Content(
                     HomeQuranSummary(
                         surahId = surahId,
@@ -209,8 +206,7 @@ class ObserveHomeCharitySummaryUseCase(
                     HomeSectionState.Content(
                         HomeCharitySummary(
                             offersCount = donations.count { it.type == "OFFER" },
-                            requestsCount = donations.count { it.type == "REQUEST" },
-                            activeVolunteersCount = HARDCODED_VOLUNTEERS
+                            requestsCount = donations.count { it.type == "REQUEST" }
                         )
                     )
                 }
@@ -222,9 +218,10 @@ class RefreshHomeDashboardUseCase(
     private val prayerFacade: PrayerTimesFacade,
     private val dailyActivityRepository: DailyActivityRepository
 ) {
-    suspend operator fun invoke() {
-        dailyActivityRepository.resetIfRequired()
-        prayerFacade.refreshLocation()
+    suspend operator fun invoke(): Result<Unit> {
+        val resetResult = dailyActivityRepository.resetIfRequired()
+        if (resetResult.isFailure) return resetResult
+        return prayerFacade.refreshLocation()
     }
 }
 

@@ -12,36 +12,48 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.AutoStories
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.BrightnessLow
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.LiveTv
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material.icons.filled.VolunteerActivism
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.component.DailyActivityCard
 import com.example.designsystem.component.DailyActivityItemData
 import com.example.designsystem.component.DashboardHeader
-import com.example.designsystem.component.LastReadCard
 import com.example.designsystem.theme.IhsanTheme
+import com.example.feature.R
 import com.example.feature.core.notification.UserMessageNotifier
 import com.example.feature.core.util.HijriDateFormatter
 import com.example.feature.dashboard.presentation.HomeDashboardAction
@@ -49,6 +61,10 @@ import com.example.feature.dashboard.presentation.HomeDashboardViewModel
 import com.example.feature.dashboard.presentation.components.AsmaHighlightCard
 import com.example.feature.dashboard.presentation.components.DailyExperienceCard
 import com.example.feature.dashboard.presentation.components.HomeQuickActions
+import com.example.feature.dashboard.presentation.components.HomeRefreshErrorNotice
+import com.example.feature.dashboard.presentation.components.HomeSectionStateCard
+import com.example.feature.dashboard.presentation.components.HomeSectionStateNotice
+import com.example.feature.dashboard.presentation.components.HomeServicesSection
 import com.example.feature.dashboard.presentation.components.NearbyCharityCard
 import com.example.feature.dashboard.presentation.components.QiblaShortcutCard
 import com.example.feature.prayer.presentation.CitySelectionBottomSheet
@@ -79,11 +95,13 @@ fun HomeDashboardScreen(
     onNavigateToTasbih: () -> Unit = {},
     onNavigateToHaramLive: () -> Unit = {},
     onNavigateToNabawiLive: () -> Unit = {},
+    onNavigateToStatistics: () -> Unit = {},
     onNavigateToIhsanPlusDaily: (() -> Unit)? = null,
     onContinueLastRead: (surahId: Int, ayahNumber: Int) -> Unit = { _, _ -> }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var showLiveChooser by remember { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -104,24 +122,37 @@ fun HomeDashboardScreen(
         }
     }
 
-    val actions = remember {
+    val primaryActions = remember {
         listOf(
             HomeIslamicAction("البوصلة", Icons.Default.Explore, "qibla"),
             HomeIslamicAction("أسماء الله", Icons.Default.AutoAwesome, "asma"),
             HomeIslamicAction("دعاء", Icons.Default.VolunteerActivism, "dua"),
             HomeIslamicAction("القرآن", Icons.AutoMirrored.Filled.MenuBook, "quran"),
-            HomeIslamicAction("بث مباشر", Icons.Default.LiveTv, "haram"),
-            HomeIslamicAction("بث النبوي", Icons.Default.LiveTv, "nabawi"),
-            HomeIslamicAction("حديث", Icons.Default.AutoStories, "hadith"),
-            HomeIslamicAction("أذكار", Icons.Default.SelfImprovement, "azkar"),
-            HomeIslamicAction("تسبيح", Icons.Default.BrightnessLow, "tasbih")
+            HomeIslamicAction("بث مباشر", Icons.Default.LiveTv, "live_chooser")
+        )
+    }
+
+    val serviceActions = remember {
+        listOf(
+            HomeIslamicAction("الأحاديث", Icons.Default.AutoStories, "hadith"),
+            HomeIslamicAction("الأذكار", Icons.Default.SelfImprovement, "azkar"),
+            HomeIslamicAction("التسبيح", Icons.Default.BrightnessLow, "tasbih"),
+            HomeIslamicAction("مواقيت الصلاة", Icons.Default.AccessTime, "prayer"),
+            HomeIslamicAction("بث الحرم المكي", Icons.Default.LiveTv, "haram"),
+            HomeIslamicAction("بث المسجد النبوي", Icons.Default.LiveTv, "nabawi"),
+            HomeIslamicAction("البحث", Icons.Default.Search, "search"),
+            HomeIslamicAction("النشاطات اليومية", Icons.AutoMirrored.Filled.List, "daily"),
+            HomeIslamicAction("التذكيرات", Icons.Default.Notifications, "reminders"),
+            HomeIslamicAction("الإحصائيات", Icons.Default.BarChart, "statistics")
         )
     }
 
     val onActionClick: (String) -> Unit = remember(
         onNavigateToQibla, onNavigateToQuran, onNavigateToAzkar,
         onNavigateToDua, onNavigateToHadith, onNavigateToAsma,
-        onNavigateToTasbih, onNavigateToHaramLive, onNavigateToNabawiLive
+        onNavigateToTasbih, onNavigateToHaramLive, onNavigateToNabawiLive,
+        onNavigateToPrayer, onNavigateToSearch, onNavigateToDailyActivities,
+        onNavigateToReminders, onNavigateToStatistics
     ) {
         { route ->
             when (route) {
@@ -134,6 +165,12 @@ fun HomeDashboardScreen(
                 "tasbih" -> onNavigateToTasbih()
                 "haram" -> onNavigateToHaramLive()
                 "nabawi" -> onNavigateToNabawiLive()
+                "prayer" -> onNavigateToPrayer()
+                "search" -> onNavigateToSearch()
+                "daily" -> onNavigateToDailyActivities()
+                "reminders" -> onNavigateToReminders()
+                "statistics" -> onNavigateToStatistics()
+                "live_chooser" -> showLiveChooser = true
                 else -> UserMessageNotifier.notify(
                     context,
                     "قريبًا، سيتم تفعيل هذه الميزة لاحقًا"
@@ -142,17 +179,25 @@ fun HomeDashboardScreen(
         }
     }
 
-    val prayerTimesDisplay = remember(uiState.data.allPrayers) {
-        uiState.data.allPrayers.map { it.nameAr to it.time }
+    // Compact hero shows five daytime cards; Maghrib stays on the full prayer screen.
+    val visiblePrayers = remember(uiState.data.allPrayers) {
+        uiState.data.allPrayers.filterNot { it.nameAr.contains("المغرب") }
+    }
+    val prayerTimesDisplay = remember(visiblePrayers) {
+        visiblePrayers.map { it.nameAr to it.time }
     }
 
-    val activePrayerIndex = remember(uiState.data.allPrayers) {
-        uiState.data.allPrayers.indexOfFirst { it.isActive }.takeIf { it != -1 } ?: 0
+    val activePrayerIndex = remember(visiblePrayers) {
+        visiblePrayers.indexOfFirst { it.isActive }.takeIf { it != -1 } ?: 0
     }
 
     val greeting = remember(uiState.data.userName) {
         val name = uiState.data.userName.trim()
-        if (name.isNotEmpty()) "أهلاً بك يا $name" else "أهلاً بك في إحسان"
+        if (name.isNotEmpty() && name != "مستخدم إحسان") {
+            "أهلاً بك، $name"
+        } else {
+            "أهلاً بك في إحسان"
+        }
     }
 
     val nextPrayerInfo = remember(
@@ -172,6 +217,7 @@ fun HomeDashboardScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.primary)
+            .verticalScroll(rememberScrollState())
     ) {
         DashboardHeader(
             currentTime = uiState.data.currentTime.ifBlank { "—" },
@@ -188,49 +234,74 @@ fun HomeDashboardScreen(
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .weight(1f),
-            color = IhsanTheme.colors.surfaceMuted,
+                .offset(y = (-24).dp),
+            color = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(
-                topStart = IhsanTheme.dimens.radiusSheet,
-                topEnd = IhsanTheme.dimens.radiusSheet
+                topStart = 28.dp,
+                topEnd = 28.dp
             )
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
+                uiState.refreshErrorMessage?.let { message ->
+                    HomeRefreshErrorNotice(
+                        message = message,
+                        onRetry = { viewModel.onAction(HomeDashboardAction.OnRefresh) }
+                    )
+                }
+
+                HomeSectionStateNotice(
+                    state = uiState.prayer,
+                    onRetry = { viewModel.onAction(HomeDashboardAction.OnRetryPrayer) }
+                )
+
                 HomeQuickActions(
-                    actions = actions,
+                    actions = primaryActions,
                     onActionClick = onActionClick
+                )
+
+                HomeServicesSection(
+                    services = serviceActions,
+                    onServiceClick = onActionClick
                 )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    if (uiState.data.spotlightAllahName.isNotBlank()) {
+                    HomeSectionStateCard(
+                        state = uiState.asma,
+                        onRetry = { viewModel.onAction(HomeDashboardAction.OnRefresh) },
+                        modifier = Modifier.weight(1f)
+                    ) { asma ->
                         AsmaHighlightCard(
-                            name = uiState.data.spotlightAllahName,
-                            transliteration = uiState.data.spotlightTransliteration,
-                            meaning = uiState.data.spotlightMeaning,
-                            onClick = onNavigateToAsma,
-                            modifier = Modifier.weight(1f)
+                            name = asma.name,
+                            transliteration = asma.transliteration,
+                            meaning = asma.meaning,
+                            onClick = onNavigateToAsma
                         )
                     }
-                    NearbyCharityCard(
-                        offersCount = uiState.data.communityOffersCount,
-                        requestsCount = uiState.data.communityRequestsCount,
-                        onClick = onNavigateToDonations,
+                    HomeSectionStateCard(
+                        state = uiState.charity,
+                        onRetry = { viewModel.onAction(HomeDashboardAction.OnRefresh) },
                         modifier = Modifier.weight(1f)
-                    )
+                    ) { charity ->
+                        NearbyCharityCard(
+                            offersCount = charity.offersCount,
+                            requestsCount = charity.requestsCount,
+                            onClick = onNavigateToDonations,
+                            onRetry = { viewModel.onAction(HomeDashboardAction.OnRefresh) }
+                        )
+                    }
                 }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     if (onNavigateToIhsanPlusDaily != null) {
                         DailyExperienceCard(
@@ -244,28 +315,57 @@ fun HomeDashboardScreen(
                     )
                 }
 
-                uiState.data.lastReadSurahId?.let { surahId ->
-                    LastReadCard(
-                        surahName = uiState.data.lastReadSurahName.orEmpty(),
-                        surahNumber = surahId,
-                        ayahNumber = uiState.data.lastReadAyahNumber,
-                        onContinueClick = {
-                            onContinueLastRead(
-                                surahId,
-                                uiState.data.lastReadAyahNumber ?: 1
+                HomeSectionStateCard(
+                    state = uiState.dailyActivities,
+                    onRetry = { viewModel.onAction(HomeDashboardAction.OnRefresh) }
+                ) { dailyActivities ->
+                    DailyActivityCard(
+                        activities = dailyActivities.items.map { item ->
+                            DailyActivityItemData(
+                                id = item.id,
+                                title = item.title,
+                                currentCount = item.currentCount,
+                                targetCount = item.targetCount,
+                                unit = item.unit,
+                                isCompleted = item.isCompleted,
+                                route = item.route
                             )
-                        }
+                        },
+                        onGoToChecklist = onNavigateToDailyActivities
                     )
                 }
 
-                DailyActivityCard(
-                    activities = uiState.data.dailyActivities,
-                    onGoToChecklist = onNavigateToDailyActivities
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
+    }
+
+    if (showLiveChooser) {
+        AlertDialog(
+            onDismissRequest = { showLiveChooser = false },
+            title = { Text(stringResource(R.string.home_live_chooser_title)) },
+            text = { Text(stringResource(R.string.home_live_chooser_body)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showLiveChooser = false
+                        onNavigateToHaramLive()
+                    }
+                ) {
+                    Text(stringResource(R.string.home_live_haram))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showLiveChooser = false
+                        onNavigateToNabawiLive()
+                    }
+                ) {
+                    Text(stringResource(R.string.home_live_nabawi))
+                }
+            }
+        )
     }
 
     uiState.data.selectedPrayerIndex?.let { index ->

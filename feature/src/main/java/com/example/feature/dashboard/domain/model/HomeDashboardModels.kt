@@ -63,8 +63,7 @@ data class HomeAsmaSummary(
 
 data class HomeCharitySummary(
     val offersCount: Int,
-    val requestsCount: Int,
-    val activeVolunteersCount: Int
+    val requestsCount: Int
 )
 
 data class HomeDailyActivityItem(

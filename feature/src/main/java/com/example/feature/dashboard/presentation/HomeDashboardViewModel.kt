@@ -52,7 +52,6 @@ class HomeDashboardViewModel(
     private val dailyActivityRepository: DailyActivityRepository
 ) : ViewModel() {
 
-    private val timeFormat = SimpleDateFormat("hh:mm:ss a", Locale("ar"))
     private val ephemeral = MutableStateFlow(EphemeralUi())
     private var clockJob: Job? = null
 
@@ -94,6 +93,7 @@ class HomeDashboardViewModel(
             currentTime = epi.currentTime,
             hijriDate = epi.hijriDate,
             isRefreshing = epi.isRefreshing,
+            refreshErrorMessage = epi.refreshErrorMessage,
             selectedPrayerIndex = epi.selectedPrayerIndex,
             isPrayerSettingsVisible = epi.isPrayerSettingsVisible,
             isCitySelectionVisible = epi.isCitySelectionVisible
@@ -108,18 +108,24 @@ class HomeDashboardViewModel(
 
     init {
         startClock()
-        viewModelScope.launch { refreshHome() }
+        viewModelScope.launch { refreshHome().onFailure { setRefreshError(it) } }
     }
 
     private fun startClock() {
         clockJob?.cancel()
         clockJob = viewModelScope.launch {
+            var lastDateKey: String? = null
             while (true) {
+                val now = Date()
+                val dateKey = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(now)
                 ephemeral.update {
-                    it.copy(
-                        currentTime = timeFormat.format(Date()),
-                        hijriDate = currentHijriDate()
-                    )
+                    it.copy(currentTime = ArabicClockFormatter.format(now, includeSeconds = true))
+                        .let { next ->
+                            if (DashboardDatePolicy.shouldRefreshHijriDate(lastDateKey, dateKey)) {
+                                lastDateKey = dateKey
+                                next.copy(hijriDate = currentHijriDate())
+                            } else next
+                        }
                 }
                 delay(1.seconds)
             }
@@ -129,12 +135,13 @@ class HomeDashboardViewModel(
     fun onAction(action: HomeDashboardAction) {
         when (action) {
             HomeDashboardAction.OnRefresh -> viewModelScope.launch {
-                ephemeral.update { it.copy(isRefreshing = true) }
-                runCatching { refreshHome() }
+                ephemeral.update { it.copy(isRefreshing = true, refreshErrorMessage = null) }
+                refreshHome().onFailure { setRefreshError(it) }
                 ephemeral.update { it.copy(isRefreshing = false) }
             }
             HomeDashboardAction.OnRetryPrayer -> viewModelScope.launch {
-                runCatching { refreshHome() }
+                ephemeral.update { it.copy(refreshErrorMessage = null) }
+                refreshHome().onFailure { setRefreshError(it) }
             }
             HomeDashboardAction.OnProfileClick -> Unit
             is HomeDashboardAction.OnPrayerClick -> {
@@ -187,6 +194,14 @@ class HomeDashboardViewModel(
         clockJob?.cancel()
     }
 
+    private fun setRefreshError(error: Throwable) {
+        ephemeral.update {
+            it.copy(
+                refreshErrorMessage = error.message ?: "تعذر تحديث الموقع ومواقيت الصلاة."
+            )
+        }
+    }
+
     private fun parseMethod(raw: String): PrayerCalculationMethod =
         runCatching { PrayerCalculationMethod.valueOf(raw) }
             .getOrDefault(PrayerCalculationMethod.MUSLIM_WORLD_LEAGUE)
@@ -199,6 +214,7 @@ class HomeDashboardViewModel(
         val currentTime: String = "",
         val hijriDate: String = "",
         val isRefreshing: Boolean = false,
+        val refreshErrorMessage: String? = null,
         val selectedPrayerIndex: Int? = null,
         val isPrayerSettingsVisible: Boolean = false,
         val isCitySelectionVisible: Boolean = false

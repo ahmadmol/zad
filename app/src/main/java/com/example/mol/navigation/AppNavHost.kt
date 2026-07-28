@@ -125,6 +125,7 @@ fun AppNavHost(
                 onNavigateToTasbih = { navController.navigate(Screen.Tasbih.route) },
                 onNavigateToHaramLive = { navController.navigate(Screen.HaramLive.route) },
                 onNavigateToNabawiLive = { navController.navigate(Screen.NabawiLive.route) },
+                onNavigateToStatistics = { navController.navigate(Screen.Statistics.route) },
                 onNavigateToIhsanPlusDaily = if (IhsanPlusFeatureFlags.dailyEnabled) {
                     { navController.navigate(Screen.IhsanPlusDaily.route) }
                 } else {
