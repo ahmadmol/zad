@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_section_loading">جارٍ التحميل…</string>
+    <string name="home_section_empty">لا تتوفر بيانات حاليًا</string>
+    <string name="home_section_error">تعذر تحميل هذا القسم.</string>
+    <string name="home_retry">إعادة المحاولة</string>
+    <string name="home_services_title">الخدمات</string>
+    <string name="home_nearby_charity_title">تبرع قريب</string>
+    <string name="home_nearby_charity_empty_title">لا تتوفر نتائج قريبة حاليًا</string>
+    <string name="home_nearby_charity_empty_body">حدّث الموقع أو أعد المحاولة</string>
+    <string name="home_live_chooser_title">اختر البث المباشر</string>
+    <string name="home_live_chooser_body">يمكنك متابعة بث الحرم المكي أو المسجد النبوي</string>
+    <string name="home_live_haram">الحرم المكي</string>
+    <string name="home_live_nabawi">المسجد النبوي</string>
+</resources>
