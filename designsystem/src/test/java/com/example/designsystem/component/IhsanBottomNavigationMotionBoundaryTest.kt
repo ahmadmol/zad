@@ -20,15 +20,16 @@ class IhsanBottomNavigationMotionBoundaryTest {
     }
 
     @Test
-    fun `uses shared animated indicator and compose animation apis`() {
+    fun `uses per-item pill indicator and compose animation apis`() {
         val source = navFile.readText()
-        assertTrue(source.contains("AnimatedSelectionIndicator"))
-        assertTrue(source.contains("SelectedIconCircle"))
+        assertFalse(source.contains("SelectedIconCircle"))
+        assertFalse(source.contains("absoluteOffset"))
         assertTrue(source.contains("BottomNavigationLabel"))
         assertTrue(source.contains("Animatable"))
         assertTrue(source.contains("FastOutSlowInEasing"))
-        assertTrue(source.contains("absoluteOffset"))
-        assertTrue(source.contains("LayoutDirection"))
+        assertTrue(source.contains("BottomNavBarHeight"))
+        assertTrue(source.contains("navigationIndicator"))
+        assertTrue(source.contains("ihsan_bottom_nav_indicator"))
     }
 
     @Test

@@ -42,16 +42,23 @@ class ProfileReferenceUiBoundaryTest {
     }
 
     @Test
-    fun `main screen hides bottom bar only on profile route`() {
+    fun `main screen shows bottom bar on Home Ehsan and Profile roots`() {
         val main = File(
             repoRoot,
             "app/src/main/java/com/example/mol/ui/MainScreen.kt"
         ).readText()
-        assertTrue(main.contains("Screen.Home.route"))
-        assertTrue(main.contains("Screen.Donations.route"))
+        val resolver = File(
+            repoRoot,
+            "app/src/main/java/com/example/mol/navigation/BottomBarDestination.kt"
+        ).readText()
+        assertTrue(main.contains("Screen.Home"))
+        assertTrue(main.contains("Screen.Donations"))
         assertTrue(main.contains("Screen.Profile"))
-        assertFalse(
-            main.contains("mainItems.any { it.screen.route == currentDestination?.route }")
-        )
+        assertTrue(main.contains("\"حسابي\""))
+        assertTrue(main.contains("resolveBottomBarDestination"))
+        assertTrue(main.contains("selectedIndex >= 0"))
+        assertTrue(resolver.contains("BottomBarDestination.PROFILE"))
+        assertTrue(resolver.contains("Screen.Profile.route -> BottomBarDestination.PROFILE"))
+        assertFalse(main.contains("coerceAtLeast(0)"))
     }
 }

@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -29,12 +28,13 @@ import com.example.designsystem.component.IhsanBottomNavDestination
 import com.example.designsystem.component.IhsanBottomNavigation
 import com.example.mol.navigation.AppNavHost
 import com.example.mol.navigation.Screen
+import com.example.mol.navigation.resolveBottomBarDestination
 
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
+    val currentRoute = navBackStackEntry?.destination?.route
 
     val mainItems = listOf(
         NavigationItem(Screen.Home, "الرئيسية", Icons.Outlined.Home, Icons.Filled.Home),
@@ -42,14 +42,12 @@ fun MainScreen() {
         NavigationItem(Screen.Profile, "حسابي", Icons.Outlined.Person, Icons.Filled.Person)
     )
 
-    // Presentation-only: hide bottom bar on Profile to match reference UI.
-    // Tab destinations and navigation logic remain unchanged.
-    val showBottomBar = currentDestination?.route == Screen.Home.route ||
-        currentDestination?.route == Screen.Donations.route
-
-    val selectedIndex = mainItems.indexOfFirst { item ->
-        currentDestination?.hierarchy?.any { it.route == item.screen.route } == true
-    }.coerceAtLeast(0)
+    // Visibility + selection derive only from the route resolver (no Home fallback).
+    val resolved = resolveBottomBarDestination(currentRoute)
+    val selectedIndex = resolved?.let { dest ->
+        mainItems.indexOfFirst { it.screen.route == dest.route }
+    } ?: -1
+    val showBottomBar = selectedIndex >= 0
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
@@ -60,9 +58,9 @@ fun MainScreen() {
                             .fillMaxWidth()
                             .navigationBarsPadding()
                             .padding(
-                                start = 16.dp,
-                                end = 16.dp,
-                                bottom = 12.dp
+                                start = 14.dp,
+                                end = 14.dp,
+                                bottom = 10.dp
                             )
                     ) {
                         IhsanBottomNavigation(
@@ -75,7 +73,7 @@ fun MainScreen() {
                             },
                             selectedIndex = selectedIndex,
                             onDestinationSelected = { index ->
-                                val item = mainItems[index]
+                                val item = mainItems.getOrNull(index) ?: return@IhsanBottomNavigation
                                 navController.navigate(item.screen.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
                                         saveState = true
@@ -86,7 +84,7 @@ fun MainScreen() {
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(72.dp)
+                                .height(70.dp)
                         )
                     }
                 }

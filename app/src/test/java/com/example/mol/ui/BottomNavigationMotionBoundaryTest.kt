@@ -10,29 +10,52 @@ import java.io.File
  */
 class BottomNavigationMotionBoundaryTest {
 
-    private val mainScreen = File("src/main/java/com/example/mol/ui/MainScreen.kt")
+    private val mainScreen = File("src/main/java/com/example/mol/ui/MainScreen.kt").readText()
+    private val resolver = File(
+        "src/main/java/com/example/mol/navigation/BottomBarDestination.kt"
+    ).readText()
 
     @Test
-    fun `main screen keeps three destinations and navigation flags`() {
-        val source = mainScreen.readText()
-        assertTrue(source.contains("Screen.Home"))
-        assertTrue(source.contains("Screen.Donations"))
-        assertTrue(source.contains("Screen.Profile"))
-        assertTrue(source.contains("\"الرئيسية\""))
-        assertTrue(source.contains("\"إحسان\""))
-        assertTrue(source.contains("\"حسابي\""))
-        assertTrue(source.contains("launchSingleTop = true"))
-        assertTrue(source.contains("saveState = true"))
-        assertTrue(source.contains("restoreState = true"))
-        assertTrue(source.contains("findStartDestination()"))
+    fun `main screen keeps three destinations including حسابي`() {
+        assertTrue(mainScreen.contains("Screen.Home"))
+        assertTrue(mainScreen.contains("Screen.Donations"))
+        assertTrue(mainScreen.contains("Screen.Profile"))
+        assertTrue(mainScreen.contains("\"الرئيسية\""))
+        assertTrue(mainScreen.contains("\"إحسان\""))
+        assertTrue(mainScreen.contains("\"حسابي\""))
+        assertTrue(mainScreen.contains("launchSingleTop = true"))
+        assertTrue(mainScreen.contains("saveState = true"))
+        assertTrue(mainScreen.contains("restoreState = true"))
+        assertTrue(mainScreen.contains("findStartDestination()"))
     }
 
     @Test
     fun `main screen does not own indicator animation logic`() {
-        val source = mainScreen.readText()
-        assertFalse(source.contains("Animatable"))
-        assertFalse(source.contains("AnimatedSelectionIndicator"))
-        assertTrue(source.contains("IhsanBottomNavigation("))
-        assertTrue(source.contains("onDestinationSelected"))
+        assertFalse(mainScreen.contains("Animatable"))
+        assertFalse(mainScreen.contains("AnimatedSelectionIndicator"))
+        assertTrue(mainScreen.contains("IhsanBottomNavigation("))
+        assertTrue(mainScreen.contains("onDestinationSelected"))
+    }
+
+    @Test
+    fun `selection derives from resolver without Home fallback`() {
+        assertTrue(mainScreen.contains("resolveBottomBarDestination"))
+        assertTrue(mainScreen.contains("selectedIndex >= 0"))
+        assertFalse(mainScreen.contains("coerceAtLeast(0)"))
+        assertFalse(mainScreen.contains("coerceIn(0"))
+        assertTrue(resolver.contains("PROFILE(Screen.Profile.route)"))
+        assertTrue(resolver.contains("Screen.Profile.route -> BottomBarDestination.PROFILE"))
+        assertFalse(resolver.contains("Screen.Home.route is hidden"))
+    }
+
+    @Test
+    fun `profile tab navigates to Profile route once per selection`() {
+        assertTrue(mainScreen.contains("navController.navigate(item.screen.route)"))
+        assertTrue(mainScreen.contains("Screen.Profile"))
+        // Single navigate call site for all tabs including حسابي.
+        val navigateCount = Regex("navController\\.navigate\\(item\\.screen\\.route\\)")
+            .findAll(mainScreen)
+            .count()
+        assertTrue(navigateCount == 1)
     }
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -101,13 +102,16 @@ fun EhsanScreen(
     }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+        // Parent MainScreen Scaffold already applies bottom-bar + navigationBars insets.
+        // Keep local insets at zero so we only consume this Scaffold's topBar + FAB padding.
         Scaffold(
             topBar = { EhsanTopBar(onBack = onNavigateBack) },
             floatingActionButton = {
                 AddEhsanButton(onClick = { startAdd("OFFER") })
             },
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
             containerColor = IhsanTheme.colors.surfaceMuted
-        ) { padding ->
+        ) { scaffoldPadding ->
             if (showAuthSheet) {
                 AuthBottomSheet(
                     onDismiss = { showAuthSheet = false },
@@ -119,10 +123,14 @@ fun EhsanScreen(
             }
 
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = scaffoldPadding.calculateTopPadding() + 12.dp,
+                    // FAB inset from this Scaffold + small breathing room (no fixed 88.dp spacer).
+                    bottom = scaffoldPadding.calculateBottomPadding() + 12.dp
+                ),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item { LocalBoardNoticeCard() }
@@ -207,8 +215,6 @@ fun EhsanScreen(
                         }
                     }
                 }
-
-                item { Spacer(modifier = Modifier.height(88.dp)) }
             }
         }
     }
