@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name">إحسان</string>
     <string name="common_back">رجوع</string>
     <string name="common_retry">إعادة المحاولة</string>
@@ -10,4 +10,28 @@
     <string name="location_permission_grant">منح الإذن الآن</string>
     <string name="location_permission_open_settings">فتح الإعدادات يدوياً</string>
     <string name="cd_location_off">خدمة الموقع غير مفعّلة</string>
+    <string name="widget_prayer_description">ودجة مواقيت الصلاة على الشاشة الرئيسية</string>
+    <string name="widget_prayer_unavailable_title">مواقيت الصلاة غير متوفرة</string>
+    <string name="widget_prayer_no_location">الرجاء تفعيل خدمة الموقع</string>
+    <string name="widget_prayer_not_ready">جارٍ تحضير مواقيت الصلاة…</string>
+    <string name="widget_prayer_remaining_hm">متبقي %1$d:%2$02d</string>
+    <string name="widget_prayer_remaining_m">متبقي %1$d دقيقة</string>
+    <string name="prayer_tracker_title">متتبع الصلاة اليدوي</string>
+    <string name="prayer_tracker_subtitle">سجّل صلواتك يدوياً لمتابعة التزامك اليومي</string>
+    <string name="prayer_tracker_performed">تم أداؤها</string>
+    <string name="prayer_tracker_late">متأخرة</string>
+    <string name="prayer_tracker_not_performed">لم تُؤدَّ</string>
+    <string name="prayer_tracker_unrecorded">غير مسجّلة</string>
+    <string name="prayer_tracker_summary">ملخص متتبع الصلاة</string>
+    <string name="quran_repeat_title">تكرار التلاوة</string>
+    <string name="quran_repeat_single_ayah">آية واحدة</string>
+    <string name="quran_repeat_range">نطاق من الآيات</string>
+    <string name="quran_repeat_ayah">رقم الآية</string>
+    <string name="quran_repeat_from">من</string>
+    <string name="quran_repeat_to">إلى</string>
+    <string name="quran_repeat_unlimited">غير محدود</string>
+    <string name="quran_repeat_times">%1$d مرة</string>
+    <string name="quran_repeat_count">عدد مرات التكرار</string>
+    <string name="quran_repeat_stop">إيقاف التكرار</string>
+    <string name="quran_repeat_apply">تطبيق</string>
 </resources>

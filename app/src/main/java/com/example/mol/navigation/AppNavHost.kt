@@ -80,11 +80,6 @@ fun AppNavHost(
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
-                },
-                onNavigateToPermission = {
-                    navController.navigate(Screen.LocationPermission.route) {
-                        popUpTo(Screen.Splash.route) { inclusive = true }
-                    }
                 }
             )
         }
@@ -92,7 +87,7 @@ fun AppNavHost(
         composable(route = Screen.Onboarding.route) {
             OnboardingScreen(
                 onFinish = {
-                    navController.navigate(Screen.LocationPermission.route) {
+                    navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Onboarding.route) { inclusive = true }
                     }
                 }
@@ -101,7 +96,7 @@ fun AppNavHost(
 
         composable(route = Screen.LocationPermission.route) {
             LocationPermissionScreen(
-                onPermissionGranted = {
+                onContinue = {
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.LocationPermission.route) { inclusive = true }
                     }
@@ -177,8 +172,7 @@ fun AppNavHost(
                 },
                 onNavigateToDua = { duaId -> 
                     navController.navigate(Screen.DuaDetail.createRoute(duaId))
-                },
-                onNavigateToZikr = { /* Navigate to Zikr Pager or List */ }
+                }
             )
         }
 
@@ -192,9 +186,6 @@ fun AppNavHost(
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             DailyActivitiesScreen(
                 activities = uiState.data.dailyActivities,
-                onActivityIncrease = { id ->
-                    viewModel.onAction(HomeDashboardAction.OnDailyActivityClick(id))
-                },
                 onActivityOpenRoute = { route ->
                     when (route) {
                         Screen.Qibla.route -> navController.navigate(Screen.Qibla.route)
@@ -224,7 +215,8 @@ fun AppNavHost(
 
         composable(route = Screen.Prayer.route) {
             PrayerScreen(
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToQibla = { navController.navigate(Screen.Qibla.route) }
             )
         }
 
@@ -425,13 +417,19 @@ fun AppNavHost(
                 onEditProfileClick = { navController.navigate(Screen.EditProfile.route) },
                 onNavigateToDonationHistory = { navController.navigate(Screen.DonationHistory.route) },
                 onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
-                onNavigateToReminders = { navController.navigate(Screen.Reminders.route) }
+                onNavigateToPrayer = { navController.navigate(Screen.Prayer.route) },
+                onNavigateToReminders = { navController.navigate(Screen.Reminders.route) },
+                onNavigateToQuran = { navController.navigate(Screen.Quran.route) },
+                onNavigateToSearch = { navController.navigate(Screen.GlobalSearch.route) }
             )
         }
 
         composable(route = Screen.DonationHistory.route) {
             DonationHistoryScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onItemClick = { id ->
+                    navController.navigate(Screen.IhsanDetails.createRoute(id))
+                }
             )
         }
 

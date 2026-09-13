@@ -88,7 +88,7 @@ fun LiveStreamScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "رجوع"
                         )
                     }
                 },

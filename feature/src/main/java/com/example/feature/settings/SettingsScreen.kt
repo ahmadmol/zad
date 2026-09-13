@@ -7,6 +7,8 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -67,23 +69,35 @@ fun SettingsScreen(
             )
         }
     ) { padding ->
+        if (uiState.isLoading) {
+            Box(Modifier.padding(padding).fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+            return@Scaffold
+        }
         Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(IhsanTheme.dimens.screenHorizontal)
         ) {
+            Text("المظهر والقراءة", style = MaterialTheme.typography.titleLarge)
+            Spacer(Modifier.height(IhsanTheme.spacing.medium))
             Text(stringResource(R.string.font_size_label), style = MaterialTheme.typography.titleMedium)
             Slider(
                 value = uiState.fontSize,
                 onValueChange = { onAction(SettingsAction.SetFontSize(it)) },
                 valueRange = 16f..42f,
                 modifier = Modifier.semantics {
-                    contentDescription = "Font size"
+                    contentDescription = "حجم خط القراءة ${uiState.fontSize.toInt()}"
                 }
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = IhsanTheme.spacing.medium))
+
+            Text("التنبيه والصوت", style = MaterialTheme.typography.titleLarge)
+            Spacer(Modifier.height(IhsanTheme.spacing.small))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -189,6 +203,13 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.width(IhsanTheme.spacing.small))
                 Text(stringResource(R.string.settings_share_app))
             }
+            Spacer(Modifier.height(IhsanTheme.spacing.large))
+            Text(
+                "تُحفظ إعداداتك محليًا على هذا الجهاز.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(IhsanTheme.spacing.large))
         }
     }
 }

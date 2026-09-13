@@ -11,6 +11,13 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 
 class SettingsManager(private val context: Context) {
 
+    /**
+     * Internal DataStore handle for code paths that need direct read/write
+     * access (e.g. the Azkar seed manager storing its version key). Kept
+     * package-private to avoid leaking DataStore access to the rest of the app.
+     */
+    internal val dataStoreInternal: DataStore<Preferences> = context.dataStore
+
     companion object {
         val FONT_SIZE = floatPreferencesKey("font_size")
         val VIBRATION_ENABLED = booleanPreferencesKey("vibration_enabled")
@@ -24,6 +31,15 @@ class SettingsManager(private val context: Context) {
         val PRE_PRAYER_NOTIFICATION_MINUTES = intPreferencesKey("pre_prayer_notification_minutes")
         val IQAMAH_NOTIFICATION_MINUTES = intPreferencesKey("iqamah_notification_minutes")
         val NOTIFICATION_SOUND_TYPE = stringPreferencesKey("notification_sound_type")
+        val AZKAR_SEED_VERSION = intPreferencesKey("azkar_seed_version")
+        val MORNING_REMINDER_ENABLED = booleanPreferencesKey("morning_reminder_enabled")
+        val MORNING_REMINDER_HOUR = intPreferencesKey("morning_reminder_hour")
+        val MORNING_REMINDER_MINUTE = intPreferencesKey("morning_reminder_minute")
+        val EVENING_REMINDER_ENABLED = booleanPreferencesKey("evening_reminder_enabled")
+        val EVENING_REMINDER_HOUR = intPreferencesKey("evening_reminder_hour")
+        val EVENING_REMINDER_MINUTE = intPreferencesKey("evening_reminder_minute")
+        val MORNING_REMINDER_LAST_RUN = longPreferencesKey("morning_reminder_last_run")
+        val EVENING_REMINDER_LAST_RUN = longPreferencesKey("evening_reminder_last_run")
     }
 
     val fontSizeFlow: Flow<Float> = context.dataStore.data.map { preferences ->
@@ -73,6 +89,15 @@ class SettingsManager(private val context: Context) {
     val notificationSoundTypeFlow: Flow<String> = context.dataStore.data.map { preferences ->
         preferences[NOTIFICATION_SOUND_TYPE] ?: "DEFAULT_ATHAN"
     }
+
+    val morningReminderEnabledFlow = context.dataStore.data.map { it[MORNING_REMINDER_ENABLED] ?: false }
+    val morningReminderHourFlow = context.dataStore.data.map { it[MORNING_REMINDER_HOUR] ?: 7 }
+    val morningReminderMinuteFlow = context.dataStore.data.map { it[MORNING_REMINDER_MINUTE] ?: 0 }
+    val eveningReminderEnabledFlow = context.dataStore.data.map { it[EVENING_REMINDER_ENABLED] ?: false }
+    val eveningReminderHourFlow = context.dataStore.data.map { it[EVENING_REMINDER_HOUR] ?: 17 }
+    val eveningReminderMinuteFlow = context.dataStore.data.map { it[EVENING_REMINDER_MINUTE] ?: 0 }
+    val morningReminderLastRunFlow = context.dataStore.data.map { it[MORNING_REMINDER_LAST_RUN] }
+    val eveningReminderLastRunFlow = context.dataStore.data.map { it[EVENING_REMINDER_LAST_RUN] }
 
     suspend fun setFontSize(size: Float) {
         context.dataStore.edit { preferences ->
@@ -133,6 +158,29 @@ class SettingsManager(private val context: Context) {
     suspend fun setNotificationSoundType(type: String) {
         context.dataStore.edit { preferences ->
             preferences[NOTIFICATION_SOUND_TYPE] = type
+        }
+    }
+
+    suspend fun setMorningReminder(enabled: Boolean, hour: Int, minute: Int) {
+        context.dataStore.edit {
+            it[MORNING_REMINDER_ENABLED] = enabled
+            it[MORNING_REMINDER_HOUR] = hour
+            it[MORNING_REMINDER_MINUTE] = minute
+        }
+    }
+
+    suspend fun setEveningReminder(enabled: Boolean, hour: Int, minute: Int) {
+        context.dataStore.edit {
+            it[EVENING_REMINDER_ENABLED] = enabled
+            it[EVENING_REMINDER_HOUR] = hour
+            it[EVENING_REMINDER_MINUTE] = minute
+        }
+    }
+
+    suspend fun recordReminderRun(kind: String, timestamp: Long) {
+        context.dataStore.edit {
+            val key = if (kind == "MORNING") MORNING_REMINDER_LAST_RUN else EVENING_REMINDER_LAST_RUN
+            it[key] = timestamp
         }
     }
 }

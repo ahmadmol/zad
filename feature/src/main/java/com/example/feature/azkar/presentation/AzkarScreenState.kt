@@ -17,7 +17,6 @@ sealed interface AzkarAction {
     data class OnIncrement(val zikrId: Long) : AzkarAction
     data class OnReset(val zikrId: Long) : AzkarAction
     data class OnResetCategory(val category: String) : AzkarAction
-    data object OnRetry : AzkarAction
     data class OnCategorySelected(val category: String?) : AzkarAction
     data class OnToggleFavorite(val zikrId: Long) : AzkarAction
     data class OnToggleShowFavorites(val show: Boolean) : AzkarAction

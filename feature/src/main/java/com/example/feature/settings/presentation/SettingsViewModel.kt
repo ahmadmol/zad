@@ -53,9 +53,6 @@ class SettingsViewModel(
             is SettingsAction.SetAdhanSound -> viewModelScope.launch {
                 userPreferences.setAdhanSoundUri(action.uri)
             }
-            SettingsAction.Retry -> {
-                // Flows re-emit automatically from DataStore; no-op retry surface.
-            }
         }
     }
 }

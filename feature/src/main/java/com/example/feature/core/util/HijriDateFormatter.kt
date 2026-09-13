@@ -40,6 +40,7 @@ object HijriDateFormatter {
 
     /** Returns e.g. "٢٢ ربيع الأول ١٤٤٦" (no weekday). */
     fun nowDateOnly(): String {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return fallbackHijri()
         return runCatching { hijriFromJavaTime() }.getOrElse { fallbackHijri() }
     }
 

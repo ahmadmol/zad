@@ -2,15 +2,12 @@ package com.example.feature.quran.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.workDataOf
 import com.example.feature.core.preferences.DailyActivityIds
 import com.example.feature.core.preferences.UserPreferences
 import com.example.feature.quran.domain.model.Reader
 import com.example.feature.quran.domain.repository.QuranRepository
+import com.example.feature.quran.domain.usecase.QuranDownloadScheduler
 import com.example.feature.quran.util.AudioPlayerHandler
-import com.example.feature.quran.worker.QuranDownloadWorker
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
@@ -25,7 +22,7 @@ import kotlinx.coroutines.launch
 class QuranViewModel(
     private val repository: QuranRepository,
     private val audioHandler: AudioPlayerHandler,
-    private val context: android.content.Context,
+    private val downloadScheduler: QuranDownloadScheduler,
     private val userPreferences: UserPreferences
 ) : ViewModel() {
 
@@ -33,7 +30,8 @@ class QuranViewModel(
     val uiState: StateFlow<QuranUiState> = _uiState.asStateFlow()
 
     private var searchJob: Job? = null
-    private var downloadJob: Job? = null
+    private var downloadedAyahsJob: Job? = null
+    private var downloadStatusJob: Job? = null
 
     private val defaultReaders = listOf(
         Reader("Alafasy_128kbps", "مشاري العفاسي"),
@@ -99,7 +97,10 @@ class QuranViewModel(
             is QuranAction.SeekTo -> audioHandler.seekTo(action.position)
             is QuranAction.SelectReader -> {
                 _uiState.update { it.copy(selectedReader = action.reader) }
-                _uiState.value.selectedSurah?.id?.let { observeDownloads(it) }
+                _uiState.value.selectedSurah?.id?.let {
+                    observeDownloads(it)
+                    observeDownloadWork(it)
+                }
                 val current = _uiState.value.currentPlayingAyah
                 if (_uiState.value.isPlaying && current != null) {
                     playAyah(current)
@@ -268,23 +269,8 @@ class QuranViewModel(
     private fun downloadSurah() {
         val surahId = _uiState.value.selectedSurah?.id ?: return
         val readerId = _uiState.value.selectedReader?.id ?: "Alafasy_128kbps"
-        _uiState.update { it.copy(isDownloading = true) }
-
-        val downloadRequest = OneTimeWorkRequestBuilder<QuranDownloadWorker>()
-            .setInputData(
-                workDataOf(
-                    "surah_id" to surahId,
-                    "reader_id" to readerId
-                )
-            )
-            .addTag("download_surah_$surahId")
-            .build()
-
-        WorkManager.getInstance(context).enqueue(downloadRequest)
-        viewModelScope.launch {
-            delay(1500)
-            _uiState.update { it.copy(isDownloading = false) }
-        }
+        val tag = downloadScheduler.enqueue(surahId, readerId)
+        observeDownloadWork(tag)
     }
 
     private fun loadSurahDetails(surahId: Int, ayahNumber: Int? = null) {
@@ -309,6 +295,7 @@ class QuranViewModel(
                         )
                     }
                     observeDownloads(surahId)
+                    observeDownloadWork(surahId)
                 } else {
                     _uiState.update {
                         it.copy(isLoading = false, errorMessage = "السورة غير موجودة")
@@ -321,11 +308,31 @@ class QuranViewModel(
     }
 
     private fun observeDownloads(surahId: Int) {
-        downloadJob?.cancel()
+        downloadedAyahsJob?.cancel()
         val readerId = _uiState.value.selectedReader?.id ?: "Alafasy_128kbps"
-        downloadJob = repository.observeDownloadedAyahs(surahId, readerId)
+        downloadedAyahsJob = repository.observeDownloadedAyahs(surahId, readerId)
             .onEach { downloaded ->
                 _uiState.update { it.copy(downloadedAyahs = downloaded) }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun observeDownloadWork(surahId: Int) {
+        val readerId = _uiState.value.selectedReader?.id ?: "Alafasy_128kbps"
+        observeDownloadWork(downloadScheduler.identity(surahId, readerId))
+    }
+
+    private fun observeDownloadWork(tag: String) {
+        downloadStatusJob?.cancel()
+        downloadStatusJob = downloadScheduler.observe(tag)
+            .onEach { progress ->
+                _uiState.update {
+                    it.copy(
+                        downloadStatus = progress.status,
+                        downloadProgress = progress.percent,
+                        downloadErrorMessage = progress.errorMessage
+                    )
+                }
             }
             .launchIn(viewModelScope)
     }

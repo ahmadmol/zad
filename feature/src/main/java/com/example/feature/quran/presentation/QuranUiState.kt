@@ -4,6 +4,7 @@ import com.example.feature.quran.domain.model.Surah
 import com.example.feature.quran.domain.model.Verse
 import com.example.feature.quran.domain.model.Bookmark
 import com.example.feature.quran.domain.model.Reader
+import com.example.feature.quran.domain.usecase.QuranDownloadStatus
 
 data class QuranUiState(
     val surahs: List<Surah> = emptyList(),
@@ -30,8 +31,17 @@ data class QuranUiState(
     val selectedReader: Reader? = null,
     val availableReaders: List<Reader> = emptyList(),
     val downloadedAyahs: List<Int> = emptyList(),
-    val isDownloading: Boolean = false
-)
+    val downloadStatus: QuranDownloadStatus = QuranDownloadStatus.Unknown,
+    val downloadProgress: Int = 0,
+    val downloadErrorMessage: String? = null
+) {
+    val isDownloading: Boolean
+        get() = downloadStatus == QuranDownloadStatus.Enqueued ||
+            downloadStatus == QuranDownloadStatus.Running
+
+    val isSurahDownloaded: Boolean
+        get() = ayahs.isNotEmpty() && downloadedAyahs.size >= ayahs.size
+}
 
 sealed interface QuranAction {
     object LoadSurahs : QuranAction

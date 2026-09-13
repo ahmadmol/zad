@@ -60,7 +60,7 @@ fun HadithScreen(
                     title = { Text("الأحاديث النبوية", fontWeight = FontWeight.Bold) },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
                         }
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -132,8 +132,6 @@ fun HadithScreen(
                 UserMessageNotifier.notify(context, "تم النسخ")
                 snackbarHostState.showSnackbar("تم النسخ")
             }
-        }, onShared = {
-            // no-op
         })
     }
 }
@@ -214,7 +212,7 @@ fun HadithCard(hadith: Hadith, onToggleFavorite: () -> Unit, onOpenDetails: () -
                 IconButton(onClick = onToggleFavorite) {
                     Icon(
                         imageVector = if (hadith.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = "Favorite",
+                        contentDescription = if (hadith.isFavorite) "إزالة من المفضلة" else "إضافة إلى المفضلة",
                         tint = if (hadith.isFavorite) IhsanTheme.colors.favorite else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
@@ -255,15 +253,6 @@ fun HadithCard(hadith: Hadith, onToggleFavorite: () -> Unit, onOpenDetails: () -
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.SemiBold
-                    )
-                }
-                
-                IconButton(onClick = { /* Share hadith */ }) {
-                    Icon(
-                        Icons.Default.Share, 
-                        contentDescription = "Share",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp)
                     )
                 }
             }

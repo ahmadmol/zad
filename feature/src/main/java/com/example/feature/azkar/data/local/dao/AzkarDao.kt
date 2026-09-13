@@ -55,6 +55,12 @@ interface AzkarDao {
     @Query("SELECT COUNT(*) FROM azkar_table")
     suspend fun countZikr(): Int
 
+    @Query("""
+        SELECT COUNT(*) FROM azkar_table
+        WHERE title = :title AND category = :category AND text = :text
+    """)
+    suspend fun countByContentKey(title: String, category: String, text: String): Int
+
     // Daily Stats
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateDailyStat(stat: DailyStatEntity)

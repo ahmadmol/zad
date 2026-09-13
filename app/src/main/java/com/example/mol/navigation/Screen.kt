@@ -187,6 +187,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     )
 
     companion object {
-        val items = listOf(Home, Donations, Profile)
+        val items: List<Screen>
+            get() = listOf(Home, Donations, Profile)
     }
 }

@@ -1,7 +1,5 @@
 package com.example.feature.splashScreen
 
-import android.Manifest
-import android.content.pm.PackageManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,10 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import com.example.feature.R
 import com.example.feature.core.preferences.UserPreferences
 import kotlinx.coroutines.delay
@@ -34,11 +30,8 @@ private val SplashBackground = Color(0xFF0B3026)
 fun SplashScreen(
     onNavigateToOnboarding: () -> Unit,
     onNavigateToMain: () -> Unit,
-    onNavigateToPermission: () -> Unit,
     userPreferences: UserPreferences = koinInject()
 ) {
-    val context = LocalContext.current
-
     LaunchedEffect(Unit) {
         delay(1500L)
         val hasCompletedOnboarding = userPreferences.hasCompletedOnboarding.first()
@@ -46,16 +39,7 @@ fun SplashScreen(
         if (!hasCompletedOnboarding) {
             onNavigateToOnboarding()
         } else {
-            val hasLocationPermission = ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-
-            if (hasLocationPermission) {
-                onNavigateToMain()
-            } else {
-                onNavigateToPermission()
-            }
+            onNavigateToMain()
         }
     }
 

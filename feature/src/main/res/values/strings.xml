@@ -1,4 +1,9 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="location_capability_title">الموقع اختياري</string>
+    <string name="location_capability_body">يمكنك استخدام القرآن والأذكار وبقية المحتوى دون موقع. فعّل الموقع عند الحاجة إلى مواقيت الصلاة أو اتجاه القبلة بحسب موقعك الحالي.</string>
+    <string name="location_capability_enable">تفعيل الموقع</string>
+    <string name="location_capability_open_settings">فتح إعدادات التطبيق</string>
+    <string name="location_capability_continue">المتابعة دون الموقع</string>
     <string name="app_name">إحسان</string>
     <string name="search_placeholder">بحث...</string>
     <string name="category_all">الكل</string>
@@ -112,4 +117,50 @@
     <string name="cd_tasbih_reset">إعادة تعيين العداد</string>
     <string name="cd_tasbih_vibration">تبديل الاهتزاز</string>
     <string name="tasbih_reset_label">تصفير العداد</string>
+
+    <string name="prayer_tracker_title">متتبع الصلاة اليدوي</string>
+    <string name="prayer_tracker_subtitle">سجّل صلواتك يدوياً لمتابعة التزامك اليومي</string>
+    <string name="prayer_tracker_performed">تم أداؤها</string>
+    <string name="prayer_tracker_late">متأخرة</string>
+    <string name="prayer_tracker_not_performed">لم تُؤدَّ</string>
+    <string name="prayer_tracker_unrecorded">غير مسجّلة</string>
+    <string name="prayer_tracker_summary">ملخص متتبع الصلاة</string>
+
+    <string name="quran_repeat_title">تكرار التلاوة</string>
+    <string name="quran_repeat_single_ayah">آية واحدة</string>
+    <string name="quran_repeat_range">نطاق من الآيات</string>
+    <string name="quran_repeat_ayah">رقم الآية</string>
+    <string name="quran_repeat_from">من</string>
+    <string name="quran_repeat_to">إلى</string>
+    <string name="quran_repeat_unlimited">غير محدود</string>
+    <string name="quran_repeat_times">%1$d مرة</string>
+    <string name="quran_repeat_count">عدد مرات التكرار</string>
+    <string name="quran_repeat_stop">إيقاف التكرار</string>
+    <string name="quran_repeat_apply">تطبيق</string>
+
+    <!-- Home Redesign String Resources -->
+    <string name="home_hero_title">إحسان</string>
+    <string name="home_hero_subtitle">خير دائم</string>
+    <string name="home_hero_prayer_time_label">موعد صلاة</string>
+    <string name="home_hero_qibla_btn">اتجاه القبلة</string>
+    <string name="home_hero_next_prayer">الصلاة التالية</string>
+    <string name="home_quran_continue_title">متابعة القراءة</string>
+    <string name="home_quran_start_title">ابدأ قراءة القرآن</string>
+    <string name="home_quran_browse_surahs">تصفح سُوَر القرآن الكريم</string>
+    <string name="home_daily_journey_title">مسيرتك اليوم</string>
+    <string name="home_daily_journey_subtitle">خطوات صغيرة تصنع أثراً كبيراً</string>
+    <string name="home_daily_journey_empty">لا توجد نشاطات مسجلة اليوم</string>
+    <string name="home_ehsan_title">إحسان في مجتمعك</string>
+    <string name="home_ehsan_subtitle">معاً نصنع مجتمعاً أكثر رحمة</string>
+    <string name="home_ehsan_empty_title">لوحة المجتمع المحلي</string>
+    <string name="home_ehsan_empty_body">لا توجد عروض تبرع أو طلبات مساعدة حقيقية مسجلة حالياً</string>
+    <string name="home_ehsan_offers_format">عروض تبرع (%1$d)</string>
+    <string name="home_ehsan_offers_label">عروض تبرع</string>
+    <string name="home_ehsan_requests_format">طلبات مساعدة (%1$d)</string>
+    <string name="home_ehsan_requests_label">طلبات مساعدة</string>
+    <string name="home_live_title">البث المباشر</string>
+    <string name="home_live_subtitle">استمع للتلاوات الحية من المساجد المقدسة</string>
+    <string name="home_live_badge">مباشر</string>
+    <string name="home_services_subtitle">كل ما تحتاجه في مكان واحد</string>
+    <string name="home_show_all">عرض الكل</string>
 </resources>

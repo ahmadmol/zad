@@ -105,14 +105,14 @@ private fun AzkarTopBar(
             title = { Text("الأذكار", fontWeight = FontWeight.Bold) },
             navigationIcon = {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
                 }
             },
             actions = {
                 IconButton(onClick = onToggleFavorites) {
                     Icon(
                         imageVector = if (isFavoritesOnly) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = "Favorites",
+                        contentDescription = if (isFavoritesOnly) "عرض جميع الأذكار" else "عرض المفضلة",
                         tint = if (isFavoritesOnly) IhsanTheme.colors.favorite else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -236,7 +236,7 @@ private fun ZikrCard(zikr: Zikr, fontSize: Float, onAction: (AzkarAction) -> Uni
                 IconButton(onClick = { onAction(AzkarAction.OnToggleFavorite(zikr.id)) }) {
                     Icon(
                         imageVector = if (zikr.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = "Favorite",
+                        contentDescription = if (zikr.isFavorite) "إزالة من المفضلة" else "إضافة إلى المفضلة",
                         tint = if (zikr.isFavorite) IhsanTheme.colors.favorite else MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(22.dp)
                     )
@@ -298,7 +298,7 @@ private fun ZikrCard(zikr: Zikr, fontSize: Float, onAction: (AzkarAction) -> Uni
                     ) {
                         Icon(
                             Icons.Default.RestartAlt, 
-                            contentDescription = "Reset", 
+                            contentDescription = "تصفير العداد", 
                             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                         )
                     }

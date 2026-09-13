@@ -1,11 +1,15 @@
 package com.example.feature.core.notification
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.content.pm.PackageManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 
 /**
  * Posts user-facing app messages to the system notification shade so feedback
@@ -33,12 +37,18 @@ object UserMessageNotifier {
         )
     }
 
+    @SuppressLint("MissingPermission")
     fun notify(
         context: Context,
         message: String,
         title: String = DEFAULT_TITLE
     ) {
         if (message.isBlank()) return
+        if (
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
+                PackageManager.PERMISSION_GRANTED
+        ) return
         ensureChannel(context)
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)

@@ -1,8 +1,10 @@
 package com.example.mol.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -51,6 +53,7 @@ fun MainScreen() {
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
             bottomBar = {
                 if (showBottomBar) {
                     Box(
@@ -84,7 +87,7 @@ fun MainScreen() {
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(70.dp)
+                                .height(62.dp)
                         )
                     }
                 }
@@ -93,7 +96,7 @@ fun MainScreen() {
         ) { innerPadding ->
             AppNavHost(
                 navController = navController,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
             )
         }
     }

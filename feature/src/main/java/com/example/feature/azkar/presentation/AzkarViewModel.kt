@@ -72,7 +72,6 @@ class AzkarViewModel(
             is AzkarAction.OnIncrement -> handleIncrement(action.zikrId)
             is AzkarAction.OnReset -> handleReset(action.zikrId)
             is AzkarAction.OnResetCategory -> handleResetCategory(action.category)
-            is AzkarAction.OnRetry -> { /* Flow handles retry automatically if source flows update */ }
             is AzkarAction.OnCategorySelected -> {
                 _selectedCategory.value = action.category
             }

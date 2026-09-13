@@ -51,7 +51,7 @@ fun DuaDetailScreen(
                     title = { Text("تفاصيل الدعاء", fontWeight = FontWeight.Bold) },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
                         }
                     },
                     actions = {

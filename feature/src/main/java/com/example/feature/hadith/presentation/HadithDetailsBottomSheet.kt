@@ -20,14 +20,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.feature.hadith.domain.model.Hadith
+import com.example.feature.core.notification.UserMessageNotifier
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HadithDetailsBottomSheet(
     hadith: Hadith,
     onDismiss: () -> Unit,
-    onCopied: () -> Unit = {},
-    onShared: () -> Unit = {}
+    onCopied: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
@@ -116,8 +116,8 @@ fun HadithDetailsBottomSheet(
                             type = "text/plain"
                         }
                         val shareIntent = Intent.createChooser(sendIntent, null)
-                        context.startActivity(shareIntent)
-                        onShared()
+                        runCatching { context.startActivity(shareIntent) }
+                            .onFailure { UserMessageNotifier.notify(context, "تعذر فتح تطبيق للمشاركة") }
                     },
                     modifier = Modifier.weight(1f).height(52.dp)
                 ) {

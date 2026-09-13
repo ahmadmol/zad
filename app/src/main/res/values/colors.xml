@@ -7,4 +7,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <!-- Defaults kept compile-safe while the unregistered Prayer Widget remains quarantined. -->
+    <color name="widget_background">#F7F8F3</color>
+    <color name="widget_text_primary">#1A1C18</color>
+    <color name="widget_text_secondary">#5E625A</color>
+    <color name="widget_text_accent">#287A3E</color>
 </resources>

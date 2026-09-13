@@ -57,7 +57,7 @@ fun QuranListScreen(
                             isSearchActive = false
                             onClearSearch()
                         }) {
-                            Icon(Icons.Default.Close, contentDescription = "Close Search")
+                            Icon(Icons.Default.Close, contentDescription = "إغلاق البحث")
                         }
                     }
                 )
@@ -66,7 +66,7 @@ fun QuranListScreen(
                     title = { Text("القرآن الكريم", fontWeight = FontWeight.Bold) },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
                         }
                     },
                     actions = {

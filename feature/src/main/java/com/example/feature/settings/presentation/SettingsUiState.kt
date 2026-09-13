@@ -14,5 +14,4 @@ sealed interface SettingsAction {
     data class SetDarkMode(val enabled: Boolean) : SettingsAction
     data class SetVibration(val enabled: Boolean) : SettingsAction
     data class SetAdhanSound(val uri: String) : SettingsAction
-    data object Retry : SettingsAction
 }

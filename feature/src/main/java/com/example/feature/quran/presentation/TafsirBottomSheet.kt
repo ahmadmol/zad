@@ -62,7 +62,7 @@ fun TafsirBottomSheet(
             Spacer(modifier = Modifier.height(8.dp))
             
             Text(
-                text = verse.tafsir ?: "تفسير هذه الآية غير متوفر حالياً. سيتم إضافته قريباً (TODO).",
+                text = verse.tafsir ?: "لا يتوفر تفسير لهذه الآية ضمن المحتوى المحلي الحالي.",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     lineHeight = 28.sp,
                     textAlign = TextAlign.Justify

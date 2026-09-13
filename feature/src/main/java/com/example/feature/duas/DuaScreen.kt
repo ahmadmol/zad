@@ -136,12 +136,7 @@ private fun DuaTopBar(onBack: () -> Unit, onSearch: (String) -> Unit, searchQuer
             title = { Text(title, fontWeight = FontWeight.Bold, fontSize = 20.sp) },
             navigationIcon = {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                }
-            },
-            actions = {
-                IconButton(onClick = { /* Menu */ }) {
-                    Icon(Icons.Default.Menu, contentDescription = "Menu")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
                 }
             },
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
@@ -279,7 +274,7 @@ private fun DuaCard(
                     IconButton(onClick = onToggleFavorite, modifier = Modifier.size(32.dp)) {
                         Icon(
                             imageVector = if (dua.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = "Favorite",
+                            contentDescription = if (dua.isFavorite) "إزالة من المفضلة" else "إضافة إلى المفضلة",
                             tint = if (dua.isFavorite) colors.favorite else colors.textSecondaryMuted,
                             modifier = Modifier.size(20.dp)
                         )
@@ -287,7 +282,7 @@ private fun DuaCard(
                     IconButton(onClick = {
                         clipboardManager.setText(AnnotatedString(dua.text))
                     }, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Default.ContentCopy, contentDescription = "Copy", tint = colors.textSecondaryMuted, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.ContentCopy, contentDescription = "نسخ", tint = colors.textSecondaryMuted, modifier = Modifier.size(18.dp))
                     }
                     IconButton(onClick = {
                         val sendIntent: Intent = Intent().apply {
@@ -298,7 +293,7 @@ private fun DuaCard(
                         val shareIntent = Intent.createChooser(sendIntent, null)
                         context.startActivity(shareIntent)
                     }, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Default.Share, contentDescription = "Share", tint = colors.textSecondaryMuted, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Share, contentDescription = "مشاركة", tint = colors.textSecondaryMuted, modifier = Modifier.size(18.dp))
                     }
                 }
                 
