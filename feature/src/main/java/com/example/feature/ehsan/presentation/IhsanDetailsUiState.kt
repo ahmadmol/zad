@@ -10,7 +10,8 @@ data class IhsanDetailsUi(
     val status: String,
     val donorName: String,
     val phoneNumber: String,
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
+    val createdAt: Long
 )
 
 data class IhsanDetailsUiState(

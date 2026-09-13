@@ -1,6 +1,7 @@
 package com.example.feature.ehsan.presentation.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -10,12 +11,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -23,42 +27,46 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Comment
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CardGiftcard
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Handshake
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.VolunteerActivism
-import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.filled.Weekend
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -68,83 +76,690 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.designsystem.R
+import coil.compose.AsyncImage
 import com.example.designsystem.theme.IhsanTheme
+import com.example.designsystem.theme.PrimaryTeal
+import com.example.feature.R
+import com.example.feature.ehsan.domain.model.Donation
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Atmospheric Header Banner for the Ehsan Screen
+ * Matches the reference design with mosque silhouettes, top bar controls, and hero text.
+ */
 @Composable
-fun EhsanTopBar(
-    onBack: () -> Unit,
+fun EhsanHeaderBanner(
+    cityName: String = "حلب",
+    islamicDate: String = "١٢ ربيع الأول ١٤٤٨",
+    onSearchClick: () -> Unit = {},
     onNotificationClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    CenterAlignedTopAppBar(
-        modifier = modifier,
-        title = {
+    val darkTeal = PrimaryTeal
+    val bannerShape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(bannerShape)
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF06413E),
+                        Color(0xFF095A54),
+                        Color(0xFF147B73)
+                    )
+                )
+            )
+            .statusBarsPadding()
+    ) {
+        // Mosque silhouette background overlay
+        Image(
+            painter = painterResource(id = R.drawable.bg_ehsan),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .align(Alignment.BottomCenter),
+            contentScale = ContentScale.Crop,
+            alpha = 0.25f
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Top Navigation & Action Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Left Actions: Notifications & Search
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = onNotificationClick,
+                        modifier = Modifier.size(38.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = "التنبيهات",
+                            tint = Color.White,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                    IconButton(
+                        onClick = onSearchClick,
+                        modifier = Modifier.size(38.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "بحث",
+                            tint = Color.White,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                }
+
+                // Center Title & Logo
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Surface(
+                            shape = CircleShape,
+                            color = Color.White.copy(alpha = 0.2f),
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Text("🌱", fontSize = 12.sp)
+                            }
+                        }
+                        Text(
+                            text = "إحسان",
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
+                    Text(
+                        text = "خير دائم",
+                        fontSize = 11.sp,
+                        color = Color.White.copy(alpha = 0.8f)
+                    )
+                }
+
+                // Right Location & Date Info
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Column(horizontalAlignment = Alignment.End) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            Text(
+                                text = cityName,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Icon(
+                                imageVector = Icons.Default.LocationOn,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                        Text(
+                            text = islamicDate,
+                            fontSize = 10.sp,
+                            color = Color.White.copy(alpha = 0.8f)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Hero Main Title
             Text(
-                text = "إحسان",
+                text = "يداً بيد لنشر الخير",
+                fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            // Hero Subtitle
+            Text(
+                text = "معاً نصنع مجتمعاً أكثر تماسكاً\nفي مدينتنا الحبيبة $cityName",
+                fontSize = 13.sp,
+                color = Color.White.copy(alpha = 0.88f),
+                textAlign = TextAlign.Center,
+                lineHeight = 18.sp
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Leaf flourish icon
+            Text(text = "🌿", fontSize = 14.sp)
+        }
+    }
+}
+
+/**
+ * Segmented Tabs for switching between "عروض تبرع" (OFFER) and "طلبات مساعدة" (REQUEST)
+ */
+@Composable
+fun EhsanSegmentedTabs(
+    selectedType: String,
+    onTypeSelected: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val darkTeal = PrimaryTeal
+
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(52.dp),
+        shape = RoundedCornerShape(26.dp),
+        color = Color(0xFFF0EBE3),
+        border = BorderStroke(0.5.dp, Color(0xFFE2DACF))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            // OFFER Tab
+            val isOffer = selectedType == "OFFER"
+            Surface(
+                onClick = { onTypeSelected("OFFER") },
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize(),
+                shape = RoundedCornerShape(22.dp),
+                color = if (isOffer) darkTeal else Color.Transparent,
+                shadowElevation = if (isOffer) 2.dp else 0.dp
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "عروض تبرع",
+                        fontSize = 15.sp,
+                        fontWeight = if (isOffer) FontWeight.Bold else FontWeight.Medium,
+                        color = if (isOffer) Color.White else Color(0xFF55605E)
+                    )
+                }
+            }
+
+            // REQUEST Tab
+            val isRequest = selectedType == "REQUEST"
+            Surface(
+                onClick = { onTypeSelected("REQUEST") },
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize(),
+                shape = RoundedCornerShape(22.dp),
+                color = if (isRequest) darkTeal else Color.Transparent,
+                shadowElevation = if (isRequest) 2.dp else 0.dp
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "طلبات مساعدة",
+                        fontSize = 15.sp,
+                        fontWeight = if (isRequest) FontWeight.Bold else FontWeight.Medium,
+                        color = if (isRequest) Color.White else Color(0xFF55605E)
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Rounded Search TextField matching reference
+ */
+@Composable
+fun EhsanSearchField(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    cityName: String = "حلب",
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        modifier = modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 48.dp),
+        placeholder = {
+            Text(
+                text = "ابحث عن فرصة خيرية في $cityName ...",
+                fontSize = 13.sp,
+                color = Color(0xFF8C9694)
             )
         },
-        navigationIcon = {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier
-                    .size(IhsanTheme.dimens.minTouchTarget)
-                    .semantics {
-                        role = Role.Button
-                        contentDescription = "رجوع"
-                    }
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+        trailingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null,
+                tint = Color(0xFF8C9694),
+                modifier = Modifier.size(20.dp)
+            )
         },
-        actions = {
-            IconButton(
-                onClick = onNotificationClick,
-                modifier = Modifier
-                    .size(IhsanTheme.dimens.minTouchTarget)
-                    .semantics {
-                        role = Role.Button
-                        contentDescription = "الإشعارات"
-                    }
-            ) {
-                Icon(
-                    Icons.Outlined.Notifications,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-        },
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface
+        singleLine = true,
+        shape = RoundedCornerShape(24.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+            focusedBorderColor = PrimaryTeal,
+            unfocusedBorderColor = Color(0xFFE5DFD5)
         )
     )
 }
 
+/**
+ * Filter / Sorting Chips Row (الكل / الأحدث / الأقرب)
+ */
+@Composable
+fun EhsanFilterRow(
+    selectedCategory: String,
+    onCategoryChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val darkTeal = PrimaryTeal
+
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 2.dp)
+    ) {
+        item {
+            val isSelected = selectedCategory == "الكل"
+            Surface(
+                onClick = { onCategoryChange("الكل") },
+                shape = RoundedCornerShape(20.dp),
+                color = if (isSelected) darkTeal else Color.White,
+                border = BorderStroke(1.dp, if (isSelected) darkTeal else Color(0xFFE0D8CE))
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.GridView,
+                        contentDescription = null,
+                        tint = if (isSelected) Color.White else Color(0xFF55605E),
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = "الكل",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isSelected) Color.White else Color(0xFF333D3B)
+                    )
+                }
+            }
+        }
+
+        item {
+            Surface(
+                onClick = { onCategoryChange("الأحدث") },
+                shape = RoundedCornerShape(20.dp),
+                color = Color.White,
+                border = BorderStroke(1.dp, Color(0xFFE0D8CE))
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AccessTime,
+                        contentDescription = null,
+                        tint = Color(0xFF55605E),
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = "الأحدث",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF333D3B)
+                    )
+                }
+            }
+        }
+
+        item {
+            Surface(
+                onClick = { onCategoryChange("الأقرب") },
+                shape = RoundedCornerShape(20.dp),
+                color = Color.White,
+                border = BorderStroke(1.dp, Color(0xFFE0D8CE))
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = null,
+                        tint = Color(0xFF55605E),
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = "الأقرب",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF333D3B)
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Detailed Donation Card item matching reference
+ */
+@Composable
+fun DonationCardItem(
+    donation: Donation,
+    imageModel: Any?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val darkTeal = PrimaryTeal
+    val isOffer = donation.type == "OFFER"
+
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(20.dp),
+        color = Color.White,
+        border = BorderStroke(0.75.dp, Color(0xFFEAE3D9)),
+        shadowElevation = 2.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Left Content Section (Title, Badge, Metadata, Action Buttons)
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 12.dp)
+            ) {
+                // Top Tag Badge
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = if (isOffer) Color(0xFFE4F3EC) else Color(0xFFFDECE5)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (isOffer) Icons.Default.CardGiftcard else Icons.Default.Handshake,
+                            contentDescription = null,
+                            tint = if (isOffer) Color(0xFF1E7A5A) else Color(0xFFD65228),
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Text(
+                            text = if (isOffer) "عرض تبرع" else "طلب مساعدة",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isOffer) Color(0xFF1E7A5A) else Color(0xFFD65228)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Title
+                Text(
+                    text = donation.title,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = darkTeal,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                // Description
+                if (donation.description.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(3.dp))
+                    Text(
+                        text = donation.description,
+                        fontSize = 12.sp,
+                        color = Color(0xFF6B7775),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 16.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Metadata (Location + Time ago)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = null,
+                            tint = Color(0xFF8A9593),
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Text(
+                            text = donation.location.ifBlank { "حلب" },
+                            fontSize = 11.sp,
+                            color = Color(0xFF8A9593)
+                        )
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AccessTime,
+                            contentDescription = null,
+                            tint = Color(0xFF8A9593),
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Text(
+                            text = "منذ ٣ ساعات",
+                            fontSize = 11.sp,
+                            color = Color(0xFF8A9593)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Action Buttons Row (عرض التفاصيل + تواصل)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // View Details Button
+                    Surface(
+                        onClick = onClick,
+                        shape = RoundedCornerShape(14.dp),
+                        color = Color(0xFFE8F2EF),
+                        border = BorderStroke(0.5.dp, Color(0xFFCDE2DE))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = "عرض التفاصيل",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = darkTeal
+                            )
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                                contentDescription = null,
+                                tint = darkTeal,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                    }
+
+                    // Contact Button
+                    Surface(
+                        onClick = onClick,
+                        shape = RoundedCornerShape(14.dp),
+                        color = Color(0xFFF7F5EE),
+                        border = BorderStroke(0.5.dp, Color(0xFFE2DDD2))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = "تواصل",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0xFF4A5654)
+                            )
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Comment,
+                                contentDescription = null,
+                                tint = Color(0xFF4A5654),
+                                modifier = Modifier.size(13.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Right Thumbnail Section
+            Surface(
+                modifier = Modifier
+                    .size(105.dp)
+                    .clip(RoundedCornerShape(16.dp)),
+                color = Color(0xFFF2EFE9)
+            ) {
+                if (imageModel != null) {
+                    AsyncImage(
+                        model = imageModel,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = when (donation.category) {
+                                "طعام" -> Icons.Default.Restaurant
+                                "ملابس" -> Icons.Default.Checkroom
+                                "أثاث" -> Icons.Default.Weekend
+                                else -> Icons.Default.Category
+                            },
+                            contentDescription = null,
+                            modifier = Modifier.size(32.dp),
+                            tint = Color(0xFFA0AAA8)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Floating Action Button for adding offer/help
+ */
+@Composable
+fun AddEhsanFab(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val darkTeal = PrimaryTeal
+
+    Surface(
+        onClick = onClick,
+        modifier = modifier,
+        shape = CircleShape,
+        color = darkTeal,
+        shadowElevation = 8.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(14.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "أضف عرضاً",
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = "🌱",
+                fontSize = 10.sp
+            )
+            Text(
+                text = "أضف عرضاً",
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+        }
+    }
+}
+
+/** Local board notice card preserved for safety */
 @Composable
 fun LocalBoardNoticeCard(modifier: Modifier = Modifier) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(IhsanTheme.dimens.radiusPill),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = IhsanTheme.colors.surfaceWarm),
-        border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle),
+        border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle.copy(alpha = 0.65f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(14.dp),
             verticalAlignment = Alignment.Top
         ) {
             Box(
                 modifier = Modifier
-                    .size(44.dp)
+                    .size(42.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(IhsanTheme.colors.surfaceMint),
                 contentAlignment = Alignment.Center
@@ -153,7 +768,7 @@ fun LocalBoardNoticeCard(modifier: Modifier = Modifier) {
                     imageVector = Icons.Default.Shield,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(22.dp)
                 )
             }
             Spacer(modifier = Modifier.width(12.dp))
@@ -165,403 +780,12 @@ fun LocalBoardNoticeCard(modifier: Modifier = Modifier) {
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = "القوائم محفوظة على جهازك فقط. لا يوجد تحقق رسمي من الحالات، ولا مدفوعات داخل التطبيق، ولا ضمان لتسليم التبرعات عبر المنصة. تواصل مباشرة عبر الهاتف أو واتساب بحدر.",
+                    text = "القوائم محفوظة على جهازك فقط. لا يوجد تحقق رسمي من الحالات، ولا مدفوعات داخل التطبيق.",
                     style = MaterialTheme.typography.bodySmall,
                     color = IhsanTheme.colors.textSecondaryMuted,
-                    modifier = Modifier.padding(top = 6.dp),
-                    lineHeight = 18.sp
+                    modifier = Modifier.padding(top = 4.dp)
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun EhsanCommunityHero(
-    donorCount: Int,
-    completedCount: Int,
-    cityCount: Int,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .semantics {
-                contentDescription =
-                    "مجتمع إحسان، متبرع $donorCount، حالة مكتملة $completedCount، مدينة $cityCount"
-            },
-        shape = RoundedCornerShape(IhsanTheme.dimens.radiusSheet),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
-    ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            androidx.compose.foundation.Image(
-                painter = painterResource(id = R.drawable.ic_islamic_pattern_tile),
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .size(110.dp)
-                    .padding(8.dp),
-                alpha = 0.16f
-            )
-            Row(
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                repeat(3) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = null,
-                        tint = Color(0xFFFFD54F).copy(alpha = 0.85f),
-                        modifier = Modifier.size(12.dp)
-                    )
-                }
-            }
-            Column(modifier = Modifier.padding(20.dp)) {
-                Text(
-                    text = "مجتمع إحسان",
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f),
-                    style = MaterialTheme.typography.labelMedium
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = "يداً بيد لنشر الخير",
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.height(18.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    EhsanStatisticTile(
-                        icon = Icons.Default.Favorite,
-                        value = donorCount.toString(),
-                        label = "متبرع",
-                        modifier = Modifier.weight(1f)
-                    )
-                    EhsanStatisticTile(
-                        icon = Icons.Default.CheckCircle,
-                        value = completedCount.toString(),
-                        label = "حالة مكتملة",
-                        modifier = Modifier.weight(1f)
-                    )
-                    EhsanStatisticTile(
-                        icon = Icons.Default.LocationOn,
-                        value = cityCount.toString(),
-                        label = "مدينة",
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun EhsanStatisticTile(
-    icon: ImageVector,
-    value: String,
-    label: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.12f))
-            .padding(vertical = 12.dp, horizontal = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
-            modifier = Modifier.size(18.dp)
-        )
-        Spacer(modifier = Modifier.height(6.dp))
-        Text(
-            text = value,
-            color = MaterialTheme.colorScheme.onPrimary,
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp
-        )
-        Text(
-            text = label,
-            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
-            fontSize = 10.sp,
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
-    }
-}
-
-@Composable
-fun EhsanPrimaryActions(
-    onDonateClick: () -> Unit,
-    onHelpClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        EhsanPrimaryActionCard(
-            title = "أرغب بالتبرع",
-            subtitle = "عرض فائض لديك",
-            icon = Icons.Default.VolunteerActivism,
-            emphasized = true,
-            onClick = onDonateClick,
-            contentDescription = "أرغب بالتبرع، عرض فائض لديك",
-            modifier = Modifier.weight(1f)
-        )
-        EhsanPrimaryActionCard(
-            title = "أحتاج مساعدة",
-            subtitle = "اطلب ما ينقصك",
-            icon = Icons.Default.Handshake,
-            emphasized = false,
-            onClick = onHelpClick,
-            contentDescription = "أحتاج مساعدة، اطلب ما ينقصك",
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-@Composable
-private fun EhsanPrimaryActionCard(
-    title: String,
-    subtitle: String,
-    icon: ImageVector,
-    emphasized: Boolean,
-    onClick: () -> Unit,
-    contentDescription: String,
-    modifier: Modifier = Modifier
-) {
-    val container = if (emphasized) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        MaterialTheme.colorScheme.surface
-    }
-    val content = if (emphasized) {
-        MaterialTheme.colorScheme.onPrimary
-    } else {
-        MaterialTheme.colorScheme.primary
-    }
-    Card(
-        onClick = onClick,
-        modifier = modifier
-            .defaultMinSize(minHeight = 108.dp)
-            .semantics {
-                role = Role.Button
-                this.contentDescription = contentDescription
-            },
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = container),
-        border = if (emphasized) null else BorderStroke(1.dp, IhsanTheme.colors.borderSubtle),
-        elevation = CardDefaults.cardElevation(defaultElevation = if (emphasized) 2.dp else 0.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(icon, contentDescription = null, tint = content, modifier = Modifier.size(24.dp))
-            Text(
-                text = title,
-                color = content,
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = subtitle,
-                color = content.copy(alpha = 0.75f),
-                fontSize = 11.sp,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                contentDescription = null,
-                tint = content.copy(alpha = 0.7f),
-                modifier = Modifier.size(18.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun EhsanSearchField(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    OutlinedTextField(
-        value = query,
-        onValueChange = onQueryChange,
-        modifier = modifier
-            .fillMaxWidth()
-            .semantics { contentDescription = "بحث في فرص إحسان" },
-        placeholder = {
-            Text(
-                text = "ابحث عن عرض، مدينة، أو محتاج...",
-                fontSize = 14.sp,
-                color = IhsanTheme.colors.textSecondaryMuted
-            )
-        },
-        leadingIcon = {
-            Icon(
-                Icons.Default.Search,
-                contentDescription = null,
-                tint = IhsanTheme.colors.textSecondaryMuted
-            )
-        },
-        singleLine = true,
-        shape = RoundedCornerShape(28.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = IhsanTheme.colors.borderSubtle
-        )
-    )
-}
-
-@Composable
-fun EhsanFilterSection(
-    label: String,
-    labelIcon: ImageVector,
-    options: List<String>,
-    selected: String,
-    onSelected: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(bottom = 8.dp)
-        ) {
-            Icon(
-                imageVector = labelIcon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 2.dp)
-        ) {
-            items(options) { option ->
-                EhsanFilterChip(
-                    label = option,
-                    selected = selected == option,
-                    onClick = { onSelected(option) }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun EhsanFilterChip(
-    label: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val shape = RoundedCornerShape(20.dp)
-    Box(
-        modifier = modifier
-            .defaultMinSize(minHeight = 40.dp)
-            .clip(shape)
-            .background(
-                if (selected) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.surface
-            )
-            .border(
-                width = 1.dp,
-                color = if (selected) MaterialTheme.colorScheme.primary
-                else IhsanTheme.colors.borderSubtle,
-                shape = shape
-            )
-            .semantics {
-                role = Role.Button
-                this.selected = selected
-                contentDescription = if (selected) "$label، محدد" else label
-            }
-            .clickable(onClick = onClick)
-            .padding(horizontal = 14.dp, vertical = 8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = label,
-            color = if (selected) MaterialTheme.colorScheme.onPrimary
-            else IhsanTheme.colors.textSecondaryMuted,
-            fontSize = 13.sp,
-            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
-        )
-    }
-}
-
-@Composable
-fun EhsanListingTabs(
-    selectedType: String,
-    onTypeSelected: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val index = when (selectedType) {
-        "OFFER" -> 1
-        "REQUEST" -> 2
-        else -> 0
-    }
-    TabRow(
-        selectedTabIndex = index,
-        modifier = modifier.fillMaxWidth(),
-        containerColor = Color.Transparent,
-        divider = {},
-        indicator = { tabPositions ->
-            TabRowDefaults.SecondaryIndicator(
-                Modifier.tabIndicatorOffset(tabPositions[index]),
-                color = MaterialTheme.colorScheme.primary,
-                height = 3.dp
-            )
-        }
-    ) {
-        listOf(
-            "ALL" to "الكل",
-            "OFFER" to "عروض تبرع",
-            "REQUEST" to "طلبات مساعدة"
-        ).forEach { (type, label) ->
-            val selected = selectedType == type
-            Tab(
-                selected = selected,
-                onClick = { onTypeSelected(type) },
-                text = {
-                    Text(
-                        text = label,
-                        fontSize = 14.sp,
-                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                        color = if (selected) MaterialTheme.colorScheme.primary
-                        else IhsanTheme.colors.textSecondaryMuted,
-                        maxLines = 1
-                    )
-                }
-            )
         }
     }
 }
@@ -572,60 +796,24 @@ fun EhsanEmptyContent(
     hasActiveFilters: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val title: String
-    val subtitle: String
-    val icon: ImageVector
-    when {
-        searchQuery.isNotBlank() -> {
-            title = "لا توجد نتائج لـ \"$searchQuery\""
-            subtitle = "جرّب كلمات أخرى أو أزل البحث."
-            icon = Icons.Default.SearchOff
-        }
-        hasActiveFilters -> {
-            title = "لا توجد فرص مطابقة للفلاتر"
-            subtitle = "جرّب تغيير الفلاتر أو أضف فرصة جديدة."
-            icon = Icons.Default.VolunteerActivism
-        }
-        else -> {
-            title = "لا توجد فرص إحسان متاحة حالياً"
-            subtitle = "جرّب تغيير الفلاتر أو أضف فرصة جديدة."
-            icon = Icons.Default.VolunteerActivism
-        }
-    }
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 28.dp)
-            .semantics { contentDescription = "$title. $subtitle" },
+            .padding(vertical = 28.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
-            modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
-                .background(IhsanTheme.colors.quickActionSurface),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = IhsanTheme.colors.textSecondaryMuted,
-                modifier = Modifier.size(48.dp)
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.primary,
-            textAlign = TextAlign.Center
+        Icon(
+            imageVector = Icons.Default.SearchOff,
+            contentDescription = null,
+            tint = Color(0xFF8A9593),
+            modifier = Modifier.size(48.dp)
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = subtitle,
-            style = MaterialTheme.typography.bodyMedium,
-            color = IhsanTheme.colors.textSecondaryMuted,
+            text = "لا توجد فرص إحسان متاحة حالياً",
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Bold,
+            color = PrimaryTeal,
             textAlign = TextAlign.Center
         )
     }
@@ -638,40 +826,15 @@ fun AddEhsanButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier
-            .defaultMinSize(minHeight = IhsanTheme.dimens.minTouchTarget)
-            .semantics {
-                role = Role.Button
-                contentDescription = "إضافة إحسان"
-            },
-        shape = RoundedCornerShape(IhsanTheme.dimens.radiusPill),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
-        ),
-        contentPadding = PaddingValues(horizontal = 18.dp, vertical = 12.dp),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = PrimaryTeal)
     ) {
-        Box(
-            modifier = Modifier
-                .size(28.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.18f)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
-            )
-        }
-        Spacer(modifier = Modifier.width(10.dp))
+        Icon(imageVector = Icons.Default.Add, contentDescription = null)
+        Spacer(modifier = Modifier.width(8.dp))
         Text("إضافة إحسان", fontWeight = FontWeight.Bold)
     }
 }
 
-/** Existing city filter options shown by the current screen (unchanged set). */
 val EhsanCityFilterOptions = listOf("الكل", "حلب", "دمشق", "حمص", "حماة")
-
-/** Existing category filter options shown by the current screen (unchanged set). */
 val EhsanCategoryFilterOptions = listOf("الكل", "طعام", "ملابس", "أثاث", "أخرى")

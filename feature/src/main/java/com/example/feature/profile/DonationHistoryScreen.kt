@@ -28,6 +28,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun DonationHistoryScreen(
     onBack: () -> Unit,
+    onItemClick: (Long) -> Unit,
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -41,7 +42,7 @@ fun DonationHistoryScreen(
                     title = { Text("سجل التبرعات", fontWeight = FontWeight.Bold) },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
                         }
                     }
                 )
@@ -63,7 +64,7 @@ fun DonationHistoryScreen(
                             title = donation.title,
                             subtitle = if (donation.type == "OFFER") "عرض تبرع" else "طلب مساعدة",
                             icon = if (donation.type == "OFFER") Icons.Default.VolunteerActivism else Icons.Default.Handshake,
-                            onClick = { /* Navigate to detail if needed */ }
+                            onClick = { onItemClick(donation.id) }
                         )
                     }
                 }

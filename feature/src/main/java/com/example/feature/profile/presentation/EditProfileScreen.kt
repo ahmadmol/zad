@@ -16,8 +16,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
@@ -62,7 +60,7 @@ fun EditProfileScreen(
                     title = { Text("تعديل الملف الشخصي", fontWeight = FontWeight.Bold) },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
                         }
                     }
                 )
@@ -78,7 +76,7 @@ fun EditProfileScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Avatar Section
-                Box(contentAlignment = Alignment.BottomEnd) {
+                Box(contentAlignment = Alignment.Center) {
                     Surface(
                         modifier = Modifier.size(100.dp),
                         shape = CircleShape,
@@ -92,14 +90,6 @@ fun EditProfileScreen(
                                 fontWeight = FontWeight.Bold
                             )
                         }
-                    }
-                    Surface(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clip(CircleShape),
-                        color = Color(0xFF6B9080)
-                    ) {
-                        Icon(Icons.Default.CameraAlt, contentDescription = null, tint = colors.onBrand, modifier = Modifier.padding(6.dp))
                     }
                 }
 
@@ -127,11 +117,13 @@ fun EditProfileScreen(
                         value = uiState.phone,
                         onValueChange = {},
                         label = { Text("رقم الهاتف") },
+                        supportingText = { Text("رقم محفوظ في الملف المحلي وغير قابل للتعديل هنا") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        enabled = false,
+                        readOnly = true,
                         colors = TextFieldDefaults.colors(
-                            disabledContainerColor = colors.surfaceMuted
+                            unfocusedContainerColor = colors.fieldContainer,
+                            focusedContainerColor = colors.fieldContainer
                         )
                     )
 
@@ -187,7 +179,7 @@ fun EditProfileScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 TextButton(onClick = onBack) {
-                    Text("إلغاء", color = colors.textSecondary)
+                    Text("تجاهل التغييرات", color = colors.textSecondary)
                 }
             }
         }

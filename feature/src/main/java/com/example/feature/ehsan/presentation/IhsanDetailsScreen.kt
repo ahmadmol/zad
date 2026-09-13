@@ -2,6 +2,7 @@ package com.example.feature.ehsan.presentation
 
 import android.content.Intent
 import android.net.Uri
+import android.text.format.DateUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -19,9 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,7 +38,10 @@ import com.example.designsystem.component.IhsanErrorState
 import com.example.designsystem.component.IhsanLoadingState
 import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
+import com.example.feature.ehsan.data.image.EhsanImageStore
+import com.example.feature.core.notification.UserMessageNotifier
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,51 +52,10 @@ fun IhsanDetailsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    var showReportDialog by remember { mutableStateOf(false) }
-    var reportSent by remember { mutableStateOf(false) }
+    val imageStore: EhsanImageStore = koinInject()
 
     LaunchedEffect(id) {
         viewModel.loadItem(id)
-    }
-
-    if (showReportDialog) {
-        AlertDialog(
-            onDismissRequest = { showReportDialog = false },
-            title = { Text(stringResource(R.string.ehsan_report_title)) },
-            text = {
-                Text(
-                    if (reportSent) {
-                        stringResource(R.string.ehsan_report_thanks)
-                    } else {
-                        stringResource(R.string.ehsan_report_confirm_body)
-                    }
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        if (reportSent) {
-                            showReportDialog = false
-                            reportSent = false
-                        } else {
-                            reportSent = true
-                        }
-                    }
-                ) {
-                    Text(
-                        if (reportSent) stringResource(R.string.common_close)
-                        else stringResource(R.string.ehsan_report_confirm)
-                    )
-                }
-            },
-            dismissButton = if (!reportSent) {
-                {
-                    TextButton(onClick = { showReportDialog = false }) {
-                        Text(stringResource(R.string.common_cancel))
-                    }
-                }
-            } else null
-        )
     }
 
     val colors = IhsanTheme.colors
@@ -129,12 +89,14 @@ fun IhsanDetailsScreen(
                                     type = "text/plain"
                                     putExtra(Intent.EXTRA_TEXT, shareText)
                                 }
-                                context.startActivity(
-                                    Intent.createChooser(
-                                        sendIntent,
-                                        context.getString(R.string.ehsan_share_chooser)
+                                runCatching {
+                                    context.startActivity(
+                                        Intent.createChooser(
+                                            sendIntent,
+                                            context.getString(R.string.ehsan_share_chooser)
+                                        )
                                     )
-                                )
+                                }.onFailure { UserMessageNotifier.notify(context, "تعذر فتح تطبيق للمشاركة") }
                             },
                             modifier = Modifier.size(IhsanTheme.dimens.minTouchTarget)
                         ) {
@@ -173,9 +135,10 @@ fun IhsanDetailsScreen(
                                 .height(280.dp)
                                 .background(colors.surfaceElevated)
                         ) {
-                            if (item.imageUrl != null) {
+                            val imageModel = imageStore.resolve(item.imageUrl)
+                            if (imageModel != null) {
                                 AsyncImage(
-                                    model = item.imageUrl,
+                                    model = imageModel,
                                     contentDescription = null,
                                     modifier = Modifier.fillMaxSize(),
                                     contentScale = ContentScale.Crop
@@ -241,7 +204,15 @@ fun IhsanDetailsScreen(
                                 Spacer(modifier = Modifier.width(16.dp))
                                 Icon(Icons.Default.Schedule, contentDescription = null, size16(), tint = colors.textSecondary)
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = "منذ يومين", color = colors.textSecondary, fontSize = 14.sp)
+                                Text(
+                                    text = DateUtils.getRelativeTimeSpanString(
+                                        item.createdAt,
+                                        System.currentTimeMillis(),
+                                        DateUtils.MINUTE_IN_MILLIS
+                                    ).toString(),
+                                    color = colors.textSecondary,
+                                    fontSize = 14.sp
+                                )
                             }
 
                             Spacer(modifier = Modifier.height(24.dp))
@@ -306,7 +277,8 @@ fun IhsanDetailsScreen(
                                         val phone = item.phoneNumber
                                         val uri = Uri.parse("tel:$phone")
                                         val intent = Intent(Intent.ACTION_DIAL, uri)
-                                        context.startActivity(intent)
+                                        runCatching { context.startActivity(intent) }
+                                            .onFailure { UserMessageNotifier.notify(context, "تعذر فتح تطبيق الاتصال") }
                                     },
                                     modifier = Modifier.weight(1f).height(IhsanTheme.dimens.controlHeight),
                                     shape = RoundedCornerShape(IhsanTheme.dimens.radiusMedium),
@@ -326,7 +298,8 @@ fun IhsanDetailsScreen(
                                         val url = "https://api.whatsapp.com/send?phone=$phone"
                                         val intent = Intent(Intent.ACTION_VIEW)
                                         intent.data = Uri.parse(url)
-                                        context.startActivity(intent)
+                                        runCatching { context.startActivity(intent) }
+                                            .onFailure { UserMessageNotifier.notify(context, "تعذر فتح واتساب") }
                                     },
                                     modifier = Modifier.weight(1f).height(IhsanTheme.dimens.controlHeight),
                                     shape = RoundedCornerShape(IhsanTheme.dimens.radiusMedium),
@@ -341,22 +314,6 @@ fun IhsanDetailsScreen(
                                 }
                             }
                             
-                            Spacer(modifier = Modifier.height(16.dp))
-                            
-                            OutlinedButton(
-                                onClick = { showReportDialog = true },
-                                modifier = Modifier.fillMaxWidth().height(IhsanTheme.dimens.controlHeight),
-                                shape = RoundedCornerShape(IhsanTheme.dimens.radiusMedium),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, colors.borderSubtle)
-                            ) {
-                                Icon(
-                                    Icons.Default.Flag,
-                                    contentDescription = stringResource(R.string.cd_report_case),
-                                    tint = colors.textSecondary
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(stringResource(R.string.ehsan_report_case), color = colors.textSecondary)
-                            }
                         }
                     }
                 }

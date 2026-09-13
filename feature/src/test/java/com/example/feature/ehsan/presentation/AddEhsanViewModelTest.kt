@@ -1,6 +1,7 @@
 package com.example.feature.ehsan.presentation
 
 import com.example.feature.ehsan.data.local.entity.UserEntity
+import com.example.feature.ehsan.data.image.EhsanImageStore
 import com.example.feature.ehsan.domain.repository.UserRepository
 import com.example.feature.ehsan.domain.usecase.AddDonationUseCase
 import com.example.feature.ehsan.domain.usecase.ValidatePhoneNumberUseCase
@@ -21,6 +22,7 @@ class AddEhsanViewModelTest {
     private val addDonationUseCase: AddDonationUseCase = mockk()
     private val userRepository: UserRepository = mockk()
     private val validatePhoneNumberUseCase = ValidatePhoneNumberUseCase()
+    private val imageStore: EhsanImageStore = mockk(relaxed = true)
     private val testDispatcher = UnconfinedTestDispatcher()
 
     private lateinit var viewModel: AddEhsanViewModel
@@ -31,7 +33,7 @@ class AddEhsanViewModelTest {
         every { userRepository.getUser() } returns flowOf(
             UserEntity(1, "Ahmed", "Ali", "0912345678", "Aleppo", "Street 1")
         )
-        viewModel = AddEhsanViewModel(addDonationUseCase, userRepository, validatePhoneNumberUseCase)
+        viewModel = AddEhsanViewModel(addDonationUseCase, userRepository, validatePhoneNumberUseCase, imageStore)
     }
 
     @After
@@ -69,7 +71,7 @@ class AddEhsanViewModelTest {
             UserEntity(1, "Ahmed", "Ali", "0000000000", "Aleppo", "Street 1")
         )
         // Re-init to pick up new user
-        viewModel = AddEhsanViewModel(addDonationUseCase, userRepository, validatePhoneNumberUseCase)
+        viewModel = AddEhsanViewModel(addDonationUseCase, userRepository, validatePhoneNumberUseCase, imageStore)
 
         // When
         viewModel.submitRequest("Food", "I need food", "Food", "Aleppo", "REQUEST", null)
@@ -84,7 +86,7 @@ class AddEhsanViewModelTest {
     fun `submitRequest when no user blocks submission`() = runTest {
         // Given
         every { userRepository.getUser() } returns flowOf(null)
-        viewModel = AddEhsanViewModel(addDonationUseCase, userRepository, validatePhoneNumberUseCase)
+        viewModel = AddEhsanViewModel(addDonationUseCase, userRepository, validatePhoneNumberUseCase, imageStore)
 
         // When
         viewModel.submitRequest("Food", "I need food", "Food", "Aleppo", "REQUEST", null)
@@ -97,7 +99,7 @@ class AddEhsanViewModelTest {
     @Test
     fun `submitRequest when already submitting does nothing`() = runTest {
         // Given
-        val viewModel = AddEhsanViewModel(addDonationUseCase, userRepository, validatePhoneNumberUseCase)
+        val viewModel = AddEhsanViewModel(addDonationUseCase, userRepository, validatePhoneNumberUseCase, imageStore)
         coEvery { addDonationUseCase(any()) } coAnswers {
             kotlinx.coroutines.delay(1000)
             Unit

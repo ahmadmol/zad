@@ -16,7 +16,7 @@ data class EhsanUiState(
     val searchQuery: String = "",
     val selectedLocation: String = "الكل",
     val selectedCategory: String = "الكل",
-    val selectedType: String = "ALL", // ALL, OFFER, REQUEST
+    val selectedType: String = "OFFER", // OFFER, REQUEST, ALL (legacy/internal only)
     val isLoading: Boolean = false,
     val error: String? = null
 )
@@ -44,7 +44,7 @@ class EhsanViewModel(
                         donations = list,
                         donorCount = donors,
                         completedCount = completed,
-                        activeProjects = list.size
+                        activeProjects = list.count { it.status == "AVAILABLE" || it.status == "PENDING" }
                     ) 
                 }
                 applyFilters()

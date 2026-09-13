@@ -1,5 +1,7 @@
 package com.example.feature.profile.presentation.components
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,12 +9,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -24,30 +28,38 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Mosque
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -55,11 +67,448 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.designsystem.R
 import com.example.designsystem.theme.IhsanTheme
+import com.example.feature.R
+
+// =================================================================================================
+// 1. Profile Hero Header with Location, Hijri Date, Brand Mark, Search & Notification icons
+//    and a smooth curved bottom transition into the body surface.
+// =================================================================================================
+
+@Composable
+fun ProfileHeroHeader(
+    location: String,
+    hijriDate: String,
+    onSearchClick: () -> Unit,
+    onNotificationClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val darkTealColor = Color(0xFF003B46)
+    val darkTealSubtext = Color(0xFF1B535D)
+    val surfaceColor = IhsanTheme.colors.surfaceBase
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(170.dp)
+    ) {
+        // Hero background image
+        Image(
+            painter = painterResource(id = R.drawable.ihsan_home_hero_background),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            alignment = Alignment.TopCenter,
+            modifier = Modifier.matchParentSize()
+        )
+
+        // Header Top Row
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
+            ) {
+                // RTL Right: Location & Hijri Date
+                Column(horizontalAlignment = Alignment.Start) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ihsan_icon_location),
+                            contentDescription = null,
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = location.ifBlank { "حلب" },
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = darkTealColor
+                        )
+                    }
+                    Text(
+                        text = hijriDate.ifBlank { "12 ربيع الأول 1448" },
+                        fontSize = 10.5.sp,
+                        color = darkTealSubtext,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(start = 19.dp)
+                    )
+                }
+
+                // Center: Brand Logo & Title & Subtitle
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ihsan_brand_mark),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.size(30.dp)
+                    )
+                    Spacer(modifier = Modifier.height(1.dp))
+                    Text(
+                        text = stringResource(R.string.home_hero_title),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = darkTealColor,
+                        letterSpacing = 0.2.sp
+                    )
+                    Text(
+                        text = stringResource(R.string.home_hero_subtitle),
+                        fontSize = 8.5.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = darkTealSubtext.copy(alpha = 0.85f)
+                    )
+                }
+
+                // RTL Left: Search & Notification Buttons (Touch Target >= 48dp)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(0.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clickable(onClick = onSearchClick)
+                            .semantics {
+                                role = Role.Button
+                                contentDescription = "بحث"
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ihsan_icon_search),
+                            contentDescription = null,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clickable(onClick = onNotificationClick)
+                            .semantics {
+                                role = Role.Button
+                                contentDescription = "التنبيهات"
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ihsan_icon_notification),
+                            contentDescription = null,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        // Curved Bottom Transition Cut
+        Canvas(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(44.dp)
+                .align(Alignment.BottomCenter)
+        ) {
+            val w = size.width
+            val h = size.height
+            val path = Path().apply {
+                moveTo(0f, h)
+                quadraticTo(
+                    w / 2f, -h * 0.35f,
+                    w, h
+                )
+                lineTo(w, h)
+                lineTo(0f, h)
+                close()
+            }
+            drawPath(path = path, color = surfaceColor)
+        }
+    }
+}
+
+// =================================================================================================
+// 2. Profile Avatar Overlay — Centered over the curved transition
+// =================================================================================================
+
+@Composable
+fun ProfileAvatarOverlay(
+    userName: String,
+    onEditClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val initial = profileInitialFromName(userName)
+    val darkTealColor = Color(0xFF003B46)
+
+    Box(
+        modifier = modifier
+            .size(108.dp)
+            .semantics { contentDescription = "صورة الملف الشخصي، $userName" },
+        contentAlignment = Alignment.Center
+    ) {
+        // Outer avatar circle with cream/white border and shadow
+        Surface(
+            modifier = Modifier
+                .size(100.dp)
+                .shadow(elevation = 3.dp, shape = CircleShape),
+            shape = CircleShape,
+            color = IhsanTheme.colors.surfaceElevated,
+            border = BorderStroke(3.5.dp, IhsanTheme.colors.surfaceBase)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(IhsanTheme.colors.surfaceMint)
+            ) {
+                if (userName.isNotBlank() && userName != "زائر") {
+                    Text(
+                        text = initial,
+                        color = darkTealColor,
+                        fontSize = 38.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null,
+                        tint = darkTealColor,
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
+            }
+        }
+
+        // Camera Action Badge Overlay
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = 4.dp, bottom = 2.dp)
+                .size(32.dp)
+                .clip(CircleShape)
+                .background(darkTealColor)
+                .border(2.dp, IhsanTheme.colors.surfaceBase, CircleShape)
+                .clickable(onClick = onEditClick)
+                .semantics {
+                    role = Role.Button
+                    contentDescription = "تعديل الملف الشخصي"
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.CameraAlt,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(15.dp)
+            )
+        }
+    }
+}
+
+// =================================================================================================
+// 3. Profile Title Header — Centered below avatar
+// =================================================================================================
+
+@Composable
+fun ProfileTitleHeader(
+    modifier: Modifier = Modifier
+) {
+    val darkTealColor = Color(0xFF003B46)
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "الملف الشخصي",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = darkTealColor,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = "إدارة حسابك وتفضيلاتك",
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Normal,
+            color = IhsanTheme.colors.textSecondary,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+// =================================================================================================
+// 4. Grouped Section Card Container
+// =================================================================================================
+
+@Composable
+fun ProfileGroupedSection(
+    headerTitle: String,
+    headerIcon: ImageVector,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    val darkTealColor = Color(0xFF003B46)
+
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        color = IhsanTheme.colors.surfaceElevated,
+        border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle),
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp
+    ) {
+        Column(modifier = Modifier.padding(vertical = 6.dp)) {
+            // Section Header Row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(IhsanTheme.colors.surfaceMint),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = headerIcon,
+                        contentDescription = null,
+                        tint = darkTealColor,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = headerTitle,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = darkTealColor
+                )
+            }
+
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                thickness = 0.5.dp,
+                color = IhsanTheme.colors.divider
+            )
+
+            content()
+        }
+    }
+}
+
+// =================================================================================================
+// 5. Profile Setting Row — Consistent layout matching reference image
+// =================================================================================================
+
+@Composable
+fun ProfileSettingRow(
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    customIconComposable: (@Composable () -> Unit)? = null,
+    trailingContent: (@Composable () -> Unit)? = null
+) {
+    val darkTealColor = Color(0xFF003B46)
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 60.dp)
+            .clickable(onClick = onClick)
+            .semantics {
+                role = Role.Button
+                contentDescription = "$title، $subtitle"
+            }
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Icon Tile Container
+        Box(
+            modifier = Modifier
+                .size(38.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(IhsanTheme.colors.surfaceMint),
+            contentAlignment = Alignment.Center
+        ) {
+            if (customIconComposable != null) {
+                customIconComposable()
+            } else if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = darkTealColor,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(14.dp))
+
+        // Title and Subtitle Column
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = darkTealColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = subtitle,
+                fontSize = 11.5.sp,
+                color = IhsanTheme.colors.textSecondary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+
+        // Trailing Content or Navigation Chevron
+        if (trailingContent != null) {
+            trailingContent()
+        } else {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                contentDescription = null,
+                tint = IhsanTheme.colors.textSecondary,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+}
+
+// =================================================================================================
+// 6. Font Size 'Aa' Icon Composable for "حجم الخط" Row
+// =================================================================================================
+
+@Composable
+fun FontIconAa(
+    modifier: Modifier = Modifier
+) {
+    val darkTealColor = Color(0xFF003B46)
+    Text(
+        text = "Aa",
+        fontSize = 15.sp,
+        fontWeight = FontWeight.Bold,
+        color = darkTealColor,
+        textAlign = TextAlign.Center,
+        modifier = modifier
+    )
+}
+
+// =================================================================================================
+// Backward Compatibility / Existing Components Bridge
+// =================================================================================================
 
 @Composable
 fun ProfileTopBar(
@@ -67,61 +516,39 @@ fun ProfileTopBar(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
-            .statusBarsPadding()
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = IhsanTheme.colors.surfaceBase
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_islamic_pattern_tile),
-            contentDescription = null,
-            modifier = Modifier
-                .matchParentSize()
-                .padding(top = 8.dp),
-            contentScale = ContentScale.Crop,
-            alpha = 0.55f
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 4.dp)
-                .defaultMinSize(minHeight = IhsanTheme.dimens.minTouchTarget),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                onClick = onBackClick,
+        Column(modifier = Modifier.statusBarsPadding()) {
+            Row(
                 modifier = Modifier
-                    .size(IhsanTheme.dimens.minTouchTarget)
-                    .semantics {
-                        role = Role.Button
-                        contentDescription = "رجوع"
-                    }
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .defaultMinSize(minHeight = IhsanTheme.dimens.minTouchTarget),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.size(IhsanTheme.dimens.minTouchTarget)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = null,
+                        tint = IhsanTheme.colors.textPrimary
+                    )
+                }
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = IhsanTheme.colors.textPrimary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
                 )
+                Spacer(modifier = Modifier.size(IhsanTheme.dimens.minTouchTarget))
             }
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
-            )
-            Spacer(modifier = Modifier.size(IhsanTheme.dimens.minTouchTarget))
         }
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(18.dp)
-                .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
-                .background(MaterialTheme.colorScheme.surface)
-        )
     }
 }
 
@@ -132,38 +559,11 @@ fun ProfileHeader(
     onEditClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val initial = profileInitialFromName(userName)
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        ProfileAvatar(
-            initial = initial,
-            contentDescription = "صورة الملف الشخصي، $userName",
-            onEditClick = onEditClick
-        )
-        Spacer(modifier = Modifier.height(14.dp))
-        Text(
-            text = userName,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center
-        )
-        if (userPhone.isNotBlank()) {
-            Spacer(modifier = Modifier.height(4.dp))
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                Text(
-                    text = userPhone,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = IhsanTheme.colors.textSecondaryMuted,
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
-    }
+    ProfileAvatarOverlay(
+        userName = userName,
+        onEditClick = onEditClick,
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -173,48 +573,11 @@ fun ProfileAvatar(
     onEditClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = modifier.size(112.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .size(104.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary)
-                .semantics { this.contentDescription = contentDescription },
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = initial,
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 40.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .size(36.dp)
-                .shadow(2.dp, CircleShape)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surface)
-                .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
-                .clickable(onClick = onEditClick)
-                .semantics {
-                    role = Role.Button
-                    this.contentDescription = "تعديل الملف الشخصي"
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(18.dp)
-            )
-        }
-    }
+    ProfileAvatarOverlay(
+        userName = initial,
+        onEditClick = onEditClick,
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -224,90 +587,26 @@ fun ProfileImpactCard(
     levelLabel: String,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .semantics {
-                contentDescription =
-                    "نشاطك المحلي، تبرع $donationsCount، طلب $requestsCount"
-            },
-        shape = RoundedCornerShape(IhsanTheme.dimens.radiusSheet),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(IhsanTheme.dimens.radiusLarge),
+        color = IhsanTheme.colors.surfaceElevated,
+        border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle)
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_islamic_pattern_tile),
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .size(120.dp)
-                    .padding(8.dp),
-                contentScale = ContentScale.Fit,
-                alpha = 0.18f
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 22.dp, vertical = 22.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "مستوى التأثير",
-                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f),
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = levelLabel,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    ProfileStatItem(value = donationsCount.toString(), label = "تبرع")
-                    Box(
-                        modifier = Modifier
-                            .width(1.dp)
-                            .height(36.dp)
-                            .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.35f))
-                    )
-                    ProfileStatItem(value = requestsCount.toString(), label = "طلب")
-                }
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "$donationsCount", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Text(text = "تبرعات", fontSize = 12.sp, color = IhsanTheme.colors.textSecondary)
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "$requestsCount", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Text(text = "طلبات", fontSize = 12.sp, color = IhsanTheme.colors.textSecondary)
             }
         }
-    }
-}
-
-@Composable
-fun ProfileStatItem(
-    value: String,
-    label: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = value,
-            color = MaterialTheme.colorScheme.onPrimary,
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp
-        )
-        Text(
-            text = label,
-            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f),
-            fontSize = 11.sp
-        )
     }
 }
 
@@ -316,150 +615,72 @@ fun ProfileSettingsCard(
     onDonationHistory: () -> Unit,
     onReminders: () -> Unit,
     onSettings: () -> Unit,
-    onLanguage: () -> Unit,
     onPrivacy: () -> Unit,
-    languageSubtitle: String,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(IhsanTheme.dimens.radiusPill),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ProfileGroupedSection(
+        headerTitle = "إعدادات التطبيق",
+        headerIcon = Icons.Default.Settings,
+        modifier = modifier
     ) {
-        Column {
-            ProfileMenuRow(
-                icon = Icons.Default.History,
-                title = "سجل التبرعات",
-                onClick = onDonationHistory
-            )
-            ProfileMenuDivider()
-            ProfileMenuRow(
-                icon = Icons.Default.Notifications,
-                title = "إعدادات التنبيهات",
-                onClick = onReminders
-            )
-            ProfileMenuDivider()
-            ProfileMenuRow(
-                icon = Icons.Default.Settings,
-                title = "إعدادات التطبيق",
-                onClick = onSettings
-            )
-            ProfileMenuDivider()
-            ProfileMenuRow(
-                icon = Icons.Default.Language,
-                title = "اللغة",
-                subtitle = languageSubtitle,
-                onClick = onLanguage
-            )
-            ProfileMenuDivider()
-            ProfileMenuRow(
-                icon = Icons.Default.Shield,
-                title = "الخصوصية والأمان",
-                onClick = onPrivacy
-            )
-        }
+        ProfileSettingRow(
+            title = "سجل التبرعات",
+            subtitle = "عرض جميع تبرعاتك السابقة",
+            icon = Icons.Default.History,
+            onClick = onDonationHistory
+        )
+        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = IhsanTheme.colors.divider)
+        ProfileSettingRow(
+            title = "إعدادات التنبيهات",
+            subtitle = "تذكير بالأذكار والصلاة",
+            icon = Icons.Default.Notifications,
+            onClick = onReminders
+        )
+        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = IhsanTheme.colors.divider)
+        ProfileSettingRow(
+            title = "إعدادات عامة",
+            subtitle = "العرض والصوت والإشعارات",
+            icon = Icons.Default.Settings,
+            onClick = onSettings
+        )
+        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = IhsanTheme.colors.divider)
+        ProfileSettingRow(
+            title = "الخصوصية والأمان",
+            subtitle = "إدارة بياناتك وحسابك",
+            icon = Icons.Default.Shield,
+            onClick = onPrivacy
+        )
     }
 }
 
 @Composable
 fun ProfileSupportCard(
+    onEmailClick: () -> Unit,
+    onWhatsAppClick: () -> Unit,
     onHelp: () -> Unit,
     onLogout: () -> Unit,
+    emailLabel: String,
+    whatsappLabel: String,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(IhsanTheme.dimens.radiusPill),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column {
-            ProfileMenuRow(
-                icon = Icons.AutoMirrored.Filled.Chat,
-                title = "مركز المساعدة",
-                onClick = onHelp
-            )
-            ProfileMenuDivider()
-            ProfileMenuRow(
-                icon = Icons.AutoMirrored.Filled.Logout,
-                title = "تسجيل الخروج",
-                onClick = onLogout,
-                titleColor = MaterialTheme.colorScheme.error,
-                iconTint = MaterialTheme.colorScheme.error,
-                iconBackground = MaterialTheme.colorScheme.errorContainer,
-                showChevron = true
-            )
-        }
-    }
-}
-
-@Composable
-fun ProfileMenuRow(
-    icon: ImageVector,
-    title: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    subtitle: String? = null,
-    titleColor: Color = MaterialTheme.colorScheme.primary,
-    iconTint: Color = MaterialTheme.colorScheme.primary,
-    iconBackground: Color = IhsanTheme.colors.surfaceMint,
-    showChevron: Boolean = true
-) {
-    Row(
+    ProfileGroupedSection(
+        headerTitle = "الدعم والاستفسار",
+        headerIcon = Icons.AutoMirrored.Filled.Chat,
         modifier = modifier
-            .fillMaxWidth()
-            .defaultMinSize(minHeight = 56.dp)
-            .semantics {
-                role = Role.Button
-                contentDescription = if (subtitle != null) "$title، $subtitle" else title
-            }
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(iconBackground),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = iconTint,
-                modifier = Modifier.size(20.dp)
-            )
-        }
-        Spacer(modifier = Modifier.width(14.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                color = titleColor,
-                fontWeight = FontWeight.Medium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-            if (subtitle != null) {
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = IhsanTheme.colors.textSecondaryMuted,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
-        if (showChevron) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                contentDescription = null,
-                tint = IhsanTheme.colors.textSecondaryMuted,
-                modifier = Modifier.size(20.dp)
-            )
-        }
+        ProfileSettingRow(
+            title = "البريد الإلكتروني",
+            subtitle = emailLabel,
+            icon = Icons.Filled.Email,
+            onClick = onEmailClick
+        )
+        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = IhsanTheme.colors.divider)
+        ProfileSettingRow(
+            title = "تسجيل الخروج",
+            subtitle = "تسجيل الخروج من الملف المحلي",
+            icon = Icons.AutoMirrored.Filled.Logout,
+            onClick = onLogout
+        )
     }
 }
 
@@ -471,17 +692,9 @@ fun ProfileVersionText(
     Text(
         text = "إصدار التطبيق $versionLabel",
         style = MaterialTheme.typography.labelSmall,
-        color = IhsanTheme.colors.textSecondaryMuted,
+        color = IhsanTheme.colors.textSecondary,
         textAlign = TextAlign.Center,
         modifier = modifier.fillMaxWidth()
-    )
-}
-
-@Composable
-private fun ProfileMenuDivider() {
-    HorizontalDivider(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        color = IhsanTheme.colors.borderSubtle
     )
 }
 

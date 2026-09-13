@@ -2,7 +2,7 @@ package com.example.feature.profile.presentation
 
 data class EditProfileUiState(
     val name: String = "",
-    val phone: String = "0930000000",
+    val phone: String = "",
     val city: String = "",
     val address: String = "",
     val avatarUrl: String? = null,

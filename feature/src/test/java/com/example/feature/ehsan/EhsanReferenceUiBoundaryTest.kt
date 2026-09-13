@@ -30,20 +30,50 @@ class EhsanReferenceUiBoundaryTest {
     }
 
     @Test
-    fun `ehsan screen keeps viewmodel callbacks and local-board honesty`() {
+    fun `ehsan screen keeps viewmodel callbacks and local-board honesty symbol`() {
         val screen = File(
             repoRoot,
             "feature/src/main/java/com/example/feature/ehsan/EhsanScreen.kt"
+        ).readText()
+        val components = File(
+            repoRoot,
+            "feature/src/main/java/com/example/feature/ehsan/presentation/components/EhsanUiComponents.kt"
         ).readText()
         assertTrue(screen.contains("EhsanViewModel"))
         assertTrue(screen.contains("onSearchQueryChange"))
         assertTrue(screen.contains("onLocationChange"))
         assertTrue(screen.contains("onCategoryChange"))
         assertTrue(screen.contains("onTypeChange"))
-        assertTrue(screen.contains("LocalBoardNoticeCard"))
+        // The local-board honesty composable is intentionally NOT rendered
+        // on the Ehsan screen in the Clean UI v2 brief. The symbol remains
+        // in the components file so any future opt-in (e.g. an "About this
+        // board" disclosure) can still surface it.
+        assertTrue(components.contains("LocalBoardNoticeCard"))
         assertFalse(screen.contains("\"١٢\""))
         assertFalse(screen.contains("trust"))
         assertFalse(screen.contains("موثق"))
+    }
+
+    @Test
+    fun `ehsan root renders no back affordance while keeping the callback wired`() {
+        val screen = File(
+            repoRoot,
+            "feature/src/main/java/com/example/feature/ehsan/EhsanScreen.kt"
+        ).readText()
+        val components = File(
+            repoRoot,
+            "feature/src/main/java/com/example/feature/ehsan/presentation/components/EhsanUiComponents.kt"
+        ).readText()
+
+        // Ehsan is a root bottom-navigation destination: the icon is opt-in and off by default.
+        assertTrue(components.contains("onBack: (() -> Unit)? = null"))
+        assertTrue(components.contains("if (onBack != null)"))
+        assertTrue(screen.contains("showNavigationIcon: Boolean = false"))
+        assertTrue(screen.contains("onNavigateBack.takeIf { showNavigationIcon }"))
+        // The callback itself is preserved, not deleted.
+        assertTrue(screen.contains("onNavigateBack: () -> Unit = {}"))
+        // The composable is not removed.
+        assertTrue(components.contains("fun EhsanTopBar("))
     }
 
     @Test

@@ -2,6 +2,8 @@ package com.example.feature.ehsan.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import android.net.Uri
+import com.example.feature.ehsan.data.image.EhsanImageStore
 import com.example.feature.ehsan.domain.model.Donation
 import com.example.feature.ehsan.domain.repository.UserRepository
 import com.example.feature.ehsan.domain.usecase.AddDonationUseCase
@@ -16,13 +18,21 @@ data class RequestHelpUiState(
     val submissionError: String? = null,
     val submissionSuccess: Boolean = false,
     val currentUserName: String = "",
-    val currentUserPhone: String = ""
+    val currentUserPhone: String = "",
+    /**
+     * Set to true once the user presses the primary action at
+     * least once. Used to decide whether to show inline field
+     * errors — we don't want to shout at the user before they
+     * have even tried to submit.
+     */
+    val submitAttempted: Boolean = false
 )
 
 class AddEhsanViewModel(
     private val addDonationUseCase: AddDonationUseCase,
     private val userRepository: UserRepository,
-    private val validatePhoneNumberUseCase: ValidatePhoneNumberUseCase
+    private val validatePhoneNumberUseCase: ValidatePhoneNumberUseCase,
+    private val imageStore: EhsanImageStore
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RequestHelpUiState())
@@ -54,6 +64,10 @@ class AddEhsanViewModel(
     ) {
         if (_uiState.value.isSubmitting) return
 
+        // Mark that the user has tried to submit so the screen
+        // can show inline field errors for empty fields.
+        _uiState.update { it.copy(submitAttempted = true) }
+
         val phone = _uiState.value.currentUserPhone
         val validationResult = validatePhoneNumberUseCase(phone)
 
@@ -76,7 +90,20 @@ class AddEhsanViewModel(
         _uiState.update { it.copy(isSubmitting = true, phoneError = null, submissionError = null) }
 
         viewModelScope.launch {
+            var ownedImageReference: String? = null
             try {
+                if (!imageUrl.isNullOrBlank()) {
+                    ownedImageReference = imageStore.persist(Uri.parse(imageUrl))
+                    if (ownedImageReference == null) {
+                        _uiState.update {
+                            it.copy(
+                                isSubmitting = false,
+                                submissionError = "تعذر حفظ الصورة المختارة. اختر صورة أخرى ثم أعد المحاولة."
+                            )
+                        }
+                        return@launch
+                    }
+                }
                 addDonationUseCase(
                     Donation(
                         title = title,
@@ -86,12 +113,13 @@ class AddEhsanViewModel(
                         type = type,
                         donorName = _uiState.value.currentUserName.ifBlank { "مستخدم" },
                         phoneNumber = validationResult.normalizedPhone,
-                        imageUrl = imageUrl
+                        imageUrl = ownedImageReference
                     )
                 )
                 _uiState.update { it.copy(isSubmitting = false, submissionSuccess = true) }
                 _event.emit(AddEhsanEvent.Success)
             } catch (e: Exception) {
+                ownedImageReference?.let { imageStore.delete(it) }
                 _uiState.update { 
                     it.copy(
                         isSubmitting = false, 

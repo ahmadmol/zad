@@ -8,47 +8,56 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Mosque
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.components.AuthBottomSheet
-import com.example.feature.core.notification.UserMessageNotifier
 import com.example.feature.profile.presentation.ProfileViewModel
-import com.example.feature.profile.presentation.components.ProfileHeader
-import com.example.feature.profile.presentation.components.ProfileImpactCard
-import com.example.feature.profile.presentation.components.ProfileSettingsCard
-import com.example.feature.profile.presentation.components.ProfileSupportCard
-import com.example.feature.profile.presentation.components.ProfileTopBar
+import com.example.feature.profile.presentation.components.FontIconAa
+import com.example.feature.profile.presentation.components.ProfileAvatarOverlay
+import com.example.feature.profile.presentation.components.ProfileGroupedSection
+import com.example.feature.profile.presentation.components.ProfileHeroHeader
+import com.example.feature.profile.presentation.components.ProfileSettingRow
+import com.example.feature.profile.presentation.components.ProfileTitleHeader
 import com.example.feature.profile.presentation.components.ProfileVersionText
 import org.koin.androidx.compose.koinViewModel
 
@@ -58,104 +67,206 @@ fun ProfileScreen(
     onEditProfileClick: () -> Unit = {},
     onNavigateToDonationHistory: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
+    onNavigateToPrayer: () -> Unit = {},
     onNavigateToReminders: () -> Unit = {},
+    onNavigateToQuran: () -> Unit = {},
+    onNavigateToSearch: () -> Unit = {},
     viewModel: ProfileViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showAuthSheet by remember { mutableStateOf(false) }
-    var showLanguageDialog by remember { mutableStateOf(false) }
-    var showPrivacyDialog by remember { mutableStateOf(false) }
-    var showHelpDialog by remember { mutableStateOf(false) }
+    var showLocalDataDialog by remember { mutableStateOf(false) }
+    var showAboutDialog by remember { mutableStateOf(false) }
+    var showFontSizeDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     val appVersion = remember(context) {
         runCatching {
             val info = context.packageManager.getPackageInfo(context.packageName, 0)
             info.versionName
-        }.getOrNull().orEmpty().ifBlank { "—" }
-    }
-
-    val donationsCount = remember(uiState.myDonations) {
-        uiState.myDonations.count { it.type == "OFFER" }
-    }
-    val requestsCount = remember(uiState.myDonations) {
-        uiState.myDonations.count { it.type == "REQUEST" }
+        }.getOrNull().orEmpty().ifBlank { "1.0.0" }
     }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = IhsanTheme.colors.surfaceMuted
+            color = IhsanTheme.colors.surfaceBase
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                ProfileTopBar(
-                    title = "الملف الشخصي",
-                    onBackClick = onBackClick
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .navigationBarsPadding()
+            ) {
+                // 1. Status Bar + Hero Header with Curved Transition
+                ProfileHeroHeader(
+                    location = uiState.city,
+                    hijriDate = "12 ربيع الأول 1448",
+                    onSearchClick = onNavigateToSearch,
+                    onNotificationClick = onNavigateToReminders
                 )
 
-                when {
-                    uiState.isLoading && !uiState.isUserLoggedIn -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .navigationBarsPadding(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                        }
-                    }
-
-                    !uiState.isUserLoggedIn -> {
-                        MissingLocalProfileContent(
-                            onCreateProfile = { showAuthSheet = true },
-                            appVersion = appVersion
+                // 2. Avatar Overlay Centered on the Curved Boundary
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        ProfileAvatarOverlay(
+                            userName = uiState.userName,
+                            onEditClick = {
+                                if (uiState.isUserLoggedIn) {
+                                    onEditProfileClick()
+                                } else {
+                                    showAuthSheet = true
+                                }
+                            },
+                            modifier = Modifier.padding(top = 0.dp)
                         )
-                    }
 
-                    else -> {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState())
-                                .navigationBarsPadding()
-                                .padding(horizontal = 20.dp)
-                                .padding(bottom = 24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // 3. Title & Subtitle
+                        ProfileTitleHeader()
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // 4. Section 1 — الحساب
+                        ProfileGroupedSection(
+                            headerTitle = "الحساب",
+                            headerIcon = Icons.Default.Person
                         ) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            ProfileHeader(
-                                userName = uiState.userName,
-                                userPhone = uiState.userPhone,
-                                onEditClick = onEditProfileClick
+                            ProfileSettingRow(
+                                title = "تحرير الملف الشخصي",
+                                subtitle = "تحديث معلوماتك وصورتك",
+                                icon = Icons.Default.Edit,
+                                onClick = {
+                                    if (uiState.isUserLoggedIn) {
+                                        onEditProfileClick()
+                                    } else {
+                                        showAuthSheet = true
+                                    }
+                                }
                             )
-                            Spacer(modifier = Modifier.height(20.dp))
-                            ProfileImpactCard(
-                                donationsCount = donationsCount,
-                                requestsCount = requestsCount,
-                                levelLabel = "نشاطك المحلي"
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                thickness = 0.5.dp,
+                                color = IhsanTheme.colors.divider
                             )
-                            Spacer(modifier = Modifier.height(20.dp))
-                            ProfileSettingsCard(
-                                onDonationHistory = onNavigateToDonationHistory,
-                                onReminders = onNavigateToReminders,
-                                onSettings = onNavigateToSettings,
-                                onLanguage = { showLanguageDialog = true },
-                                onPrivacy = { showPrivacyDialog = true },
-                                languageSubtitle = "العربية"
+                            ProfileSettingRow(
+                                title = "سجل المساهمات",
+                                subtitle = "اطلع على تاريخ تبرعاتك وإحسانك",
+                                icon = Icons.Default.FavoriteBorder,
+                                onClick = onNavigateToDonationHistory
                             )
-                            Spacer(modifier = Modifier.height(14.dp))
-                            ProfileSupportCard(
-                                onHelp = { showHelpDialog = true },
-                                onLogout = { viewModel.logout() }
-                            )
-                            Spacer(modifier = Modifier.height(24.dp))
-                            ProfileVersionText(versionLabel = appVersion)
-                            Spacer(modifier = Modifier.height(16.dp))
                         }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // 5. Section 2 — المظهر والتفضيلات
+                        ProfileGroupedSection(
+                            headerTitle = "المظهر والتفضيلات",
+                            headerIcon = Icons.Default.Settings
+                        ) {
+                            ProfileSettingRow(
+                                title = "الوضع الداكن",
+                                subtitle = "تغيير مظهر التطبيق",
+                                icon = Icons.Default.DarkMode,
+                                onClick = { viewModel.setDarkMode(!uiState.isDarkMode) },
+                                trailingContent = {
+                                    Switch(
+                                        checked = uiState.isDarkMode,
+                                        onCheckedChange = { viewModel.setDarkMode(it) },
+                                        colors = SwitchDefaults.colors(
+                                            checkedThumbColor = Color.White,
+                                            checkedTrackColor = MaterialTheme.colorScheme.primary,
+                                            uncheckedThumbColor = IhsanTheme.colors.textSecondary,
+                                            uncheckedTrackColor = IhsanTheme.colors.surfaceMint
+                                        )
+                                    )
+                                }
+                            )
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                thickness = 0.5.dp,
+                                color = IhsanTheme.colors.divider
+                            )
+                            ProfileSettingRow(
+                                title = "حجم الخط",
+                                subtitle = "تخصيص حجم الخط لراحة أفضل",
+                                customIconComposable = { FontIconAa() },
+                                onClick = { showFontSizeDialog = true }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // 6. Section 3 — الصلاة والقرآن
+                        ProfileGroupedSection(
+                            headerTitle = "الصلاة والقرآن",
+                            headerIcon = Icons.Default.Mosque
+                        ) {
+                            ProfileSettingRow(
+                                title = "إعدادات الصلاة",
+                                subtitle = "تنبيهات الأذان وأوقات الصلاة",
+                                icon = Icons.Default.Notifications,
+                                onClick = onNavigateToPrayer
+                            )
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                thickness = 0.5.dp,
+                                color = IhsanTheme.colors.divider
+                            )
+                            ProfileSettingRow(
+                                title = "التنزيلات",
+                                subtitle = "إدارة المحتوى المحفوظ دون اتصال",
+                                icon = Icons.Default.Download,
+                                onClick = onNavigateToQuran
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // 7. Section 4 — الخصوصية والبيانات
+                        ProfileGroupedSection(
+                            headerTitle = "الخصوصية والبيانات",
+                            headerIcon = Icons.Default.Shield
+                        ) {
+                            ProfileSettingRow(
+                                title = "البيانات المحلية",
+                                subtitle = "إدارة بياناتك على الجهاز (نشاطك المحلي)",
+                                icon = Icons.Default.Storage,
+                                onClick = { showLocalDataDialog = true }
+                            )
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                thickness = 0.5.dp,
+                                color = IhsanTheme.colors.divider
+                            )
+                            ProfileSettingRow(
+                                title = "حول التطبيق",
+                                subtitle = "الإصدار وسياسة الخصوصية",
+                                icon = Icons.Default.Info,
+                                onClick = { showAboutDialog = true }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        ProfileVersionText(versionLabel = appVersion)
+
+                        // Bottom content breathing room for bottom bar
+                        Spacer(modifier = Modifier.height(96.dp))
                     }
                 }
             }
 
+            // Auth Bottom Sheet
             if (showAuthSheet) {
                 AuthBottomSheet(
                     onDismiss = { showAuthSheet = false },
@@ -163,250 +274,134 @@ fun ProfileScreen(
                 )
             }
 
-            if (showLanguageDialog) {
+            // Font Size Adjustment Dialog
+            if (showFontSizeDialog) {
+                var currentSize by remember { mutableFloatStateOf(uiState.fontSize) }
                 AlertDialog(
-                    onDismissRequest = { showLanguageDialog = false },
-                    title = { Text("اللغة") },
+                    onDismissRequest = { showFontSizeDialog = false },
+                    title = { Text("تخصيص حجم الخط") },
                     text = {
-                        Text("اللغة الحالية للتطبيق هي العربية. سيتم إضافة لغات أخرى في تحديث قادم.")
-                    },
-                    confirmButton = {
-                        TextButton(onClick = { showLanguageDialog = false }) {
-                            Text("حسناً")
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "حجم الخط الحالي: ${currentSize.toInt()} نقطة",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = IhsanTheme.colors.textPrimary
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "بسم الله الرحمن الرحيم",
+                                fontSize = currentSize.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.primary,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Slider(
+                                value = currentSize,
+                                onValueChange = { currentSize = it },
+                                valueRange = 16f..36f,
+                                steps = 10
+                            )
                         }
-                    }
-                )
-            }
-
-            if (showPrivacyDialog) {
-                AlertDialog(
-                    onDismissRequest = { showPrivacyDialog = false },
-                    title = { Text("الخصوصية والأمان") },
-                    text = {
-                        Text(
-                            "نحترم خصوصيتك. بيانات الملف والتبرعات تُحفظ محليًا على جهازك قدر الإمكان، " +
-                                "ولا نشارك معلوماتك الشخصية مع أطراف ثالثة دون موافقتك."
-                        )
-                    },
-                    confirmButton = {
-                        TextButton(onClick = { showPrivacyDialog = false }) {
-                            Text("موافق")
-                        }
-                    }
-                )
-            }
-
-            if (showHelpDialog) {
-                AlertDialog(
-                    onDismissRequest = { showHelpDialog = false },
-                    title = { Text("مركز المساعدة") },
-                    text = {
-                        Text(
-                            "للدعم والاستفسارات تواصل معنا عبر البريد:\nsupport@ihsan.app\n\n" +
-                                "أو من خلال إعدادات التطبيق وقسم التنبيهات."
-                        )
                     },
                     confirmButton = {
                         TextButton(
                             onClick = {
-                                showHelpDialog = false
-                                val intent = android.content.Intent(android.content.Intent.ACTION_SENDTO).apply {
-                                    data = android.net.Uri.parse("mailto:support@ihsan.app")
-                                    putExtra(android.content.Intent.EXTRA_SUBJECT, "دعم تطبيق إحسان")
-                                }
-                                runCatching { context.startActivity(intent) }
-                                    .onFailure {
-                                        UserMessageNotifier.notify(
-                                            context,
-                                            "تعذر فتح تطبيق البريد"
-                                        )
-                                    }
+                                viewModel.setFontSize(currentSize)
+                                showFontSizeDialog = false
                             }
                         ) {
-                            Text("مراسلة الدعم")
+                            Text("حفظ")
                         }
                     },
                     dismissButton = {
-                        TextButton(onClick = { showHelpDialog = false }) {
+                        TextButton(onClick = { showFontSizeDialog = false }) {
+                            Text("إلغاء")
+                        }
+                    }
+                )
+            }
+
+            // Local Data Management Dialog
+            if (showLocalDataDialog) {
+                AlertDialog(
+                    onDismissRequest = { showLocalDataDialog = false },
+                    title = { Text("البيانات المحلية") },
+                    text = {
+                        Column {
+                            Text(
+                                text = "تطبيق إحسان يحفظ بيانات ملفك الشخصي ونشاطك المحلي وتفضيلاتك على هذا الجهاز فقط لحماية خصوصيتك.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = IhsanTheme.colors.textPrimary
+                            )
+                            if (uiState.isUserLoggedIn) {
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text(
+                                    text = "يمكنك تسجيل الخروج لإلغاء القيد المحلي على هذا الجهاز.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = IhsanTheme.colors.textSecondary
+                                )
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        if (uiState.isUserLoggedIn) {
+                            TextButton(
+                                onClick = {
+                                    viewModel.logout()
+                                    showLocalDataDialog = false
+                                }
+                            ) {
+                                Text("تسجيل الخروج", color = MaterialTheme.colorScheme.error)
+                            }
+                        } else {
+                            TextButton(onClick = { showLocalDataDialog = false }) {
+                                Text("موافق")
+                            }
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showLocalDataDialog = false }) {
                             Text("إغلاق")
                         }
                     }
                 )
             }
-        }
-    }
-}
 
-@Composable
-private fun MissingLocalProfileContent(
-    onCreateProfile: () -> Unit,
-    appVersion: String
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .navigationBarsPadding()
-            .padding(horizontal = 24.dp, vertical = 32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.weight(1f, fill = true))
-        Surface(
-            modifier = Modifier.size(120.dp),
-            shape = CircleShape,
-            color = IhsanTheme.colors.quickActionSurface
-        ) {
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    modifier = Modifier.size(56.dp),
-                    tint = IhsanTheme.colors.textSecondaryMuted
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(24.dp))
-        Text(
-            text = "أنشئ ملفاً شخصياً على الجهاز لإدارة تبرعاتك ومتابعة طلباتك. البيانات محلية وليست حساباً عبر الإنترنت",
-            textAlign = TextAlign.Center,
-            color = IhsanTheme.colors.textSecondaryMuted,
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Spacer(modifier = Modifier.height(28.dp))
-        Button(
-            onClick = onCreateProfile,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-        ) {
-            Text("إنشاء / فتح ملف شخصي", fontWeight = FontWeight.Bold)
-        }
-        Spacer(modifier = Modifier.weight(1f, fill = true))
-        ProfileVersionText(versionLabel = appVersion)
-    }
-}
-
-@Composable
-private fun ProfileContentPreviewBody(
-    userName: String,
-    userPhone: String,
-    donations: Int,
-    requests: Int
-) {
-    IhsanTheme {
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = IhsanTheme.colors.surfaceMuted
-            ) {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    ProfileTopBar(title = "الملف الشخصي", onBackClick = {})
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                            .padding(horizontal = 20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        ProfileHeader(
-                            userName = userName,
-                            userPhone = userPhone,
-                            onEditClick = {}
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
-                        ProfileImpactCard(
-                            donationsCount = donations,
-                            requestsCount = requests,
-                            levelLabel = "نشاطك المحلي"
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
-                        ProfileSettingsCard(
-                            onDonationHistory = {},
-                            onReminders = {},
-                            onSettings = {},
-                            onLanguage = {},
-                            onPrivacy = {},
-                            languageSubtitle = "العربية"
-                        )
-                        Spacer(modifier = Modifier.height(14.dp))
-                        ProfileSupportCard(onHelp = {}, onLogout = {})
-                        Spacer(modifier = Modifier.height(24.dp))
-                        ProfileVersionText(versionLabel = "1.0.0")
-                        Spacer(modifier = Modifier.height(16.dp))
+            // About App & Privacy Policy Dialog
+            if (showAboutDialog) {
+                AlertDialog(
+                    onDismissRequest = { showAboutDialog = false },
+                    title = { Text("حول تطبيق إحسان") },
+                    text = {
+                        Column {
+                            Text(
+                                text = "إحسان - تطبيق إسلامي شامل للقرآن الكريم، الأذكار، أوقات الصلاة، والعمل الخيري.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = IhsanTheme.colors.textPrimary
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(
+                                text = "الإصدار: $appVersion",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(
+                                text = "سياسة الخصوصية: جميع البيانات محلية ومحفوظة بأمان على جهازك، ولا يتم مشاركتها مع أي جهة خارجية.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = IhsanTheme.colors.textSecondary
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showAboutDialog = false }) {
+                            Text("إغلاق")
+                        }
                     }
-                }
-            }
-        }
-    }
-}
-
-@Preview(name = "Profile Light 360", locale = "ar", widthDp = 360, heightDp = 840, showBackground = true)
-@Composable
-private fun ProfilePreviewLight360() {
-    ProfileContentPreviewBody(
-        userName = "عن نت",
-        userPhone = "0967225762",
-        donations = 0,
-        requests = 0
-    )
-}
-
-@Preview(name = "Profile Light 430", locale = "ar", widthDp = 430, heightDp = 900, showBackground = true)
-@Composable
-private fun ProfilePreviewLight430() {
-    ProfileContentPreviewBody(
-        userName = "مستخدم إحسان",
-        userPhone = "0999999999",
-        donations = 3,
-        requests = 1
-    )
-}
-
-@Preview(
-    name = "Profile Dark",
-    locale = "ar",
-    widthDp = 360,
-    heightDp = 840,
-    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
-    showBackground = true
-)
-@Composable
-private fun ProfilePreviewDark() {
-    ProfileContentPreviewBody(
-        userName = "أحمد",
-        userPhone = "0912345678",
-        donations = 2,
-        requests = 2
-    )
-}
-
-@Preview(name = "Profile FontScale", locale = "ar", widthDp = 360, heightDp = 900, fontScale = 1.3f)
-@Composable
-private fun ProfilePreviewFontScale() {
-    ProfileContentPreviewBody(
-        userName = "مستخدم",
-        userPhone = "0900000000",
-        donations = 1,
-        requests = 0
-    )
-}
-
-@Preview(name = "Profile Missing", locale = "ar", widthDp = 360, heightDp = 720, showBackground = true)
-@Composable
-private fun ProfilePreviewMissing() {
-    IhsanTheme {
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = IhsanTheme.colors.surfaceMuted
-            ) {
-                Column {
-                    ProfileTopBar(title = "الملف الشخصي", onBackClick = {})
-                    MissingLocalProfileContent(onCreateProfile = {}, appVersion = "1.0.0")
-                }
+                )
             }
         }
     }

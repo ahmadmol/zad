@@ -31,7 +31,8 @@ class IhsanDetailsViewModel(
                             status = donation.status,
                             donorName = donation.donorName,
                             phoneNumber = donation.phoneNumber,
-                            imageUrl = donation.imageUrl
+                            imageUrl = donation.imageUrl,
+                            createdAt = donation.createdAt
                         )
                     )
                 } else {
