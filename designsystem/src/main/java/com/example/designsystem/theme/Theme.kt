@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -13,6 +14,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
@@ -100,7 +104,20 @@ object IhsanTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalIhsanDimens.current
+
+    val readingTypography: ReadingTypography
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalReadingTypography.current
 }
+
+private val IhsanShapes = Shapes(
+    extraSmall = RoundedCornerShape(6.dp),
+    small = RoundedCornerShape(10.dp),
+    medium = RoundedCornerShape(14.dp),
+    large = RoundedCornerShape(20.dp),
+    extraLarge = RoundedCornerShape(28.dp)
+)
 
 @Composable
 fun IhsanTheme(
@@ -122,10 +139,13 @@ fun IhsanTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as? Activity)?.window ?: return@SideEffect
-            window.statusBarColor = colorScheme.primary.toArgb()
-            window.navigationBarColor = colorScheme.background.toArgb()
+            // Transparent status bar for seamless edge-to-edge header blending
+            val systemSurface = semanticColors.surfaceBase
+            window.statusBarColor = Color.Transparent.toArgb()
+            window.navigationBarColor = systemSurface.toArgb()
+            WindowCompat.setDecorFitsSystemWindows(window, false)
             val controller = WindowCompat.getInsetsController(window, view)
-            controller.isAppearanceLightStatusBars = false
+            controller.isAppearanceLightStatusBars = !darkTheme
             controller.isAppearanceLightNavigationBars = !darkTheme
         }
     }
@@ -133,11 +153,13 @@ fun IhsanTheme(
     CompositionLocalProvider(
         LocalSpacing provides Spacing(),
         LocalIhsanColors provides semanticColors,
-        LocalIhsanDimens provides IhsanDimens()
+        LocalIhsanDimens provides IhsanDimens(),
+        LocalReadingTypography provides ReadingTypography()
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = Typography,
+            shapes = IhsanShapes,
             content = content
         )
     }

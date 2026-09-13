@@ -2,10 +2,12 @@ package com.example.feature.dashboard.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,13 +16,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Today
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -43,13 +43,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.designsystem.component.softBrandTonalFill
 import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
 
+/**
+ * Quiet, light "Name of Allah for today" card.
+ *
+ * v2 - Reduced-information layout:
+ *   - Section eyebrow ("اسم اليوم")
+ *   - Single Arabic name (large, brand color)
+ *   - Short meaning (one line)
+ *   - Compact chevron-only CTA pointing to the full Asma list
+ *
+ * The English transliteration was removed because the card is now used
+ * as a quick glance, not a translation reference.
+ */
 @Composable
 fun AsmaHighlightCard(
     name: String,
-    transliteration: String,
+    @Suppress("UNUSED_PARAMETER") transliteration: String,
     meaning: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -57,56 +70,112 @@ fun AsmaHighlightCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(148.dp)
-            .semantics {
+            .height(144.dp)
+            .semantics(mergeDescendants = true) {
                 role = Role.Button
-                contentDescription = "أسماء الله الحسنى، $name"
+                contentDescription = "اسم اليوم، $name، $meaning"
             }
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle.copy(alpha = 0.4f))
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .clip(RoundedCornerShape(20.dp))
+                .background(softBrandTonalFill())
+                .border(
+                    BorderStroke(1.dp, IhsanTheme.colors.borderSubtle.copy(alpha = 0.5f)),
+                    RoundedCornerShape(20.dp)
+                )
         ) {
-            Text(
-                text = "أسماء الله الحسنى",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
-                textAlign = TextAlign.Center,
-                fontSize = 11.sp
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = name,
-                style = MaterialTheme.typography.headlineLarge.copy(fontSize = 30.sp),
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.Center,
-                maxLines = 1
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = transliteration,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
-                fontSize = 13.sp
-            )
-            Text(
-                text = meaning,
-                style = MaterialTheme.typography.bodySmall,
-                color = IhsanTheme.colors.textSecondaryMuted,
-                textAlign = TextAlign.Center,
-                maxLines = 1
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.home_asma_today_title),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AutoAwesome,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = name,
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontSize = 22.sp,
+                            lineHeight = 26.sp
+                        ),
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = meaning,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = IhsanTheme.colors.textSecondaryMuted,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        lineHeight = 14.sp,
+                        fontSize = 12.sp,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.06f))
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .align(Alignment.End),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.home_show_more),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 11.sp
+                    )
+                    Spacer(modifier = Modifier.size(2.dp))
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(14.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -129,14 +198,18 @@ fun NearbyCharityCard(
         return
     }
 
-    val subtitle = "عروض $offersCount · طلبات $requestsCount على اللوحة المحلية"
     HomeShortcutCard(
         eyebrow = stringResource(R.string.home_nearby_charity_title),
-        title = "ابحث الآن",
-        description = subtitle,
+        title = if (offersCount + requestsCount == 1) {
+            "عنصر واحد متاح"
+        } else {
+            "$offersCount عروض · $requestsCount طلبات"
+        },
+        description = "لوحة المجتمع المحلي",
+        actionLabel = stringResource(R.string.home_open_ehsan),
         icon = Icons.Default.Place,
         onClick = onClick,
-        contentDescription = "تبرع قريب، لوحة محلية",
+        contentDescription = "إحسان المحلي، $offersCount عروض و$requestsCount طلبات",
         modifier = modifier
     )
 }
@@ -151,21 +224,26 @@ private fun NearbyCharityEmptyCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(148.dp)
+            .height(144.dp)
             .semantics {
                 role = Role.Button
                 contentDescription = emptyBody
             }
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle.copy(alpha = 0.4f))
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
+                .clip(RoundedCornerShape(20.dp))
+                .background(softBrandTonalFill())
+                .border(
+                    BorderStroke(1.dp, IhsanTheme.colors.borderSubtle.copy(alpha = 0.5f)),
+                    RoundedCornerShape(20.dp)
+                )
+                .padding(14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
@@ -179,8 +257,8 @@ private fun NearbyCharityEmptyCard(
                 Text(
                     text = stringResource(R.string.home_nearby_charity_empty_title),
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
                     color = MaterialTheme.colorScheme.primary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
@@ -199,7 +277,7 @@ private fun NearbyCharityEmptyCard(
                     Spacer(modifier = Modifier.height(6.dp))
                     TextButton(
                         onClick = onRetry,
-                        contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)
+                        contentPadding = PaddingValues(0.dp)
                     ) {
                         Text(stringResource(R.string.home_retry))
                     }
@@ -225,42 +303,11 @@ private fun NearbyCharityEmptyCard(
 }
 
 @Composable
-fun QiblaShortcutCard(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    HomeShortcutCard(
-        eyebrow = "القبلة",
-        title = "تحديد الاتجاه",
-        description = "اعرف اتجاه القبلة من موقعك الحالي",
-        icon = Icons.Default.Explore,
-        onClick = onClick,
-        contentDescription = "القبلة، تحديد الاتجاه",
-        modifier = modifier
-    )
-}
-
-@Composable
-fun DailyExperienceCard(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    HomeShortcutCard(
-        eyebrow = "تجربة اليوم",
-        title = "ملخص محلي للقراءة فقط",
-        description = "بيانات محلية على الجهاز دون اتصال",
-        icon = Icons.Default.Today,
-        onClick = onClick,
-        contentDescription = "تجربة اليوم، ملخص محلي للقراءة فقط",
-        modifier = modifier
-    )
-}
-
-@Composable
 internal fun HomeShortcutCard(
     eyebrow: String,
     title: String,
     description: String,
+    actionLabel: String,
     icon: ImageVector,
     onClick: () -> Unit,
     contentDescription: String,
@@ -269,21 +316,26 @@ internal fun HomeShortcutCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(148.dp)
-            .semantics {
+            .height(144.dp)
+            .semantics(mergeDescendants = true) {
                 role = Role.Button
                 this.contentDescription = contentDescription
             }
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle.copy(alpha = 0.4f))
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
+                .clip(RoundedCornerShape(20.dp))
+                .background(softBrandTonalFill())
+                .border(
+                    BorderStroke(1.dp, IhsanTheme.colors.borderSubtle.copy(alpha = 0.5f)),
+                    RoundedCornerShape(20.dp)
+                )
+                .padding(14.dp),
             verticalAlignment = Alignment.Top
         ) {
             Column(modifier = Modifier.weight(1f)) {
@@ -299,7 +351,7 @@ internal fun HomeShortcutCard(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleLarge.copy(fontSize = 16.sp),
-                    fontWeight = FontWeight.ExtraBold,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
@@ -309,24 +361,33 @@ internal fun HomeShortcutCard(
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
                     color = IhsanTheme.colors.textSecondaryMuted,
-                    maxLines = 3,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     lineHeight = 15.sp,
                     fontSize = 12.sp
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                Box(
+                Row(
                     modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.06f)),
-                    contentAlignment = Alignment.Center
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.08f))
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Text(
+                        text = actionLabel,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 12.sp,
+                        maxLines = 1
+                    )
+                    Spacer(modifier = Modifier.size(4.dp))
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                        imageVector = Icons.Default.KeyboardArrowLeft,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }

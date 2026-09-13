@@ -221,7 +221,7 @@ class RefreshHomeDashboardUseCase(
     suspend operator fun invoke(): Result<Unit> {
         val resetResult = dailyActivityRepository.resetIfRequired()
         if (resetResult.isFailure) return resetResult
-        return prayerFacade.refreshLocation()
+        return runCatching { prayerFacade.refreshLocation() }
     }
 }
 

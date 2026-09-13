@@ -149,6 +149,5 @@ sealed interface HomeDashboardAction {
     data class OnUpdatePrePrayerNotification(val minutes: Int) : HomeDashboardAction
     data class OnUpdateIqamahNotification(val minutes: Int) : HomeDashboardAction
     data class OnUpdateNotificationSound(val type: String) : HomeDashboardAction
-    data class OnDailyActivityClick(val activityId: String) : HomeDashboardAction
     data object OnRetryPrayer : HomeDashboardAction
 }

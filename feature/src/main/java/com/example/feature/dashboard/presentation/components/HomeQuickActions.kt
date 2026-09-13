@@ -35,6 +35,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.designsystem.component.LiquidGlassStyle
+import com.example.designsystem.component.liquidGlass
 import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
 import com.example.feature.dashboard.HomeIslamicAction
@@ -123,12 +125,9 @@ private fun HomeQuickActionItem(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .size(46.dp)
-                .clip(shape)
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.08f))
-                .border(
-                    width = 1.dp,
-                    color = IhsanTheme.colors.borderSubtle.copy(alpha = 0.35f),
-                    shape = shape
+                .liquidGlass(
+                    style = LiquidGlassStyle.Subtle,
+                    cornerRadius = 16.dp
                 ),
             verticalArrangement = Arrangement.Center
         ) {

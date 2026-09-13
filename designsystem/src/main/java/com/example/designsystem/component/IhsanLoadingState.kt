@@ -30,7 +30,7 @@ fun IhsanLoadingState(
             .fillMaxWidth()
             .padding(IhsanTheme.spacing.large)
             .semantics {
-                contentDescription = message ?: "Loading"
+                contentDescription = message ?: "جارٍ التحميل"
             },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center

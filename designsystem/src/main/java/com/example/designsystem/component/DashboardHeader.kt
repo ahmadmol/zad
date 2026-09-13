@@ -61,7 +61,7 @@ fun DashboardHeader(
     activePrayerIndex: Int,
     onNotificationClick: () -> Unit,
     onPrayerClick: (Int) -> Unit = {},
-    greeting: String = "أهلاً بك في إحسان",
+    @Suppress("UNUSED_PARAMETER") greeting: String = "",
     modifier: Modifier = Modifier
 ) {
     val onBrand = IhsanTheme.colors.onBrand
@@ -96,41 +96,38 @@ fun DashboardHeader(
                 .padding(horizontal = 16.dp)
                 .padding(top = 8.dp, bottom = 16.dp)
         ) {
-            // In RTL: first child = End (visual right) = greeting;
-            // second child = Start (visual left) = notifications — matches reference.
+            // In RTL: first child = End (visual right) = clock; second child = Start
+            // (visual left) = notifications. Greeting text was removed in the
+            // Clean UI pass so the header carries only the information that
+            // changes minute-to-minute (date, location, clock, next prayer).
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = greeting,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = onBrand,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f, fill = false)
+                ClockDisplay(
+                    currentTime = currentTime,
+                    onBrand = onBrand
                 )
                 IconButton(
                     onClick = onNotificationClick,
                     modifier = Modifier
-                        .size(44.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(onBrand.copy(alpha = 0.15f))
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(onBrand.copy(alpha = 0.14f))
                 ) {
                     Icon(
                         imageVector = Icons.Default.Notifications,
                         contentDescription = stringResource(id = R.string.notifications_desc),
                         tint = onBrand,
-                        modifier = Modifier.size(22.dp)
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-            // RTL: first = date/location (visual right), second = clock (visual left/center)
+            // RTL: first = date/location (visual right), second = next prayer chip (visual left/center)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -146,26 +143,26 @@ fun DashboardHeader(
                 ) {
                     Text(
                         text = hijriDate,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = onBrand,
-                        maxLines = 2,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = onBrand.copy(alpha = 0.88f),
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        lineHeight = 18.sp
+                        lineHeight = 17.sp
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.LocationOn,
                             contentDescription = null,
-                            tint = onBrand.copy(alpha = 0.8f),
-                            modifier = Modifier.size(14.dp)
+                            tint = onBrand.copy(alpha = 0.78f),
+                            modifier = Modifier.size(13.dp)
                         )
                         Spacer(modifier = Modifier.width(3.dp))
                         Text(
                             text = location,
-                            fontSize = 13.sp,
-                            color = onBrand.copy(alpha = 0.8f),
+                            fontSize = 12.sp,
+                            color = onBrand.copy(alpha = 0.78f),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -174,55 +171,17 @@ fun DashboardHeader(
 
                 Spacer(modifier = Modifier.width(10.dp))
 
-                Column(horizontalAlignment = Alignment.End) {
-                    Row(
-                        verticalAlignment = Alignment.Bottom,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Text(
-                            text = clockSuffix(currentTime),
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = onBrand,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-                        Text(
-                            text = clockPart(currentTime),
-                            fontSize = 52.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = onBrand,
-                            lineHeight = 52.sp,
-                            maxLines = 1
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.HourglassBottom,
-                            contentDescription = null,
-                            tint = onBrand,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = nextPrayerInfo,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = onBrand,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                }
+                NextPrayerChip(
+                    nextPrayerInfo = nextPrayerInfo,
+                    onBrand = onBrand
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 0.dp)
             ) {
                 itemsIndexed(prayerTimes) { index, pair ->
@@ -234,8 +193,88 @@ fun DashboardHeader(
                     )
                 }
             }
+
+            // Bottom fade: stitches the green hero into the white body so the
+            // prayer strip flows into the cards without a hard seam.
+            Spacer(modifier = Modifier.height(12.dp))
+            BottomFadeToSurface()
         }
     }
+}
+
+@Composable
+private fun ClockDisplay(
+    currentTime: String,
+    onBrand: Color
+) {
+    Row(
+        verticalAlignment = Alignment.Bottom,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            text = clockSuffix(currentTime),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = onBrand.copy(alpha = 0.88f),
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        Text(
+            text = clockPart(currentTime),
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            color = onBrand,
+            lineHeight = 34.sp,
+            maxLines = 1
+        )
+    }
+}
+
+@Composable
+private fun NextPrayerChip(
+    nextPrayerInfo: String,
+    onBrand: Color
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(onBrand.copy(alpha = 0.12f))
+            .padding(horizontal = 10.dp, vertical = 6.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.HourglassBottom,
+            contentDescription = null,
+            tint = onBrand,
+            modifier = Modifier.size(14.dp)
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+            text = nextPrayerInfo.ifBlank { "—" },
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = onBrand,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+private fun BottomFadeToSurface() {
+    val surface = MaterialTheme.colorScheme.surface
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(14.dp)
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color.Transparent,
+                        surface.copy(alpha = 0.55f)
+                    )
+                )
+            )
+    )
 }
 
 @Composable

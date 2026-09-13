@@ -103,7 +103,7 @@ val DarkIhsanSemanticColors = IhsanSemanticColors(
     surfaceBase = DarkBackground,
     surfaceElevated = DarkSurfaceElevated,
     surfaceMuted = DarkSurfaceMuted,
-    surfaceMint = DarkInteractivePrimaryContainer.copy(alpha = 0.55f),
+    surfaceMint = DarkInteractivePrimaryContainer.copy(alpha = 0.35f),
     surfaceWarm = DarkSurfaceWarm,
     textPrimary = DarkOnSurface,
     textSecondary = DarkOnSurfaceVariant,

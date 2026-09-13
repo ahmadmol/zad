@@ -37,8 +37,7 @@ val homeDashboardModule = module {
             observeHomeCharity = get(),
             refreshHome = get(),
             updatePrayerSettings = get(),
-            prayerLocationRepository = get(),
-            dailyActivityRepository = get()
+            prayerLocationRepository = get()
         )
     }
 }

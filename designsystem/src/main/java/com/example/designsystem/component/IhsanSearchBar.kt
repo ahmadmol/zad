@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.designsystem.theme.IhsanTheme
 
 @Composable
@@ -25,7 +24,7 @@ fun IhsanSearchBar(
     onQueryChange: (String) -> Unit,
     placeholder: String = "بحث..."
 ) {
-    val fieldShape = RoundedCornerShape(28.dp)
+    val fieldShape = RoundedCornerShape(IhsanTheme.dimens.radiusLarge)
     val fieldColors = IhsanTheme.colors
 
     TextField(
@@ -33,12 +32,12 @@ fun IhsanSearchBar(
         onValueChange = onQueryChange,
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(IhsanTheme.dimens.controlHeight)
             .border(width = 1.dp, color = fieldColors.fieldBorder, shape = fieldShape),
         placeholder = {
             Text(
                 text = placeholder,
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         },

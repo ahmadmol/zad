@@ -10,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import com.example.designsystem.theme.IhsanTheme
 
 @Composable
 fun IhsanButton(
@@ -23,9 +23,9 @@ fun IhsanButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.height(48.dp),
+        modifier = modifier.height(IhsanTheme.dimens.controlHeightCompact),
         enabled = enabled,
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(IhsanTheme.dimens.radiusMedium),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
             contentColor = contentColor

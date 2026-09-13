@@ -10,7 +10,6 @@ import com.example.feature.dashboard.domain.model.HomePrayerSummary
 import com.example.feature.dashboard.domain.model.HomeProfileSummary
 import com.example.feature.dashboard.domain.model.HomeQuranSummary
 import com.example.feature.dashboard.domain.model.HomeSectionState
-import com.example.feature.dashboard.domain.repository.DailyActivityRepository
 import com.example.feature.dashboard.domain.usecase.ObserveHomeAsmaSummaryUseCase
 import com.example.feature.dashboard.domain.usecase.ObserveHomeCharitySummaryUseCase
 import com.example.feature.dashboard.domain.usecase.ObserveHomeDailyActivitiesUseCase
@@ -48,8 +47,7 @@ class HomeDashboardViewModel(
     observeHomeCharity: ObserveHomeCharitySummaryUseCase,
     private val refreshHome: RefreshHomeDashboardUseCase,
     private val updatePrayerSettings: UpdatePrayerSettingsUseCase,
-    private val prayerLocationRepository: PrayerLocationRepository,
-    private val dailyActivityRepository: DailyActivityRepository
+    private val prayerLocationRepository: PrayerLocationRepository
 ) : ViewModel() {
 
     private val ephemeral = MutableStateFlow(EphemeralUi())
@@ -182,9 +180,6 @@ class HomeDashboardViewModel(
             }
             is HomeDashboardAction.OnUpdateNotificationSound -> viewModelScope.launch {
                 updatePrayerSettings.updateNotificationSound(action.type)
-            }
-            is HomeDashboardAction.OnDailyActivityClick -> viewModelScope.launch {
-                dailyActivityRepository.increment(action.activityId)
             }
         }
     }

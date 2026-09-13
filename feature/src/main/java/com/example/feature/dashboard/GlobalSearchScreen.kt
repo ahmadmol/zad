@@ -7,8 +7,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,7 +22,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.component.IhsanActionCard
 import com.example.designsystem.component.IhsanSearchBar
 import com.example.designsystem.theme.IhsanTheme
-import com.example.feature.azkar.presentation.AzkarViewModel
 import com.example.feature.duas.presentation.DuaViewModel
 import com.example.feature.quran.presentation.QuranViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -35,21 +32,17 @@ fun GlobalSearchScreen(
     onBack: () -> Unit,
     onNavigateToQuran: (Int, Int) -> Unit,
     onNavigateToDua: (Long) -> Unit,
-    onNavigateToZikr: (Long) -> Unit,
     quranViewModel: QuranViewModel = koinViewModel(),
-    duaViewModel: DuaViewModel = koinViewModel(),
-    azkarViewModel: AzkarViewModel = koinViewModel()
+    duaViewModel: DuaViewModel = koinViewModel()
 ) {
     var query by remember { mutableStateOf("") }
     val quranState by quranViewModel.uiState.collectAsStateWithLifecycle()
     val duaState by duaViewModel.uiState.collectAsStateWithLifecycle()
-    val azkarState by azkarViewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(query) {
         if (query.isNotEmpty()) {
             quranViewModel.onAction(com.example.feature.quran.presentation.QuranAction.Search(query))
             duaViewModel.onAction(com.example.feature.duas.presentation.DuaAction.OnSearchQueryChanged(query))
-            azkarViewModel.onAction(com.example.feature.azkar.presentation.AzkarAction.OnSearchQueryChanged(query))
         }
     }
 
@@ -61,13 +54,13 @@ fun GlobalSearchScreen(
                         IhsanSearchBar(
                             query = query,
                             onQueryChange = { query = it },
-                            placeholder = "ابحث عن آية، دعاء، أو ذكر...",
+                            placeholder = "ابحث عن آية أو دعاء...",
                             modifier = Modifier.fillMaxWidth().padding(end = 16.dp)
                         )
                     },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
                         }
                     }
                 )
@@ -107,19 +100,6 @@ fun GlobalSearchScreen(
                                 subtitle = dua.text,
                                 icon = Icons.Default.AutoAwesome,
                                 onClick = { onNavigateToDua(dua.id) }
-                            )
-                        }
-                    }
-
-                    // Azkar Results
-                    if (azkarState.azkarList.isNotEmpty()) {
-                        item { SearchSectionTitle("أذكار وتسبيح", Icons.Default.SelfImprovement) }
-                        items(azkarState.azkarList) { zikr ->
-                            IhsanActionCard(
-                                title = zikr.title,
-                                subtitle = zikr.text,
-                                icon = Icons.Default.SelfImprovement,
-                                onClick = { onNavigateToZikr(zikr.id) }
                             )
                         }
                     }

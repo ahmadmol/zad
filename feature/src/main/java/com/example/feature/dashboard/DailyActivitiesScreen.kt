@@ -24,7 +24,6 @@ import com.example.designsystem.theme.IhsanTheme
 @Composable
 fun DailyActivitiesScreen(
     activities: List<DailyActivityItemData>,
-    onActivityIncrease: (String) -> Unit,
     onActivityOpenRoute: (String) -> Unit,
     onBack: () -> Unit
 ) {
@@ -77,7 +76,6 @@ fun DailyActivitiesScreen(
                 items(activities) { activity ->
                     DailyActivityDetailCard(
                         activity = activity,
-                        onIncrease = { onActivityIncrease(activity.id) },
                         onOpenRoute = { onActivityOpenRoute(activity.route) }
                     )
                 }
@@ -154,7 +152,6 @@ private fun SummaryCard(percentage: Int, progress: Float) {
 @Composable
 private fun DailyActivityDetailCard(
     activity: DailyActivityItemData,
-    onIncrease: () -> Unit,
     onOpenRoute: () -> Unit
 ) {
     Surface(
@@ -182,7 +179,7 @@ private fun DailyActivityDetailCard(
                     )
                 }
                 IconButton(onClick = onOpenRoute) {
-                    Icon(imageVector = Icons.AutoMirrored.Filled.OpenInNew, contentDescription = "فتح الموديول")
+                    Icon(imageVector = Icons.AutoMirrored.Filled.OpenInNew, contentDescription = "فتح النشاط")
                 }
             }
 
@@ -200,20 +197,8 @@ private fun DailyActivityDetailCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Button(
-                    onClick = onIncrease,
-                    enabled = !activity.isCompleted,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(text = if (activity.isCompleted) "مكتمل" else "زيادة")
-                }
-                OutlinedButton(onClick = onOpenRoute, modifier = Modifier.weight(1f)) {
-                    Text(text = "فتح")
-                }
+            OutlinedButton(onClick = onOpenRoute, modifier = Modifier.fillMaxWidth()) {
+                Text(text = if (activity.isCompleted) "مراجعة النشاط" else "فتح النشاط")
             }
         }
     }

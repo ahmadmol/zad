@@ -4,7 +4,7 @@
     <string name="home_section_empty">لا تتوفر بيانات حاليًا</string>
     <string name="home_section_error">تعذر تحميل هذا القسم.</string>
     <string name="home_retry">إعادة المحاولة</string>
-    <string name="home_services_title">الخدمات</string>
+    <string name="home_services_title">اكتشف الخدمات</string>
     <string name="home_nearby_charity_title">تبرع قريب</string>
     <string name="home_nearby_charity_empty_title">لا تتوفر نتائج قريبة حاليًا</string>
     <string name="home_nearby_charity_empty_body">حدّث الموقع أو أعد المحاولة</string>
@@ -12,4 +12,14 @@
     <string name="home_live_chooser_body">يمكنك متابعة بث الحرم المكي أو المسجد النبوي</string>
     <string name="home_live_haram">الحرم المكي</string>
     <string name="home_live_nabawi">المسجد النبوي</string>
+    <string name="home_asma_today_title">اسم اليوم</string>
+    <string name="home_asma_empty_body">لم تتوفر أسماء للعرض بعد</string>
+    <string name="home_daily_title">النشاط اليومي</string>
+    <string name="home_daily_empty_body">لا توجد أنشطة مسجلة اليوم</string>
+    <string name="home_open_ehsan">فتح إحسان</string>
+    <string name="home_open_daily">فتح القائمة</string>
+    <string name="home_show_more">عرض المزيد</string>
+    <string name="home_next_prayer_label">الصلاة القادمة</string>
+    <string name="home_remaining_label">متبقي على الظهر</string>
+    <string name="home_time_left_format">%1$s</string>
 </resources>

@@ -62,21 +62,24 @@ val OnSurfaceVariantGrey = Neutral500
 val OutlineGrey = Neutral300
 val OutlineVariantLight = Neutral200
 
-// Dark Mode — warm charcoal green foundation
-val DarkBackground = Color(0xFF0E1714)
-val DarkSurface = Color(0xFF16201C)
-val DarkSurfaceElevated = Color(0xFF1E2A25)
-val DarkSurfaceMuted = Color(0xFF202A26)
-val DarkSurfaceWarm = Color(0xFF3A312B)
-val DarkOnSurface = Color(0xFFF3F5F4)
-val DarkOnSurfaceVariant = Color(0xFFAAB5B0)
-val DarkInteractivePrimary = Color(0xFF8FD0C2)
-val DarkInteractivePrimaryContainer = Color(0xFF0C4036)
+// Dark Mode — neutral charcoal / near-black foundation.
+// The brand green is used as an *Accent* (interactive / decorative) only;
+// surfaces, backgrounds and dividers are intentionally desaturated so the
+// dark theme does not look like a "darkened green theme".
+val DarkBackground = Color(0xFF101012)        // near-black canvas
+val DarkSurface = Color(0xFF161618)           // raised sheet on canvas
+val DarkSurfaceElevated = Color(0xFF1C1C1F)   // higher card (settings, support)
+val DarkSurfaceMuted = Color(0xFF1A1A1D)      // tonal fill, icon halos
+val DarkSurfaceWarm = Color(0xFF2A2722)       // soft warm accent surface
+val DarkOnSurface = Color(0xFFE9EAEC)         // primary text
+val DarkOnSurfaceVariant = Color(0xFFA8ABB1)  // secondary text
+val DarkInteractivePrimary = Color(0xFF7DD3B0) // brand accent on dark
+val DarkInteractivePrimaryContainer = Color(0xFF1F3A30)
 val OnDarkInteractivePrimary = Color(0xFF06251F)
-val DarkOutline = Color(0xFF53605B)
-val DarkOutlineVariant = Color(0xFF34413C)
+val DarkOutline = Color(0xFF50525A)
+val DarkOutlineVariant = Color(0xFF2A2B2F)    // very subtle dividers
 val DarkScrim = Color(0x80000000)
-val DarkBrandElevated = Color(0xFF0C4036)
+val DarkBrandElevated = Color(0xFF1F3A30)     // used for tonal brand fills, not chrome
 
 // Legacy / Utility Colors
 val White = Color(0xFFFFFFFF)

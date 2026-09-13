@@ -1,43 +1,22 @@
 package com.example.feature.dashboard
 
-import android.Manifest
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.AutoStories
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.BrightnessLow
-import androidx.compose.material.icons.filled.Explore
-import androidx.compose.material.icons.filled.LiveTv
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.SelfImprovement
-import androidx.compose.material.icons.filled.VolunteerActivism
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,24 +28,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.designsystem.component.DailyActivityCard
-import com.example.designsystem.component.DailyActivityItemData
-import com.example.designsystem.component.DashboardHeader
 import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
 import com.example.feature.core.notification.UserMessageNotifier
 import com.example.feature.core.util.HijriDateFormatter
 import com.example.feature.dashboard.presentation.HomeDashboardAction
 import com.example.feature.dashboard.presentation.HomeDashboardViewModel
-import com.example.feature.dashboard.presentation.components.AsmaHighlightCard
-import com.example.feature.dashboard.presentation.components.DailyExperienceCard
-import com.example.feature.dashboard.presentation.components.HomeQuickActions
+import com.example.feature.dashboard.presentation.components.HomeContextualHero
+import com.example.feature.dashboard.presentation.components.HomeDailyJourneyCard
+import com.example.feature.dashboard.presentation.components.HomeDiscoverServicesGrid
+import com.example.feature.dashboard.presentation.components.HomeEhsanCommunityCard
+import com.example.feature.dashboard.presentation.components.HomeLiveStreamCard
+import com.example.feature.dashboard.presentation.components.HomeQuranContinueCard
 import com.example.feature.dashboard.presentation.components.HomeRefreshErrorNotice
-import com.example.feature.dashboard.presentation.components.HomeSectionStateCard
 import com.example.feature.dashboard.presentation.components.HomeSectionStateNotice
-import com.example.feature.dashboard.presentation.components.HomeServicesSection
-import com.example.feature.dashboard.presentation.components.NearbyCharityCard
-import com.example.feature.dashboard.presentation.components.QiblaShortcutCard
 import com.example.feature.prayer.presentation.CitySelectionBottomSheet
 import com.example.feature.prayer.presentation.PrayerDetailsBottomSheet
 import com.example.feature.prayer.presentation.PrayerSettingsBottomSheet
@@ -96,63 +71,19 @@ fun HomeDashboardScreen(
     onNavigateToHaramLive: () -> Unit = {},
     onNavigateToNabawiLive: () -> Unit = {},
     onNavigateToStatistics: () -> Unit = {},
-    onNavigateToIhsanPlusDaily: (() -> Unit)? = null,
+    @Suppress("UNUSED_PARAMETER") onNavigateToIhsanPlusDaily: (() -> Unit)? = null,
     onContinueLastRead: (surahId: Int, ayahNumber: Int) -> Unit = { _, _ -> }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var showLiveChooser by remember { mutableStateOf(false) }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (!isGranted) {
-            UserMessageNotifier.notify(
-                context,
-                "يجب منح إذن الإشعارات لتفعيل التنبيهات",
-                title = "التنبيهات"
-            )
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        UserMessageNotifier.ensureChannel(context)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
-    }
-
-    val primaryActions = remember {
-        listOf(
-            HomeIslamicAction("البوصلة", Icons.Default.Explore, "qibla"),
-            HomeIslamicAction("أسماء الله", Icons.Default.AutoAwesome, "asma"),
-            HomeIslamicAction("دعاء", Icons.Default.VolunteerActivism, "dua"),
-            HomeIslamicAction("القرآن", Icons.AutoMirrored.Filled.MenuBook, "quran"),
-            HomeIslamicAction("بث مباشر", Icons.Default.LiveTv, "live_chooser")
-        )
-    }
-
-    val serviceActions = remember {
-        listOf(
-            HomeIslamicAction("الأحاديث", Icons.Default.AutoStories, "hadith"),
-            HomeIslamicAction("الأذكار", Icons.Default.SelfImprovement, "azkar"),
-            HomeIslamicAction("التسبيح", Icons.Default.BrightnessLow, "tasbih"),
-            HomeIslamicAction("مواقيت الصلاة", Icons.Default.AccessTime, "prayer"),
-            HomeIslamicAction("بث الحرم المكي", Icons.Default.LiveTv, "haram"),
-            HomeIslamicAction("بث المسجد النبوي", Icons.Default.LiveTv, "nabawi"),
-            HomeIslamicAction("البحث", Icons.Default.Search, "search"),
-            HomeIslamicAction("النشاطات اليومية", Icons.AutoMirrored.Filled.List, "daily"),
-            HomeIslamicAction("التذكيرات", Icons.Default.Notifications, "reminders"),
-            HomeIslamicAction("الإحصائيات", Icons.Default.BarChart, "statistics")
-        )
-    }
-
     val onActionClick: (String) -> Unit = remember(
         onNavigateToQibla, onNavigateToQuran, onNavigateToAzkar,
         onNavigateToDua, onNavigateToHadith, onNavigateToAsma,
         onNavigateToTasbih, onNavigateToHaramLive, onNavigateToNabawiLive,
         onNavigateToPrayer, onNavigateToSearch, onNavigateToDailyActivities,
-        onNavigateToReminders, onNavigateToStatistics
+        onNavigateToReminders, onNavigateToStatistics, onNavigateToDonations
     ) {
         { route ->
             when (route) {
@@ -170,6 +101,7 @@ fun HomeDashboardScreen(
                 "daily" -> onNavigateToDailyActivities()
                 "reminders" -> onNavigateToReminders()
                 "statistics" -> onNavigateToStatistics()
+                "donations" -> onNavigateToDonations()
                 "live_chooser" -> showLiveChooser = true
                 else -> UserMessageNotifier.notify(
                     context,
@@ -179,73 +111,62 @@ fun HomeDashboardScreen(
         }
     }
 
-    // Compact hero shows five daytime cards; Maghrib stays on the full prayer screen.
-    val visiblePrayers = remember(uiState.data.allPrayers) {
-        uiState.data.allPrayers.filterNot { it.nameAr.contains("المغرب") }
+    // 1. Current active prayer comes ONLY from an item in allPrayers where isActive == true
+    val activePrayer = remember(uiState.data.allPrayers) {
+        uiState.data.allPrayers.firstOrNull { it.isActive }
     }
-    val prayerTimesDisplay = remember(visiblePrayers) {
-        visiblePrayers.map { it.nameAr to it.time }
-    }
+    val currentPrayerTitle = activePrayer?.nameAr ?: "—"
 
-    val activePrayerIndex = remember(visiblePrayers) {
-        visiblePrayers.indexOfFirst { it.isActive }.takeIf { it != -1 } ?: 0
-    }
+    // 2. Next prayer name comes directly from domain result uiState.data.nextPrayerName
+    val nextPrayerTitle = uiState.data.nextPrayerName.ifBlank { "—" }
 
-    val greeting = remember(uiState.data.userName) {
-        val name = uiState.data.userName.trim()
-        if (name.isNotEmpty() && name != "مستخدم إحسان") {
-            "أهلاً بك، $name"
-        } else {
-            "أهلاً بك في إحسان"
-        }
+    // 3. Next prayer time is safely matched against the full allPrayers list (presentation-only)
+    val nextPrayerItem = remember(uiState.data.allPrayers, nextPrayerTitle) {
+        if (nextPrayerTitle != "—") {
+            uiState.data.allPrayers.firstOrNull {
+                it.nameAr == nextPrayerTitle || nextPrayerTitle.contains(it.nameAr) || it.nameAr.contains(nextPrayerTitle)
+            }
+        } else null
     }
-
-    val nextPrayerInfo = remember(
-        uiState.data.nextPrayerName,
-        uiState.data.nextPrayerTimeLeft
-    ) {
-        val name = uiState.data.nextPrayerName
-        val left = uiState.data.nextPrayerTimeLeft
-        when {
-            name.isNotBlank() && left.isNotBlank() -> "$name خلال $left"
-            name.isNotBlank() -> name
-            else -> ""
-        }
-    }
+    val nextPrayerTimeLabel = nextPrayerItem?.time ?: "—"
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary)
+            .background(MaterialTheme.colorScheme.surface)
             .verticalScroll(rememberScrollState())
     ) {
-        DashboardHeader(
-            currentTime = uiState.data.currentTime.ifBlank { "—" },
-            hijriDate = uiState.data.hijriDate.ifBlank { HijriDateFormatter.nowFormatted() },
+        // 1. Contextual Skyline Hero Banner
+        HomeContextualHero(
             location = uiState.data.location,
-            nextPrayerInfo = nextPrayerInfo,
-            prayerTimes = prayerTimesDisplay,
-            activePrayerIndex = activePrayerIndex,
-            greeting = greeting,
+            hijriDate = uiState.data.hijriDate.ifBlank { HijriDateFormatter.nowFormatted() },
+            currentPrayerName = currentPrayerTitle,
+            countdownText = uiState.data.nextPrayerTimeLeft,
+            nextPrayerName = nextPrayerTitle,
+            nextPrayerTime = nextPrayerTimeLabel,
+            dailyVerseText = uiState.data.dailyVerse,
+            dailyVerseSource = uiState.data.dailyVerseSource,
             onNotificationClick = onNavigateToReminders,
-            onPrayerClick = { index -> viewModel.onAction(HomeDashboardAction.OnPrayerClick(index)) }
+            onSearchClick = onNavigateToSearch,
+            onQiblaClick = onNavigateToQibla
         )
 
+        // 2. Main Content Surface Overlay
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .offset(y = (-24).dp),
+                .offset(y = (-16).dp),
             color = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(
-                topStart = 28.dp,
-                topEnd = 28.dp
+                topStart = 24.dp,
+                topEnd = 24.dp
             )
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 uiState.refreshErrorMessage?.let { message ->
                     HomeRefreshErrorNotice(
@@ -259,83 +180,39 @@ fun HomeDashboardScreen(
                     onRetry = { viewModel.onAction(HomeDashboardAction.OnRetryPrayer) }
                 )
 
-                HomeQuickActions(
-                    actions = primaryActions,
-                    onActionClick = onActionClick
+                // 2.1 Continue / Start Quran Card
+                HomeQuranContinueCard(
+                    surahName = uiState.data.lastReadSurahName,
+                    surahId = uiState.data.lastReadSurahId,
+                    ayahNumber = uiState.data.lastReadAyahNumber,
+                    onContinueClick = onContinueLastRead,
+                    onStartQuranClick = onNavigateToQuran
                 )
 
-                HomeServicesSection(
-                    services = serviceActions,
+                // 2.2 Daily Journey ("مسيرتك اليوم")
+                HomeDailyJourneyCard(
+                    activities = uiState.data.dailyActivities,
+                    onGoToChecklist = onNavigateToDailyActivities
+                )
+
+                // 2.3 Ehsan in Your Community ("إحسان في مجتمعك")
+                HomeEhsanCommunityCard(
+                    offersCount = uiState.data.communityOffersCount,
+                    requestsCount = uiState.data.communityRequestsCount,
+                    onNavigateToDonations = onNavigateToDonations
+                )
+
+                // 2.4 Live Content Banner ("البث المباشر")
+                HomeLiveStreamCard(
+                    onLiveClick = { showLiveChooser = true }
+                )
+
+                // 2.5 Discover Services ("اكتشف الخدمات")
+                HomeDiscoverServicesGrid(
                     onServiceClick = onActionClick
                 )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    HomeSectionStateCard(
-                        state = uiState.asma,
-                        onRetry = { viewModel.onAction(HomeDashboardAction.OnRefresh) },
-                        modifier = Modifier.weight(1f)
-                    ) { asma ->
-                        AsmaHighlightCard(
-                            name = asma.name,
-                            transliteration = asma.transliteration,
-                            meaning = asma.meaning,
-                            onClick = onNavigateToAsma
-                        )
-                    }
-                    HomeSectionStateCard(
-                        state = uiState.charity,
-                        onRetry = { viewModel.onAction(HomeDashboardAction.OnRefresh) },
-                        modifier = Modifier.weight(1f)
-                    ) { charity ->
-                        NearbyCharityCard(
-                            offersCount = charity.offersCount,
-                            requestsCount = charity.requestsCount,
-                            onClick = onNavigateToDonations,
-                            onRetry = { viewModel.onAction(HomeDashboardAction.OnRefresh) }
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    if (onNavigateToIhsanPlusDaily != null) {
-                        DailyExperienceCard(
-                            onClick = onNavigateToIhsanPlusDaily,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                    QiblaShortcutCard(
-                        onClick = onNavigateToQibla,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                HomeSectionStateCard(
-                    state = uiState.dailyActivities,
-                    onRetry = { viewModel.onAction(HomeDashboardAction.OnRefresh) }
-                ) { dailyActivities ->
-                    DailyActivityCard(
-                        activities = dailyActivities.items.map { item ->
-                            DailyActivityItemData(
-                                id = item.id,
-                                title = item.title,
-                                currentCount = item.currentCount,
-                                targetCount = item.targetCount,
-                                unit = item.unit,
-                                isCompleted = item.isCompleted,
-                                route = item.route
-                            )
-                        },
-                        onGoToChecklist = onNavigateToDailyActivities
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(4.dp))
             }
         }
     }
@@ -419,118 +296,22 @@ fun HomeDashboardScreen(
     }
 }
 
+@Preview(name = "Home Screen Light", locale = "ar", widthDp = 360, heightDp = 800, showBackground = true)
 @Composable
-private fun HomeDashboardPreviewContent(
-    showDailyExperience: Boolean = true
-) {
+private fun HomeDashboardPreviewLight() {
     IhsanTheme {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.primary)
-        ) {
-            DashboardHeader(
-                currentTime = "04:23 م",
-                hijriDate = "السبت، ٤ صفر ١٤٤٨",
-                location = "حلب",
-                nextPrayerInfo = "العصر خلال 00:03:40",
-                prayerTimes = listOf(
-                    "الفجر" to "03:42 ص",
-                    "الشروق" to "05:28 ص",
-                    "الظهر" to "12:39 م",
-                    "العصر" to "04:27 م",
-                    "العشاء" to "09:07 م"
-                ),
-                activePrayerIndex = 0,
-                greeting = "أهلاً بك في إحسان",
-                onNotificationClick = {}
-            )
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f),
-                color = IhsanTheme.colors.surfaceMuted,
-                shape = RoundedCornerShape(
-                    topStart = IhsanTheme.dimens.radiusSheet,
-                    topEnd = IhsanTheme.dimens.radiusSheet
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    HomeQuickActions(
-                        actions = listOf(
-                            HomeIslamicAction("البوصلة", Icons.Default.Explore, "qibla"),
-                            HomeIslamicAction("أسماء الله", Icons.Default.AutoAwesome, "asma"),
-                            HomeIslamicAction("دعاء", Icons.Default.VolunteerActivism, "dua"),
-                            HomeIslamicAction("القرآن", Icons.AutoMirrored.Filled.MenuBook, "quran"),
-                            HomeIslamicAction("بث مباشر", Icons.Default.LiveTv, "haram")
-                        ),
-                        onActionClick = {}
-                    )
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        AsmaHighlightCard(
-                            name = "الرَّحْمَنُ",
-                            transliteration = "Ar-Rahman",
-                            meaning = "The Entirely Merciful",
-                            onClick = {},
-                            modifier = Modifier.weight(1f)
-                        )
-                        NearbyCharityCard(
-                            offersCount = 3,
-                            requestsCount = 2,
-                            onClick = {},
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        if (showDailyExperience) {
-                            DailyExperienceCard(onClick = {}, modifier = Modifier.weight(1f))
-                        }
-                        QiblaShortcutCard(onClick = {}, modifier = Modifier.weight(1f))
-                    }
-                    DailyActivityCard(
-                        activities = listOf(
-                            DailyActivityItemData("1", "أذكار", 1, 6, "مرة", false, "azkar")
-                        ),
-                        onGoToChecklist = {}
-                    )
-                }
-            }
-        }
+        HomeContextualHero(
+            location = "حلب",
+            hijriDate = "12 ربيع الأول 1448",
+            currentPrayerName = "الظهر",
+            countdownText = "1:14",
+            nextPrayerName = "العصر",
+            nextPrayerTime = "3:42 م",
+            dailyVerseText = "وَأَقِمِ الصَّلَاةَ إِنَّ الصَّلَاةَ تَنْهَىٰ عَنِ الْفَحْشَاءِ وَالْمُنْكَرِ",
+            dailyVerseSource = "سورة العنكبوت (٤٥)",
+            onNotificationClick = {},
+            onSearchClick = {},
+            onQiblaClick = {}
+        )
     }
-}
-
-@Preview(name = "Home Light 360", locale = "ar", widthDp = 360, heightDp = 800, showBackground = true)
-@Composable
-private fun HomeDashboardPreviewLight360() {
-    HomeDashboardPreviewContent()
-}
-
-@Preview(name = "Home Light 430", locale = "ar", widthDp = 430, heightDp = 900, showBackground = true)
-@Composable
-private fun HomeDashboardPreviewLight430() {
-    HomeDashboardPreviewContent()
-}
-
-@Preview(
-    name = "Home Dark",
-    locale = "ar",
-    widthDp = 360,
-    heightDp = 800,
-    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
-    showBackground = true
-)
-@Composable
-private fun HomeDashboardPreviewDark() {
-    HomeDashboardPreviewContent()
-}
-
-@Preview(name = "Home FontScale", locale = "ar", widthDp = 360, heightDp = 800, fontScale = 1.3f)
-@Composable
-private fun HomeDashboardPreviewFontScale() {
-    HomeDashboardPreviewContent(showDailyExperience = false)
 }
