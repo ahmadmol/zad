@@ -4,12 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.feature.core.util.HijriDateFormatter
 import com.example.feature.prayer.PrayerTime
+import com.example.feature.prayer.data.calculator.AdhanPrayerCalculator
 import com.example.feature.prayer.domain.facade.PrayerTimesFacade
+import com.example.feature.prayer.domain.model.PrayerCalculationMethod
+import com.example.feature.prayer.domain.model.PrayerCalculationSettings
 import com.example.feature.prayer.domain.model.PrayerLocationSource
 import com.example.feature.prayer.domain.model.PrayerLocationState
 import com.example.feature.prayer.domain.model.PrayerLocationUnavailableReason
 import com.example.feature.prayer.domain.model.PrayerReconciliationReason
 import com.example.feature.prayer.domain.model.PrayerAlarmPermissionState
+import com.example.feature.prayer.domain.model.PrayerSystemStatus
+import com.example.feature.prayer.domain.repository.PrayerSettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +26,8 @@ import java.util.Date
 import java.util.Locale
 
 class PrayerViewModel(
-    private val facade: PrayerTimesFacade
+    private val facade: PrayerTimesFacade,
+    private val settingsRepository: PrayerSettingsRepository? = null
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PrayerUiState())
@@ -31,18 +37,24 @@ class PrayerViewModel(
 
     init {
         viewModelScope.launch {
+            val settingsFlow = settingsRepository?.observeSettings()
+                ?: MutableStateFlow(PrayerCalculationSettings())
+
             combine(
                 facade.prayerDay,
                 facade.nextPrayer,
                 facade.locationState,
-                facade.systemStatus
-            ) { day, next, location, status ->
-                UiBundle(day, next, location, status)
+                facade.systemStatus,
+                settingsFlow
+            ) { day, next, location, status, settings ->
+                UiBundle(day, next, location, status, settings)
             }.collect { bundle ->
                 val day = bundle.day
                 val next = bundle.next
                 val location = bundle.location
                 val status = bundle.status
+                val settings = bundle.settings
+
                 val times = day?.instants?.map { instant ->
                     val now = System.currentTimeMillis()
                     val activeWindowEnd = instant.epochMillis + 45 * 60 * 1000
@@ -87,7 +99,10 @@ class PrayerViewModel(
                                 else "تعذر إكمال الجدولة"
                             },
                         canRetryLocation = location is PrayerLocationState.Unavailable ||
-                            location is PrayerLocationState.Available
+                            location is PrayerLocationState.Available,
+                        calculationMethodName = methodLabel(settings.method),
+                        prePrayerReminderMinutes = settings.prePrayerNotificationMinutes,
+                        adhanEnabled = settings.notificationsEnabled
                     )
                 }
             }
@@ -105,14 +120,56 @@ class PrayerViewModel(
                 facade.refreshLocation()
                 facade.reconcileSchedule(PrayerReconciliationReason.ManualRetry)
             }
-            is PrayerAction.OnToggleNotification -> {}
             PrayerAction.OnToggleSystemStatus -> {
                 _uiState.update { it.copy(systemStatusExpanded = !it.systemStatusExpanded) }
             }
             PrayerAction.OnRetrySchedule -> viewModelScope.launch {
                 facade.reconcileSchedule(PrayerReconciliationReason.ManualRetry)
             }
+            is PrayerAction.OnSelectPrayer -> {
+                _uiState.update { it.copy(selectedPrayer = action.prayer) }
+            }
+            is PrayerAction.OnToggleSettingsSheet -> {
+                _uiState.update { it.copy(showSettingsBottomSheet = action.show) }
+            }
+            is PrayerAction.OnToggleCalendarSheet -> {
+                _uiState.update { it.copy(showCalendarBottomSheet = action.show) }
+            }
+            is PrayerAction.OnUpdateCalculationMethod -> {
+                viewModelScope.launch {
+                    val methodEnum = AdhanPrayerCalculator.parseMethod(action.methodStr)
+                    settingsRepository?.updateCalculationMethod(methodEnum)
+                    facade.reconcileSchedule(PrayerReconciliationReason.SettingsChanged)
+                }
+            }
+            is PrayerAction.OnUpdatePrePrayerMinutes -> {
+                viewModelScope.launch {
+                    settingsRepository?.updatePrePrayerMinutes(action.minutes)
+                    facade.reconcileSchedule(PrayerReconciliationReason.SettingsChanged)
+                }
+            }
+            is PrayerAction.OnToggleAdhan -> {
+                viewModelScope.launch {
+                    val minutes = if (action.enabled) 10 else 0
+                    settingsRepository?.updatePrePrayerMinutes(minutes)
+                    facade.reconcileSchedule(PrayerReconciliationReason.SettingsChanged)
+                }
+            }
         }
+    }
+
+    private fun methodLabel(method: PrayerCalculationMethod): String = when (method) {
+        PrayerCalculationMethod.MUSLIM_WORLD_LEAGUE -> "رابطة العالم الإسلامي"
+        PrayerCalculationMethod.EGYPTIAN -> "الهيئة المصرية العامة للمساحة"
+        PrayerCalculationMethod.KARACHI -> "جامعة العلوم الإسلامية بكراتشي"
+        PrayerCalculationMethod.UMM_AL_QURA -> "أم القرى (مكة)"
+        PrayerCalculationMethod.DUBAI -> "دبي"
+        PrayerCalculationMethod.MOON_SIGHTING_COMMITTEE -> "لجنة رؤية الهلال"
+        PrayerCalculationMethod.NORTH_AMERICA -> "ISNA (أمريكا الشمالية)"
+        PrayerCalculationMethod.KUWAIT -> "الكويت"
+        PrayerCalculationMethod.QATAR -> "قطر"
+        PrayerCalculationMethod.SINGAPORE -> "سنغافورة"
+        PrayerCalculationMethod.OTHER -> "طريقة أخرى"
     }
 
     private fun locationLabel(state: PrayerLocationState): String = when (state) {
@@ -149,6 +206,8 @@ class PrayerViewModel(
         val day: com.example.feature.prayer.domain.model.PrayerDay?,
         val next: com.example.feature.prayer.domain.model.NextPrayer?,
         val location: PrayerLocationState,
-        val status: com.example.feature.prayer.domain.model.PrayerSystemStatus
+        val status: PrayerSystemStatus,
+        val settings: PrayerCalculationSettings
     )
 }
+

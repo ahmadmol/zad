@@ -89,8 +89,7 @@ class StatisticsViewModelTest {
     }
 
     @Test
-    fun `statistics retry action is the only mutation surface and is no-op`() {
-        viewModel.onAction(StatisticsAction.Retry)
+    fun `statistics state exposes no mutation surface`() {
         assertNull(viewModel.uiState.value.error)
     }
 

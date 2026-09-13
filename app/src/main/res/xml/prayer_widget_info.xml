@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Phase 7 — Prayer home widget metadata.
+
+  updatePeriodMillis is 0 on purpose: the provider schedules a single alarm for the
+  next prayer instant instead of polling on a fixed period. That keeps the widget
+  accurate without waking the device on a timer.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="180dp"
+    android:minHeight="80dp"
+    android:targetCellWidth="3"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/widget_prayer"
+    android:previewLayout="@layout/widget_prayer"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:description="@string/widget_prayer_description" />

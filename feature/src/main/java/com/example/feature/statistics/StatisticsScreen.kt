@@ -17,6 +17,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -68,7 +70,6 @@ fun StatisticsScreen(
                     modifier = Modifier
                         .padding(padding)
                         .fillMaxSize(),
-                    retryLabel = stringResource(R.string.common_retry),
                     onRetry = null
                 )
             }
@@ -159,9 +160,16 @@ fun DailyProgressChart(stats: List<DailyStat>) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val labelColor = MaterialTheme.colorScheme.onSurfaceVariant
 
-    Canvas(modifier = Modifier.fillMaxWidth().height(200.dp)) {
-        val spacing = 16.dp.toPx()
-        val barWidth = 30.dp.toPx()
+    val chartDescription = stats.joinToString(separator = "، ") { "${it.date}: ${it.totalCount}" }
+    Canvas(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .semantics { contentDescription = "نشاط الأذكار خلال سبعة أيام: $chartDescription" }
+    ) {
+        val slotWidth = if (stats.isEmpty()) size.width else size.width / stats.size
+        val spacing = slotWidth * 0.35f
+        val barWidth = slotWidth * 0.55f
         val maxCount = (stats.maxOfOrNull { it.totalCount } ?: 1).coerceAtLeast(1)
         val canvasHeight = size.height - 30.dp.toPx()
 

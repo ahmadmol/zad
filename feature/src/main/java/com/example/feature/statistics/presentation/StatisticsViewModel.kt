@@ -51,12 +51,4 @@ class StatisticsViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = StatisticsUiState(isLoading = true)
         )
-
-    fun onAction(action: StatisticsAction) {
-        when (action) {
-            StatisticsAction.Retry -> {
-                // Flow-backed; repository re-emits when Room updates.
-            }
-        }
-    }
 }

@@ -16,12 +16,24 @@ data class PrayerUiState(
     val systemStatusExpanded: Boolean = false,
     val notificationPermissionLabel: String? = null,
     val lastScheduleSummary: String? = null,
-    val canRetryLocation: Boolean = false
+    val canRetryLocation: Boolean = false,
+    val calculationMethodName: String = "رابطة العالم الإسلامي",
+    val prePrayerReminderMinutes: Int = 10,
+    val adhanEnabled: Boolean = true,
+    val showSettingsBottomSheet: Boolean = false,
+    val showCalendarBottomSheet: Boolean = false,
+    val selectedPrayer: PrayerTime? = null
 )
 
 sealed interface PrayerAction {
     data object OnRefresh : PrayerAction
-    data class OnToggleNotification(val prayerName: String) : PrayerAction
     data object OnToggleSystemStatus : PrayerAction
     data object OnRetrySchedule : PrayerAction
+    data class OnSelectPrayer(val prayer: PrayerTime?) : PrayerAction
+    data class OnToggleSettingsSheet(val show: Boolean) : PrayerAction
+    data class OnToggleCalendarSheet(val show: Boolean) : PrayerAction
+    data class OnUpdateCalculationMethod(val methodStr: String) : PrayerAction
+    data class OnUpdatePrePrayerMinutes(val minutes: Int) : PrayerAction
+    data class OnToggleAdhan(val enabled: Boolean) : PrayerAction
 }
+

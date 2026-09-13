@@ -7,15 +7,28 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.logger.Level
 import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.Configuration
 import androidx.work.WorkManager
 import com.example.feature.prayer.worker.AdhanWorker
-import com.example.feature.azkar.worker.AzkarNotificationWorker
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.workDataOf
 import java.util.concurrent.TimeUnit
-import java.util.Calendar
+import com.example.feature.quran.worker.QuranWorkerFactory
+import com.example.feature.reminders.AzkarReminderCoordinator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class IhsanApp : Application() {
+class IhsanApp : Application(), Configuration.Provider, KoinComponent {
+    private val reminderCoordinator: AzkarReminderCoordinator by inject()
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(QuranWorkerFactory())
+            .build()
+
     override fun onCreate() {
         super.onCreate()
         startKoin {
@@ -41,33 +54,6 @@ class IhsanApp : Application() {
             adhanSchedulerRequest
         )
 
-        // Azkar Notifications (Morning)
-        scheduleAzkarWork("MORNING", 6)
-        
-        // Azkar Notifications (Evening)
-        scheduleAzkarWork("EVENING", 18)
-    }
-
-    private fun scheduleAzkarWork(type: String, hour: Int) {
-        val workManager = WorkManager.getInstance(this)
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, hour)
-            set(Calendar.MINUTE, 0)
-            if (before(Calendar.getInstance())) {
-                add(Calendar.DAY_OF_YEAR, 1)
-            }
-        }
-        val delay = calendar.timeInMillis - System.currentTimeMillis()
-
-        val azkarRequest = PeriodicWorkRequestBuilder<AzkarNotificationWorker>(24, TimeUnit.HOURS)
-            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-            .setInputData(workDataOf("azkar_type" to type))
-            .build()
-
-        workManager.enqueueUniquePeriodicWork(
-            "azkar_$type",
-            ExistingPeriodicWorkPolicy.KEEP,
-            azkarRequest
-        )
+        applicationScope.launch { reminderCoordinator.reconcileAll() }
     }
 }

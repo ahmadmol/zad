@@ -9,6 +9,7 @@ import com.example.feature.duas.data.repository.DuaRepositoryImpl
 import com.example.feature.duas.domain.repository.DuaRepository
 import com.example.feature.ehsan.data.repository.EhsanRepositoryImpl
 import com.example.feature.ehsan.data.repository.UserRepositoryImpl
+import com.example.feature.ehsan.data.image.EhsanImageStore
 import com.example.feature.ehsan.domain.repository.EhsanRepository
 import com.example.feature.ehsan.domain.repository.UserRepository
 import com.example.feature.hadith.data.repository.HadithRepositoryImpl
@@ -29,6 +30,7 @@ val repositoryModule = module {
 
     single<EhsanRepository> { EhsanRepositoryImpl(get(), get()) }
     single<UserRepository> { UserRepositoryImpl(get()) }
+    single { EhsanImageStore(androidContext()) }
     single<HadithRepository> { HadithRepositoryImpl(get()) }
 
     single { QiblaManager(androidContext()) }

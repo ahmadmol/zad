@@ -22,6 +22,3 @@ data class StatisticsUiState(
     val isEmpty: Boolean = false
 )
 
-sealed interface StatisticsAction {
-    data object Retry : StatisticsAction
-}

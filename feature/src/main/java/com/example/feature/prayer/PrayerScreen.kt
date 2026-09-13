@@ -1,6 +1,10 @@
 package com.example.feature.prayer
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,19 +12,32 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,10 +45,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
 import com.example.feature.core.util.HijriDateFormatter
+import com.example.feature.ihsanplus.integration.presentation.ControlledPrayerAssistSection
 import com.example.feature.prayer.presentation.PrayerAction
+import com.example.feature.prayer.presentation.PrayerDetailsBottomSheet
+import com.example.feature.prayer.presentation.PrayerSettingsBottomSheet
 import com.example.feature.prayer.presentation.PrayerUiState
 import com.example.feature.prayer.presentation.PrayerViewModel
-import com.example.feature.ihsanplus.integration.presentation.ControlledPrayerAssistSection
 import org.koin.androidx.compose.koinViewModel
 
 data class PrayerTime(
@@ -47,135 +66,329 @@ data class PrayerTime(
 @Composable
 fun PrayerScreen(
     viewModel: PrayerViewModel = koinViewModel(),
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onNavigateToQibla: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
     val colors = IhsanTheme.colors
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-        Scaffold(
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            "إحسان",
-                            style = MaterialTheme.typography.headlineMedium.copy(
-                                fontWeight = FontWeight.ExtraBold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = onNavigateBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { /* Menu */ }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu")
-                        }
-                    },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colors.surfaceMuted)
+        ) {
+            // Header Hero Background Area
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(350.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ihsan_home_hero_background),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    alignment = Alignment.TopCenter
                 )
-            },
-            containerColor = colors.surfaceMuted
-        ) { padding ->
-            if (uiState.isLoading && uiState.prayerTimes.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                }
-            } else {
+
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(padding)
+                        .statusBarsPadding()
                         .padding(horizontal = 16.dp)
                 ) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    Text(
-                        text = "أوقات الصلاة",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
+                    // Top Navigation & Location Header Bar
+                    PrayerTopBar(
+                        locationName = uiState.locationName,
+                        hijriDate = uiState.hijriDate.ifBlank { HijriDateFormatter.nowFormatted() },
+                        gregorianDate = uiState.currentDate,
+                        onNavigateBack = onNavigateBack
                     )
-                    Text(
-                        text = uiState.locationName,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium.copy(color = colors.textSecondary)
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    // Prayer Hero Focal Area
+                    PrayerHeroSection(
+                        nextPrayerName = uiState.nextPrayerName.ifBlank { "العصر" },
+                        countdown = uiState.nextPrayerCountdown,
+                        onQiblaClick = onNavigateToQibla
                     )
-                    uiState.locationSourceLabel?.let { source ->
-                        Text(
-                            text = source,
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.labelSmall.copy(color = colors.textSecondary)
-                        )
+                }
+            }
+
+            // Body Content Surface
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 300.dp)
+                    .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
+                    .background(colors.surfaceMuted)
+            ) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 48.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // 1. Quran Verse Card
+                    item {
+                        QuranVerseCard()
                     }
-                    if (uiState.locationUnavailable) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = uiState.locationUnavailableMessage.orEmpty(),
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFFB00020))
-                        )
-                        TextButton(onClick = { viewModel.onAction(PrayerAction.OnRefresh) }) {
-                            Text(stringResource(R.string.prayer_retry_location))
-                        }
-                    }
 
-                    Spacer(modifier = Modifier.height(8.dp))
-                    PrayerSystemStatusSection(uiState = uiState, onAction = viewModel::onAction)
-                    ControlledPrayerAssistSection()
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        // Timeline vertical line
-                        Box(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .padding(start = 12.dp)
-                                .width(1.dp)
-                                .background(colors.divider)
-                                .align(Alignment.CenterStart)
-                        )
-
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                            contentPadding = PaddingValues(bottom = 32.dp)
-                        ) {
-                            items(uiState.prayerTimes) { prayer ->
-                                val isNext = prayer.nameAr == uiState.nextPrayerName
-                                PrayerTimelineItem(
-                                    prayer = prayer,
-                                    countdown = if (isNext) uiState.nextPrayerCountdown else null,
-                                    location = uiState.locationName
-                                )
+                    // 2. Prayer Times List Header
+                    item {
+                        PrayerTimesHeader(
+                            onShowCalendar = {
+                                viewModel.onAction(PrayerAction.OnToggleCalendarSheet(true))
                             }
-                            
-                            item {
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Column(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        uiState.currentDate,
-                                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
-                                    )
-                                    Text(
-                                        uiState.hijriDate.ifBlank { HijriDateFormatter.nowFormatted() },
-                                        style = MaterialTheme.typography.bodySmall.copy(color = colors.textSecondary)
-                                    )
-                                }
-                            }
-                        }
+                        )
                     }
+
+                    // 3. Prayer Times Rows
+                    items(uiState.prayerTimes) { prayer ->
+                        val isNext = prayer.nameAr == uiState.nextPrayerName || prayer.isActive
+                        PrayerTimeRow(
+                            prayer = prayer,
+                            isNext = isNext,
+                            countdown = if (isNext) uiState.nextPrayerCountdown else null,
+                            onClick = {
+                                viewModel.onAction(PrayerAction.OnSelectPrayer(prayer))
+                            }
+                        )
+                    }
+
+                    // 4. Prayer Settings Section ("إعدادات الصلاة")
+                    item {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        PrayerSettingsSection(
+                            uiState = uiState,
+                            onAction = viewModel::onAction
+                        )
+                    }
+
+                    // 5. Advanced Settings / System Status Section
+                    item {
+                        PrayerSystemStatusSection(
+                            uiState = uiState,
+                            onAction = viewModel::onAction
+                        )
+                    }
+
+                    // 6. Controlled Prayer Assist Section
+                    item {
+                        ControlledPrayerAssistSection()
+                    }
+                }
+            }
+
+            // Settings Bottom Sheet
+            if (uiState.showSettingsBottomSheet) {
+                PrayerSettingsBottomSheet(
+                    onDismiss = { viewModel.onAction(PrayerAction.OnToggleSettingsSheet(false)) },
+                    onUpdateMethod = { methodStr ->
+                        viewModel.onAction(PrayerAction.OnUpdateCalculationMethod(methodStr))
+                    },
+                    onUpdateMadhab = { },
+                    onUpdateLocationMode = { },
+                    onUpdateSound = { }
+                )
+            }
+
+            // Prayer Details Bottom Sheet
+            uiState.selectedPrayer?.let { selected ->
+                PrayerDetailsBottomSheet(
+                    selectedPrayer = selected,
+                    allPrayers = uiState.prayerTimes,
+                    location = uiState.locationName,
+                    countdown = uiState.nextPrayerCountdown,
+                    onDismiss = { viewModel.onAction(PrayerAction.OnSelectPrayer(null)) },
+                    onNavigateToFullPrayer = { viewModel.onAction(PrayerAction.OnSelectPrayer(null)) },
+                    onUpdatePrePrayer = { mins ->
+                        viewModel.onAction(PrayerAction.OnUpdatePrePrayerMinutes(mins))
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PrayerTopBar(
+    locationName: String,
+    hijriDate: String,
+    gregorianDate: String,
+    onNavigateBack: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Back Button
+        IconButton(
+            onClick = onNavigateBack,
+            modifier = Modifier
+                .size(40.dp)
+                .background(Color.White.copy(alpha = 0.7f), CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.cd_back),
+                tint = Color(0xFF0F2A30)
+            )
+        }
+
+        // Title
+        Text(
+            text = "الصلاة",
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Bold,
+                fontSize = 22.sp,
+                color = Color(0xFF0F2A30)
+            )
+        )
+
+        // Location & Date
+        Column(horizontalAlignment = Alignment.End) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(id = R.drawable.ihsan_icon_location),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = locationName,
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF0F2A30),
+                        fontSize = 14.sp
+                    )
+                )
+            }
+            Text(
+                text = hijriDate,
+                style = MaterialTheme.typography.labelSmall.copy(
+                    color = Color(0xFF4A6068),
+                    fontSize = 11.sp
+                )
+            )
+            Text(
+                text = gregorianDate,
+                style = MaterialTheme.typography.labelSmall.copy(
+                    color = Color(0xFF4A6068),
+                    fontSize = 11.sp
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun PrayerHeroSection(
+    nextPrayerName: String,
+    countdown: String,
+    onQiblaClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(230.dp),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        // Responsive White Arc
+        PrayerArcCanvas(
+            modifier = Modifier
+                .width(260.dp)
+                .height(130.dp)
+                .padding(top = 18.dp)
+        )
+
+        // Indicator at Peak Apex
+        Image(
+            painter = painterResource(id = R.drawable.ihsan_icon_prayer_indicator),
+            contentDescription = null,
+            modifier = Modifier
+                .size(36.dp)
+                .align(Alignment.TopCenter)
+        )
+
+        // Content
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 48.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "موعد الصلاة القادمة",
+                style = MaterialTheme.typography.labelMedium.copy(
+                    color = Color(0xFF1E3F47),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Normal
+                )
+            )
+
+            Text(
+                text = nextPrayerName,
+                style = MaterialTheme.typography.displayMedium.copy(
+                    color = Color(0xFF0F2A30),
+                    fontSize = 38.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "يتبقى ",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        color = Color(0xFF0F2A30),
+                        fontSize = 15.sp
+                    )
+                )
+                Text(
+                    text = countdown,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        color = Color(0xFF0F2A30),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Qibla CTA Pill Button
+            Surface(
+                onClick = onQiblaClick,
+                shape = CircleShape,
+                color = Color.White.copy(alpha = 0.35f),
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f)),
+                modifier = Modifier
+                    .height(36.dp)
+                    .defaultMinSize(minWidth = 120.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ihsan_icon_qibla),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "اتجاه القبلة",
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            color = Color(0xFF0F2A30),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp
+                        )
+                    )
                 }
             }
         }
@@ -183,84 +396,443 @@ fun PrayerScreen(
 }
 
 @Composable
-fun PrayerTimelineItem(prayer: PrayerTime, countdown: String?, location: String) {
-    val colors = IhsanTheme.colors
+fun PrayerArcCanvas(
+    modifier: Modifier = Modifier,
+    arcColor: Color = Color.White.copy(alpha = 0.9f),
+    strokeWidth: Dp = 2.dp,
+    dotRadius: Dp = 3.5.dp
+) {
+    val strokeWidthPx = with(LocalDensity.current) { strokeWidth.toPx() }
+    val dotRadiusPx = with(LocalDensity.current) { dotRadius.toPx() }
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Timeline dot
-        Box(
-            modifier = Modifier
-                .size(12.dp)
-                .border(2.dp, if (countdown != null) MaterialTheme.colorScheme.primary else colors.borderSubtle, CircleShape)
-                .background(if (countdown != null) MaterialTheme.colorScheme.primary else Color.Transparent, CircleShape)
+    Canvas(modifier = modifier) {
+        val width = size.width
+        val height = size.height
+
+        val startAngle = 195f
+        val sweepAngle = 150f
+
+        val rect = Rect(
+            left = 0f,
+            top = 0f,
+            right = width,
+            bottom = height * 2f
         )
 
-        Spacer(modifier = Modifier.width(16.dp))
+        drawArc(
+            color = arcColor,
+            startAngle = startAngle,
+            sweepAngle = sweepAngle,
+            useCenter = false,
+            topLeft = rect.topLeft,
+            size = rect.size,
+            style = Stroke(width = strokeWidthPx, cap = StrokeCap.Round)
+        )
 
-        // Card content
-        Box(modifier = Modifier.weight(1f)) {
-            if (countdown != null) {
-                ActivePrayerCard(prayer, countdown, location)
-            } else {
-                StandardPrayerCard(prayer)
+        val startRad = Math.toRadians(startAngle.toDouble())
+        val endRad = Math.toRadians((startAngle + sweepAngle).toDouble())
+        val rx = width / 2f
+        val ry = height
+
+        val startX = rx + rx * Math.cos(startRad).toFloat()
+        val startY = ry + ry * Math.sin(startRad).toFloat()
+
+        val endX = rx + rx * Math.cos(endRad).toFloat()
+        val endY = ry + ry * Math.sin(endRad).toFloat()
+
+        drawCircle(color = arcColor, radius = dotRadiusPx, center = Offset(startX, startY))
+        drawCircle(color = arcColor, radius = dotRadiusPx, center = Offset(endX, endY))
+    }
+}
+
+@Composable
+fun QuranVerseCard() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(130.dp),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Image(
+                painter = painterResource(id = R.drawable.ihsan_quran_card_background),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp, vertical = 14.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1B3B32),
+                        fontSize = 15.sp
+                    )
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "أَقِمِ ٱلصَّلَوٰةَ إِنَّ ٱلصَّلَوٰةَ تَنْهَىٰ عَنِ ٱلْفَحْشَاءِ وَٱلْمُنكَرِ ۗ",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF112A23),
+                        fontSize = 13.sp,
+                        textAlign = TextAlign.Center
+                    )
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "(العنكبوت ٤٥)",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = Color(0xFF4A6D63),
+                        fontSize = 11.sp
+                    )
+                )
             }
         }
     }
 }
 
 @Composable
-fun StandardPrayerCard(prayer: PrayerTime) {
-    val colors = IhsanTheme.colors
-
-    Card(
+fun PrayerTimesHeader(onShowCalendar: () -> Unit) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (prayer.isPast) {
-                colors.surfaceElevated.copy(alpha = 0.6f)
-            } else {
-                colors.surfaceElevated
-            }
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = if (prayer.isPast) 0.dp else 2.dp)
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = Icons.Default.AccessTime,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "مواقيت الصلاة",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 17.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .clickable { onShowCalendar() }
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.CalendarMonth,
+                contentDescription = null,
+                tint = IhsanTheme.colors.textSecondary,
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "عرض التقويم",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = IhsanTheme.colors.textSecondary,
+                    fontSize = 13.sp
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun PrayerTimeRow(
+    prayer: PrayerTime,
+    isNext: Boolean,
+    countdown: String?,
+    onClick: () -> Unit
+) {
+    val colors = IhsanTheme.colors
+
+    val containerColor = if (isNext) Color(0xFFD8EFEB) else colors.surfaceElevated
+    val borderColor = if (isNext) Color(0xFFAADCD5) else colors.borderSubtle
+    val contentColor = if (isNext) Color(0xFF0D4E4A) else MaterialTheme.colorScheme.onSurface
+
+    Surface(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        color = containerColor,
+        border = BorderStroke(1.dp, borderColor)
     ) {
         Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (isNext) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(Color(0xFF2C7A75), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ihsan_icon_prayer),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                } else {
+                    Icon(
+                        imageVector = prayerIconVector(prayer.nameAr),
+                        contentDescription = null,
+                        tint = colors.textSecondary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = prayer.nameAr,
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = if (isNext) FontWeight.Bold else FontWeight.Medium,
+                                fontSize = 16.sp,
+                                color = contentColor
+                            )
+                        )
+                        if (isNext) {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Surface(
+                                color = Color(0xFF2C7A75),
+                                shape = RoundedCornerShape(50)
+                            ) {
+                                Text(
+                                    text = "القادمة",
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        color = Color.White,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (isNext) {
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = contentColor,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
                 Text(
-                    text = prayer.nameAr,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                )
-                Text(
-                    text = prayer.nameEn.uppercase(),
-                    style = MaterialTheme.typography.labelSmall.copy(color = colors.textSecondary)
+                    text = prayer.time,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = contentColor
+                    )
                 )
             }
-            
-            Text(
-                text = prayer.time,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = if (prayer.isPast) colors.textSecondary else MaterialTheme.colorScheme.onSurface
-                )
-            )
+        }
+    }
+}
 
+private fun prayerIconVector(prayerNameAr: String): ImageVector = when (prayerNameAr) {
+    "الفجر" -> Icons.Default.WbTwilight
+    "الشروق" -> Icons.Default.WbSunny
+    "الظهر" -> Icons.Default.LightMode
+    "العصر" -> Icons.Default.Mosque
+    "المغرب" -> Icons.Default.NightsStay
+    "العشاء" -> Icons.Default.Bedtime
+    else -> Icons.Default.AccessTime
+}
+
+@Composable
+fun PrayerSettingsSection(
+    uiState: PrayerUiState,
+    onAction: (PrayerAction) -> Unit
+) {
+    val colors = IhsanTheme.colors
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = 12.dp)
+        ) {
             Icon(
-                imageVector = if (prayer.isPast) Icons.Default.NotificationsOff else Icons.Default.NotificationsNone,
+                imageVector = Icons.Default.Settings,
                 contentDescription = null,
-                tint = if (prayer.isPast) colors.textDisabled else colors.textSecondary,
+                tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(20.dp)
             )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "إعدادات الصلاة",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 17.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            // Tile 1: Calculation Method
+            Surface(
+                onClick = { onAction(PrayerAction.OnToggleSettingsSheet(true)) },
+                modifier = Modifier
+                    .weight(1f)
+                    .height(110.dp),
+                shape = RoundedCornerShape(16.dp),
+                color = colors.surfaceElevated,
+                border = BorderStroke(1.dp, colors.borderSubtle)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(12.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Calculate,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Column {
+                        Text(
+                            text = "طريقة الحساب",
+                            style = MaterialTheme.typography.titleSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "${uiState.calculationMethodName} >",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                color = colors.textSecondary,
+                                fontSize = 10.sp
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+            }
+
+            // Tile 2: Pre-prayer notification
+            Surface(
+                onClick = { onAction(PrayerAction.OnToggleSettingsSheet(true)) },
+                modifier = Modifier
+                    .weight(1f)
+                    .height(110.dp),
+                shape = RoundedCornerShape(16.dp),
+                color = colors.surfaceElevated,
+                border = BorderStroke(1.dp, colors.borderSubtle)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(12.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AccessTime,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Column {
+                        Text(
+                            text = "التنبيه قبل الصلاة",
+                            style = MaterialTheme.typography.titleSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        val reminderText = if (uiState.prePrayerReminderMinutes > 0) {
+                            "${uiState.prePrayerReminderMinutes} دقائق >"
+                        } else {
+                            "إيقاف >"
+                        }
+                        Text(
+                            text = reminderText,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                color = colors.textSecondary,
+                                fontSize = 10.sp
+                            )
+                        )
+                    }
+                }
+            }
+
+            // Tile 3: Adhan Switch
+            Surface(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(110.dp),
+                shape = RoundedCornerShape(16.dp),
+                color = colors.surfaceElevated,
+                border = BorderStroke(1.dp, colors.borderSubtle)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(12.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.NotificationsActive,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Column {
+                        Text(
+                            text = "الأذان",
+                            style = MaterialTheme.typography.titleSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Switch(
+                            checked = uiState.adhanEnabled,
+                            onCheckedChange = { onAction(PrayerAction.OnToggleAdhan(it)) },
+                            modifier = Modifier.scale(0.8f)
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -270,110 +842,65 @@ fun ActivePrayerCard(prayer: PrayerTime, countdown: String, location: String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(8.dp, RoundedCornerShape(32.dp)),
-        shape = RoundedCornerShape(32.dp),
+            .semantics(mergeDescendants = true) {
+                contentDescription = "${prayer.nameAr}، الوقت المتبقي $countdown، $location"
+            },
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Column(
-                modifier = Modifier
-                    .padding(24.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Column {
-                        Text(
-                            text = prayer.nameAr,
-                            style = MaterialTheme.typography.headlineSmall.copy(
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-                        Text(
-                            text = prayer.nameEn.uppercase(),
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
-                            )
-                        )
-                    }
-                    
-                    IconButton(
-                        onClick = {},
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f), CircleShape)
-                            .size(36.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
-                            contentDescription = null, 
-                            tint = Color(0xFFFF8A65), 
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = "الوقت المتبقي",
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
-                        letterSpacing = 2.sp
-                    )
+        Column(
+            modifier = Modifier
+                .padding(20.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = prayer.nameAr,
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontWeight = FontWeight.Bold
                 )
-                
-                Text(
-                    text = countdown,
-                    style = MaterialTheme.typography.displayMedium.copy(
-                        color = Color(0xFFFF8A65),
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 48.sp
-                    )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "الوقت المتبقي: $countdown",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = location,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                )
+            )
+        }
+    }
+}
 
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            Icons.Default.LocationOn,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = location,
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
-                            )
-                        )
-                    }
-
-                    Surface(
-                        color = Color(0xFFFF8A65),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = "جاري الآن",
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-                    }
-                }
-            }
+@Composable
+fun StandardPrayerCard(prayer: PrayerTime) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = IhsanTheme.colors.surfaceElevated)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = prayer.nameAr,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+            )
+            Text(
+                text = prayer.time,
+                style = MaterialTheme.typography.titleMedium
+            )
         }
     }
 }
@@ -384,31 +911,51 @@ private fun PrayerSystemStatusSection(
     onAction: (PrayerAction) -> Unit
 ) {
     val colors = IhsanTheme.colors
+    val headerText = "إعدادات متقدمة"
+    val headerHint = if (uiState.systemStatusExpanded) "اضغط للطي" else "اضغط للفتح"
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = colors.surfaceElevated),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, colors.borderSubtle)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onAction(PrayerAction.OnToggleSystemStatus) },
+                    .clickable { onAction(PrayerAction.OnToggleSystemStatus) }
+                    .semantics(mergeDescendants = true) {
+                        contentDescription = "$headerText، $headerHint"
+                    },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    "حالة نظام الصلاة",
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Tune,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        headerText,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    )
+                }
                 Icon(
                     imageVector = if (uiState.systemStatusExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = colors.textSecondary
                 )
             }
             if (uiState.systemStatusExpanded) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 uiState.locationSourceLabel?.let {
                     Text(it, style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
                 }
@@ -418,6 +965,7 @@ private fun PrayerSystemStatusSection(
                 uiState.lastScheduleSummary?.let {
                     Text(it, style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
                 }
+                Spacer(modifier = Modifier.height(8.dp))
                 TextButton(onClick = { onAction(PrayerAction.OnRetrySchedule) }) {
                     Text(stringResource(R.string.prayer_reschedule_alarms))
                 }

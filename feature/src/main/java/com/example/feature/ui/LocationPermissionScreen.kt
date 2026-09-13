@@ -1,85 +1,105 @@
 package com.example.feature.ui
 
 import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MyLocation
-import androidx.compose.material3.*
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.core.app.ActivityCompat
+import com.example.designsystem.component.IhsanCapabilityState
+import com.example.designsystem.theme.IhsanTheme
+import com.example.feature.R
 
 @Composable
 fun LocationPermissionScreen(
-    onPermissionGranted: () -> Unit
+    onContinue: () -> Unit
 ) {
+    val context = LocalContext.current
+    var requestCompletedWithoutGrant by rememberSaveable { mutableStateOf(false) }
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            onPermissionGranted()
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { grants ->
+        val granted = grants[Manifest.permission.ACCESS_COARSE_LOCATION] == true ||
+            grants[Manifest.permission.ACCESS_FINE_LOCATION] == true
+        if (granted) {
+            onContinue()
+        } else {
+            requestCompletedWithoutGrant = true
         }
     }
 
-    Column(
+    val activity = context.findActivity()
+    val shouldShowRationale = activity != null && (
+        ActivityCompat.shouldShowRequestPermissionRationale(
+            activity,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) || ActivityCompat.shouldShowRequestPermissionRationale(
+            activity,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+    )
+    // `shouldShowRequestPermissionRationale == false` is meaningful here only after
+    // this screen has actually completed a denied request in the current saved state.
+    val shouldOpenSettings = requestCompletedWithoutGrant && !shouldShowRationale
+
+    IhsanCapabilityState(
+        title = stringResource(R.string.location_capability_title),
+        body = stringResource(R.string.location_capability_body),
+        icon = Icons.Outlined.LocationOn,
+        primaryActionLabel = stringResource(
+            if (shouldOpenSettings) {
+                R.string.location_capability_open_settings
+            } else {
+                R.string.location_capability_enable
+            }
+        ),
+        onPrimaryAction = {
+            if (shouldOpenSettings) {
+                context.startActivity(
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", context.packageName, null)
+                    }
+                )
+            } else {
+                launcher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                )
+            }
+        },
+        secondaryActionLabel = stringResource(R.string.location_capability_continue),
+        onSecondaryAction = onContinue,
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            imageVector = Icons.Default.MyLocation,
-            contentDescription = null,
-            modifier = Modifier.size(100.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
-        
-        Spacer(modifier = Modifier.height(32.dp))
-        
-        Text(
-            text = "تفعيل الموقع",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.primary
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        Text(
-            text = "يحتاج تطبيق إحسان إلى الوصول لموقعك لتوفير مواقيت صلاة دقيقة وتحديد اتجاه القبلة ومشاريع الخير القريبة منك.",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            lineHeight = 28.sp
-        )
-        
-        Spacer(modifier = Modifier.height(48.dp))
-        
-        Button(
-            onClick = { launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Text("تفعيل الآن", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        }
-        
-        TextButton(
-            onClick = onPermissionGranted,
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            Text("تخطى الآن", color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .verticalScroll(rememberScrollState())
+    )
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }
