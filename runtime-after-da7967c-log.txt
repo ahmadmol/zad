@@ -1,0 +1,6 @@
+﻿# runtime-after-da7967c-log.txt
+# Generated: 2026-07-29 12:35 (system time during verification)
+# Device status: NOT CONNECTED
+# adb devices -l returned empty. Last known device id (ac190123 / 23129RAA4G sapphire_global) from earlier session is no longer attached.
+# No install / launch was performed.
+# adb logcat -d not executed (no device). No FATAL EXCEPTION / AndroidRuntime / Room cannot verify / identity hash / Resources.NotFoundException / InflateException / SQLiteException lines exist in this log because logcat is empty.

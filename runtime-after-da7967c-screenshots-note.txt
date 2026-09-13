@@ -1,0 +1,7 @@
+﻿# runtime-after-da7967c-{home,ehsan,profile}.png
+# Captured: 2026-07-29 (system time during verification)
+# Device status: NOT CONNECTED
+# adb devices -l returned empty during the entire verification window.
+# The earlier-session device 23129RAA4G (sapphire_global) was not attached.
+# No install / launch was performed; no live screenshot was captured.
+# Files are zero-byte placeholders so downstream tooling has a stable path to read.

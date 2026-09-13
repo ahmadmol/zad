@@ -1,0 +1,14 @@
+y=2069 [720,2069]-[1025,2141] click=True text= desc=
+y=2069 [720,2069]-[1025,2141] click=False text= desc=البحث
+y=2069 [387,2069]-[692,2141] click=True text= desc=
+y=2069 [387,2069]-[692,2141] click=False text= desc=النشاطات اليومية
+y=2069 [55,2069]-[359,2141] click=True text= desc=
+y=2069 [55,2069]-[359,2141] click=False text= desc=التذكيرات
+y=2141 [706,2141]-[1036,2367] click=False text= desc=الرئيسية
+y=2298 [825,2298]-[918,2350] click=False text=الرئيسية desc=
+y=2141 [375,2141]-[706,2367] click=True text= desc=
+y=2141 [375,2141]-[706,2367] click=False text= desc=إحسان
+y=2298 [503,2298]-[579,2350] click=False text=إحسان desc=
+y=2141 [44,2141]-[375,2367] click=True text= desc=
+y=2141 [44,2141]-[375,2367] click=False text= desc=حسابي
+y=2298 [170,2298]-[250,2350] click=False text=حسابي desc=
