@@ -9,6 +9,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -189,9 +190,18 @@ fun QuranReaderScreen(
         )
     }
 
+    val isDark = isSystemInDarkTheme()
+    val bgCanvas = if (isDark) Color(0xFF111211) else Color(0xFFFCF8F5)
+    val topBarTitleColor = if (isDark) Color(0xFFEEE9DD) else PrimaryTeal
+    val topBarChipBg = if (isDark) Color(0xFF20372F) else Color(0xFFE8F2EC)
+    val topBarChipText = if (isDark) IhsanTheme.colors.selectedContent else PrimaryTeal
+    val topBarIconTint = if (isDark) IhsanTheme.colors.selectedContent else PrimaryTeal
+    val mushafFrameBg = if (isDark) Color(0xFF1B1A17) else Color(0xFFFAF7F0)
+    val mushafFrameBorder = if (isDark) Color(0xFF3A342B) else Color(0xFFD8CEB8)
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
-            containerColor = Color(0xFFFCF8F5),
+            containerColor = bgCanvas,
             topBar = {
                 TopAppBar(
                     modifier = Modifier.statusBarsPadding(),
@@ -201,7 +211,7 @@ fun QuranReaderScreen(
                                 text = selectedSurah?.let { "سورة ${it.name}" } ?: "تحميل...",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = PrimaryTeal
+                                color = topBarTitleColor
                             )
                             val current = state.currentPlayingAyah
                                 ?: state.lastRead?.takeIf { it.first.id == selectedSurah?.id }?.second
@@ -210,8 +220,8 @@ fun QuranReaderScreen(
                             if (total > 0) {
                                 Surface(
                                     shape = RoundedCornerShape(14.dp),
-                                    color = Color(0xFFE8F2EC),
-                                    border = BorderStroke(0.5.dp, PrimaryTeal.copy(alpha = 0.15f))
+                                    color = topBarChipBg,
+                                    border = BorderStroke(0.5.dp, topBarChipText.copy(alpha = 0.25f))
                                 ) {
                                     Row(
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp),
@@ -221,14 +231,14 @@ fun QuranReaderScreen(
                                         Icon(
                                             imageVector = Icons.AutoMirrored.Filled.MenuBook,
                                             contentDescription = null,
-                                            tint = PrimaryTeal,
+                                            tint = topBarChipText,
                                             modifier = Modifier.size(13.dp)
                                         )
                                         Text(
                                             text = "الآية $current من $total",
                                             style = MaterialTheme.typography.labelSmall,
                                             fontWeight = FontWeight.SemiBold,
-                                            color = PrimaryTeal
+                                            color = topBarChipText
                                         )
                                     }
                                 }
@@ -245,7 +255,7 @@ fun QuranReaderScreen(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "رجوع",
-                                tint = PrimaryTeal,
+                                tint = topBarIconTint,
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
@@ -253,7 +263,7 @@ fun QuranReaderScreen(
                                 text = "رجوع",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = PrimaryTeal
+                                color = topBarIconTint
                             )
                         }
                     },
@@ -264,7 +274,7 @@ fun QuranReaderScreen(
                                 text = "Aa",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = PrimaryTeal
+                                color = topBarIconTint
                             )
                         }
                         // Audio Reciter Icon
@@ -272,7 +282,7 @@ fun QuranReaderScreen(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.VolumeUp,
                                 contentDescription = "اختر القارئ",
-                                tint = PrimaryTeal
+                                tint = topBarIconTint
                             )
                         }
                         // Bookmark Action Icon
@@ -289,12 +299,12 @@ fun QuranReaderScreen(
                             Icon(
                                 imageVector = if (isSurahBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
                                 contentDescription = "علامة مرجعية",
-                                tint = PrimaryTeal
+                                tint = topBarIconTint
                             )
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color(0xFFFCF8F5)
+                        containerColor = bgCanvas
                     )
                 )
             },
@@ -303,9 +313,9 @@ fun QuranReaderScreen(
                     AnimatedVisibility(visible = showFontSettings) {
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
-                            color = Color(0xFFFAF4EB),
+                            color = if (isDark) Color(0xFF1B1A17) else Color(0xFFFAF4EB),
                             shadowElevation = 8.dp,
-                            border = BorderStroke(1.dp, Color(0xFFE8E0D5))
+                            border = BorderStroke(1.dp, if (isDark) Color(0xFF3A342B) else Color(0xFFE8E0D5))
                         ) {
                             Row(
                                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
@@ -315,16 +325,16 @@ fun QuranReaderScreen(
                                     text = "حجم الخط",
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = PrimaryTeal
+                                    color = topBarIconTint
                                 )
                                 Slider(
                                     value = state.fontSize,
                                     onValueChange = onUpdateFontSize,
                                     valueRange = 20f..48f,
                                     colors = SliderDefaults.colors(
-                                        thumbColor = PrimaryTeal,
-                                        activeTrackColor = PrimaryTeal,
-                                        inactiveTrackColor = PrimaryTeal.copy(alpha = 0.2f)
+                                        thumbColor = topBarIconTint,
+                                        activeTrackColor = topBarIconTint,
+                                        inactiveTrackColor = topBarIconTint.copy(alpha = 0.2f)
                                     ),
                                     modifier = Modifier.weight(1f).padding(horizontal = 16.dp)
                                 )
@@ -332,7 +342,7 @@ fun QuranReaderScreen(
                                     text = "${state.fontSize.toInt()}",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = PrimaryTeal
+                                    color = topBarIconTint
                                 )
                             }
                         }
@@ -362,7 +372,7 @@ fun QuranReaderScreen(
                 modifier = Modifier
                     .padding(padding)
                     .fillMaxSize()
-                    .background(Color(0xFFFCF8F5))
+                    .background(bgCanvas)
             ) {
                 QuranDownloadStatusPanel(state = state, onRetry = onDownloadSurah)
                 Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
@@ -370,7 +380,7 @@ fun QuranReaderScreen(
                         state.isLoading && state.ayahs.isEmpty() -> {
                             CircularProgressIndicator(
                                 modifier = Modifier.align(Alignment.Center),
-                                color = PrimaryTeal
+                                color = topBarIconTint
                             )
                         }
                         state.errorMessage != null && state.ayahs.isEmpty() -> {
@@ -397,10 +407,10 @@ fun QuranReaderScreen(
                                     .fillMaxSize()
                                     .padding(horizontal = 12.dp, vertical = 6.dp)
                                     .border(
-                                        border = BorderStroke(1.2.dp, Color(0xFFD8CEB8)),
+                                        border = BorderStroke(1.2.dp, mushafFrameBorder),
                                         shape = RoundedCornerShape(16.dp)
                                     )
-                                    .background(Color(0xFFFAF7F0), RoundedCornerShape(16.dp))
+                                    .background(mushafFrameBg, RoundedCornerShape(16.dp))
                                     .padding(horizontal = 12.dp, vertical = 12.dp)
                             ) {
                                 LazyColumn(
@@ -527,15 +537,17 @@ fun SurahHeaderBanner(
     surah: Surah,
     modifier: Modifier = Modifier
 ) {
-    val goldColor = Color(0xFFC5A059)
-    val tealColor = PrimaryTeal
+    val isDark = isSystemInDarkTheme()
+    val goldColor = if (isDark) IhsanTheme.colors.goldAccent else Color(0xFFC5A059)
+    val textColor = if (isDark) Color(0xFFEEE9DD) else PrimaryTeal
+    val bannerBg = if (isDark) Color(0xFF24221E) else Color(0xFFFAF3EA)
 
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp),
         shape = RoundedCornerShape(16.dp),
-        color = Color(0xFFFAF3EA),
+        color = bannerBg,
         border = BorderStroke(1.2.dp, goldColor.copy(alpha = 0.5f))
     ) {
         Box(
@@ -555,7 +567,7 @@ fun SurahHeaderBanner(
                 style = IhsanTheme.readingTypography.quran.copy(
                     fontSize = 30.sp,
                     fontWeight = FontWeight.Bold,
-                    color = tealColor
+                    color = textColor
                 ),
                 textAlign = TextAlign.Center
             )
@@ -568,7 +580,8 @@ fun SurahHeaderBanner(
 fun BasmalaHeader(
     modifier: Modifier = Modifier
 ) {
-    val tealColor = PrimaryTeal
+    val isDark = isSystemInDarkTheme()
+    val textColor = if (isDark) Color(0xFFEEE9DD) else PrimaryTeal
 
     Column(
         modifier = modifier
@@ -581,7 +594,7 @@ fun BasmalaHeader(
             style = IhsanTheme.readingTypography.quran.copy(
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Normal,
-                color = tealColor
+                color = textColor
             ),
             textAlign = TextAlign.Center
         )
@@ -595,9 +608,12 @@ fun AyahNumberBadge(
     modifier: Modifier = Modifier,
     isHighlighted: Boolean = false
 ) {
-    val goldColor = Color(0xFFC5A059)
-    val tealColor = PrimaryTeal
-    val strokeColor = if (isHighlighted) tealColor else goldColor
+    val isDark = isSystemInDarkTheme()
+    val goldColor = if (isDark) IhsanTheme.colors.goldAccent else Color(0xFFC5A059)
+    val highlightColor = if (isDark) IhsanTheme.colors.selectedContent else PrimaryTeal
+    val strokeColor = if (isHighlighted) highlightColor else goldColor
+    val numColor = if (isDark) Color(0xFFEEE9DD) else (if (isHighlighted) highlightColor else Color(0xFF1B2C2A))
+    val badgeBg = if (isDark) Color(0xFF24221E) else Color(0xFFFAF5ED)
     val arabicNum = remember(number) { toArabicNumerals(number) }
 
     Box(
@@ -622,7 +638,7 @@ fun AyahNumberBadge(
 
             drawPath(
                 path = path,
-                color = if (isHighlighted) tealColor.copy(alpha = 0.15f) else Color(0xFFFAF5ED)
+                color = if (isHighlighted) highlightColor.copy(alpha = 0.2f) else badgeBg
             )
             drawPath(
                 path = path,
@@ -640,7 +656,7 @@ fun AyahNumberBadge(
             style = MaterialTheme.typography.labelMedium.copy(
                 fontSize = if (number > 99) 10.sp else 12.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (isHighlighted) tealColor else Color(0xFF1B2C2A)
+                color = numColor
             )
         )
     }
@@ -654,7 +670,10 @@ fun VerseItem(
     fontSize: Float,
     onClick: () -> Unit
 ) {
-    val tealColor = PrimaryTeal
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+    val activeBg = if (isDark) Color(0xFF20372F) else PrimaryTeal.copy(alpha = 0.08f)
+    val activeBorder = if (isDark) Color(0xFF2E5042) else PrimaryTeal.copy(alpha = 0.4f)
+    val textColor = if (isDark) Color(0xFFEEE9DD) else (if (isPlaying) PrimaryTeal else Color(0xFF1B1B1E))
 
     Surface(
         modifier = Modifier
@@ -662,10 +681,10 @@ fun VerseItem(
             .clickable(onClick = onClick)
             .animateContentSize(),
         shape = RoundedCornerShape(12.dp),
-        color = if (isPlaying) tealColor.copy(alpha = 0.08f) else Color.Transparent,
+        color = if (isPlaying) activeBg else Color.Transparent,
         border = BorderStroke(
             width = if (isPlaying) 1.2.dp else 0.dp,
-            color = if (isPlaying) tealColor.copy(alpha = 0.4f) else Color.Transparent
+            color = if (isPlaying) activeBorder else Color.Transparent
         )
     ) {
         Row(
@@ -681,7 +700,7 @@ fun VerseItem(
                     fontSize = fontSize.sp,
                     lineHeight = (fontSize * 1.8).sp,
                     textAlign = TextAlign.Justify,
-                    color = if (isPlaying) tealColor else Color(0xFF1B1B1E)
+                    color = textColor
                 ),
                 modifier = Modifier.weight(1f)
             )
@@ -708,16 +727,20 @@ private fun VerseQuickActionSheet(
     onPlayClick: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+    val sheetBg = if (isDark) Color(0xFF1B1A17) else Color(0xFFFCF8F5)
+    val titleColor = if (isDark) Color(0xFFEEE9DD) else PrimaryTeal
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = Color(0xFFFCF8F5)
+        containerColor = sheetBg
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Text(
                 text = "الآية ${toArabicNumerals(verse.verseNumber)}",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = PrimaryTeal
+                color = titleColor
             )
             Spacer(modifier = Modifier.height(12.dp))
             Row(
@@ -759,13 +782,22 @@ fun AudioBar(
     onSeek: (Long) -> Unit,
     onExpandReader: () -> Unit
 ) {
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+    val barBg = if (isDark) Color(0xFF161618) else Color(0xFFFAFAF7)
+    val barBorder = if (isDark) Color(0xFF2A2B2F) else Color(0xFFECE4D8)
+    val primaryText = if (isDark) Color(0xFFEEE9DD) else PrimaryTeal
+    val subtext = if (isDark) Color(0xFFAAA498) else MaterialTheme.colorScheme.onSurfaceVariant
+    val accentColor = if (isDark) IhsanTheme.colors.selectedContent else PrimaryTeal
+    val playContainer = if (isDark) IhsanTheme.colors.selectedContainer else PrimaryTeal
+    val playIconTint = if (isDark) IhsanTheme.colors.selectedContent else Color.White
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .navigationBarsPadding(),
-        color = Color(0xFFFAFAF7),
-        shadowElevation = 12.dp,
-        border = BorderStroke(1.dp, Color(0xFFECE4D8)),
+        color = barBg,
+        shadowElevation = if (isDark) 0.dp else 12.dp,
+        border = BorderStroke(1.dp, barBorder),
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
     ) {
         Column(
@@ -786,12 +818,12 @@ fun AudioBar(
                         text = if (surahName.isNotBlank()) "سورة $surahName" else "القرآن الكريم",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = PrimaryTeal
+                        color = primaryText
                     )
                     Text(
                         text = readerName.ifBlank { "الشيخ عبد الرحمن السديس" },
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = subtext
                     )
                 }
 
@@ -799,7 +831,7 @@ fun AudioBar(
                     Icon(
                         imageVector = Icons.Default.KeyboardArrowUp,
                         contentDescription = "القارئ",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = subtext
                     )
                 }
             }
@@ -823,7 +855,7 @@ fun AudioBar(
                         Icon(
                             imageVector = Icons.Default.SkipPrevious,
                             contentDescription = "السابق",
-                            tint = PrimaryTeal,
+                            tint = accentColor,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -831,15 +863,15 @@ fun AudioBar(
                     Surface(
                         onClick = onTogglePlay,
                         shape = CircleShape,
-                        color = PrimaryTeal,
-                        shadowElevation = 4.dp,
+                        color = playContainer,
+                        shadowElevation = if (isDark) 0.dp else 4.dp,
                         modifier = Modifier.size(48.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
                                 imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                                 contentDescription = if (isPlaying) "إيقاف مؤقت" else "تشغيل",
-                                tint = Color.White,
+                                tint = playIconTint,
                                 modifier = Modifier.size(28.dp)
                             )
                         }
@@ -852,7 +884,7 @@ fun AudioBar(
                         Icon(
                             imageVector = Icons.Default.SkipNext,
                             contentDescription = "التالي",
-                            tint = PrimaryTeal,
+                            tint = accentColor,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -867,9 +899,9 @@ fun AudioBar(
                         onValueChange = { onSeek(it.toLong()) },
                         valueRange = 0f..(if (playbackDuration > 0) playbackDuration.toFloat() else 1f),
                         colors = SliderDefaults.colors(
-                            thumbColor = PrimaryTeal,
-                            activeTrackColor = PrimaryTeal,
-                            inactiveTrackColor = PrimaryTeal.copy(alpha = 0.2f)
+                            thumbColor = accentColor,
+                            activeTrackColor = accentColor,
+                            inactiveTrackColor = accentColor.copy(alpha = 0.2f)
                         ),
                         modifier = Modifier.height(20.dp)
                     )
@@ -880,12 +912,12 @@ fun AudioBar(
                         Text(
                             text = formatTime(playbackPosition),
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = subtext
                         )
                         Text(
                             text = formatTime(playbackDuration),
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = subtext
                         )
                     }
                 }
@@ -902,17 +934,22 @@ private fun ReaderPickerSheet(
     onSelect: (Reader) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+    val sheetBg = if (isDark) Color(0xFF1B1A17) else Color(0xFFFCF8F5)
+    val primaryText = if (isDark) Color(0xFFEEE9DD) else PrimaryTeal
+    val accentColor = if (isDark) IhsanTheme.colors.selectedContent else PrimaryTeal
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = Color(0xFFFCF8F5)
+        containerColor = sheetBg
     ) {
         Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
             Text(
                 text = "اختر القارئ",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = PrimaryTeal
+                color = primaryText
             )
             Spacer(modifier = Modifier.height(12.dp))
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -922,13 +959,13 @@ private fun ReaderPickerSheet(
                         onClick = { onSelect(reader) },
                         shape = RoundedCornerShape(16.dp),
                         color = if (isSelected) {
-                            PrimaryTeal.copy(alpha = 0.12f)
+                            accentColor.copy(alpha = 0.15f)
                         } else {
-                            Color(0xFFFAF4EB)
+                            if (isDark) Color(0xFF24221E) else Color(0xFFFAF4EB)
                         },
                         border = BorderStroke(
                             width = 1.dp,
-                            color = if (isSelected) PrimaryTeal else Color(0xFFE8E0D5)
+                            color = if (isSelected) accentColor else (if (isDark) Color(0xFF3A342B) else Color(0xFFE8E0D5))
                         ),
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -942,13 +979,13 @@ private fun ReaderPickerSheet(
                             Text(
                                 text = reader.name,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isSelected) PrimaryTeal else Color(0xFF1B1B1E)
+                                color = if (isSelected) accentColor else (if (isDark) Color(0xFFEEE9DD) else Color(0xFF1B1B1E))
                             )
                             if (isSelected) {
                                 Icon(
                                     imageVector = Icons.Default.CheckCircle,
                                     contentDescription = "محدد",
-                                    tint = PrimaryTeal
+                                    tint = accentColor
                                 )
                             }
                         }

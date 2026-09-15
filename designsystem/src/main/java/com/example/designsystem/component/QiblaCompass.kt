@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -24,6 +25,7 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.designsystem.theme.IhsanTheme
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -34,8 +36,14 @@ fun QiblaCompass(
     modifier: Modifier = Modifier,
     isAligned: Boolean = false
 ) {
-    val activeTeal = if (isAligned) Color(0xFF10B981) else Color(0xFF0F766E)
-    val alignGlow = if (isAligned) Color(0x3310B981) else Color(0x1A0F766E)
+    val isDark = isSystemInDarkTheme()
+    val activeTeal = if (isAligned) Color(0xFF10B981) else (if (isDark) IhsanTheme.colors.selectedContent else Color(0xFF0F766E))
+    val alignGlow = if (isAligned) Color(0x3310B981) else (if (isDark) Color(0x267DD3B0) else Color(0x1A0F766E))
+    val dialBg = if (isDark) IhsanTheme.colors.surfaceElevated else Color.White
+    val dialBorder = if (isDark) IhsanTheme.colors.borderSubtle else Color(0xFFE2E8F0)
+    val rosetteColor = if (isDark) Color(0xFF2A2B2F) else Color(0xFFF1F5F9)
+    val cardinalTextColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF0F172A)
+    val goldAccent = IhsanTheme.colors.goldAccent
 
     Box(
         modifier = modifier.size(290.dp),
@@ -50,14 +58,14 @@ fun QiblaCompass(
                 .border(1.dp, activeTeal.copy(alpha = 0.25f), CircleShape)
         )
 
-        // White Dial Body
+        // Dial Body (Neutral Charcoal in Dark / White in Light)
         Box(
             modifier = Modifier
                 .fillMaxSize(0.92f)
                 .shadow(12.dp, CircleShape, spotColor = Color(0x20000000))
                 .clip(CircleShape)
-                .background(Color.White)
-                .border(2.dp, Color(0xFFE2E8F0), CircleShape)
+                .background(dialBg)
+                .border(2.dp, dialBorder, CircleShape)
         )
 
         Canvas(modifier = Modifier.fillMaxSize(0.92f)) {
@@ -70,13 +78,13 @@ fun QiblaCompass(
             rotate(degrees = -bearing, pivot = center) {
                 // Background subtle rosette pattern
                 drawCircle(
-                    color = Color(0xFFF1F5F9),
+                    color = rosetteColor,
                     radius = radius * 0.55f,
                     center = center,
                     style = Stroke(width = 1.dp.toPx())
                 )
                 drawCircle(
-                    color = Color(0xFFF1F5F9),
+                    color = rosetteColor,
                     radius = radius * 0.38f,
                     center = center,
                     style = Stroke(width = 1.dp.toPx())
@@ -91,7 +99,11 @@ fun QiblaCompass(
 
                     val tickLength = if (isCardinal) 12.dp.toPx() else if (isMajor) 8.dp.toPx() else 4.dp.toPx()
                     val tickWidth = if (isCardinal) 2.dp.toPx() else if (isMajor) 1.5.dp.toPx() else 1.dp.toPx()
-                    val tickColor = if (isCardinal) Color(0xFF334155) else if (isMajor) Color(0xFF64748B) else Color(0xFFCBD5E1)
+                    val tickColor = if (isDark) {
+                        if (isCardinal) Color(0xFFE9EAEC) else if (isMajor) Color(0xFFA8ABB1) else Color(0xFF414449)
+                    } else {
+                        if (isCardinal) Color(0xFF334155) else if (isMajor) Color(0xFF64748B) else Color(0xFFCBD5E1)
+                    }
 
                     val startR = radius - tickLength
                     val endR = radius
@@ -120,7 +132,7 @@ fun QiblaCompass(
                 )
 
                 val paint = Paint().apply {
-                    color = Color(0xFF0F172A).toArgb()
+                    color = cardinalTextColor.toArgb()
                     textSize = 15.sp.toPx()
                     textAlign = Paint.Align.CENTER
                     typeface = Typeface.DEFAULT_BOLD

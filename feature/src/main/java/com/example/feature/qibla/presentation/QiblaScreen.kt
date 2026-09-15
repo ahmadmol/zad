@@ -6,10 +6,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,6 +65,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.component.QiblaCompass
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
 import org.koin.androidx.compose.koinViewModel
 
@@ -98,8 +101,13 @@ fun QiblaScreen(
         viewModel.updateLocationAndCalculateQibla()
     }
 
-    val darkTealColor = Color(0xFF003B46)
-    val darkTealSubtext = Color(0xFF1B535D)
+    val isDark = isSystemInDarkTheme()
+    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
+    val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else Color(0xFF1B535D)
+    val pillBg = if (isDark) IhsanTheme.colors.surfaceElevated else Color.White.copy(alpha = 0.75f)
+    val badgeBg = if (isDark) IhsanTheme.colors.surfaceElevated else Color(0xFFEFF8F6)
+    val badgeBorder = if (isDark) IhsanTheme.colors.borderSubtle else Color(0xFFCBE3DF)
+    val badgeText = if (isDark) IhsanTheme.colors.selectedContent else Color(0xFF046A38)
 
     // Opaque full screen surface container - no HOME visible underneath
     Surface(
@@ -117,6 +125,15 @@ fun QiblaScreen(
                     .fillMaxWidth()
                     .height(260.dp)
             )
+
+            if (isDark) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(260.dp)
+                        .background(Color.Black.copy(alpha = 0.55f))
+                )
+            }
 
             // Screen Content Column
             Column(
@@ -140,7 +157,7 @@ fun QiblaScreen(
                                 .align(Alignment.CenterStart)
                                 .size(36.dp)
                                 .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.65f))
+                                .background(pillBg)
                                 .clickable(onClick = onNavigateBack)
                                 .semantics {
                                     role = Role.Button
@@ -175,7 +192,7 @@ fun QiblaScreen(
                         Box(
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.75f))
+                                .background(pillBg)
                                 .clickable {
                                     val coarseAllowed = ContextCompat.checkSelfPermission(
                                         context,
@@ -225,7 +242,7 @@ fun QiblaScreen(
                         Box(
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.60f))
+                                .background(pillBg)
                                 .padding(horizontal = 12.dp, vertical = 3.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -259,14 +276,14 @@ fun QiblaScreen(
                                 modifier = Modifier.size(250.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                CircularProgressIndicator(color = Color(0xFF0F766E))
+                                CircularProgressIndicator(color = IhsanTheme.colors.selectedContent)
                             }
                         } else if (uiState.error != null && uiState.qiblaAngle == 0f) {
                             Box(
                                 modifier = Modifier
                                     .size(250.dp)
                                     .clip(CircleShape)
-                                    .background(Color.White)
+                                    .background(IhsanTheme.colors.surfaceElevated)
                                     .padding(20.dp),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -282,7 +299,7 @@ fun QiblaScreen(
                                         Icon(
                                             imageVector = Icons.Default.MyLocation,
                                             contentDescription = "إعادة المحاولة",
-                                            tint = Color(0xFF0F766E)
+                                            tint = IhsanTheme.colors.selectedContent
                                         )
                                     }
                                 }
@@ -336,8 +353,8 @@ fun QiblaScreen(
                         Box(
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .background(Color(0xFFEFF8F6))
-                                .border(0.6.dp, Color(0xFFCBE3DF), CircleShape)
+                                .background(badgeBg)
+                                .border(0.6.dp, badgeBorder, CircleShape)
                                 .padding(horizontal = 12.dp, vertical = 6.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -352,7 +369,7 @@ fun QiblaScreen(
                                     text = accuracyText,
                                     fontSize = 11.5.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF046A38)
+                                    color = badgeText
                                 )
                             }
                         }
@@ -361,8 +378,8 @@ fun QiblaScreen(
                         Box(
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .background(Color(0xFFEFF8F6))
-                                .border(0.6.dp, Color(0xFFCBE3DF), CircleShape)
+                                .background(badgeBg)
+                                .border(0.6.dp, badgeBorder, CircleShape)
                                 .padding(horizontal = 12.dp, vertical = 6.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -397,11 +414,9 @@ fun QiblaScreen(
                         .padding(bottom = 12.dp),
                     shape = RoundedCornerShape(18.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFEDF6F7)
+                        containerColor = if (isDark) IhsanTheme.colors.surfaceElevated else Color(0xFFEDF6F7)
                     ),
-                    border = CardDefaults.outlinedCardBorder().copy(
-                        brush = SolidColor(Color(0xFFD0E8EC))
-                    )
+                    border = BorderStroke(1.dp, badgeBorder)
                 ) {
                     Row(
                         modifier = Modifier

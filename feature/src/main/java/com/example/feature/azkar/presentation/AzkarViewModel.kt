@@ -48,11 +48,15 @@ class AzkarViewModel(
         val filtered = allAzkar.filter { zikr ->
             (category == null || zikr.category == category) &&
                 (!favoritesOnly || zikr.isFavorite) &&
-                (query.isBlank() || zikr.text.contains(query, ignoreCase = true))
+                (query.isBlank() ||
+                    zikr.title.contains(query, ignoreCase = true) ||
+                    zikr.text.contains(query, ignoreCase = true) ||
+                    zikr.category.contains(query, ignoreCase = true))
         }
 
         AzkarUiState(
             azkarList = filtered,
+            availableCategories = allAzkar.map { it.category }.distinct(),
             isLoading = loading,
             error = error,
             selectedCategory = category,

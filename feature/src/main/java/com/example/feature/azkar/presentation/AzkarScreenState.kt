@@ -4,6 +4,7 @@ import com.example.feature.azkar.domain.model.Zikr
 
 data class AzkarUiState(
     val azkarList: List<Zikr> = emptyList(),
+    val availableCategories: List<String> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
     val selectedCategory: String? = null,

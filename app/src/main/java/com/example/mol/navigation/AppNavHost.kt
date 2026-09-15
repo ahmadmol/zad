@@ -200,7 +200,7 @@ fun AppNavHost(
             val viewModel: HomeDashboardViewModel = koinViewModel(viewModelStoreOwner = sharedOwner)
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             DailyActivitiesScreen(
-                activities = uiState.data.dailyActivities,
+                activityState = uiState.dailyActivities,
                 onActivityOpenRoute = { route ->
                     when (route) {
                         Screen.Qibla.route -> navController.navigate(Screen.Qibla.route)
@@ -214,6 +214,7 @@ fun AppNavHost(
                         else -> {}
                     }
                 },
+                onRetry = { viewModel.onAction(HomeDashboardAction.OnRefresh) },
                 onBack = { navController.popBackStack() }
             )
         }
