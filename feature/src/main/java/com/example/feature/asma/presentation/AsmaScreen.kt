@@ -45,11 +45,9 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -78,6 +76,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.R as DesignR
 import com.example.feature.R as FeatureR
@@ -252,7 +252,7 @@ fun AsmaScreen(
 
                 if (uiState.isDetailsOpen && uiState.selectedName != null) {
                     val selected = uiState.selectedName!!
-                    AsmaDetailsSheet(
+                    AsmaDetailsDialog(
                         name = selected,
                         onDismiss = { viewModel.onAction(AsmaAction.OnDismissDetails) },
                         onToggleFavorite = { viewModel.onAction(AsmaAction.OnToggleFavorite(selected.id)) },
@@ -641,43 +641,50 @@ private fun AsmaSearchResultCard(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AsmaDetailsSheet(
+private fun AsmaDetailsDialog(
     name: AllahName,
     onDismiss: () -> Unit,
     onToggleFavorite: () -> Unit,
     onCopy: () -> Unit,
     onShare: () -> Unit
 ) {
-    ModalBottomSheet(
+    Dialog(
         onDismissRequest = onDismiss,
-        containerColor = IhsanTheme.colors.surfaceElevated,
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        Column(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 20.dp),
+            shape = RoundedCornerShape(28.dp),
+            color = IhsanTheme.colors.surfaceElevated,
+            border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle),
+            shadowElevation = 8.dp
         ) {
-            Box(
+            Column(
                 modifier = Modifier
-                    .size(80.dp)
-                    .clip(CircleShape)
-                    .background(IhsanTheme.colors.surfaceWarm)
-                    .border(1.dp, IhsanTheme.colors.goldAccent.copy(alpha = 0.4f), CircleShape),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = name.name,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 26.sp
-                    ),
-                    color = IhsanTheme.colors.brand
-                )
-            }
+                Box(
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clip(CircleShape)
+                        .background(IhsanTheme.colors.surfaceWarm)
+                        .border(1.dp, IhsanTheme.colors.goldAccent.copy(alpha = 0.4f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = name.name,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 26.sp
+                        ),
+                        color = IhsanTheme.colors.brand
+                    )
+                }
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -773,7 +780,8 @@ private fun AsmaDetailsSheet(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
     }
 }
