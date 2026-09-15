@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.components.AuthBottomSheet
+import com.example.feature.core.util.HijriDateFormatter
 import com.example.feature.profile.presentation.ProfileViewModel
 import com.example.feature.profile.presentation.components.FontIconAa
 import com.example.feature.profile.presentation.components.ProfileAvatarOverlay
@@ -101,7 +102,7 @@ fun ProfileScreen(
                 // 1. Status Bar + Hero Header with Curved Transition
                 ProfileHeroHeader(
                     location = uiState.city,
-                    hijriDate = "12 ربيع الأول 1448",
+                    hijriDate = HijriDateFormatter.nowFormatted(),
                     onSearchClick = onNavigateToSearch,
                     onNotificationClick = onNavigateToReminders
                 )
@@ -174,6 +175,17 @@ fun ProfileScreen(
                             headerIcon = Icons.Default.Settings
                         ) {
                             ProfileSettingRow(
+                                title = "جميع الإعدادات",
+                                subtitle = "تخصيص المظهر والإشعارات والموقع والبيانات",
+                                icon = Icons.Default.Settings,
+                                onClick = onNavigateToSettings
+                            )
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                thickness = 0.5.dp,
+                                color = IhsanTheme.colors.divider
+                            )
+                            ProfileSettingRow(
                                 title = "الوضع الداكن",
                                 subtitle = "تغيير مظهر التطبيق",
                                 icon = Icons.Default.DarkMode,
@@ -197,8 +209,8 @@ fun ProfileScreen(
                                 color = IhsanTheme.colors.divider
                             )
                             ProfileSettingRow(
-                                title = "حجم الخط",
-                                subtitle = "تخصيص حجم الخط لراحة أفضل",
+                                title = "حجم نص المعاينة",
+                                subtitle = "يؤثر على نموذج النص في نافذة المعاينة فقط",
                                 customIconComposable = { FontIconAa() },
                                 onClick = { showFontSizeDialog = true }
                             )
@@ -223,8 +235,8 @@ fun ProfileScreen(
                                 color = IhsanTheme.colors.divider
                             )
                             ProfileSettingRow(
-                                title = "التنزيلات",
-                                subtitle = "إدارة المحتوى المحفوظ دون اتصال",
+                                title = "القرآن الكريم",
+                                subtitle = "فتح القرآن والقراءة المحفوظة",
                                 icon = Icons.Default.Download,
                                 onClick = onNavigateToQuran
                             )
@@ -279,11 +291,11 @@ fun ProfileScreen(
                 var currentSize by remember { mutableFloatStateOf(uiState.fontSize) }
                 AlertDialog(
                     onDismissRequest = { showFontSizeDialog = false },
-                    title = { Text("تخصيص حجم الخط") },
+                    title = { Text("حجم نص المعاينة") },
                     text = {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
-                                text = "حجم الخط الحالي: ${currentSize.toInt()} نقطة",
+                                text = "حجم نص المعاينة: ${currentSize.toInt()} نقطة",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = IhsanTheme.colors.textPrimary
                             )

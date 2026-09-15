@@ -30,6 +30,10 @@ class PrayerSettingsRepositoryImpl(
             iqamahNotificationMinutes = iqamah,
             notificationsEnabled = true
         )
+    }.let { settingsFlow ->
+        combine(settingsFlow, settingsManager.prayerNotificationsEnabledFlow) { settings, enabled ->
+            settings.copy(notificationsEnabled = enabled)
+        }
     }
 
     override suspend fun updateCalculationMethod(method: PrayerCalculationMethod) {
@@ -48,6 +52,10 @@ class PrayerSettingsRepositoryImpl(
         settingsManager.setUseAutoLocation(enabled)
     }
 
+    override suspend fun updateManualLocation(city: String, latitude: Double, longitude: Double) {
+        settingsManager.setManualLocation(city, latitude, longitude)
+    }
+
     override suspend fun updatePrePrayerMinutes(minutes: Int) {
         settingsManager.setPrePrayerNotificationMinutes(minutes)
     }
@@ -58,5 +66,9 @@ class PrayerSettingsRepositoryImpl(
 
     override suspend fun updateNotificationSoundType(type: String) {
         settingsManager.setNotificationSoundType(type)
+    }
+
+    override suspend fun updateNotificationsEnabled(enabled: Boolean) {
+        settingsManager.setPrayerNotificationsEnabled(enabled)
     }
 }

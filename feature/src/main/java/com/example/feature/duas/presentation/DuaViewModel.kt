@@ -17,14 +17,15 @@ class DuaViewModel(
     private val _searchQuery = MutableStateFlow("")
     private val _showFavoritesOnly = MutableStateFlow(false)
     private val _isLoading = MutableStateFlow(false)
+    private val _errorMessage = MutableStateFlow<String?>(null)
 
     val uiState: StateFlow<DuaUiState> = combine(
         repository.getAllDuas(),
         _selectedCategory,
         _searchQuery,
         _showFavoritesOnly,
-        _isLoading
-    ) { allDuas, category, query, favoritesOnly, loading ->
+        combine(_isLoading, _errorMessage) { loading, error -> loading to error }
+    ) { allDuas, category, query, favoritesOnly, loadState ->
         val filtered = allDuas.filter { dua ->
             (category == null || dua.category == category) &&
             (query.isBlank() || dua.title.contains(query, ignoreCase = true) || dua.text.contains(query, ignoreCase = true)) &&
@@ -33,7 +34,8 @@ class DuaViewModel(
         DuaUiState(
             allDuas = allDuas,
             duas = filtered,
-            isLoading = loading,
+            isLoading = loadState.first,
+            errorMessage = loadState.second,
             selectedCategory = category,
             searchQuery = query,
             showFavoritesOnly = favoritesOnly
@@ -51,7 +53,9 @@ class DuaViewModel(
     private fun loadData() {
         viewModelScope.launch {
             _isLoading.value = true
-            repository.loadDuasIfNeeded()
+            _errorMessage.value = null
+            runCatching { repository.loadDuasIfNeeded() }
+                .onFailure { _errorMessage.value = "load_failed" }
             _isLoading.value = false
         }
     }

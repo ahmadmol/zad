@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -46,9 +47,8 @@ fun DuaScreen(
     onDuaClick: (Long) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var selectedTab by remember { mutableIntStateOf(0) } // 0: All, 1: Favorites
-
     val colors = IhsanTheme.colors
+    val selectedTab = if (uiState.showFavoritesOnly) 1 else 0
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
@@ -65,30 +65,12 @@ fun DuaScreen(
             Column(modifier = Modifier.padding(padding).fillMaxSize()) {
                 
                 if (uiState.searchQuery.isEmpty()) {
-                    TabRow(
-                        selectedTabIndex = selectedTab,
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        contentColor = MaterialTheme.colorScheme.primary,
-                        indicator = { tabPositions ->
-                            TabRowDefaults.SecondaryIndicator(
-                                Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                    DuaSegmentedTabs(
+                        showFavoritesOnly = uiState.showFavoritesOnly,
+                        onSelectionChanged = {
+                            viewModel.onAction(DuaAction.OnToggleFavoritesOnly(it))
                         }
-                    ) {
-                        Tab(selected = selectedTab == 0, onClick = { 
-                            selectedTab = 0 
-                            viewModel.onAction(DuaAction.OnToggleFavoritesOnly(false))
-                        }) {
-                            Text("الكل", modifier = Modifier.padding(16.dp))
-                        }
-                        Tab(selected = selectedTab == 1, onClick = { 
-                            selectedTab = 1 
-                            viewModel.onAction(DuaAction.OnToggleFavoritesOnly(true))
-                        }) {
-                            Text("المفضلة", modifier = Modifier.padding(16.dp))
-                        }
-                    }
+                    )
 
                     if (selectedTab == 0) {
                         CategoryChips(
@@ -101,6 +83,12 @@ fun DuaScreen(
                 Box(modifier = Modifier.weight(1f)) {
                     if (uiState.isLoading) {
                         CircularProgressIndicator(Modifier.align(Alignment.Center), color = MaterialTheme.colorScheme.primary)
+                    } else if (uiState.errorMessage != null) {
+                        ErrorState(
+                            message = stringResource(com.example.feature.R.string.dua_load_failed),
+                            onRetry = { viewModel.onAction(DuaAction.Refresh) },
+                            modifier = Modifier.align(Alignment.Center)
+                        )
                     } else if (uiState.duas.isEmpty()) {
                         EmptyState(
                             query = uiState.searchQuery,
@@ -122,6 +110,41 @@ fun DuaScreen(
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DuaSegmentedTabs(
+    showFavoritesOnly: Boolean,
+    onSelectionChanged: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .fillMaxWidth()
+            .height(52.dp)
+            .clip(RoundedCornerShape(18.dp))
+            .background(IhsanTheme.colors.surfaceElevated)
+            .border(1.dp, IhsanTheme.colors.borderSubtle, RoundedCornerShape(18.dp))
+            .padding(4.dp)
+    ) {
+        listOf(
+            false to stringResource(com.example.feature.R.string.dua_tab_all),
+            true to stringResource(com.example.feature.R.string.dua_tab_favorites)
+        ).forEach { (favorites, label) ->
+            val selected = showFavoritesOnly == favorites
+            Surface(
+                onClick = { onSelectionChanged(favorites) },
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+                shape = RoundedCornerShape(14.dp),
+                color = if (selected) IhsanTheme.colors.selectedContainer else Color.Transparent,
+                contentColor = if (selected) IhsanTheme.colors.selectedContent else IhsanTheme.colors.textSecondary
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(label, fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium)
                 }
             }
         }
@@ -215,7 +238,7 @@ private fun DuaCard(
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
@@ -271,7 +294,7 @@ private fun DuaCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = onToggleFavorite, modifier = Modifier.size(32.dp)) {
+                    IconButton(onClick = onToggleFavorite, modifier = Modifier.size(48.dp)) {
                         Icon(
                             imageVector = if (dua.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = if (dua.isFavorite) "إزالة من المفضلة" else "إضافة إلى المفضلة",
@@ -281,7 +304,7 @@ private fun DuaCard(
                     }
                     IconButton(onClick = {
                         clipboardManager.setText(AnnotatedString(dua.text))
-                    }, modifier = Modifier.size(32.dp)) {
+                    }, modifier = Modifier.size(48.dp)) {
                         Icon(Icons.Default.ContentCopy, contentDescription = "نسخ", tint = colors.textSecondaryMuted, modifier = Modifier.size(18.dp))
                     }
                     IconButton(onClick = {
@@ -292,7 +315,7 @@ private fun DuaCard(
                         }
                         val shareIntent = Intent.createChooser(sendIntent, null)
                         context.startActivity(shareIntent)
-                    }, modifier = Modifier.size(32.dp)) {
+                    }, modifier = Modifier.size(48.dp)) {
                         Icon(Icons.Default.Share, contentDescription = "مشاركة", tint = colors.textSecondaryMuted, modifier = Modifier.size(18.dp))
                     }
                 }
@@ -304,6 +327,28 @@ private fun DuaCard(
                     fontSize = 10.sp
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun ErrorState(message: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.ErrorOutline,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.error,
+            modifier = Modifier.size(48.dp)
+        )
+        Spacer(Modifier.height(12.dp))
+        Text(message, textAlign = TextAlign.Center, color = IhsanTheme.colors.textSecondary)
+        Spacer(Modifier.height(16.dp))
+        Button(onClick = onRetry, modifier = Modifier.heightIn(min = 48.dp)) {
+            Text(stringResource(com.example.feature.R.string.common_retry))
         }
     }
 }

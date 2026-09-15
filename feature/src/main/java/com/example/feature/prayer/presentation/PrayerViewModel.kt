@@ -11,9 +11,8 @@ import com.example.feature.prayer.domain.model.PrayerCalculationSettings
 import com.example.feature.prayer.domain.model.PrayerLocationSource
 import com.example.feature.prayer.domain.model.PrayerLocationState
 import com.example.feature.prayer.domain.model.PrayerLocationUnavailableReason
+import com.example.feature.prayer.domain.model.PrayerMadhhab
 import com.example.feature.prayer.domain.model.PrayerReconciliationReason
-import com.example.feature.prayer.domain.model.PrayerAlarmPermissionState
-import com.example.feature.prayer.domain.model.PrayerSystemStatus
 import com.example.feature.prayer.domain.repository.PrayerSettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -44,15 +43,13 @@ class PrayerViewModel(
                 facade.prayerDay,
                 facade.nextPrayer,
                 facade.locationState,
-                facade.systemStatus,
                 settingsFlow
-            ) { day, next, location, status, settings ->
-                UiBundle(day, next, location, status, settings)
+            ) { day, next, location, settings ->
+                UiBundle(day, next, location, settings)
             }.collect { bundle ->
                 val day = bundle.day
                 val next = bundle.next
                 val location = bundle.location
-                val status = bundle.status
                 val settings = bundle.settings
 
                 val times = day?.instants?.map { instant ->
@@ -91,15 +88,6 @@ class PrayerViewModel(
                         locationUnavailable = location is PrayerLocationState.Unavailable,
                         locationUnavailableMessage = (location as? PrayerLocationState.Unavailable)
                             ?.let { unavailableMessage(it.reason) },
-                        systemStatusExpanded = it.systemStatusExpanded,
-                        notificationPermissionLabel = permissionLabel(status.alarmPermission),
-                        lastScheduleSummary = status.lastFailureSummary
-                            ?: status.lastReconciliationSuccess?.let { ok ->
-                                if (ok) "تمت جدولة ${status.scheduledAlarmCount} تنبيهاً"
-                                else "تعذر إكمال الجدولة"
-                            },
-                        canRetryLocation = location is PrayerLocationState.Unavailable ||
-                            location is PrayerLocationState.Available,
                         calculationMethodName = methodLabel(settings.method),
                         prePrayerReminderMinutes = settings.prePrayerNotificationMinutes,
                         adhanEnabled = settings.notificationsEnabled
@@ -120,12 +108,6 @@ class PrayerViewModel(
                 facade.refreshLocation()
                 facade.reconcileSchedule(PrayerReconciliationReason.ManualRetry)
             }
-            PrayerAction.OnToggleSystemStatus -> {
-                _uiState.update { it.copy(systemStatusExpanded = !it.systemStatusExpanded) }
-            }
-            PrayerAction.OnRetrySchedule -> viewModelScope.launch {
-                facade.reconcileSchedule(PrayerReconciliationReason.ManualRetry)
-            }
             is PrayerAction.OnSelectPrayer -> {
                 _uiState.update { it.copy(selectedPrayer = action.prayer) }
             }
@@ -142,6 +124,26 @@ class PrayerViewModel(
                     facade.reconcileSchedule(PrayerReconciliationReason.SettingsChanged)
                 }
             }
+            is PrayerAction.OnUpdateMadhhab -> viewModelScope.launch {
+                val madhhab = runCatching { PrayerMadhhab.valueOf(action.madhhab) }
+                    .getOrDefault(PrayerMadhhab.SHAFI)
+                settingsRepository?.updateMadhhab(madhhab)
+                facade.reconcileSchedule(PrayerReconciliationReason.SettingsChanged)
+            }
+            is PrayerAction.OnUpdateLocationMode -> viewModelScope.launch {
+                settingsRepository?.updateUseAutoLocation(action.enabled)
+                facade.refreshLocation()
+                facade.reconcileSchedule(PrayerReconciliationReason.LocationChanged)
+            }
+            is PrayerAction.OnUpdateManualLocation -> viewModelScope.launch {
+                settingsRepository?.updateManualLocation(action.city, action.latitude, action.longitude)
+                facade.refreshLocation()
+                facade.reconcileSchedule(PrayerReconciliationReason.LocationChanged)
+            }
+            is PrayerAction.OnUpdateSound -> viewModelScope.launch {
+                settingsRepository?.updateNotificationSoundType(action.soundType)
+                facade.reconcileSchedule(PrayerReconciliationReason.SettingsChanged)
+            }
             is PrayerAction.OnUpdatePrePrayerMinutes -> {
                 viewModelScope.launch {
                     settingsRepository?.updatePrePrayerMinutes(action.minutes)
@@ -150,8 +152,7 @@ class PrayerViewModel(
             }
             is PrayerAction.OnToggleAdhan -> {
                 viewModelScope.launch {
-                    val minutes = if (action.enabled) 10 else 0
-                    settingsRepository?.updatePrePrayerMinutes(minutes)
+                    settingsRepository?.updateNotificationsEnabled(action.enabled)
                     facade.reconcileSchedule(PrayerReconciliationReason.SettingsChanged)
                 }
             }
@@ -195,18 +196,10 @@ class PrayerViewModel(
         PrayerLocationUnavailableReason.UNKNOWN -> "تعذر تحديد الموقع"
     }
 
-    private fun permissionLabel(state: PrayerAlarmPermissionState): String = when (state) {
-        PrayerAlarmPermissionState.GrantedExact -> "تنبيهات دقيقة متاحة"
-        PrayerAlarmPermissionState.InexactOnly -> "تنبيهات غير دقيقة فقط"
-        PrayerAlarmPermissionState.NotificationsDenied -> "إذن الإشعارات غير ممنوح"
-        PrayerAlarmPermissionState.Unknown -> "حالة التنبيهات غير معروفة"
-    }
-
     private data class UiBundle(
         val day: com.example.feature.prayer.domain.model.PrayerDay?,
         val next: com.example.feature.prayer.domain.model.NextPrayer?,
         val location: PrayerLocationState,
-        val status: PrayerSystemStatus,
         val settings: PrayerCalculationSettings
     )
 }

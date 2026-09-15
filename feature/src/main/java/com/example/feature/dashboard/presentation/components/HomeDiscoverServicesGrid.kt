@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.BrightnessLow
 import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material.icons.filled.VolunteerActivism
@@ -53,6 +54,7 @@ fun HomeDiscoverServicesGrid(
         ServiceItemData("القرآن", drawableResId = R.drawable.ihsan_icon_quran, route = "quran"),
         ServiceItemData("الصلاة", drawableResId = R.drawable.ihsan_icon_prayer, route = "prayer"),
         ServiceItemData("القبلة", drawableResId = R.drawable.ihsan_icon_qibla, route = "qibla"),
+        ServiceItemData("أسماء الله", icon = Icons.Default.AutoAwesome, route = "asma"),
         ServiceItemData("الأدعية", icon = Icons.Default.VolunteerActivism, route = "dua"),
         ServiceItemData("التسبيح", icon = Icons.Default.BrightnessLow, route = "tasbih"),
         ServiceItemData("الأذكار", icon = Icons.Default.SelfImprovement, route = "azkar")

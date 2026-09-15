@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
@@ -90,6 +91,10 @@ private val LightColorScheme = lightColorScheme(
 )
 
 object IhsanTheme {
+    val isDark: Boolean
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalIhsanDarkTheme.current
     val spacing: Spacing
         @Composable
         @ReadOnlyComposable
@@ -110,6 +115,8 @@ object IhsanTheme {
         @ReadOnlyComposable
         get() = LocalReadingTypography.current
 }
+
+private val LocalIhsanDarkTheme = compositionLocalOf { false }
 
 private val IhsanShapes = Shapes(
     extraSmall = RoundedCornerShape(6.dp),
@@ -154,7 +161,8 @@ fun IhsanTheme(
         LocalSpacing provides Spacing(),
         LocalIhsanColors provides semanticColors,
         LocalIhsanDimens provides IhsanDimens(),
-        LocalReadingTypography provides ReadingTypography()
+        LocalReadingTypography provides ReadingTypography(),
+        LocalIhsanDarkTheme provides darkTheme
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

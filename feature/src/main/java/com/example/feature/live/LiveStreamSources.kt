@@ -23,3 +23,47 @@ object LiveStreamSources {
     fun youtubeChannelLiveUrl(channelId: String): String =
         "https://www.youtube.com/channel/$channelId/live"
 }
+
+enum class LiveSourceType(
+    val id: String,
+    val tabTitle: String,
+    val screenTitle: String,
+    val sourceName: String,
+    val description: String,
+    val hlsUrl: String,
+    val youtubeChannelId: String,
+    val locationName: String
+) {
+    HARAM(
+        id = "haram",
+        tabTitle = "المسجد الحرام",
+        screenTitle = "البث المباشر - المسجد الحرام",
+        sourceName = "المسجد الحرام - مكة المكرمة",
+        description = "شاهد البث المباشر من بيت الله الحرام",
+        hlsUrl = LiveStreamSources.HARAM_HLS,
+        youtubeChannelId = LiveStreamSources.HARAM_YOUTUBE_CHANNEL_ID,
+        locationName = "مكة المكرمة"
+    ),
+    NABAWI(
+        id = "nabawi",
+        tabTitle = "المسجد النبوي",
+        screenTitle = "البث المباشر - المسجد النبوي",
+        sourceName = "المسجد النبوي - المدينة المنورة",
+        description = "شاهد البث المباشر من المسجد النبوي الشريف",
+        hlsUrl = LiveStreamSources.NABAWI_HLS,
+        youtubeChannelId = LiveStreamSources.NABAWI_YOUTUBE_CHANNEL_ID,
+        locationName = "المدينة المنورة"
+    );
+
+    companion object {
+        fun fromUrlOrTitle(hlsUrl: String?, title: String?): LiveSourceType {
+            return if (hlsUrl?.contains("saudi_sunnah") == true ||
+                title?.contains("النبوي") == true ||
+                title?.contains("nabawi", ignoreCase = true) == true) {
+                NABAWI
+            } else {
+                HARAM
+            }
+        }
+    }
+}

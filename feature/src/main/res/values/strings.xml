@@ -28,8 +28,8 @@
     <string name="daily_details_title">تفاصيل الأذكار اليومية:</string>
     <string name="settings_title">الإعدادات</string>
     <string name="font_size_label">حجم الخط</string>
-    <string name="dark_mode_label">الوضع الليلي</string>
-    <string name="vibration_label">الاهتزاز عند الانتهاء</string>
+    <string name="dark_mode_label">الوضع الداكن</string>
+    <string name="vibration_label">الاهتزاز عند التنبيه</string>
     <string name="reminders_title">التنبيهات</string>
     <string name="reminders_subtitle">ضبط مواعيد الأذكار اليومية</string>
     <string name="morning_reminder_msg">حان وقت أذكار الصباح ☀️</string>
@@ -163,4 +163,25 @@
     <string name="home_live_badge">مباشر</string>
     <string name="home_services_subtitle">كل ما تحتاجه في مكان واحد</string>
     <string name="home_show_all">عرض الكل</string>
+    <string name="settings_subtitle">خصص تجربتك في إحسان</string>
+    <string name="settings_section_appearance">المظهر</string>
+    <string name="settings_section_notifications">الإشعارات</string>
+    <string name="settings_section_general">عام</string>
+    <string name="settings_reminders_title">تذكير الأذكار اليومية</string>
+    <string name="settings_reminders_subtitle">أذكار الصباح والمساء</string>
+    <string name="settings_location_title">الموقع</string>
+    <string name="settings_data_management_title">إدارة البيانات</string>
+    <string name="settings_data_management_sub">تُحفظ إعداداتك محليًا على هذا الجهاز</string>
+    <string name="settings_share_app_title">مشاركة التطبيق</string>
+    <string name="settings_clear_data_dialog_title">إعادة ضبط البيانات المحلية</string>
+    <string name="settings_clear_data_dialog_body">هل أنت متاكد من إعادة ضبط السجلات والبيانات المحلية؟</string>
+    <string name="settings_clear_data_confirm_btn">إعادة ضبط</string>
+    <string name="font_size_scope_label">حجم خط الأذكار</string>
+    <string name="theme_mode_label">مظهر التطبيق</string>
+    <string name="theme_system">النظام</string>
+    <string name="theme_light">فاتح</string>
+    <string name="theme_dark">داكن</string>
+    <string name="dua_tab_all">الكل</string>
+    <string name="dua_tab_favorites">المفضلة</string>
+    <string name="dua_load_failed">تعذر تحميل الأدعية. حاول مرة أخرى.</string>
 </resources>

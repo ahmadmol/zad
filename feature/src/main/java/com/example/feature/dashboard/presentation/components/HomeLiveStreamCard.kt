@@ -87,33 +87,6 @@ fun HomeLiveStreamCard(
                     )
             )
 
-            // LIVE Badge top right (in RTL)
-            Box(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Color.Black.copy(alpha = 0.5f))
-                    .border(0.5.dp, Color.White.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
-                    .padding(horizontal = 6.dp, vertical = 2.dp)
-                    .align(Alignment.TopEnd)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(5.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFFFF5252))
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = stringResource(R.string.home_live_badge),
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
-            }
-
             // Main Row Content
             Row(
                 modifier = Modifier

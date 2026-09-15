@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.feature.ehsan.domain.model.Donation
 import com.example.feature.ehsan.domain.usecase.GetDonationsUseCase
+import com.example.feature.prayer.domain.model.PrayerLocationState
+import com.example.feature.prayer.domain.repository.PrayerLocationRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -16,13 +18,16 @@ data class EhsanUiState(
     val searchQuery: String = "",
     val selectedLocation: String = "الكل",
     val selectedCategory: String = "الكل",
+    val selectedSort: String = "DEFAULT",
     val selectedType: String = "OFFER", // OFFER, REQUEST, ALL (legacy/internal only)
+    val locationName: String? = null,
     val isLoading: Boolean = false,
     val error: String? = null
 )
 
 class EhsanViewModel(
-    private val getDonationsUseCase: GetDonationsUseCase
+    private val getDonationsUseCase: GetDonationsUseCase,
+    private val prayerLocationRepository: PrayerLocationRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EhsanUiState())
@@ -30,6 +35,19 @@ class EhsanViewModel(
 
     init {
         observeDonations()
+        observeLocation()
+    }
+
+    private fun observeLocation() {
+        prayerLocationRepository.observeLocation()
+            .onEach { state ->
+                val locationName = (state as? PrayerLocationState.Available)
+                    ?.location
+                    ?.displayName
+                    ?.takeIf { it.isNotBlank() }
+                _uiState.update { it.copy(locationName = locationName) }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun observeDonations() {
@@ -70,6 +88,11 @@ class EhsanViewModel(
         applyFilters()
     }
 
+    fun onSortChange(sort: String) {
+        _uiState.update { it.copy(selectedSort = sort) }
+        applyFilters()
+    }
+
     fun onTypeChange(type: String) {
         _uiState.update { it.copy(selectedType = type) }
         applyFilters()
@@ -86,6 +109,12 @@ class EhsanViewModel(
             
             matchesQuery && matchesLocation && matchesCategory && matchesType
         }
-        _uiState.update { it.copy(filteredDonations = filtered) }
+        val sorted = when (currentState.selectedSort) {
+            "LATEST" -> filtered.sortedByDescending { donation ->
+                donation.createdAt.takeIf { it > 0L } ?: Long.MIN_VALUE
+            }
+            else -> filtered
+        }
+        _uiState.update { it.copy(filteredDonations = sorted) }
     }
 }

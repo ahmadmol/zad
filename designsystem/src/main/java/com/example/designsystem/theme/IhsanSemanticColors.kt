@@ -49,6 +49,7 @@ data class IhsanSemanticColors(
     val progressActive: Color,
     val progressTrack: Color,
     val accentWarm: Color,
+    val goldAccent: Color,
     val quickActionSurface: Color,
     val whatsapp: Color,
     val favorite: Color
@@ -91,6 +92,7 @@ val LightIhsanSemanticColors = IhsanSemanticColors(
     progressActive = PrimaryTeal,
     progressTrack = PrimaryTeal.copy(alpha = 0.12f),
     accentWarm = Color(0xFFC66927),
+    goldAccent = Color(0xFFC5A66A),
     quickActionSurface = Color(0xFFF3F6F5),
     whatsapp = Color(0xFF25D366),
     favorite = Color(0xFFE91E63)
@@ -114,7 +116,7 @@ val DarkIhsanSemanticColors = IhsanSemanticColors(
     selectedContainer = DarkInteractivePrimaryContainer,
     selectedContent = DarkInteractivePrimary,
     unselectedContent = DarkOnSurfaceVariant,
-    navigationSurface = DarkSurfaceElevated,
+    navigationSurface = DarkSurface,
     navigationIndicator = DarkInteractivePrimaryContainer,
     navigationOutline = DarkOutlineVariant,
     navigationIconHalo = DarkInteractivePrimary.copy(alpha = 0.18f),
@@ -133,6 +135,7 @@ val DarkIhsanSemanticColors = IhsanSemanticColors(
     progressActive = DarkInteractivePrimary,
     progressTrack = DarkInteractivePrimary.copy(alpha = 0.22f),
     accentWarm = Color(0xFFFFB74D),
+    goldAccent = DarkGoldAccent,
     quickActionSurface = DarkSurfaceMuted,
     whatsapp = Color(0xFF25D366),
     favorite = Color(0xFFF48FB1)

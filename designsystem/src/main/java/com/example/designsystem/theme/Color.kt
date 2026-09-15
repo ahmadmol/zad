@@ -69,17 +69,18 @@ val OutlineVariantLight = Neutral200
 val DarkBackground = Color(0xFF101012)        // near-black canvas
 val DarkSurface = Color(0xFF161618)           // raised sheet on canvas
 val DarkSurfaceElevated = Color(0xFF1C1C1F)   // higher card (settings, support)
-val DarkSurfaceMuted = Color(0xFF1A1A1D)      // tonal fill, icon halos
+val DarkSurfaceMuted = Color(0xFF202123)      // tonal fill, icon halos, inputs
 val DarkSurfaceWarm = Color(0xFF2A2722)       // soft warm accent surface
 val DarkOnSurface = Color(0xFFE9EAEC)         // primary text
 val DarkOnSurfaceVariant = Color(0xFFA8ABB1)  // secondary text
-val DarkInteractivePrimary = Color(0xFF7DD3B0) // brand accent on dark
+val DarkInteractivePrimary = Color(0xFF7DD3B0) // brand mint accent on dark
 val DarkInteractivePrimaryContainer = Color(0xFF1F3A30)
 val OnDarkInteractivePrimary = Color(0xFF06251F)
-val DarkOutline = Color(0xFF50525A)
+val DarkOutline = Color(0xFF414449)
 val DarkOutlineVariant = Color(0xFF2A2B2F)    // very subtle dividers
-val DarkScrim = Color(0x80000000)
+val DarkScrim = Color(0x99000000)             // black 50-60%
 val DarkBrandElevated = Color(0xFF1F3A30)     // used for tonal brand fills, not chrome
+val DarkGoldAccent = Color(0xFFC5A66A)          // muted gold accent (5-10% visual budget)
 
 // Legacy / Utility Colors
 val White = Color(0xFFFFFFFF)

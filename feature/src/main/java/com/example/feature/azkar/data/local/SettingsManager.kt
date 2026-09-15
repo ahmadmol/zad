@@ -11,6 +11,8 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 
 class SettingsManager(private val context: Context) {
 
+    enum class ThemeMode { SYSTEM, LIGHT, DARK }
+
     /**
      * Internal DataStore handle for code paths that need direct read/write
      * access (e.g. the Azkar seed manager storing its version key). Kept
@@ -22,6 +24,8 @@ class SettingsManager(private val context: Context) {
         val FONT_SIZE = floatPreferencesKey("font_size")
         val VIBRATION_ENABLED = booleanPreferencesKey("vibration_enabled")
         val DARK_MODE = booleanPreferencesKey("dark_mode")
+        val THEME_MODE = stringPreferencesKey("theme_mode")
+        val PRAYER_NOTIFICATIONS_ENABLED = booleanPreferencesKey("prayer_notifications_enabled")
         val CALCULATION_METHOD = stringPreferencesKey("calculation_method")
         val MADHAB = stringPreferencesKey("madhab")
         val USE_AUTO_LOCATION = booleanPreferencesKey("use_auto_location")
@@ -51,7 +55,20 @@ class SettingsManager(private val context: Context) {
     }
 
     val darkModeFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[DARK_MODE] ?: false
+        when (preferences[THEME_MODE]?.let { runCatching { ThemeMode.valueOf(it) }.getOrNull() }) {
+            ThemeMode.DARK -> true
+            ThemeMode.LIGHT, ThemeMode.SYSTEM -> false
+            null -> preferences[DARK_MODE] ?: false
+        }
+    }
+
+    val themeModeFlow: Flow<ThemeMode> = context.dataStore.data.map { preferences ->
+        preferences[THEME_MODE]?.let { runCatching { ThemeMode.valueOf(it) }.getOrNull() }
+            ?: if (preferences.contains(DARK_MODE)) {
+                if (preferences[DARK_MODE] == true) ThemeMode.DARK else ThemeMode.LIGHT
+            } else {
+                ThemeMode.SYSTEM
+            }
     }
 
     val calculationMethodFlow: Flow<String> = context.dataStore.data.map { preferences ->
@@ -90,6 +107,10 @@ class SettingsManager(private val context: Context) {
         preferences[NOTIFICATION_SOUND_TYPE] ?: "DEFAULT_ATHAN"
     }
 
+    val prayerNotificationsEnabledFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[PRAYER_NOTIFICATIONS_ENABLED] ?: true
+    }
+
     val morningReminderEnabledFlow = context.dataStore.data.map { it[MORNING_REMINDER_ENABLED] ?: false }
     val morningReminderHourFlow = context.dataStore.data.map { it[MORNING_REMINDER_HOUR] ?: 7 }
     val morningReminderMinuteFlow = context.dataStore.data.map { it[MORNING_REMINDER_MINUTE] ?: 0 }
@@ -114,6 +135,14 @@ class SettingsManager(private val context: Context) {
     suspend fun setDarkMode(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[DARK_MODE] = enabled
+            preferences[THEME_MODE] = if (enabled) ThemeMode.DARK.name else ThemeMode.LIGHT.name
+        }
+    }
+
+    suspend fun setThemeMode(mode: ThemeMode) {
+        context.dataStore.edit { preferences ->
+            preferences[THEME_MODE] = mode.name
+            if (mode != ThemeMode.SYSTEM) preferences[DARK_MODE] = mode == ThemeMode.DARK
         }
     }
 
@@ -140,6 +169,7 @@ class SettingsManager(private val context: Context) {
             preferences[MANUAL_LOCATION_CITY] = city
             preferences[MANUAL_LOCATION_LAT] = lat
             preferences[MANUAL_LOCATION_LNG] = lng
+            preferences[USE_AUTO_LOCATION] = false
         }
     }
 
@@ -159,6 +189,10 @@ class SettingsManager(private val context: Context) {
         context.dataStore.edit { preferences ->
             preferences[NOTIFICATION_SOUND_TYPE] = type
         }
+    }
+
+    suspend fun setPrayerNotificationsEnabled(enabled: Boolean) {
+        context.dataStore.edit { it[PRAYER_NOTIFICATIONS_ENABLED] = enabled }
     }
 
     suspend fun setMorningReminder(enabled: Boolean, hour: Int, minute: Int) {

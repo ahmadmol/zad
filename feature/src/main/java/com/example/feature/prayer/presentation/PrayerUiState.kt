@@ -13,10 +13,6 @@ data class PrayerUiState(
     val isLoading: Boolean = false,
     val locationUnavailable: Boolean = false,
     val locationUnavailableMessage: String? = null,
-    val systemStatusExpanded: Boolean = false,
-    val notificationPermissionLabel: String? = null,
-    val lastScheduleSummary: String? = null,
-    val canRetryLocation: Boolean = false,
     val calculationMethodName: String = "رابطة العالم الإسلامي",
     val prePrayerReminderMinutes: Int = 10,
     val adhanEnabled: Boolean = true,
@@ -27,12 +23,14 @@ data class PrayerUiState(
 
 sealed interface PrayerAction {
     data object OnRefresh : PrayerAction
-    data object OnToggleSystemStatus : PrayerAction
-    data object OnRetrySchedule : PrayerAction
     data class OnSelectPrayer(val prayer: PrayerTime?) : PrayerAction
     data class OnToggleSettingsSheet(val show: Boolean) : PrayerAction
     data class OnToggleCalendarSheet(val show: Boolean) : PrayerAction
     data class OnUpdateCalculationMethod(val methodStr: String) : PrayerAction
+    data class OnUpdateMadhhab(val madhhab: String) : PrayerAction
+    data class OnUpdateLocationMode(val enabled: Boolean) : PrayerAction
+    data class OnUpdateManualLocation(val city: String, val latitude: Double, val longitude: Double) : PrayerAction
+    data class OnUpdateSound(val soundType: String) : PrayerAction
     data class OnUpdatePrePrayerMinutes(val minutes: Int) : PrayerAction
     data class OnToggleAdhan(val enabled: Boolean) : PrayerAction
 }

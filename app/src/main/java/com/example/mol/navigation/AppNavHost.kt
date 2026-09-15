@@ -42,6 +42,7 @@ import com.example.feature.qibla.presentation.QiblaScreen
 import com.example.feature.tasbih.presentation.TasbihScreen
 import com.example.feature.live.LiveStreamScreen
 import com.example.feature.live.LiveStreamSources
+import com.example.feature.live.LiveSourceType
 import com.example.feature.quran.presentation.QuranAction
 import com.example.feature.quran.presentation.QuranListScreen
 import com.example.feature.quran.presentation.QuranReaderScreen
@@ -145,7 +146,14 @@ fun AppNavHost(
                 title = Screen.HaramLive.title,
                 hlsUrl = LiveStreamSources.HARAM_HLS,
                 youtubeChannelId = LiveStreamSources.HARAM_YOUTUBE_CHANNEL_ID,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onSelectSource = { source ->
+                    if (source == LiveSourceType.NABAWI) {
+                        navController.navigate(Screen.NabawiLive.route) {
+                            popUpTo(Screen.HaramLive.route) { inclusive = true }
+                        }
+                    }
+                }
             )
         }
 
@@ -154,7 +162,14 @@ fun AppNavHost(
                 title = Screen.NabawiLive.title,
                 hlsUrl = LiveStreamSources.NABAWI_HLS,
                 youtubeChannelId = LiveStreamSources.NABAWI_YOUTUBE_CHANNEL_ID,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onSelectSource = { source ->
+                    if (source == LiveSourceType.HARAM) {
+                        navController.navigate(Screen.HaramLive.route) {
+                            popUpTo(Screen.NabawiLive.route) { inclusive = true }
+                        }
+                    }
+                }
             )
         }
 

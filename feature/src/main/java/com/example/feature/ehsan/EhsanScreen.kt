@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.components.AuthBottomSheet
+import com.example.feature.core.util.HijriDateFormatter
 import com.example.feature.components.AuthViewModel
 import com.example.feature.ehsan.data.image.EhsanImageStore
 import com.example.feature.ehsan.presentation.EhsanViewModel
@@ -45,6 +46,7 @@ import com.example.feature.ehsan.presentation.components.EhsanFilterRow
 import com.example.feature.ehsan.presentation.components.EhsanHeaderBanner
 import com.example.feature.ehsan.presentation.components.EhsanSearchField
 import com.example.feature.ehsan.presentation.components.EhsanSegmentedTabs
+import com.example.feature.ehsan.presentation.components.LocalBoardNoticeCard
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
@@ -69,10 +71,12 @@ fun EhsanScreen(
     val hasActiveFilters = remember(
         uiState.selectedLocation,
         uiState.selectedCategory,
+        uiState.selectedSort,
         uiState.selectedType
     ) {
-        uiState.selectedLocation != "الكل" ||
+            uiState.selectedLocation != "الكل" ||
             uiState.selectedCategory != "الكل" ||
+            uiState.selectedSort != "DEFAULT" ||
             uiState.selectedType != "OFFER"
     }
 
@@ -84,10 +88,13 @@ fun EhsanScreen(
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
             floatingActionButton = {
-                AddEhsanFab(onClick = { startAdd("OFFER") })
+                AddEhsanFab(
+                    type = uiState.selectedType,
+                    onClick = { startAdd(uiState.selectedType) }
+                )
             },
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
-            containerColor = Color(0xFFFBF9F4)
+            containerColor = MaterialTheme.colorScheme.background
         ) { scaffoldPadding ->
             if (showAuthSheet) {
                 AuthBottomSheet(
@@ -109,8 +116,8 @@ fun EhsanScreen(
                 // Item 0: Atmospheric Mosque Silhouette Banner
                 item {
                     EhsanHeaderBanner(
-                        cityName = "حلب",
-                        islamicDate = "١٢ ربيع الأول ١٤٤٨"
+                        cityName = uiState.locationName,
+                        islamicDate = HijriDateFormatter.nowFormatted()
                     )
                 }
 
@@ -129,14 +136,16 @@ fun EhsanScreen(
                         EhsanSearchField(
                             query = uiState.searchQuery,
                             onQueryChange = viewModel::onSearchQueryChange,
-                            cityName = "حلب"
+                            cityName = uiState.locationName
                         )
 
-                        // Item 3: Filter / Sort Chips (الكل / الأحدث / الأقرب)
+                        // Item 3: Sorting controls
                         EhsanFilterRow(
-                            selectedCategory = uiState.selectedCategory,
-                            onCategoryChange = viewModel::onCategoryChange
+                            selectedSort = uiState.selectedSort,
+                            onSortChange = viewModel::onSortChange
                         )
+
+                        LocalBoardNoticeCard()
                     }
                 }
 

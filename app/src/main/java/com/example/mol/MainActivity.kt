@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.theme.IhsanTheme
@@ -25,7 +26,12 @@ class MainActivity : ComponentActivity() {
             val settingsViewModel: SettingsViewModel = koinViewModel()
             val settingsState by settingsViewModel.uiState.collectAsStateWithLifecycle()
 
-            IhsanTheme(darkTheme = settingsState.isDarkMode) {
+            val useDarkTheme = when (settingsState.themeMode) {
+                com.example.feature.azkar.data.local.SettingsManager.ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                com.example.feature.azkar.data.local.SettingsManager.ThemeMode.LIGHT -> false
+                com.example.feature.azkar.data.local.SettingsManager.ThemeMode.DARK -> true
+            }
+            IhsanTheme(darkTheme = useDarkTheme) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

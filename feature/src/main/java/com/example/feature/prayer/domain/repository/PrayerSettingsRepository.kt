@@ -17,9 +17,13 @@ interface PrayerSettingsRepository {
 
     suspend fun updateUseAutoLocation(enabled: Boolean)
 
+    suspend fun updateManualLocation(city: String, latitude: Double, longitude: Double)
+
     suspend fun updatePrePrayerMinutes(minutes: Int)
 
     suspend fun updateIqamahMinutes(minutes: Int)
 
     suspend fun updateNotificationSoundType(type: String)
+
+    suspend fun updateNotificationsEnabled(enabled: Boolean)
 }

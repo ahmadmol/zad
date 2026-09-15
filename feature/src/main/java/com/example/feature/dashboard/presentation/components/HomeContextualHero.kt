@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -46,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
 import kotlin.math.cos
 import kotlin.math.sin
@@ -65,8 +67,9 @@ fun HomeContextualHero(
     onQiblaClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val darkTealColor = Color(0xFF003B46)
-    val darkTealSubtext = Color(0xFF1B535D)
+    val isDark = isSystemInDarkTheme()
+    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
+    val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else Color(0xFF1B535D)
     val isPrayerUnavailable = currentPrayerName.isBlank() || currentPrayerName == "—"
 
     Box(
@@ -82,6 +85,14 @@ fun HomeContextualHero(
             alignment = Alignment.Center,
             modifier = Modifier.matchParentSize()
         )
+
+        if (isDark) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.Black.copy(alpha = 0.55f))
+            )
+        }
 
         // 2. Foreground Content Layer
         Column(

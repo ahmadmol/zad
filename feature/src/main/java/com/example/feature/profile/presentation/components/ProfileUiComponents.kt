@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -80,13 +81,14 @@ import com.example.feature.R
 @Composable
 fun ProfileHeroHeader(
     location: String,
-    hijriDate: String,
+    hijriDate: String?,
     onSearchClick: () -> Unit,
     onNotificationClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val darkTealColor = Color(0xFF003B46)
-    val darkTealSubtext = Color(0xFF1B535D)
+    val isDark = isSystemInDarkTheme()
+    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
+    val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else Color(0xFF1B535D)
     val surfaceColor = IhsanTheme.colors.surfaceBase
 
     Box(
@@ -103,6 +105,14 @@ fun ProfileHeroHeader(
             modifier = Modifier.matchParentSize()
         )
 
+        if (isDark) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.Black.copy(alpha = 0.55f))
+            )
+        }
+
         // Header Top Row
         Column(
             modifier = Modifier
@@ -118,27 +128,31 @@ fun ProfileHeroHeader(
             ) {
                 // RTL Right: Location & Hijri Date
                 Column(horizontalAlignment = Alignment.Start) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ihsan_icon_location),
-                            contentDescription = null,
-                            modifier = Modifier.size(15.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
+                    if (location.isNotBlank()) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ihsan_icon_location),
+                                contentDescription = null,
+                                modifier = Modifier.size(15.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = location,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = darkTealColor
+                            )
+                        }
+                    }
+                    if (!hijriDate.isNullOrBlank()) {
                         Text(
-                            text = location.ifBlank { "حلب" },
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = darkTealColor
+                            text = hijriDate,
+                            fontSize = 10.5.sp,
+                            color = darkTealSubtext,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(start = 19.dp)
                         )
                     }
-                    Text(
-                        text = hijriDate.ifBlank { "12 ربيع الأول 1448" },
-                        fontSize = 10.5.sp,
-                        color = darkTealSubtext,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(start = 19.dp)
-                    )
                 }
 
                 // Center: Brand Logo & Title & Subtitle
@@ -241,8 +255,11 @@ fun ProfileAvatarOverlay(
     onEditClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isDark = isSystemInDarkTheme()
     val initial = profileInitialFromName(userName)
-    val darkTealColor = Color(0xFF003B46)
+    val iconColor = if (isDark) IhsanTheme.colors.selectedContent else Color(0xFF003B46)
+    val badgeBg = if (isDark) IhsanTheme.colors.selectedContainer else Color(0xFF003B46)
+    val badgeIconTint = if (isDark) IhsanTheme.colors.selectedContent else Color.White
 
     Box(
         modifier = modifier
@@ -268,7 +285,7 @@ fun ProfileAvatarOverlay(
                 if (userName.isNotBlank() && userName != "زائر") {
                     Text(
                         text = initial,
-                        color = darkTealColor,
+                        color = iconColor,
                         fontSize = 38.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -276,7 +293,7 @@ fun ProfileAvatarOverlay(
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = null,
-                        tint = darkTealColor,
+                        tint = iconColor,
                         modifier = Modifier.size(48.dp)
                     )
                 }
@@ -290,7 +307,7 @@ fun ProfileAvatarOverlay(
                 .padding(end = 4.dp, bottom = 2.dp)
                 .size(32.dp)
                 .clip(CircleShape)
-                .background(darkTealColor)
+                .background(badgeBg)
                 .border(2.dp, IhsanTheme.colors.surfaceBase, CircleShape)
                 .clickable(onClick = onEditClick)
                 .semantics {
@@ -302,7 +319,7 @@ fun ProfileAvatarOverlay(
             Icon(
                 imageVector = Icons.Default.CameraAlt,
                 contentDescription = null,
-                tint = Color.White,
+                tint = badgeIconTint,
                 modifier = Modifier.size(15.dp)
             )
         }
@@ -317,7 +334,8 @@ fun ProfileAvatarOverlay(
 fun ProfileTitleHeader(
     modifier: Modifier = Modifier
 ) {
-    val darkTealColor = Color(0xFF003B46)
+    val isDark = isSystemInDarkTheme()
+    val titleColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -326,7 +344,7 @@ fun ProfileTitleHeader(
             text = "الملف الشخصي",
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
-            color = darkTealColor,
+            color = titleColor,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(2.dp))
@@ -351,7 +369,9 @@ fun ProfileGroupedSection(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val darkTealColor = Color(0xFF003B46)
+    val isDark = isSystemInDarkTheme()
+    val titleColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
+    val iconColor = if (isDark) IhsanTheme.colors.selectedContent else Color(0xFF003B46)
 
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -379,7 +399,7 @@ fun ProfileGroupedSection(
                     Icon(
                         imageVector = headerIcon,
                         contentDescription = null,
-                        tint = darkTealColor,
+                        tint = iconColor,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -388,7 +408,7 @@ fun ProfileGroupedSection(
                     text = headerTitle,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = darkTealColor
+                    color = titleColor
                 )
             }
 
@@ -417,7 +437,9 @@ fun ProfileSettingRow(
     customIconComposable: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null
 ) {
-    val darkTealColor = Color(0xFF003B46)
+    val isDark = isSystemInDarkTheme()
+    val titleColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
+    val iconColor = if (isDark) IhsanTheme.colors.selectedContent else Color(0xFF003B46)
 
     Row(
         modifier = modifier
@@ -445,7 +467,7 @@ fun ProfileSettingRow(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = darkTealColor,
+                    tint = iconColor,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -459,7 +481,7 @@ fun ProfileSettingRow(
                 text = title,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                color = darkTealColor,
+                color = titleColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -495,12 +517,13 @@ fun ProfileSettingRow(
 fun FontIconAa(
     modifier: Modifier = Modifier
 ) {
-    val darkTealColor = Color(0xFF003B46)
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+    val iconColor = if (isDark) IhsanTheme.colors.selectedContent else Color(0xFF003B46)
     Text(
         text = "Aa",
         fontSize = 15.sp,
         fontWeight = FontWeight.Bold,
-        color = darkTealColor,
+        color = iconColor,
         textAlign = TextAlign.Center,
         modifier = modifier
     )
