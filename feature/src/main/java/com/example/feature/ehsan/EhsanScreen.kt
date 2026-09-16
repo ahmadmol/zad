@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -124,7 +125,9 @@ fun EhsanScreen(
                 // Item 1: Segmented Tabs (عروض تبرع / طلبات مساعدة)
                 item {
                     Column(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .padding(horizontal = IhsanTheme.dimens.screenHorizontal)
+                            .offset(y = (-22).dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         EhsanSegmentedTabs(

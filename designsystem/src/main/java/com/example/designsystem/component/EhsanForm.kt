@@ -1,8 +1,10 @@
 package com.example.designsystem.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,15 +20,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Comment
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -37,8 +47,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -47,6 +61,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.designsystem.R
 import com.example.designsystem.theme.IhsanTheme
 
 /* ============================================================
@@ -725,6 +740,477 @@ private fun ReadOnlyRow(label: String, value: String) {
     }
 }
 
+/**
+ * Unified Hero Banner Header for Ehsan Create flows (Offer / Request).
+ * Features cyan sky-blue gradient, mosque silhouette artwork, integrated status bar,
+ * top navigation buttons, center logo, city/date badge, title, subtitle, and curved wave transition.
+ */
+@Composable
+fun EhsanHeroHeader(
+    title: String,
+    subtitle: String,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    cityName: String? = "حلب",
+    islamicDate: String? = "12 ربيع الأول 1448",
+    logoPainter: Painter? = null,
+    onSearchClick: (() -> Unit)? = null
+) {
+    val isDark = IhsanTheme.isDark
+    val colors = IhsanTheme.colors
+    val heroTop = if (isDark) colors.brandElevated else Color(0xFFDDF7FB)
+    val heroBottom = if (isDark) colors.brand else Color(0xFF9AD9E7)
+    val heroContent = if (isDark) colors.onBrand else colors.brand
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(bottomStart = 36.dp, bottomEnd = 36.dp))
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(heroTop, heroBottom)
+                )
+            )
+            .statusBarsPadding()
+    ) {
+        // Mosque silhouette background overlay
+        Image(
+            painter = painterResource(id = R.drawable.ic_mosque_silhouette),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+                .align(Alignment.BottomCenter),
+            contentScale = ContentScale.FillBounds,
+            alpha = if (isDark) 0.22f else 0.30f
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(top = 4.dp, bottom = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Top Navigation Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Left: Back button & optional Search
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "رجوع",
+                            tint = heroContent
+                        )
+                    }
+                    if (onSearchClick != null) {
+                        IconButton(
+                            onClick = onSearchClick,
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "بحث",
+                                tint = heroContent
+                            )
+                        }
+                    }
+                }
+
+                // Center: Logo / Title badge
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    if (logoPainter != null) {
+                        Image(
+                            painter = logoPainter,
+                            contentDescription = "إحسان",
+                            modifier = Modifier.height(34.dp),
+                            contentScale = ContentScale.Fit
+                        )
+                    } else {
+                        Text(
+                            text = "إحسان",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = heroContent
+                        )
+                    }
+                    Text(
+                        text = "خير دائم",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = heroContent.copy(alpha = 0.85f)
+                    )
+                }
+
+                // Right: Location & Islamic Date Info
+                Column(horizontalAlignment = Alignment.End) {
+                    if (!cityName.isNullOrBlank()) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            Text(
+                                text = cityName,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = heroContent
+                            )
+                            Icon(
+                                imageVector = Icons.Default.LocationOn,
+                                contentDescription = null,
+                                tint = heroContent,
+                                modifier = Modifier.size(15.dp)
+                            )
+                        }
+                    }
+                    if (!islamicDate.isNullOrBlank()) {
+                        Text(
+                            text = islamicDate,
+                            fontSize = 10.sp,
+                            color = heroContent.copy(alpha = 0.82f)
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(14.dp))
+
+            // Main Hero Title
+            Text(
+                text = title,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = heroContent,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(Modifier.height(4.dp))
+
+            // Subtitle
+            Text(
+                text = subtitle,
+                fontSize = 13.sp,
+                color = heroContent.copy(alpha = 0.88f),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+/**
+ * Step Indicator — 3-stage progress stepper matching reference UI.
+ */
+data class StepItem(
+    val stepNumber: Int,
+    val title: String
+)
+
+@Composable
+fun EhsanStepIndicator(
+    steps: List<StepItem>,
+    currentStep: Int,
+    onStepClick: (Int) -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    val colors = IhsanTheme.colors
+
+    Surface(
+        shape = RoundedCornerShape(FormCornerLarge),
+        color = colors.surfaceElevated,
+        border = BorderStroke(1.dp, colors.borderSubtle),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            steps.forEachIndexed { index, step ->
+                val isActive = currentStep == step.stepNumber
+                val isCompleted = currentStep > step.stepNumber
+                val isAccessible = step.stepNumber <= currentStep
+
+                // Step Circle + Title Item
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.clickable(enabled = isAccessible) {
+                        onStepClick(step.stepNumber)
+                    }
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(
+                                when {
+                                    isActive || isCompleted -> colors.brand
+                                    else -> colors.surfaceMuted
+                                }
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = when {
+                                    isActive || isCompleted -> colors.brand
+                                    else -> colors.borderSubtle
+                                },
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isCompleted) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                tint = colors.onBrand,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        } else {
+                            Text(
+                                text = "${step.stepNumber}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isActive) colors.onBrand else colors.textSecondary
+                            )
+                        }
+                    }
+
+                    Spacer(Modifier.height(6.dp))
+
+                    Text(
+                        text = step.title,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = if (isActive || isCompleted) FontWeight.Bold else FontWeight.Medium,
+                        color = if (isActive || isCompleted) colors.brand else colors.textSecondary
+                    )
+                }
+
+                // Connecting Line between steps
+                if (index < steps.size - 1) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(2.dp)
+                            .padding(horizontal = 8.dp)
+                            .background(
+                                if (currentStep > step.stepNumber) colors.brand else colors.borderSubtle
+                            )
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Category Cards Grid/Row matching reference UI (e.g., ملابس، أثاث، مواد غذائية، كتب).
+ * Displays selected card in dark teal with top-corner checkmark badge.
+ */
+data class CategoryCardOption(
+    val key: String,
+    val label: String,
+    val icon: ImageVector
+)
+
+@Composable
+fun EhsanCategoryGrid(
+    categories: List<CategoryCardOption>,
+    selectedKey: String,
+    onSelect: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val colors = IhsanTheme.colors
+
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        categories.forEach { category ->
+            val isSelected = category.key == selectedKey
+
+            Surface(
+                onClick = { onSelect(category.key) },
+                shape = RoundedCornerShape(FormCornerMedium),
+                color = if (isSelected) colors.brand else colors.fieldContainer,
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = if (isSelected) colors.brand else colors.fieldBorder
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .heightIn(min = 78.dp)
+            ) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    // Selected checkmark badge in corner
+                    if (isSelected) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(6.dp)
+                                .size(18.dp)
+                                .clip(CircleShape)
+                                .background(colors.onBrand.copy(alpha = 0.25f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                tint = colors.onBrand,
+                                modifier = Modifier.size(12.dp)
+                            )
+                        }
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 4.dp, vertical = 10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = category.icon,
+                            contentDescription = null,
+                            tint = if (isSelected) colors.onBrand else colors.brand,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            text = category.label,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            color = if (isSelected) colors.onBrand else colors.textPrimary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Contact Method Selector matching reference UI (واتساب / اتصال هاتفي).
+ */
+@Composable
+fun EhsanContactMethodSelector(
+    selectedMethod: String,
+    onSelect: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val colors = IhsanTheme.colors
+
+    val options = listOf(
+        Triple("WHATSAPP", "واتساب", Icons.AutoMirrored.Filled.Comment),
+        Triple("PHONE", "اتصال هاتفي", Icons.Default.Phone)
+    )
+
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        options.forEach { (key, label, icon) ->
+            val isSelected = selectedMethod == key
+
+            Surface(
+                onClick = { onSelect(key) },
+                shape = RoundedCornerShape(FormCornerMedium),
+                color = if (isSelected) colors.charityOfferContainer else colors.fieldContainer,
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = if (isSelected) colors.brand else colors.fieldBorder
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .heightIn(min = 52.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = if (isSelected) colors.brand else colors.textSecondary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                        color = if (isSelected) colors.brand else colors.textPrimary
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    // Radio Circle
+                    Box(
+                        modifier = Modifier
+                            .size(18.dp)
+                            .clip(CircleShape)
+                            .border(
+                                1.5.dp,
+                                if (isSelected) colors.brand else colors.textSecondary.copy(alpha = 0.5f),
+                                CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isSelected) {
+                            Box(
+                                modifier = Modifier
+                                    .size(10.dp)
+                                    .clip(CircleShape)
+                                    .background(colors.brand)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Review Summary Card shown in Step 3 before publishing/submitting.
+ */
+@Composable
+fun EhsanReviewSummaryCard(
+    title: String,
+    category: String,
+    city: String,
+    description: String,
+    contactPhone: String,
+    modifier: Modifier = Modifier
+) {
+    EhsanFormCard(modifier = modifier) {
+        EhsanSectionHeader(
+            title = "مراجعة التفاصيل",
+            description = "تأكد من صحة البيانات قبل النشر"
+        )
+        Spacer(Modifier.height(14.dp))
+        ReadOnlyRow(label = "العنوان", value = title)
+        Spacer(Modifier.height(8.dp))
+        ReadOnlyRow(label = "التصنيف", value = category)
+        Spacer(Modifier.height(8.dp))
+        ReadOnlyRow(label = "المدينة", value = city)
+        Spacer(Modifier.height(8.dp))
+        ReadOnlyRow(label = "رقم التواصل", value = contactPhone)
+        Spacer(Modifier.height(8.dp))
+        ReadOnlyRow(label = "الوصف", value = description)
+    }
+}
+
 /* Re-export commonly-used spacer values so screens can keep
  * their gap rhythm consistent without re-declaring them. */
 object EhsanFormSpacing {
@@ -733,3 +1219,4 @@ object EhsanFormSpacing {
     val FieldGap: Dp = 16.dp
     val InlineGap: Dp = 8.dp
 }
+

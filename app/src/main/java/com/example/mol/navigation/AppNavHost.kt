@@ -187,7 +187,13 @@ fun AppNavHost(
                 },
                 onNavigateToDua = { duaId -> 
                     navController.navigate(Screen.DuaDetail.createRoute(duaId))
-                }
+                },
+                onNavigateToAzkar = { navController.navigate(Screen.Azkar.route) },
+                onNavigateToHadith = { navController.navigate(Screen.Hadith.route) },
+                onNavigateToAsma = { navController.navigate(Screen.Asma.route) },
+                onNavigateToPrayer = { navController.navigate(Screen.Prayer.route) },
+                onNavigateToQibla = { navController.navigate(Screen.Qibla.route) },
+                onNavigateToDonations = { navController.navigate(Screen.Donations.route) }
             )
         }
 

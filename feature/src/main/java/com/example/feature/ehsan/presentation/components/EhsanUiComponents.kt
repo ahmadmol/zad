@@ -98,12 +98,13 @@ import com.example.feature.ehsan.domain.model.Donation
 fun EhsanHeaderBanner(
     cityName: String?,
     islamicDate: String?,
-    onSearchClick: () -> Unit = {},
-    onNotificationClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val darkTeal = PrimaryTeal
-    val bannerShape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+    val isDark = IhsanTheme.isDark
+    val bannerShape = RoundedCornerShape(bottomStart = 54.dp, bottomEnd = 54.dp)
+    val heroTop = if (isDark) IhsanTheme.colors.brandElevated else Color(0xFFDDF7FB)
+    val heroBottom = if (isDark) IhsanTheme.colors.brand else Color(0xFF9AD9E7)
+    val heroContent = if (isDark) IhsanTheme.colors.onBrand else IhsanTheme.colors.brand
 
     Box(
         modifier = modifier
@@ -111,31 +112,28 @@ fun EhsanHeaderBanner(
             .clip(bannerShape)
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF06413E),
-                        Color(0xFF095A54),
-                        Color(0xFF147B73)
-                    )
+                    colors = listOf(heroTop, heroBottom)
                 )
             )
             .statusBarsPadding()
     ) {
         // Mosque silhouette background overlay
         Image(
-            painter = painterResource(id = R.drawable.bg_ehsan),
+            painter = painterResource(id = com.example.designsystem.R.drawable.ic_mosque_silhouette),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(112.dp)
                 .align(Alignment.BottomCenter),
             contentScale = ContentScale.Crop,
-            alpha = 0.25f
+            alpha = if (isDark) 0.30f else 0.34f
         )
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 16.dp),
+                .padding(horizontal = IhsanTheme.dimens.screenHorizontal)
+                .padding(top = 8.dp, bottom = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Top Navigation & Action Row
@@ -144,61 +142,20 @@ fun EhsanHeaderBanner(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Left Actions: Notifications & Search
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = onNotificationClick,
-                        modifier = Modifier.size(38.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = "التنبيهات",
-                            tint = Color.White,
-                            modifier = Modifier.size(22.dp)
-                        )
-                    }
-                    IconButton(
-                        onClick = onSearchClick,
-                        modifier = Modifier.size(38.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "بحث",
-                            tint = Color.White,
-                            modifier = Modifier.size(22.dp)
-                        )
-                    }
-                }
+                Spacer(modifier = Modifier.width(76.dp))
 
                 // Center Title & Logo
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Surface(
-                            shape = CircleShape,
-                            color = Color.White.copy(alpha = 0.2f),
-                            modifier = Modifier.size(24.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text("🌱", fontSize = 12.sp)
-                            }
-                        }
-                        Text(
-                            text = "إحسان",
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                    }
+                    Image(
+                        painter = painterResource(R.drawable.splash_ihsan_logo_transparent),
+                        contentDescription = "إحسان",
+                        modifier = Modifier.height(38.dp),
+                        contentScale = ContentScale.Fit
+                    )
                     Text(
                         text = "خير دائم",
                         fontSize = 11.sp,
-                        color = Color.White.copy(alpha = 0.8f)
+                        color = heroContent.copy(alpha = 0.78f)
                     )
                 }
 
@@ -214,12 +171,12 @@ fun EhsanHeaderBanner(
                                     text = cityName,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = heroContent
                                 )
                                 Icon(
                                     imageVector = Icons.Default.LocationOn,
                                     contentDescription = null,
-                                    tint = Color.White,
+                                    tint = heroContent,
                                     modifier = Modifier.size(16.dp)
                                 )
                             }
@@ -228,21 +185,21 @@ fun EhsanHeaderBanner(
                             Text(
                                 text = islamicDate,
                                 fontSize = 10.sp,
-                                color = Color.White.copy(alpha = 0.8f)
+                                color = heroContent.copy(alpha = 0.78f)
                             )
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             // Hero Main Title
             Text(
-                text = "يداً بيد لنشر الخير",
-                fontSize = 26.sp,
+                text = "مجتمع إحسان",
+                fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = heroContent,
                 textAlign = TextAlign.Center
             )
 
@@ -250,21 +207,15 @@ fun EhsanHeaderBanner(
 
             // Hero Subtitle
             Text(
-                text = if (cityName.isNullOrBlank()) {
-                    "معاً نصنع مجتمعاً أكثر تماسكاً"
-                } else {
-                    "معاً نصنع مجتمعاً أكثر تماسكاً\nفي $cityName"
-                },
-                fontSize = 13.sp,
-                color = Color.White.copy(alpha = 0.88f),
+                text = "معاً نصنع مجتمعاً أكثر تماسكاً",
+                fontSize = 15.sp,
+                color = heroContent.copy(alpha = 0.86f),
                 textAlign = TextAlign.Center,
                 lineHeight = 18.sp
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Leaf flourish icon
-            Text(text = "🌿", fontSize = 14.sp)
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(text = "❧", fontSize = 22.sp, color = heroContent)
         }
     }
 }
@@ -282,13 +233,13 @@ fun EhsanSegmentedTabs(
     val darkTeal = PrimaryTeal
     val activeContainer = if (isDark) IhsanTheme.colors.selectedContainer else darkTeal
     val activeContent = if (isDark) IhsanTheme.colors.selectedContent else Color.White
-    val inactiveContainer = if (isDark) IhsanTheme.colors.surfaceMuted else Color(0xFFF0EBE3)
+    val inactiveContainer = if (isDark) IhsanTheme.colors.surfaceMuted else IhsanTheme.colors.surfaceWarm
     val inactiveContent = IhsanTheme.colors.textSecondary
 
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .height(52.dp),
+            .height(IhsanTheme.dimens.controlHeight),
         shape = RoundedCornerShape(26.dp),
         color = inactiveContainer,
         border = BorderStroke(0.5.dp, IhsanTheme.colors.borderSubtle)
@@ -359,14 +310,10 @@ fun EhsanSearchField(
         onValueChange = onQueryChange,
         modifier = modifier
             .fillMaxWidth()
-            .defaultMinSize(minHeight = 48.dp),
+            .height(IhsanTheme.dimens.controlHeight),
         placeholder = {
             Text(
-                text = if (cityName.isNullOrBlank()) {
-                    "ابحث عن فرصة خيرية ..."
-                } else {
-                    "ابحث عن فرصة خيرية في $cityName ..."
-                },
+                text = "ابحث عن فرصة خيرية...",
                 fontSize = 13.sp,
                 color = IhsanTheme.colors.textSecondary
             )
@@ -491,7 +438,7 @@ fun DonationCardItem(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(22.dp),
         color = IhsanTheme.colors.surfaceElevated,
         border = BorderStroke(0.75.dp, IhsanTheme.colors.borderSubtle),
         shadowElevation = if (isDark) 0.dp else 2.dp
@@ -499,14 +446,14 @@ fun DonationCardItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Left Content Section (Title, Badge, Metadata, Action Buttons)
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 12.dp)
+                    .padding(end = 14.dp)
             ) {
                 // Top Tag Badge
                 Surface(
@@ -612,6 +559,7 @@ fun DonationCardItem(
                     // View Details Button
                     Surface(
                         onClick = onClick,
+                        modifier = Modifier.defaultMinSize(minHeight = IhsanTheme.dimens.minTouchTarget),
                         shape = RoundedCornerShape(14.dp),
                         color = IhsanTheme.colors.surfaceMint,
                         border = BorderStroke(0.5.dp, IhsanTheme.colors.borderSubtle)
@@ -645,6 +593,7 @@ fun DonationCardItem(
                                 )
                                 runCatching { context.startActivity(dialIntent) }
                             },
+                            modifier = Modifier.defaultMinSize(minHeight = IhsanTheme.dimens.minTouchTarget),
                             shape = RoundedCornerShape(14.dp),
                             color = IhsanTheme.colors.surfaceMuted,
                             border = BorderStroke(0.5.dp, IhsanTheme.colors.borderSubtle)
@@ -675,7 +624,8 @@ fun DonationCardItem(
             // Right Thumbnail Section
             Surface(
                 modifier = Modifier
-                    .size(105.dp)
+                    .width(112.dp)
+                    .height(132.dp)
                     .clip(RoundedCornerShape(16.dp)),
                 color = IhsanTheme.colors.surfaceMuted
             ) {
@@ -718,7 +668,7 @@ fun AddEhsanFab(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val label = if (type == "REQUEST") "أضف طلباً" else "أضف عرضاً"
+    val label = if (type == "REQUEST") "طلب مساعدة" else "إضافة عرض"
     val isDark = isSystemInDarkTheme()
     val darkTeal = PrimaryTeal
     val fabBg = if (isDark) IhsanTheme.colors.selectedContainer else darkTeal
@@ -727,26 +677,25 @@ fun AddEhsanFab(
     Surface(
         onClick = onClick,
         modifier = modifier,
-        shape = CircleShape,
+        shape = RoundedCornerShape(28.dp),
         color = fabBg,
         shadowElevation = if (isDark) 2.dp else 8.dp
     ) {
         Column(
-            modifier = Modifier.padding(14.dp),
+            modifier = Modifier
+                .defaultMinSize(minWidth = 92.dp, minHeight = 72.dp)
+                .padding(horizontal = 16.dp, vertical = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Icon(
-                imageVector = Icons.Default.Add,
+                imageVector = if (type == "REQUEST") Icons.Default.Favorite else Icons.Default.Add,
                 contentDescription = label,
                 tint = fabFg,
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = "🌱",
-                fontSize = 10.sp
-            )
+            if (type != "REQUEST") Text(text = "🌱", fontSize = 10.sp)
             Text(
                 text = label,
                 fontSize = 10.sp,
