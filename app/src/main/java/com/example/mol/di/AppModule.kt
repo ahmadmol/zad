@@ -11,6 +11,9 @@ import com.example.feature.core.preferences.UserPreferences
 import com.example.feature.prayer.util.PrayerNotificationScheduler
 import com.example.feature.quran.quranModule
 import com.example.feature.reminders.AzkarReminderCoordinator
+import com.example.feature.sanhya.di.sanhyaModule
+import com.example.feature.nabiihsan.di.nabiIhsanModule
+import com.example.feature.fahmanallah.di.fahmModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -33,6 +36,9 @@ val appModule = module {
         useCaseModule,
         viewModelModule,
         quranModule,
+        sanhyaModule,
+        nabiIhsanModule,
+        fahmModule,
         com.example.feature.prayer.di.prayerDomainModule,
         com.example.feature.dashboard.di.homeDashboardModule,
         com.example.feature.ihsanplus.integration.di.ihsanPlusProductionModule

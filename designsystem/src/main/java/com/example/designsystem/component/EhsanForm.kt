@@ -49,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -758,99 +759,45 @@ fun EhsanHeroHeader(
 ) {
     val isDark = IhsanTheme.isDark
     val colors = IhsanTheme.colors
-    val heroTop = if (isDark) colors.brandElevated else Color(0xFFDDF7FB)
-    val heroBottom = if (isDark) colors.brand else Color(0xFF9AD9E7)
-    val heroContent = if (isDark) colors.onBrand else colors.brand
+    val heroContent = colors.onBrand
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(bottomStart = 36.dp, bottomEnd = 36.dp))
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(heroTop, heroBottom)
-                )
-            )
-            .statusBarsPadding()
     ) {
-        // Mosque silhouette background overlay
         Image(
-            painter = painterResource(id = R.drawable.ic_mosque_silhouette),
+            painter = painterResource(id = R.drawable.bg_home),
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .align(Alignment.BottomCenter),
-            contentScale = ContentScale.FillBounds,
-            alpha = if (isDark) 0.22f else 0.30f
+            contentScale = ContentScale.Crop,
+            alignment = Alignment.Center,
+            modifier = Modifier.matchParentSize()
         )
+
+        if (isDark) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.Black.copy(alpha = 0.55f))
+            )
+        }
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .statusBarsPadding()
                 .padding(horizontal = 16.dp)
                 .padding(top = 4.dp, bottom = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Top Navigation Row
+            // Top Navigation Row (RTL: First child = Right, Third child = Left)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Left: Back button & optional Search
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(
-                        onClick = onBackClick,
-                        modifier = Modifier.size(40.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "رجوع",
-                            tint = heroContent
-                        )
-                    }
-                    if (onSearchClick != null) {
-                        IconButton(
-                            onClick = onSearchClick,
-                            modifier = Modifier.size(40.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "بحث",
-                                tint = heroContent
-                            )
-                        }
-                    }
-                }
-
-                // Center: Logo / Title badge
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    if (logoPainter != null) {
-                        Image(
-                            painter = logoPainter,
-                            contentDescription = "إحسان",
-                            modifier = Modifier.height(34.dp),
-                            contentScale = ContentScale.Fit
-                        )
-                    } else {
-                        Text(
-                            text = "إحسان",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = heroContent
-                        )
-                    }
-                    Text(
-                        text = "خير دائم",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = heroContent.copy(alpha = 0.85f)
-                    )
-                }
-
-                // Right: Location & Islamic Date Info
-                Column(horizontalAlignment = Alignment.End) {
+                // Right: Location & Islamic Date Info (First child in RTL = Visual Right)
+                Column(horizontalAlignment = Alignment.Start) {
                     if (!cityName.isNullOrBlank()) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -874,8 +821,60 @@ fun EhsanHeroHeader(
                         Text(
                             text = islamicDate,
                             fontSize = 10.sp,
-                            color = heroContent.copy(alpha = 0.82f)
+                            color = heroContent.copy(alpha = 0.85f)
                         )
+                    }
+                }
+
+                // Center: Logo / Title badge
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    if (logoPainter != null) {
+                        Image(
+                            painter = logoPainter,
+                            contentDescription = "إحسان",
+                            modifier = Modifier.height(34.dp),
+                            contentScale = ContentScale.Fit,
+                            colorFilter = ColorFilter.tint(heroContent)
+                        )
+                    } else {
+                        Text(
+                            text = "إحسان",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = heroContent
+                        )
+                    }
+                    Text(
+                        text = "خير دائم",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = heroContent.copy(alpha = 0.9f)
+                    )
+                }
+
+                // Left: Back button & optional Search (Third child in RTL = Visual Left)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "رجوع",
+                            tint = heroContent
+                        )
+                    }
+                    if (onSearchClick != null) {
+                        IconButton(
+                            onClick = onSearchClick,
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "بحث",
+                                tint = heroContent
+                            )
+                        }
                     }
                 }
             }

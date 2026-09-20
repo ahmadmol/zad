@@ -65,34 +65,25 @@ fun DashboardHeader(
     modifier: Modifier = Modifier
 ) {
     val onBrand = IhsanTheme.colors.onBrand
-    val brandColor = IhsanTheme.colors.brand
     val layoutDirection = LocalLayoutDirection.current
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(brandColor, brandColor.copy(alpha = 0.92f))
-                )
-            )
-            .statusBarsPadding()
+            .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
     ) {
-            Image(
-            painter = painterResource(id = R.drawable.ic_mosque_silhouette),
+        Image(
+            painter = painterResource(id = R.drawable.bg_home),
             contentDescription = null,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(78.dp)
-                .padding(bottom = 8.dp),
-            contentScale = ContentScale.FillBounds,
-            alpha = 0.22f
+            contentScale = ContentScale.Crop,
+            alignment = Alignment.Center,
+            modifier = Modifier.matchParentSize()
         )
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .statusBarsPadding()
                 .padding(horizontal = 16.dp)
                 .padding(top = 8.dp, bottom = 16.dp)
         ) {

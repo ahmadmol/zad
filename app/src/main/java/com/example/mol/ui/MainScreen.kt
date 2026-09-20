@@ -49,7 +49,7 @@ fun MainScreen() {
     val selectedIndex = resolved?.let { dest ->
         mainItems.indexOfFirst { it.screen.route == dest.route }
     } ?: -1
-    val showBottomBar = selectedIndex >= 0
+    val showBottomBar = (selectedIndex >= 0) && (currentRoute != Screen.Splash.route) && (currentRoute != Screen.Onboarding.route)
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(

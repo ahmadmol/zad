@@ -64,10 +64,10 @@ import kotlin.math.abs
 
 private val IndicatorMotion = tween<Float>(durationMillis = 280, easing = FastOutSlowInEasing)
 
-/** Compact bar / pill dimensions (within requested 68–74 / 72–88 / 42–48 ranges). */
-internal val BottomNavBarHeight = 62.dp
-private val IndicatorPillWidth = 56.dp
-private val IndicatorPillHeight = 32.dp
+/** Enhanced bar & pill dimensions for clear visibility and touch ergonomics. */
+internal val BottomNavBarHeight = 68.dp
+private val IndicatorPillWidth = 58.dp
+private val IndicatorPillHeight = 34.dp
 private val IndicatorCorner = 16.dp
 private val BarCorner = 22.dp
 
@@ -162,7 +162,7 @@ fun IhsanBottomNavigationItem(
     // White icon only when green pill is visible under it.
     val iconTint = lerp(navColors.unselectedContent, navColors.selectedContent, selectionFraction)
     val iconScale = androidx.compose.ui.util.lerp(1f, 1.05f, selectionFraction)
-    val iconSize = lerp(20.dp, 22.dp, selectionFraction)
+    val iconSize = lerp(22.dp, 24.dp, selectionFraction)
     val pillShape = RoundedCornerShape(IndicatorCorner)
 
     Column(
@@ -231,11 +231,11 @@ internal fun BottomNavigationLabel(
     Text(
         text = text,
         modifier = modifier,
-        fontSize = 11.sp,
+        fontSize = 12.sp,
         fontWeight = if (selectionFraction > 0.5f) FontWeight.SemiBold else FontWeight.Medium,
         color = labelColor,
         maxLines = 1,
-        style = MaterialTheme.typography.labelSmall.copy(lineHeight = 14.sp)
+        style = MaterialTheme.typography.labelSmall.copy(lineHeight = 15.sp)
     )
 }
 

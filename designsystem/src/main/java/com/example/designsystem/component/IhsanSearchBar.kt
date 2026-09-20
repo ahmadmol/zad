@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -22,7 +24,8 @@ fun IhsanSearchBar(
     modifier: Modifier = Modifier,
     query: String,
     onQueryChange: (String) -> Unit,
-    placeholder: String = "بحث..."
+    placeholder: String = "بحث...",
+    onClear: (() -> Unit)? = null
 ) {
     val fieldShape = RoundedCornerShape(IhsanTheme.dimens.radiusLarge)
     val fieldColors = IhsanTheme.colors
@@ -48,6 +51,20 @@ fun IhsanSearchBar(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         },
+        trailingIcon = if (query.isNotEmpty()) {
+            {
+                IconButton(onClick = {
+                    onQueryChange("")
+                    onClear?.invoke()
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "مسح البحث",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        } else null,
         shape = fieldShape,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = fieldColors.fieldContainer,
@@ -63,3 +80,4 @@ fun IhsanSearchBar(
         singleLine = true
     )
 }
+
