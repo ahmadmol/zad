@@ -60,6 +60,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -294,47 +295,37 @@ private fun AsmaHeroHeader(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val brandColor = IhsanTheme.colors.brand
-    val onBrandColor = IhsanTheme.colors.onBrand
-    val isDark = isSystemInDarkTheme()
+    val isDark = IhsanTheme.isDark
+    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else IhsanTheme.colors.brand
+    val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else IhsanTheme.colors.brand.copy(alpha = 0.82f)
+    val iconBgColor = if (isDark) Color.White.copy(alpha = 0.15f) else IhsanTheme.colors.brand.copy(alpha = 0.08f)
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = if (isDark) {
-                        listOf(
-                            IhsanTheme.colors.brandElevated,
-                            IhsanTheme.colors.surfaceBase
-                        )
-                    } else {
-                        listOf(
-                            brandColor,
-                            brandColor.copy(alpha = 0.90f)
-                        )
-                    }
-                )
-            )
-            .statusBarsPadding()
-            .padding(bottom = 20.dp)
     ) {
         Image(
-            painter = painterResource(id = DesignR.drawable.ic_mosque_silhouette),
+            painter = painterResource(id = FeatureR.drawable.ihsan_home_hero_background),
             contentDescription = null,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(80.dp),
-            contentScale = ContentScale.FillBounds,
-            alpha = if (isDark) 0.15f else 0.22f
+            contentScale = ContentScale.Crop,
+            alignment = Alignment.Center,
+            modifier = Modifier.matchParentSize()
         )
+
+        if (isDark) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.Black.copy(alpha = 0.55f))
+            )
+        }
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 12.dp)
+                .statusBarsPadding()
+                .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -345,13 +336,13 @@ private fun AsmaHeroHeader(
                     modifier = Modifier
                         .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
                         .clip(CircleShape)
-                        .background(onBrandColor.copy(alpha = 0.14f))
+                        .background(iconBgColor)
                         .semantics { contentDescription = "رجوع" }
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = null,
-                        tint = onBrandColor,
+                        tint = darkTealColor,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -365,7 +356,7 @@ private fun AsmaHeroHeader(
                             fontWeight = FontWeight.Bold,
                             fontSize = 22.sp
                         ),
-                        color = onBrandColor
+                        color = darkTealColor
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
@@ -373,7 +364,7 @@ private fun AsmaHeroHeader(
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontSize = 13.sp
                         ),
-                        color = onBrandColor.copy(alpha = 0.85f)
+                        color = darkTealSubtext
                     )
                 }
             }

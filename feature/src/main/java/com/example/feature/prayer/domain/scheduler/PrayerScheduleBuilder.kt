@@ -75,7 +75,7 @@ object PrayerScheduleBuilder {
                     }
                 }
 
-                if (instant.name.isNotifiable) {
+                if (instant.name.isNotifiable && policy.endOfPrayerReminderMinutesBeforeNext > 0) {
                     val next = instants.getOrNull(index + 1)
                     if (next != null) {
                         val trigger = next.epochMillis - policy.endOfPrayerReminderMinutesBeforeNext * 60_000L

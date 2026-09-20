@@ -15,7 +15,6 @@ import java.util.*
  * via [com.example.feature.prayer.domain.calculator.PrayerCalculator].
  */
 @Deprecated("Use AdhanPrayerCalculator through the domain PrayerCalculator interface")
-@OptIn(kotlin.time.ExperimentalTime::class)
 object PrayerCalculator {
 
     fun calculate(
@@ -53,7 +52,7 @@ object PrayerCalculator {
     private fun createPrayerTime(
         nameAr: String,
         nameEn: String,
-        instant: kotlin.time.Instant,
+        instant: kotlinx.datetime.Instant,
         currentTime: Long,
         format: SimpleDateFormat
     ): PrayerTime {

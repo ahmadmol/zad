@@ -2,36 +2,35 @@ package com.example.feature.quran.presentation
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+/** Characterizes the current Quran audio state, which is represented directly by player fields. */
 class QuranAudioPhaseTest {
 
     @Test
-    fun `verse playing requires player isPlaying not only current ayah`() {
-        val connecting = QuranUiState(
-            currentPlayingAyah = 1,
-            isPlaying = false,
-            audioPhase = QuranAudioPhase.Connecting
-        )
-        assertFalse(connecting.isPlaying && connecting.currentPlayingAyah == 1)
+    fun `current ayah alone does not claim active playback`() {
+        val paused = QuranUiState(currentPlayingAyah = 1, isPlaying = false)
 
-        val playing = connecting.copy(
-            isPlaying = true,
-            audioPhase = QuranAudioPhase.Playing
-        )
-        assertTrue(playing.isPlaying && playing.currentPlayingAyah == 1)
+        assertFalse(paused.isPlaying)
+        assertEquals(1, paused.currentPlayingAyah)
+
+        val playing = paused.copy(isPlaying = true)
+        assertTrue(playing.isPlaying)
+        assertEquals(1, playing.currentPlayingAyah)
     }
 
     @Test
-    fun `error phase clears playing claim`() {
+    fun `playback error can clear active media while retaining its message`() {
         val error = QuranUiState(
             currentPlayingAyah = null,
             isPlaying = false,
-            audioPhase = QuranAudioPhase.Error,
             errorMessage = "تعذر تشغيل التلاوة. تحقق من الاتصال وحاول مرة أخرى."
         )
-        assertEquals(QuranAudioPhase.Error, error.audioPhase)
+
+        assertNull(error.currentPlayingAyah)
         assertFalse(error.isPlaying)
+        assertTrue(error.errorMessage.orEmpty().contains("تعذر تشغيل التلاوة"))
     }
 }

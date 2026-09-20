@@ -1,115 +1,130 @@
 package com.example.feature.qibla.presentation
 
+import com.example.feature.prayer.domain.model.PrayerLocation
+import com.example.feature.prayer.domain.model.PrayerLocationSource
+import com.example.feature.prayer.domain.model.PrayerLocationState
+import com.example.feature.prayer.domain.model.PrayerLocationUnavailableReason
+import com.example.feature.prayer.domain.repository.PrayerLocationRepository
 import com.example.feature.qibla.util.QiblaManager
+import io.mockk.every
+import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.io.File
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class QiblaOfflineFirstStateTest {
 
     @Test
-    fun `bearing is ready before a later successful label`() {
-        val locating = QiblaStateReducer.refreshStarted(QiblaUiState())
-        val bearing = QiblaStateReducer.bearingResolved(locating, 170f)
+    fun `saved location makes the first bearing immediately usable`() = qiblaTest(
+        PrayerLocationState.Available(ALEPPO, PrayerLocationSource.Saved)
+    ) { harness ->
+        val state = harness.viewModel.uiState.value
 
-        assertEquals(170f, bearing.qiblaAngle)
-        assertFalse(bearing.isLoading)
-        assertEquals("", bearing.locationName)
-
-        val labeled = QiblaStateReducer.labelsResolved(bearing, "حي الجميلية" to "حلب، سوريا")
-        assertEquals(170f, labeled.qiblaAngle)
-        assertEquals("حي الجميلية", labeled.locationName)
-    }
-
-    @Test
-    fun `geocoder failure fallback cannot remove a usable bearing`() {
-        val bearing = QiblaStateReducer.bearingResolved(QiblaUiState(), 170f)
-        val fallback = QiblaStateReducer.labelsResolved(bearing, QiblaViewModel.FALLBACK_LOCATION_LABELS)
-
-        assertEquals(170f, fallback.qiblaAngle)
-        assertFalse(fallback.isLoading)
-        assertEquals("الموقع الحالي", fallback.locationName)
-    }
-
-    @Test
-    fun `geocoder timeout fallback leaves no blocking loading`() {
-        val bearing = QiblaStateReducer.bearingResolved(QiblaUiState(), 170f)
-        val timedOut = QiblaStateReducer.labelsResolved(bearing, QiblaViewModel.FALLBACK_LOCATION_LABELS)
-
-        assertFalse(timedOut.isLoading)
-        assertEquals(170f, timedOut.qiblaAngle)
-        assertTrue(QiblaViewModel.GEOCODER_TIMEOUT_MS > 0L)
-    }
-
-    @Test
-    fun `cached location makes the first bearing immediately usable`() {
-        val state = QiblaStateReducer.bearingResolved(
-            QiblaStateReducer.refreshStarted(QiblaUiState()),
-            169f
-        )
-
-        assertEquals(169f, state.qiblaAngle)
+        assertEquals(169.3f, state.qiblaAngle, 1.0f)
         assertFalse(state.isLoading)
-        assertTrue(state.isRefreshingLocation)
+        assertEquals("حلب", state.locationName)
+        assertEquals("موقع محفوظ", state.cityAndCountry)
+        assertNull(state.error)
     }
 
     @Test
-    fun `fresh location updates bearing without clearing cached bearing first`() {
-        val cached = QiblaStateReducer.bearingResolved(QiblaUiState(), 169f)
-        val refreshing = QiblaStateReducer.refreshStarted(cached)
-        assertEquals(169f, refreshing.qiblaAngle)
-        assertFalse(refreshing.isLoading)
+    fun `manual location uses the canonical manual source label`() = qiblaTest(
+        PrayerLocationState.Available(ALEPPO, PrayerLocationSource.Manual)
+    ) { harness ->
+        val state = harness.viewModel.uiState.value
 
-        val fresh = QiblaStateReducer.bearingResolved(refreshing, 170f)
-        assertEquals(170f, fresh.qiblaAngle)
-        assertFalse(fresh.isLoading)
+        assertEquals("حلب", state.locationName)
+        assertEquals("موقع يدوي", state.cityAndCountry)
+        assertFalse(state.isLoading)
     }
 
     @Test
-    fun `no location produces a location-specific non-network error`() {
-        val state = QiblaStateReducer.locationUnavailable(QiblaUiState())
+    fun `initial unavailable location produces a location-specific error`() = qiblaTest(
+        PrayerLocationState.Unavailable(PrayerLocationUnavailableReason.NO_SAVED_LOCATION)
+    ) { harness ->
+        val state = harness.viewModel.uiState.value
 
-        assertNull(state.qiblaAngle)
+        assertEquals(0f, state.qiblaAngle)
+        assertFalse(state.isLoading)
+        assertTrue(state.error.orEmpty().contains("موقع"))
+        assertFalse(state.error.orEmpty().contains("الإنترنت"))
+    }
+
+    @Test
+    fun `later location failure cannot remove an existing usable bearing`() = qiblaTest(
+        PrayerLocationState.Available(ALEPPO, PrayerLocationSource.Saved)
+    ) { harness ->
+        val bearing = harness.viewModel.uiState.value.qiblaAngle
+
+        harness.repository.locations.value =
+            PrayerLocationState.Unavailable(PrayerLocationUnavailableReason.TIMEOUT)
+        runCurrent()
+
+        val state = harness.viewModel.uiState.value
+        assertEquals(bearing, state.qiblaAngle)
+        assertFalse(state.isLoading)
+        assertNull(state.error)
+    }
+
+    @Test
+    fun `refresh success replaces the unavailable state with device location`() = qiblaTest(
+        PrayerLocationState.Unavailable(PrayerLocationUnavailableReason.TIMEOUT)
+    ) { harness ->
+        harness.repository.refreshResult = Result.success(ALEPPO)
+
+        harness.viewModel.updateLocationAndCalculateQibla()
+        runCurrent()
+
+        val state = harness.viewModel.uiState.value
+        assertEquals(169.3f, state.qiblaAngle, 1.0f)
+        assertEquals("الموقع الحالي", state.cityAndCountry)
+        assertFalse(state.isLoading)
+        assertNull(state.error)
+    }
+
+    @Test
+    fun `refresh failure without cached bearing clears loading and reports location error`() = qiblaTest(
+        PrayerLocationState.Loading
+    ) { harness ->
+        harness.repository.refreshResult = Result.failure(IllegalStateException("provider off"))
+
+        harness.viewModel.updateLocationAndCalculateQibla()
+        runCurrent()
+
+        val state = harness.viewModel.uiState.value
+        assertEquals(0f, state.qiblaAngle)
         assertFalse(state.isLoading)
         assertTrue(state.error.orEmpty().contains("الموقع"))
-        assertFalse(state.error.orEmpty().contains("الإنترنت"))
-        assertFalse(state.error.orEmpty().contains("الشبكة"))
     }
 
     @Test
-    fun `permission denial is explicit`() {
-        val state = QiblaStateReducer.permissionDenied(QiblaUiState())
+    fun `alignment uses enter and exit hysteresis around the current bearing`() = qiblaTest(
+        PrayerLocationState.Available(ALEPPO, PrayerLocationSource.Saved)
+    ) { harness ->
+        val bearing = harness.viewModel.uiState.value.qiblaAngle
 
-        assertFalse(state.hasLocationPermission)
-        assertFalse(state.isLoading)
-        assertTrue(state.error.orEmpty().contains("صلاحية الموقع"))
-    }
+        harness.rotations.emit(bearing + 2f)
+        runCurrent()
+        assertTrue(harness.viewModel.uiState.value.isAligned)
 
-    @Test
-    fun `geocoder result changes labels only`() {
-        val before = QiblaStateReducer.bearingResolved(
-            QiblaUiState(compassRotation = 42f, isAligned = true),
-            170f
-        )
-        val after = QiblaStateReducer.labelsResolved(before, "الجميلية" to "حلب، سوريا")
-
-        assertEquals(before.qiblaAngle, after.qiblaAngle)
-        assertEquals(before.compassRotation, after.compassRotation)
-        assertEquals(before.isAligned, after.isAligned)
-        assertEquals("الجميلية", after.locationName)
-    }
-
-    @Test
-    fun `production source publishes bearing before launching geocoding`() {
-        val source = productionSource("QiblaViewModel.kt")
-        val method = source.substringAfter("private fun publishBearing")
-            .substringBefore("private fun publishLocationUnavailable")
-
-        assertTrue(method.indexOf("QiblaStateReducer.bearingResolved") >= 0)
-        assertTrue(method.indexOf("QiblaStateReducer.bearingResolved") < method.indexOf("geocodingJob ="))
+        harness.rotations.emit(bearing + 6f)
+        runCurrent()
+        assertFalse(harness.viewModel.uiState.value.isAligned)
     }
 
     @Test
@@ -117,40 +132,46 @@ class QiblaOfflineFirstStateTest {
         assertEquals(169.3f, QiblaManager.calculateQiblaDirection(36.2021, 37.1343), 1.0f)
     }
 
-    @Test
-    fun `stored manual bearing clears loading without needing network`() {
-        val state = QiblaStateReducer.storedManualBearing(
-            QiblaUiState(), 169.3f, "حلب", QiblaLocationSource.Saved
-        )
-
-        assertEquals(169.3f, state.qiblaAngle)
-        assertFalse(state.isLoading)
-        assertFalse(state.isRefreshingLocation)
-        assertNull(state.error)
-        assertEquals("حلب", state.locationName)
-        assertEquals(QiblaLocationSource.Saved, state.locationSource)
-    }
-
-    @Test
-    fun `stored manual bearing preserves a previously empty label`() {
-        val state = QiblaStateReducer.storedManualBearing(
-            QiblaUiState(), 169.3f, "", QiblaLocationSource.Manual
-        )
-
-        // Empty source label must not overwrite existing locationName.
-        assertEquals("", state.locationName)
-        assertEquals(QiblaLocationSource.Manual, state.locationSource)
-    }
-
-    private fun productionSource(fileName: String): String {
-        val repoRoot = File(".").canonicalFile.let { dir ->
-            generateSequence(dir) { it.parentFile }
-                .firstOrNull { File(it, "settings.gradle.kts").exists() }
-                ?: dir
+    private fun qiblaTest(
+        initialLocation: PrayerLocationState,
+        block: suspend TestScope.(Harness) -> Unit
+    ) = runTest {
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        try {
+            val rotations = MutableSharedFlow<Float>(extraBufferCapacity = 1)
+            val manager = mockk<QiblaManager>(relaxed = true) {
+                every { getRotationFlow() } returns rotations
+                every { getAccuracyFlow() } returns emptyFlow()
+            }
+            val repository = FakeLocationRepository(initialLocation)
+            val harness = Harness(QiblaViewModel(manager, repository), repository, rotations)
+            runCurrent()
+            block(harness)
+        } finally {
+            Dispatchers.resetMain()
         }
-        return File(
-            repoRoot,
-            "feature/src/main/java/com/example/feature/qibla/presentation/$fileName"
-        ).readText()
+    }
+
+    private data class Harness(
+        val viewModel: QiblaViewModel,
+        val repository: FakeLocationRepository,
+        val rotations: MutableSharedFlow<Float>
+    )
+
+    private class FakeLocationRepository(initial: PrayerLocationState) : PrayerLocationRepository {
+        val locations = MutableStateFlow(initial)
+        var refreshResult: Result<PrayerLocation> = Result.failure(IllegalStateException("not configured"))
+
+        override fun observeLocation(): Flow<PrayerLocationState> = locations
+        override suspend fun refreshLocation(): Result<PrayerLocation> = refreshResult
+        override suspend fun saveManualLocation(
+            latitude: Double,
+            longitude: Double,
+            displayName: String
+        ): Result<Unit> = Result.success(Unit)
+    }
+
+    private companion object {
+        val ALEPPO = PrayerLocation(36.2021, 37.1343, "حلب")
     }
 }

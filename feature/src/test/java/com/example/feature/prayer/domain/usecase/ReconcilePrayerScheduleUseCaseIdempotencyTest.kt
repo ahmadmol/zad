@@ -89,8 +89,12 @@ class ReconcilePrayerScheduleUseCaseIdempotencyTest {
             firstSchedule.alarms.size,
             secondSchedule.alarms.size
         )
-        val firstKeys = firstSchedule.alarms.map { it.eventKey }.toSet()
-        val secondKeys = secondSchedule.alarms.map { it.eventKey }.toSet()
+        val firstKeys = firstSchedule.alarms.map {
+            Triple(it.stableId, it.prayerName, it.kind) to it.triggerEpochMillis
+        }.toSet()
+        val secondKeys = secondSchedule.alarms.map {
+            Triple(it.stableId, it.prayerName, it.kind) to it.triggerEpochMillis
+        }.toSet()
         assertEquals(firstKeys, secondKeys)
     }
 
@@ -251,20 +255,18 @@ private class FixedSettingsRepo(
     override suspend fun updateUseAutoLocation(enabled: Boolean) {
         flow.value = flow.value.copy(useAutoLocation = enabled)
     }
+    override suspend fun updateManualLocation(city: String, latitude: Double, longitude: Double) = Unit
     override suspend fun updatePrePrayerMinutes(minutes: Int) {
         flow.value = flow.value.copy(prePrayerNotificationMinutes = minutes)
     }
     override suspend fun updateIqamahMinutes(minutes: Int) {
         flow.value = flow.value.copy(iqamahNotificationMinutes = minutes)
     }
-    override suspend fun updateAlertMode(
-        prayer: com.example.feature.prayer.domain.model.PrayerName,
-        mode: com.example.feature.prayer.domain.model.PrayerAlertMode
-    ) {
-        flow.value = flow.value.copy(alertModes = flow.value.alertModes.with(prayer, mode))
-    }
     override suspend fun updateNotificationSoundType(type: String) {
         // not used in this test
+    }
+    override suspend fun updateNotificationsEnabled(enabled: Boolean) {
+        flow.value = flow.value.copy(notificationsEnabled = enabled)
     }
 }
 

@@ -12,7 +12,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -74,39 +76,39 @@ fun SplashScreen(
                 .padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Ihsan Real Logo
+            // Ihsan Real Logo with Kaaba - color adjusted to harmonize with screen colors
             Image(
                 painter = painterResource(id = R.drawable.splash_ihsan_logo_transparent),
                 contentDescription = "إحسان",
-                modifier = Modifier.size(160.dp),
-                contentScale = ContentScale.Fit
+                modifier = Modifier.size(180.dp),
+                contentScale = ContentScale.Fit,
+                colorFilter = ColorFilter.tint(
+                    color = if (isDark) Color.White else DeepTeal,
+                    blendMode = BlendMode.Modulate
+                )
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "إحسان",
-                fontSize = 38.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = if (isDark) Color.White else DeepTeal,
-                letterSpacing = 1.sp
-            )
+            Spacer(modifier = Modifier.height(12.dp))
 
             Text(
                 text = "خير دائم",
-                fontSize = 18.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (isDark) Color(0xFFB2DFDB) else DeepTeal.copy(alpha = 0.85f)
+                color = if (isDark) Color(0xFFB2DFDB) else DeepTeal,
+                lineHeight = 28.sp,
+                letterSpacing = 0.sp
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             Text(
                 text = "معاً لقرب إلى الله ولمجتمع أكثر تماسكاً",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = if (isDark) Color.White.copy(alpha = 0.9f) else Color(0xFF2C5E55),
-                textAlign = TextAlign.Center
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = if (isDark) Color.White.copy(alpha = 0.95f) else Color(0xFF1B4D43),
+                textAlign = TextAlign.Center,
+                lineHeight = 23.sp,
+                letterSpacing = 0.sp
             )
         }
 
@@ -131,19 +133,23 @@ fun SplashScreen(
 
             Text(
                 text = "جاري التحميل ...",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Normal,
-                color = if (isDark) Color.White.copy(alpha = 0.7f) else DeepTeal.copy(alpha = 0.7f)
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                color = if (isDark) Color.White.copy(alpha = 0.8f) else Color(0xFF1B4D43),
+                lineHeight = 18.sp,
+                letterSpacing = 0.sp
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
                 text = "﴿ وَأَحْسِنُوا إِنَّ اللَّهَ يُحِبُّ الْمُحْسِنِينَ ﴾",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
                 color = if (isDark) Color(0xFFE0F2F1) else DeepTeal,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                lineHeight = 26.sp,
+                letterSpacing = 0.sp
             )
         }
     }

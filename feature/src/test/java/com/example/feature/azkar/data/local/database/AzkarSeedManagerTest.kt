@@ -273,9 +273,6 @@ private class FakeAzkarDao(initial: List<ZikrEntity>) : AzkarDao {
     override suspend fun countByContentKey(title: String, category: String, text: String): Int =
         rows.value.count { it.title == title && it.category == category && it.text == text }
 
-    override suspend fun findIdByContentKey(title: String, category: String, text: String): Long? =
-        rows.value.firstOrNull { it.title == title && it.category == category && it.text == text }?.id
-
     // Daily stats — not used by the seed manager but the interface requires them.
     override suspend fun insertOrUpdateDailyStat(stat: com.example.feature.azkar.data.local.entity.DailyStatEntity) {
         // no-op for these tests

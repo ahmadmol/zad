@@ -70,7 +70,7 @@ class HomePrayerParityTest {
         override val locationState: StateFlow<PrayerLocationState> = _locationState.asStateFlow()
         override val systemStatus: StateFlow<PrayerSystemStatus> = _systemStatus.asStateFlow()
 
-        override suspend fun refreshLocation(): Result<Unit> = Result.success(Unit)
+        override suspend fun refreshLocation() = Unit
         override suspend fun updateSettings(settings: PrayerCalculationSettings) = Unit
         override suspend fun reconcileSchedule(reason: PrayerReconciliationReason) = Unit
     }
@@ -89,17 +89,11 @@ class HomePrayerParityTest {
             offsets: com.example.feature.prayer.domain.model.PrayerOffsets
         ) = Unit
         override suspend fun updateUseAutoLocation(enabled: Boolean) = Unit
+        override suspend fun updateManualLocation(city: String, latitude: Double, longitude: Double) = Unit
         override suspend fun updatePrePrayerMinutes(minutes: Int) = Unit
         override suspend fun updateIqamahMinutes(minutes: Int) = Unit
-        override suspend fun updateAlertMode(
-            prayer: com.example.feature.prayer.domain.model.PrayerName,
-            mode: com.example.feature.prayer.domain.model.PrayerAlertMode
-        ) {
-            settings.value = settings.value.copy(
-                alertModes = settings.value.alertModes.with(prayer, mode)
-            )
-        }
         override suspend fun updateNotificationSoundType(type: String) = Unit
+        override suspend fun updateNotificationsEnabled(enabled: Boolean) = Unit
     }
 
     private val calculator = AdhanPrayerCalculator()

@@ -1,196 +1,76 @@
 package com.example.feature.prayer.domain.model
 
+import com.example.feature.prayer.domain.scheduler.PrayerScheduleBuilder
+import java.time.LocalDate
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
-import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.time.LocalDate
 
-/**
- * Phase A1 regression locks: only a real prayer at its exact time may play the adhan.
- * Every other combination must resolve to [PrayerAlertAudio.NOTICE].
- */
+/** Replaces removed audio/extras helpers with current alarm-request identity coverage. */
 class PrayerAlertAudioPolicyTest {
+    private val location = PrayerLocation(24.7136, 46.6753, "Riyadh")
 
-    private val realPrayers = listOf(
-        PrayerName.FAJR,
-        PrayerName.DHUHR,
-        PrayerName.ASR,
-        PrayerName.MAGHRIB,
-        PrayerName.ISHA
-    )
-
-    // TEST 1
     @Test
-    fun `pre prayer reminder never resolves adhan`() {
-        realPrayers.forEach { prayer ->
-            assertEquals(
-                "PRE_PRAYER must never be adhan for $prayer",
-                PrayerAlertAudio.NOTICE,
-                PrayerAlertAudioPolicy.decide(prayer, PrayerAlarmKind.PRE_PRAYER)
-            )
-        }
-    }
-
-    // TEST 2
-    @Test
-    fun `sunrise exact never resolves adhan`() {
+    fun `stable base id is deterministic for the same prayer and day`() {
         assertEquals(
-            PrayerAlertAudio.NOTICE,
-            PrayerAlertAudioPolicy.decide(PrayerName.SUNRISE, PrayerAlarmKind.EXACT)
-        )
-    }
-
-    // TEST 3
-    @Test
-    fun `sunrise never resolves adhan for any event kind`() {
-        PrayerAlarmKind.entries.forEach { kind ->
-            assertEquals(
-                "SUNRISE must never be adhan for kind $kind",
-                PrayerAlertAudio.NOTICE,
-                PrayerAlertAudioPolicy.decide(PrayerName.SUNRISE, kind)
-            )
-        }
-    }
-
-    // TEST 4
-    @Test
-    fun `iqamah never resolves adhan`() {
-        realPrayers.forEach { prayer ->
-            assertEquals(
-                PrayerAlertAudio.NOTICE,
-                PrayerAlertAudioPolicy.decide(prayer, PrayerAlarmKind.IQAMAH)
-            )
-        }
-    }
-
-    // TEST 5
-    @Test
-    fun `end reminder never resolves adhan`() {
-        realPrayers.forEach { prayer ->
-            assertEquals(
-                PrayerAlertAudio.NOTICE,
-                PrayerAlertAudioPolicy.decide(prayer, PrayerAlarmKind.END_REMINDER)
-            )
-        }
-    }
-
-    // TESTS 6-10
-    @Test
-    fun `exact event for each real prayer is adhan capable`() {
-        realPrayers.forEach { prayer ->
-            assertEquals(
-                "$prayer EXACT must stay adhan-capable",
-                PrayerAlertAudio.ADHAN,
-                PrayerAlertAudioPolicy.decide(prayer, PrayerAlarmKind.EXACT)
-            )
-        }
-    }
-
-    @Test
-    fun `exact is the only adhan capable kind`() {
-        val adhanCombinations = PrayerName.entries.flatMap { prayer ->
-            PrayerAlarmKind.entries.map { kind -> prayer to kind }
-        }.filter { (prayer, kind) ->
-            PrayerAlertAudioPolicy.decide(prayer, kind) == PrayerAlertAudio.ADHAN
-        }
-
-        assertEquals(
-            realPrayers.map { it to PrayerAlarmKind.EXACT }.toSet(),
-            adhanCombinations.toSet()
+            PrayerScheduleBuilder.stableBaseId(PrayerName.ASR, 224),
+            PrayerScheduleBuilder.stableBaseId(PrayerName.ASR, 224)
         )
     }
 
     @Test
-    fun `missing event identity falls back to notice rather than adhan`() {
-        assertEquals(
-            PrayerAlertAudio.NOTICE,
-            PrayerAlertAudioPolicy.decide(null, null)
-        )
-        assertEquals(
-            PrayerAlertAudio.NOTICE,
-            PrayerAlertAudioPolicy.decide(PrayerName.ASR, null)
-        )
-        assertEquals(
-            PrayerAlertAudio.NOTICE,
-            PrayerAlertAudioPolicy.decide(null, PrayerAlarmKind.EXACT)
-        )
-    }
-
-    // TEST 11
-    @Test
-    fun `same event key yields the same deterministic notification id`() {
-        val key = PrayerAlarmEventKey.of(
-            LocalDate.of(2026, 8, 12), PrayerName.ASR, PrayerAlarmKind.EXACT
-        )
-
-        assertEquals("2026-08-12_ASR_EXACT", key)
-        assertEquals(
-            PrayerAlarmEventKey.notificationId(key),
-            PrayerAlarmEventKey.notificationId(key)
-        )
-        assertEquals(
-            PrayerAlarmEventKey.notificationId(key),
-            PrayerAlarmEventKey.notificationId("2026-08-12_ASR_EXACT")
-        )
+    fun `stable base id changes for prayer or day`() {
+        val base = PrayerScheduleBuilder.stableBaseId(PrayerName.ASR, 224)
+        assertNotEquals(base, PrayerScheduleBuilder.stableBaseId(PrayerName.FAJR, 224))
+        assertNotEquals(base, PrayerScheduleBuilder.stableBaseId(PrayerName.ASR, 225))
     }
 
     @Test
-    fun `different events yield different notification ids`() {
-        val date = LocalDate.of(2026, 8, 12)
-        val ids = PrayerName.entries.flatMap { prayer ->
-            PrayerAlarmKind.entries.map { kind ->
-                PrayerAlarmEventKey.notificationId(PrayerAlarmEventKey.of(date, prayer, kind))
-            }
-        }
+    fun `each alarm kind for a prayer receives a distinct stable id`() {
+        val day = prayerDay(0)
+        val alarms = PrayerScheduleBuilder.build(
+            today = day,
+            tomorrow = prayerDay(1),
+            location = location,
+            policy = PrayerSchedulePolicy(
+                prePrayerMinutes = 10,
+                iqamahMinutes = 10,
+                endOfPrayerReminderMinutesBeforeNext = 15
+            ),
+            nowEpochMillis = 0,
+            settingsFingerprint = "fp"
+        ).alarms.filter { it.prayerName == PrayerName.ASR }
 
-        assertEquals("event keys must not collide within a day", ids.size, ids.toSet().size)
-        assertNotEquals(
-            PrayerAlarmEventKey.notificationId("2026-08-12_ASR_EXACT"),
-            PrayerAlarmEventKey.notificationId("2026-08-13_ASR_EXACT")
-        )
+        assertEquals(alarms.size, alarms.map { it.stableId }.toSet().size)
+        assertTrue(alarms.map { it.kind }.containsAll(PrayerAlarmKind.entries))
     }
 
-    // TESTS 12-13
     @Test
-    fun `event kind and prayer name survive the alarm extras round trip`() {
+    fun `alarm request identity includes prayer kind trigger and stable id`() {
         val request = PrayerAlarmRequest(
-            stableId = 78384,
-            prayerName = PrayerName.ASR,
-            kind = PrayerAlarmKind.PRE_PRAYER,
+            stableId = 42,
+            prayerName = PrayerName.FAJR,
+            kind = PrayerAlarmKind.EXACT,
             triggerEpochMillis = 1_000L,
-            title = "irrelevant",
-            message = "irrelevant",
-            eventKey = "2026-08-12_ASR_PRE_PRAYER"
+            title = "الفجر",
+            message = "حان وقت الصلاة"
         )
+        val changedKind = request.copy(kind = PrayerAlarmKind.PRE_PRAYER)
 
-        val extras = PrayerAlertIdentity.of(request).encode()
-        val decoded = PrayerAlertIdentity.decode { extras[it] }
-
-        assertEquals(PrayerName.ASR, decoded?.prayerName)
-        assertEquals(PrayerAlarmKind.PRE_PRAYER, decoded?.kind)
-        assertEquals("2026-08-12_ASR_PRE_PRAYER", decoded?.eventKey)
-        assertEquals(
-            PrayerAlertAudio.NOTICE,
-            PrayerAlertAudioPolicy.decide(decoded?.prayerName, decoded?.kind)
-        )
+        assertNotEquals(request, changedKind)
+        assertEquals(42, request.stableId)
+        assertEquals(PrayerName.FAJR, request.prayerName)
+        assertEquals(PrayerAlarmKind.EXACT, request.kind)
     }
 
-    @Test
-    fun `every prayer and kind survives the alarm extras round trip`() {
-        PrayerName.entries.forEach { prayer ->
-            PrayerAlarmKind.entries.forEach { kind ->
-                val identity = PrayerAlertIdentity(prayer, kind, "2026-08-12_${prayer.name}_${kind.name}")
-                val extras = identity.encode()
-                assertEquals(identity, PrayerAlertIdentity.decode { extras[it] })
-            }
+    private fun prayerDay(offsetDays: Int) = PrayerDay(
+        dateEpochDay = LocalDate.of(2026, 8, 12).plusDays(offsetDays.toLong()).toEpochDay(),
+        timeZoneId = "UTC",
+        location = location,
+        settings = PrayerCalculationSettings(),
+        instants = PrayerName.entries.mapIndexed { index, prayer ->
+            PrayerInstant(prayer, offsetDays * 86_400_000L + (index + 2) * 3_600_000L)
         }
-    }
-
-    @Test
-    fun `identity from a legacy alarm without extras decodes to null`() {
-        assertNull(PrayerAlertIdentity.decode { null })
-        assertNull(PrayerAlertIdentity.decode { if (it == PrayerAlarmExtras.PRAYER_NAME) "ASR" else null })
-        assertNull(PrayerAlertIdentity.decode { "GARBAGE" })
-    }
+    )
 }

@@ -19,8 +19,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -38,7 +36,7 @@ import com.example.feature.duas.domain.model.Dua
 fun DuaDetailScreen(
     dua: Dua?,
     onBack: () -> Unit,
-    onToggleFavorite: (Long, Boolean) -> Unit
+    onToggleFavorite: (Long, Boolean) -> Unit,
 ) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
@@ -172,7 +170,7 @@ fun DuaDetailScreen(
                                 modifier = Modifier.padding(vertical = 12.dp),
                                 color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
                             )
-                            DetailRow(label = "المرجع", value = dua.reference.ifBlank { "رواه البخاري" }, icon = Icons.Default.GridView)
+                            DetailRow(label = "المرجع", value = dua.reference.ifBlank { dua.source }, icon = Icons.Default.GridView)
                         }
                     }
 

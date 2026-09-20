@@ -112,9 +112,11 @@ class ReconcilePrayerScheduleUseCaseTest {
             override suspend fun updateMadhhab(madhhab: com.example.feature.prayer.domain.model.PrayerMadhhab) {}
             override suspend fun updateOffsets(offsets: com.example.feature.prayer.domain.model.PrayerOffsets) {}
             override suspend fun updateUseAutoLocation(enabled: Boolean) {}
+            override suspend fun updateManualLocation(city: String, latitude: Double, longitude: Double) {}
             override suspend fun updatePrePrayerMinutes(minutes: Int) {}
             override suspend fun updateIqamahMinutes(minutes: Int) {}
             override suspend fun updateNotificationSoundType(type: String) {}
+            override suspend fun updateNotificationsEnabled(enabled: Boolean) {}
         },
         calculator = AdhanPrayerCalculator(),
         alarmGateway = gateway,

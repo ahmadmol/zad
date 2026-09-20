@@ -18,7 +18,7 @@ private val Context.dataStore by preferencesDataStore(name = "user_preferences")
 
 class UserPreferences(private val context: Context) {
 
-    private val activityDateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    private val activityDateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
     val userName: Flow<String> = context.dataStore.data
         .map { it[KEY_USER_NAME] ?: DEFAULT_USER_NAME }
@@ -40,6 +40,9 @@ class UserPreferences(private val context: Context) {
 
     val adhanSoundUri: Flow<String?> = context.dataStore.data
         .map { it[KEY_ADHAN_SOUND_URI] }
+
+    val userAvatarUri: Flow<String?> = context.dataStore.data
+        .map { it[KEY_USER_AVATAR_URI] }
 
     val favoriteAsmaIds: Flow<Set<String>> = context.dataStore.data
         .map { it[KEY_FAVORITE_ASMA_IDS] ?: emptySet() }
@@ -144,6 +147,16 @@ class UserPreferences(private val context: Context) {
         }
     }
 
+    suspend fun setUserAvatarUri(uri: String?) {
+        context.dataStore.edit { prefs ->
+            if (uri.isNullOrBlank()) {
+                prefs.remove(KEY_USER_AVATAR_URI)
+            } else {
+                prefs[KEY_USER_AVATAR_URI] = uri
+            }
+        }
+    }
+
     suspend fun setFavoriteAsmaIds(ids: Set<String>) {
         context.dataStore.edit { prefs ->
             prefs[KEY_FAVORITE_ASMA_IDS] = ids
@@ -167,6 +180,7 @@ class UserPreferences(private val context: Context) {
 
     private companion object {
         val KEY_USER_NAME = stringPreferencesKey("user_name")
+        val KEY_USER_AVATAR_URI = stringPreferencesKey("user_avatar_uri")
         val KEY_HAS_COMPLETED_ONBOARDING = booleanPreferencesKey("has_completed_onboarding")
         val KEY_LAST_READ_SURAH_ID = intPreferencesKey("last_read_surah_id")
         val KEY_LAST_READ_AYAH_NUMBER = intPreferencesKey("last_read_ayah_number")

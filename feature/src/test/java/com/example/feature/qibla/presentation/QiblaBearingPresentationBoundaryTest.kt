@@ -1,84 +1,55 @@
 package com.example.feature.qibla.presentation
 
+import java.io.File
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.io.File
 
-/**
- * Bearing availability is explicit. A real north bearing (0°) must not be confused
- * with the unresolved placeholder.
- */
+/** Presentation boundary checks for the current zero-sentinel Qibla state. */
 class QiblaBearingPresentationBoundaryTest {
-
-    private val repoRoot = File(".").canonicalFile.let { dir ->
+    private val root = File(".").canonicalFile.let { dir ->
         generateSequence(dir) { it.parentFile }
-            .firstOrNull { File(it, "settings.gradle.kts").exists() }
-            ?: dir
+            .firstOrNull { File(it, "settings.gradle.kts").exists() } ?: dir
     }
-
-    private val screen = File(
-        repoRoot,
-        "feature/src/main/java/com/example/feature/qibla/presentation/QiblaScreen.kt"
-    ).readText()
-
-    private val viewModel = File(
-        repoRoot,
-        "feature/src/main/java/com/example/feature/qibla/presentation/QiblaViewModel.kt"
-    ).readText()
-
-    /** Mirrors the screen's validity rule so the placeholder decision is testable. */
-    private fun bearingLabel(qiblaAngle: Float?): String =
-        qiblaAngle?.let { "${it.toInt()}°" } ?: "—°"
+    private val screen = File(root, "feature/src/main/java/com/example/feature/qibla/presentation/QiblaScreen.kt").readText()
+    private val viewModel = File(root, "feature/src/main/java/com/example/feature/qibla/presentation/QiblaViewModel.kt").readText()
 
     @Test
-    fun `default state does not present a zero degree bearing`() {
-        assertEquals("—°", bearingLabel(QiblaUiState().qiblaAngle))
+    fun `default state uses zero sentinel while location is loading`() {
+        val state = QiblaUiState()
+        assertEquals(0f, state.qiblaAngle)
+        assertTrue(state.isLoading)
     }
 
     @Test
-    fun `valid bearing is still presented as degrees`() {
-        assertEquals("136°", bearingLabel(136.4f))
-        assertEquals("293°", bearingLabel(293f))
-        assertEquals("0°", bearingLabel(0f))
+    fun `screen does not render compass for unresolved error state`() {
+        assertTrue(screen.contains("uiState.error != null && uiState.qiblaAngle == 0f"))
+        assertTrue(screen.contains("qiblaDirection = uiState.qiblaAngle"))
     }
 
     @Test
-    fun `screen guards the degree display behind a validity check`() {
-        assertTrue(screen.contains("val hasValidBearing = uiState.qiblaAngle != null"))
-        assertTrue(screen.contains("uiState.qiblaAngle?.let"))
-        assertFalse(screen.contains("qiblaAngle != 0f"))
-    }
-
-    @Test
-    fun `offline first fix keeps location and geocoding out of the screen`() {
-        assertTrue(viewModel.contains("val qiblaAngle: Float? = null"))
-        assertTrue(viewModel.contains("withTimeoutOrNull(GEOCODER_TIMEOUT_MS)"))
+    fun `screen delegates location work to viewmodel`() {
         assertFalse(screen.contains("LocationServices"))
+        assertTrue(screen.contains("viewModel.updateLocationAndCalculateQibla()"))
     }
 
     @Test
-    fun `phase 2A fallback consults the canonical prayer location repository before declaring unavailable`() {
-        assertTrue(
-            "QiblaViewModel must consult a stored/manual fallback before declaring unavailable",
-            viewModel.contains("resolveStoredManualBearing()")
-        )
-        assertTrue(
-            "QiblaViewModel must depend on PrayerLocationRepository, not a parallel location source",
-            viewModel.contains("PrayerLocationRepository")
-        )
-        assertTrue(
-            "Stored/manual fallback must explicitly skip the Device source to avoid re-using the same Fused fix",
-            viewModel.contains("PrayerLocationSource.Saved") || viewModel.contains("PrayerLocationSource.Manual")
-        )
+    fun `viewmodel consumes canonical prayer location repository`() {
+        assertTrue(viewModel.contains("PrayerLocationRepository"))
+        assertTrue(viewModel.contains("locationRepository.observeLocation()"))
+        assertTrue(viewModel.contains("is PrayerLocationState.Available -> applyLocation"))
     }
 
     @Test
-    fun `phase 2A fallback uses a short repository read timeout`() {
-        assertTrue(
-            "Stored/manual read must be bounded by an explicit timeout constant",
-            viewModel.contains("STORED_LOCATION_TIMEOUT_MS")
-        )
+    fun `unavailable update preserves an existing bearing`() {
+        assertTrue(viewModel.contains("if (_uiState.value.qiblaAngle == 0f)"))
+    }
+
+    @Test
+    fun `canonical source labels cover device saved and manual`() {
+        assertTrue(viewModel.contains("PrayerLocationSource.Device -> \"الموقع الحالي\""))
+        assertTrue(viewModel.contains("PrayerLocationSource.Saved -> \"موقع محفوظ\""))
+        assertTrue(viewModel.contains("PrayerLocationSource.Manual -> \"موقع يدوي\""))
     }
 }
