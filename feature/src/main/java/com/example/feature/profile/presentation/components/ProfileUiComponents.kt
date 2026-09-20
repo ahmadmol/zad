@@ -6,7 +6,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,6 +58,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -86,9 +86,9 @@ fun ProfileHeroHeader(
     onNotificationClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isDark = isSystemInDarkTheme()
-    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
-    val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else Color(0xFF1B535D)
+    val isDark = IhsanTheme.isDark
+    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else IhsanTheme.colors.brand
+    val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else IhsanTheme.colors.brand.copy(alpha = 0.82f)
     val surfaceColor = IhsanTheme.colors.surfaceBase
 
     Box(
@@ -253,12 +253,13 @@ fun ProfileHeroHeader(
 fun ProfileAvatarOverlay(
     userName: String,
     onEditClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    avatarModel: Any? = null
 ) {
-    val isDark = isSystemInDarkTheme()
+    val isDark = IhsanTheme.isDark
     val initial = profileInitialFromName(userName)
-    val iconColor = if (isDark) IhsanTheme.colors.selectedContent else Color(0xFF003B46)
-    val badgeBg = if (isDark) IhsanTheme.colors.selectedContainer else Color(0xFF003B46)
+    val iconColor = if (isDark) IhsanTheme.colors.selectedContent else IhsanTheme.colors.brand
+    val badgeBg = if (isDark) IhsanTheme.colors.selectedContainer else IhsanTheme.colors.brand
     val badgeIconTint = if (isDark) IhsanTheme.colors.selectedContent else Color.White
 
     Box(
@@ -282,7 +283,16 @@ fun ProfileAvatarOverlay(
                     .fillMaxSize()
                     .background(IhsanTheme.colors.surfaceMint)
             ) {
-                if (userName.isNotBlank() && userName != "زائر") {
+                if (avatarModel != null) {
+                    AsyncImage(
+                        model = avatarModel,
+                        contentDescription = "صورة الملف الشخصي",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape)
+                    )
+                } else if (userName.isNotBlank() && userName != "زائر") {
                     Text(
                         text = initial,
                         color = iconColor,
@@ -334,8 +344,8 @@ fun ProfileAvatarOverlay(
 fun ProfileTitleHeader(
     modifier: Modifier = Modifier
 ) {
-    val isDark = isSystemInDarkTheme()
-    val titleColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
+    val isDark = IhsanTheme.isDark
+    val titleColor = if (isDark) IhsanTheme.colors.textPrimary else IhsanTheme.colors.brand
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -369,9 +379,9 @@ fun ProfileGroupedSection(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val isDark = isSystemInDarkTheme()
-    val titleColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
-    val iconColor = if (isDark) IhsanTheme.colors.selectedContent else Color(0xFF003B46)
+    val isDark = IhsanTheme.isDark
+    val titleColor = if (isDark) IhsanTheme.colors.textPrimary else IhsanTheme.colors.brand
+    val iconColor = if (isDark) IhsanTheme.colors.selectedContent else IhsanTheme.colors.brand
 
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -437,9 +447,9 @@ fun ProfileSettingRow(
     customIconComposable: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null
 ) {
-    val isDark = isSystemInDarkTheme()
-    val titleColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
-    val iconColor = if (isDark) IhsanTheme.colors.selectedContent else Color(0xFF003B46)
+    val isDark = IhsanTheme.isDark
+    val titleColor = if (isDark) IhsanTheme.colors.textPrimary else IhsanTheme.colors.brand
+    val iconColor = if (isDark) IhsanTheme.colors.selectedContent else IhsanTheme.colors.brand
 
     Row(
         modifier = modifier
@@ -517,8 +527,8 @@ fun ProfileSettingRow(
 fun FontIconAa(
     modifier: Modifier = Modifier
 ) {
-    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
-    val iconColor = if (isDark) IhsanTheme.colors.selectedContent else Color(0xFF003B46)
+    val isDark = IhsanTheme.isDark
+    val iconColor = if (isDark) IhsanTheme.colors.selectedContent else IhsanTheme.colors.brand
     Text(
         text = "Aa",
         fontSize = 15.sp,

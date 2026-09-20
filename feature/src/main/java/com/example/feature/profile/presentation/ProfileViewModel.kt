@@ -3,6 +3,7 @@ package com.example.feature.profile.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.feature.azkar.data.local.SettingsManager
+import com.example.feature.core.preferences.UserPreferences
 import com.example.feature.ehsan.domain.model.Donation
 import com.example.feature.ehsan.domain.repository.UserRepository
 import com.example.feature.ehsan.domain.usecase.DeleteDonationUseCase
@@ -21,6 +22,7 @@ data class ProfileUiState(
     val myDonations: List<Donation> = emptyList(),
     val userName: String = "زائر",
     val userPhone: String = "",
+    val avatarUrl: String? = null,
     val isLoading: Boolean = false,
     val isUserLoggedIn: Boolean = false,
     val isDarkMode: Boolean = false,
@@ -34,7 +36,8 @@ class ProfileViewModel(
     private val updateDonationStatusUseCase: UpdateDonationStatusUseCase,
     private val deleteDonationUseCase: DeleteDonationUseCase,
     private val userRepository: UserRepository,
-    private val settingsManager: SettingsManager
+    private val settingsManager: SettingsManager,
+    private val userPreferences: UserPreferences
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState(isLoading = true))
@@ -47,15 +50,17 @@ class ProfileViewModel(
     private fun observeUserAndSettings() {
         combine(
             userRepository.getUser(),
+            userPreferences.userAvatarUri,
             settingsManager.darkModeFlow,
             settingsManager.fontSizeFlow,
             settingsManager.manualLocationCityFlow
-        ) { user, darkMode, fontSize, city ->
+        ) { user, avatarUri, darkMode, fontSize, city ->
             val fullName = if (user != null) "${user.firstName} ${user.lastName}".trim() else "زائر"
             _uiState.update {
                 it.copy(
                     userName = if (fullName.isNotBlank()) fullName else "زائر",
                     userPhone = user?.phoneNumber ?: "",
+                    avatarUrl = if (user != null) avatarUri else null,
                     isUserLoggedIn = user != null,
                     isDarkMode = darkMode,
                     fontSize = fontSize,
@@ -95,6 +100,7 @@ class ProfileViewModel(
     fun logout() {
         viewModelScope.launch {
             userRepository.logout()
+            userPreferences.setUserAvatarUri(null)
         }
     }
 

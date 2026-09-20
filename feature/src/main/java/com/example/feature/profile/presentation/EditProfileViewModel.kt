@@ -1,8 +1,11 @@
 package com.example.feature.profile.presentation
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.example.feature.core.preferences.UserPreferences
+import com.example.feature.ehsan.data.image.EhsanImageStore
 import com.example.feature.ehsan.domain.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,13 +14,16 @@ import kotlinx.coroutines.launch
 
 class EditProfileViewModel(
     private val userRepository: UserRepository,
+    private val userPreferences: UserPreferences,
+    private val imageStore: EhsanImageStore,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
         EditProfileUiState(
             name = savedStateHandle[KEY_NAME] ?: "",
             city = savedStateHandle[KEY_CITY] ?: "",
-            address = savedStateHandle[KEY_ADDRESS] ?: ""
+            address = savedStateHandle[KEY_ADDRESS] ?: "",
+            avatarUrl = savedStateHandle[KEY_AVATAR]
         )
     )
     val uiState = _uiState.asStateFlow()
@@ -29,12 +35,14 @@ class EditProfileViewModel(
     private fun loadUserData() {
         viewModelScope.launch {
             val user = userRepository.getUser().first()
+            val savedAvatar = userPreferences.userAvatarUri.first()
             user?.let {
                 _uiState.value = _uiState.value.copy(
                     name = savedStateHandle[KEY_NAME] ?: "${it.firstName} ${it.lastName}",
                     phone = it.phoneNumber,
                     city = savedStateHandle[KEY_CITY] ?: it.city,
-                    address = savedStateHandle[KEY_ADDRESS] ?: it.address
+                    address = savedStateHandle[KEY_ADDRESS] ?: it.address,
+                    avatarUrl = savedStateHandle[KEY_AVATAR] ?: savedAvatar
                 )
             }
         }
@@ -55,6 +63,25 @@ class EditProfileViewModel(
         _uiState.value = _uiState.value.copy(address = newAddress)
     }
 
+    fun onAvatarSelected(uri: Uri) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            val persistedRef = imageStore.persist(uri)
+            if (persistedRef != null) {
+                savedStateHandle[KEY_AVATAR] = persistedRef
+                _uiState.value = _uiState.value.copy(
+                    avatarUrl = persistedRef,
+                    isLoading = false
+                )
+            } else {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = "فشل في حفظ الصورة"
+                )
+            }
+        }
+    }
+
     fun saveChanges() {
         if (_uiState.value.name.isBlank()) {
             _uiState.value = _uiState.value.copy(errorMessage = "الاسم الكامل مطلوب")
@@ -73,9 +100,12 @@ class EditProfileViewModel(
                     city = _uiState.value.city,
                     address = _uiState.value.address
                 )
+                userPreferences.setUserAvatarUri(_uiState.value.avatarUrl)
+
                 savedStateHandle.remove<String>(KEY_NAME)
                 savedStateHandle.remove<String>(KEY_CITY)
                 savedStateHandle.remove<String>(KEY_ADDRESS)
+                savedStateHandle.remove<String>(KEY_AVATAR)
                 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -98,5 +128,6 @@ class EditProfileViewModel(
         private const val KEY_NAME = "edit_profile_name"
         private const val KEY_CITY = "edit_profile_city"
         private const val KEY_ADDRESS = "edit_profile_address"
+        private const val KEY_AVATAR = "edit_profile_avatar"
     }
 }

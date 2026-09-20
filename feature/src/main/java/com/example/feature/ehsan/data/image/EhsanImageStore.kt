@@ -2,6 +2,7 @@ package com.example.feature.ehsan.data.image
 
 import android.content.Context
 import android.net.Uri
+import com.example.feature.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -67,8 +68,13 @@ class EhsanImageStore(
      * URI strings written before Phase 8. Returns `null` when an app-owned file is
      * missing, so the UI can show its empty state instead of a broken image.
      */
-    fun resolve(reference: String?): Uri? {
+    fun resolve(reference: String?): Any? {
         if (reference.isNullOrBlank()) return null
+        when (reference.removePrefix("drawable/")) {
+            "ihsan_ehsan_school_backpack" -> return R.drawable.ihsan_ehsan_school_backpack
+            "ihsan_ehsan_care_support" -> return R.drawable.ihsan_ehsan_care_support
+            "ihsan_ehsan_winter_clothes" -> return R.drawable.ihsan_ehsan_winter_clothes
+        }
         if (!reference.startsWith(REFERENCE_PREFIX)) {
             // Legacy value (content:// or file://) — hand it back unchanged.
             return runCatching { Uri.parse(reference) }.getOrNull()

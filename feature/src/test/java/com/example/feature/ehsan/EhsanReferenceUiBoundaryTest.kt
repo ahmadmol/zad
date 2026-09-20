@@ -41,14 +41,10 @@ class EhsanReferenceUiBoundaryTest {
         ).readText()
         assertTrue(screen.contains("EhsanViewModel"))
         assertTrue(screen.contains("onSearchQueryChange"))
-        assertTrue(screen.contains("onLocationChange"))
-        assertTrue(screen.contains("onCategoryChange"))
         assertTrue(screen.contains("onTypeChange"))
-        // The local-board honesty composable is intentionally NOT rendered
-        // on the Ehsan screen in the Clean UI v2 brief. The symbol remains
-        // in the components file so any future opt-in (e.g. an "About this
-        // board" disclosure) can still surface it.
+        assertTrue(screen.contains("onSortChange"))
         assertTrue(components.contains("LocalBoardNoticeCard"))
+        assertTrue(screen.contains("LocalBoardNoticeCard()"))
         assertFalse(screen.contains("\"١٢\""))
         assertFalse(screen.contains("trust"))
         assertFalse(screen.contains("موثق"))
@@ -66,14 +62,11 @@ class EhsanReferenceUiBoundaryTest {
         ).readText()
 
         // Ehsan is a root bottom-navigation destination: the icon is opt-in and off by default.
-        assertTrue(components.contains("onBack: (() -> Unit)? = null"))
-        assertTrue(components.contains("if (onBack != null)"))
         assertTrue(screen.contains("showNavigationIcon: Boolean = false"))
-        assertTrue(screen.contains("onNavigateBack.takeIf { showNavigationIcon }"))
         // The callback itself is preserved, not deleted.
         assertTrue(screen.contains("onNavigateBack: () -> Unit = {}"))
-        // The composable is not removed.
-        assertTrue(components.contains("fun EhsanTopBar("))
+        // The root screen does not render an inline back affordance.
+        assertFalse(screen.contains("EhsanTopBar("))
     }
 
     @Test
