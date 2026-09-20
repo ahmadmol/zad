@@ -53,7 +53,7 @@ fun HomeLiveStreamCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(108.dp)
+            .height(120.dp)
             .semantics(mergeDescendants = true) {
                 role = Role.Button
                 contentDescription = "$liveTitle، $liveSubtitle"
@@ -91,7 +91,7 @@ fun HomeLiveStreamCard(
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -100,33 +100,33 @@ fun HomeLiveStreamCard(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = liveTitle,
-                        fontSize = 16.sp,
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
-                    Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = liveSubtitle,
-                        fontSize = 10.5.sp,
-                        color = Color.White.copy(alpha = 0.85f),
+                        fontSize = 12.5.sp,
+                        color = Color.White.copy(alpha = 0.90f),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        lineHeight = 14.sp
+                        lineHeight = 16.sp
                     )
                 }
 
-                Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.width(12.dp))
 
                 // Translucent Circular Play Button (Left side in RTL)
                 Box(
                     modifier = Modifier
-                        .size(38.dp)
+                        .size(44.dp)
                         .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.2f))
-                        .border(0.8.dp, Color.White.copy(alpha = 0.5f), CircleShape)
+                        .background(Color.White.copy(alpha = 0.22f))
+                        .border(1.dp, Color.White.copy(alpha = 0.6f), CircleShape)
                         .clickable(onClick = onLiveClick),
                     contentAlignment = Alignment.Center
                 ) {
@@ -134,7 +134,7 @@ fun HomeLiveStreamCard(
                         imageVector = Icons.Default.PlayArrow,
                         contentDescription = liveTitle,
                         tint = Color.White,
-                        modifier = Modifier.size(22.dp)
+                        modifier = Modifier.size(26.dp)
                     )
                 }
             }

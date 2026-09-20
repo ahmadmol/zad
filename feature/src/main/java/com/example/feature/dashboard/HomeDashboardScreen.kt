@@ -38,10 +38,10 @@ import com.example.feature.dashboard.presentation.components.HomeContextualHero
 import com.example.feature.dashboard.presentation.components.HomeDailyJourneyCard
 import com.example.feature.dashboard.presentation.components.HomeDiscoverServicesGrid
 import com.example.feature.dashboard.presentation.components.HomeEhsanCommunityCard
-import com.example.feature.dashboard.presentation.components.HomeLiveStreamCard
 import com.example.feature.dashboard.presentation.components.HomeQuranContinueCard
 import com.example.feature.dashboard.presentation.components.HomeRefreshErrorNotice
 import com.example.feature.dashboard.presentation.components.HomeSectionStateNotice
+import com.example.feature.dashboard.presentation.components.HomeThreeGlassCards
 import com.example.feature.prayer.presentation.CitySelectionBottomSheet
 import com.example.feature.prayer.presentation.PrayerDetailsBottomSheet
 import com.example.feature.prayer.presentation.PrayerSettingsBottomSheet
@@ -71,6 +71,9 @@ fun HomeDashboardScreen(
     onNavigateToHaramLive: () -> Unit = {},
     onNavigateToNabawiLive: () -> Unit = {},
     onNavigateToStatistics: () -> Unit = {},
+    onNavigateToSanhya: () -> Unit = {},
+    onNavigateToNabiIhsan: () -> Unit = {},
+    onNavigateToFahm: () -> Unit = {},
     @Suppress("UNUSED_PARAMETER") onNavigateToIhsanPlusDaily: (() -> Unit)? = null,
     onContinueLastRead: (surahId: Int, ayahNumber: Int) -> Unit = { _, _ -> }
 ) {
@@ -83,10 +86,14 @@ fun HomeDashboardScreen(
         onNavigateToDua, onNavigateToHadith, onNavigateToAsma,
         onNavigateToTasbih, onNavigateToHaramLive, onNavigateToNabawiLive,
         onNavigateToPrayer, onNavigateToSearch, onNavigateToDailyActivities,
-        onNavigateToReminders, onNavigateToStatistics, onNavigateToDonations
+        onNavigateToReminders, onNavigateToStatistics, onNavigateToDonations,
+        onNavigateToSanhya, onNavigateToNabiIhsan, onNavigateToFahm
     ) {
         { route ->
             when (route) {
+                "fahm" -> onNavigateToFahm()
+                "nabi_ihsan" -> onNavigateToNabiIhsan()
+                "sanhya" -> onNavigateToSanhya()
                 "qibla" -> onNavigateToQibla()
                 "quran" -> onNavigateToQuran()
                 "azkar" -> onNavigateToAzkar()
@@ -180,7 +187,7 @@ fun HomeDashboardScreen(
                     onRetry = { viewModel.onAction(HomeDashboardAction.OnRetryPrayer) }
                 )
 
-                // 2.1 Continue / Start Quran Card
+                // 2.1 Continue / Start Quran Card (Requirement 2)
                 HomeQuranContinueCard(
                     surahName = uiState.data.lastReadSurahName,
                     surahId = uiState.data.lastReadSurahId,
@@ -189,30 +196,28 @@ fun HomeDashboardScreen(
                     onStartQuranClick = onNavigateToQuran
                 )
 
-                // 2.2 Daily Journey ("مسيرتك اليوم")
+                // 2.2 Journey Card ("رحلتي مع الإحسان") (Requirement 3)
                 HomeDailyJourneyCard(
-                    activities = uiState.data.dailyActivities,
                     onGoToChecklist = onNavigateToDailyActivities
                 )
 
-                // 2.3 Ehsan in Your Community ("إحسان في مجتمعك")
+                // 2.3 Three Glass Cards (القرآن الكريم / أذكار الصباح / أذكار المساء) (Requirement 4)
+                HomeThreeGlassCards(
+                    onNavigateToQuran = onNavigateToQuran,
+                    onNavigateToAzkar = onNavigateToAzkar
+                )
+
+                // 2.4 Ehsan Community Donation Card ("عروض التبرع والمساعدة") (Requirement 5)
                 HomeEhsanCommunityCard(
-                    offersCount = uiState.data.communityOffersCount,
-                    requestsCount = uiState.data.communityRequestsCount,
                     onNavigateToDonations = onNavigateToDonations
                 )
 
-                // 2.4 Live Content Banner ("البث المباشر")
-                HomeLiveStreamCard(
-                    onLiveClick = { showLiveChooser = true }
-                )
-
-                // 2.5 Discover Services ("اكتشف الخدمات")
+                // 2.5 Discover Services ("الخدمات") (Requirement 6)
                 HomeDiscoverServicesGrid(
                     onServiceClick = onActionClick
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }

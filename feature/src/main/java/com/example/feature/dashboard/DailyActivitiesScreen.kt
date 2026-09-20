@@ -3,10 +3,14 @@ package com.example.feature.dashboard
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,7 +25,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -30,10 +33,10 @@ import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.BrightnessLow
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.ChevronLeft
-import androidx.compose.material.icons.filled.SelfImprovement
+import androidx.compose.material.icons.filled.NightsStay
 import androidx.compose.material.icons.filled.Today
 import androidx.compose.material.icons.filled.VolunteerActivism
+import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -47,9 +50,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -57,8 +63,10 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.designsystem.component.DailyProgressSummary
 import com.example.designsystem.component.IhsanEmptyState
 import com.example.designsystem.component.IhsanErrorState
@@ -134,53 +142,63 @@ fun DailyActivitiesScreen(
 
 @Composable
 private fun DailyActivitiesHero(onBack: () -> Unit) {
-    val colors = IhsanTheme.colors
+    val isDark = isSystemInDarkTheme()
+    val heroTextColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF073E46)
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(colors.surfaceMint, colors.surfaceBase)
-                )
-            )
-            .statusBarsPadding()
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-            .heightIn(min = 82.dp),
-        contentAlignment = Alignment.Center
+            .heightIn(min = 110.dp)
     ) {
-        IconButton(
-            onClick = onBack,
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .size(48.dp)
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.cd_back),
-                tint = colors.textPrimary
-            )
-        }
+        Image(
+            painter = painterResource(id = R.drawable.ihsan_home_hero_background),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
 
-        Column(
-            modifier = Modifier.padding(horizontal = 52.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .padding(horizontal = 8.dp, vertical = 12.dp)
         ) {
-            Text(
-                text = stringResource(R.string.daily_activities_title),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                color = colors.textPrimary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(modifier = Modifier.height(3.dp))
-            Text(
-                text = stringResource(R.string.daily_activities_subtitle),
-                style = MaterialTheme.typography.bodySmall,
-                color = colors.textSecondary,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.cd_back),
+                    tint = heroTextColor
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 52.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(R.string.daily_activities_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = heroTextColor,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = stringResource(R.string.daily_activities_subtitle),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = heroTextColor.copy(alpha = 0.85f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }
@@ -195,46 +213,96 @@ private fun DailyActivitiesContent(
         doneCount = activities.count { it.isCompleted }
     )
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 14.dp, end = 14.dp, top = 6.dp, bottom = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        item {
-            DailySummaryCard(summary = summary)
-        }
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val density = LocalDensity.current
+        val isNarrow = this.maxWidth < 340.dp || density.fontScale > 1.15f
 
-        item {
-            Text(
-                text = stringResource(R.string.daily_activities_list_title),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = IhsanTheme.colors.textPrimary,
-                modifier = Modifier.padding(top = 6.dp, bottom = 2.dp)
-            )
-        }
-
-        items(
-            items = activities,
-            key = { it.id }
-        ) { activity ->
-            DailyActivityRow(
-                activity = activity,
-                onClick = { onActivityOpenRoute(activity.route) }
-            )
-        }
-
-        if (summary.totalCount > 0 && summary.doneCount == summary.totalCount) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            // 1. Today Summary Card
             item {
-                Text(
-                    text = stringResource(R.string.daily_activities_all_complete),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = IhsanTheme.colors.success,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 6.dp),
-                )
+                DailySummaryCard(summary = summary)
+            }
+
+            // 2. Activities Section Title
+            item {
+                Column(modifier = Modifier.padding(top = 4.dp)) {
+                    Text(
+                        text = stringResource(R.string.daily_activities_list_title),
+                        style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
+                        fontWeight = FontWeight.Bold,
+                        color = IhsanTheme.colors.textPrimary
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = stringResource(R.string.daily_activities_list_subtitle),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = IhsanTheme.colors.textSecondary
+                    )
+                }
+            }
+
+            // 3. Grid / List of Activity Cards
+            if (isNarrow) {
+                items(
+                    count = activities.size,
+                    key = { index -> activities[index].id }
+                ) { index ->
+                    val activity = activities[index]
+                    DailyActivityGridCard(
+                        activity = activity,
+                        onClick = { onActivityOpenRoute(activity.route) }
+                    )
+                }
+            } else {
+                val chunks = activities.chunked(2)
+                items(
+                    count = chunks.size,
+                    key = { index -> chunks[index].first().id }
+                ) { rowIndex ->
+                    val rowItems = chunks[rowIndex]
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        rowItems.forEach { activity ->
+                            Box(modifier = Modifier.weight(1f)) {
+                                DailyActivityGridCard(
+                                    activity = activity,
+                                    onClick = { onActivityOpenRoute(activity.route) }
+                                )
+                            }
+                        }
+                        if (rowItems.size == 1) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+
+            // 4. All complete praise banner if applicable
+            if (summary.totalCount > 0 && summary.doneCount == summary.totalCount) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(IhsanTheme.colors.success.copy(alpha = 0.12f))
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.daily_activities_all_complete),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = IhsanTheme.colors.success,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
             }
         }
     }
@@ -255,6 +323,12 @@ private fun DailySummaryCard(summary: DailyProgressSummary) {
         summary.percentage
     )
 
+    val dynamicCopy = when (summary.doneCount) {
+        0 -> stringResource(R.string.daily_activities_summary_copy_0)
+        summary.totalCount -> stringResource(R.string.daily_activities_summary_copy_complete)
+        else -> stringResource(R.string.daily_activities_summary_copy_progress)
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -267,7 +341,7 @@ private fun DailySummaryCard(summary: DailyProgressSummary) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 18.dp, vertical = 14.dp),
+                .padding(horizontal = 18.dp, vertical = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -280,20 +354,34 @@ private fun DailySummaryCard(summary: DailyProgressSummary) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
+                    text = "${summary.doneCount} / ${summary.totalCount}",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = colors.progressActive
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
                     text = stringResource(
                         R.string.daily_activities_summary_count,
                         summary.doneCount,
                         summary.totalCount
                     ),
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = colors.textSecondary
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = dynamicCopy,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = colors.progressActive
                 )
             }
 
             Spacer(modifier = Modifier.width(16.dp))
 
             Box(
-                modifier = Modifier.size(68.dp),
+                modifier = Modifier.size(72.dp),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(
@@ -301,66 +389,67 @@ private fun DailySummaryCard(summary: DailyProgressSummary) {
                     modifier = Modifier.fillMaxSize(),
                     color = colors.progressActive,
                     trackColor = colors.progressTrack,
-                    strokeWidth = 6.dp,
+                    strokeWidth = 7.dp,
                     strokeCap = StrokeCap.Round
                 )
-                Text(
-                    text = stringResource(
-                        R.string.daily_activities_percentage,
-                        summary.percentage
-                    ),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = colors.textPrimary
-                )
+
+                if (summary.totalCount > 0 && summary.doneCount == summary.totalCount) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(colors.success),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                } else {
+                    Text(
+                        text = "${summary.doneCount}/${summary.totalCount}",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun DailyActivityRow(
+private fun DailyActivityGridCard(
     activity: HomeDailyActivityItem,
     onClick: () -> Unit
 ) {
     val colors = IhsanTheme.colors
-    val progress by animateFloatAsState(
+    val animatedProgress by animateFloatAsState(
         targetValue = activityProgress(activity),
         animationSpec = tween(PROGRESS_ANIMATION_MILLIS),
         label = "${activity.id}-progress"
     )
-    val progressLabel = if (activity.targetCount > 0) {
-        stringResource(
-            R.string.daily_activities_item_progress,
-            activity.currentCount,
-            activity.targetCount,
-            activity.unit
-        )
-    } else {
-        stringResource(
-            R.string.daily_activities_item_count,
-            activity.currentCount,
-            activity.unit
-        )
+
+    val statusText = when {
+        activity.isCompleted -> stringResource(R.string.daily_activities_completed)
+        activity.currentCount > 0 -> "${activity.currentCount} / ${activity.targetCount}"
+        else -> stringResource(R.string.daily_activities_not_started)
     }
-    val completionLabel = stringResource(
-        if (activity.isCompleted) {
-            R.string.daily_activities_completed
-        } else {
-            R.string.daily_activities_not_completed
-        }
-    )
+
     val semanticLabel = stringResource(
         R.string.daily_activities_item_semantics,
         activity.title,
-        progressLabel,
-        completionLabel
+        statusText,
+        if (activity.isCompleted) stringResource(R.string.daily_activities_completed) else stringResource(R.string.daily_activities_not_completed)
     )
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 80.dp)
+            .heightIn(min = 104.dp)
             .clickable(onClick = onClick)
             .clearAndSetSemantics {
                 contentDescription = semanticLabel
@@ -370,95 +459,107 @@ private fun DailyActivityRow(
                     true
                 }
             },
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = colors.surfaceElevated),
         border = BorderStroke(
             width = 1.dp,
             color = if (activity.isCompleted) {
-                colors.success.copy(alpha = 0.42f)
+                colors.success.copy(alpha = 0.35f)
             } else {
                 colors.borderSubtle
             }
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 11.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(14.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(46.dp)
-                    .clip(CircleShape)
-                    .background(activityIconContainer(activity.id)),
-                contentAlignment = Alignment.Center
+            // Top Row: Icon on start, state indicator on end
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = activityIcon(activity.id),
-                    contentDescription = null,
-                    tint = if (activity.isCompleted) colors.success else colors.progressActive,
-                    modifier = Modifier.size(23.dp)
-                )
-            }
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(activityIconContainer(activity.id)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = activityIcon(activity.id),
+                        contentDescription = null,
+                        tint = if (activity.isCompleted) colors.success else colors.progressActive,
+                        modifier = Modifier.size(21.dp)
+                    )
+                }
 
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = activity.title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = colors.textPrimary,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.height(3.dp))
-                Text(
-                    text = progressLabel,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (activity.isCompleted) colors.success else colors.textSecondary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Box(modifier = Modifier.size(32.dp), contentAlignment = Alignment.Center) {
-                if (activity.isCompleted) {
-                    Box(
-                        modifier = Modifier
-                            .size(28.dp)
-                            .clip(CircleShape)
-                            .background(colors.success.copy(alpha = 0.14f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null,
-                            tint = colors.success,
-                            modifier = Modifier.size(18.dp)
+                Box(
+                    modifier = Modifier.size(28.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (activity.isCompleted) {
+                        Box(
+                            modifier = Modifier
+                                .size(26.dp)
+                                .clip(CircleShape)
+                                .background(colors.success),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    } else if (activity.currentCount > 0) {
+                        CircularProgressIndicator(
+                            progress = { animatedProgress },
+                            modifier = Modifier.size(26.dp),
+                            color = colors.progressActive,
+                            trackColor = colors.progressTrack,
+                            strokeWidth = 3.dp,
+                            strokeCap = StrokeCap.Round
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clip(CircleShape)
+                                .border(1.5.dp, colors.borderSubtle, CircleShape)
                         )
                     }
-                } else {
-                    CircularProgressIndicator(
-                        progress = { progress },
-                        modifier = Modifier.size(28.dp),
-                        color = colors.progressActive,
-                        trackColor = colors.progressTrack,
-                        strokeWidth = 3.dp,
-                        strokeCap = StrokeCap.Round
-                    )
                 }
             }
 
-            Icon(
-                imageVector = Icons.Default.ChevronLeft,
-                contentDescription = null,
-                tint = colors.textSecondary,
-                modifier = Modifier.size(22.dp)
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = activity.title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = colors.textPrimary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(3.dp))
+
+            Text(
+                text = statusText,
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = if (activity.isCompleted) FontWeight.SemiBold else FontWeight.Normal,
+                color = when {
+                    activity.isCompleted -> colors.success
+                    activity.currentCount > 0 -> colors.textSecondary
+                    else -> colors.textSecondary.copy(alpha = 0.7f)
+                },
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
@@ -494,8 +595,8 @@ private fun activityIconContainer(activityId: String) = when (activityId) {
 
 private fun activityIcon(activityId: String): ImageVector = when (activityId) {
     DailyActivityIds.QURAN_READING -> Icons.AutoMirrored.Filled.MenuBook
-    DailyActivityIds.MORNING_AZKAR,
-    DailyActivityIds.EVENING_AZKAR -> Icons.Default.SelfImprovement
+    DailyActivityIds.MORNING_AZKAR -> Icons.Default.WbSunny
+    DailyActivityIds.EVENING_AZKAR -> Icons.Default.NightsStay
     DailyActivityIds.TASBEEH -> Icons.Default.BrightnessLow
     DailyActivityIds.DAILY_DUA -> Icons.Default.VolunteerActivism
     DailyActivityIds.DAILY_NAME -> Icons.Default.AutoAwesome

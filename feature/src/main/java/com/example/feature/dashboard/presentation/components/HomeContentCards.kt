@@ -1,6 +1,7 @@
 package com.example.feature.dashboard.presentation.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,7 +19,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Card
@@ -33,6 +35,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -49,15 +53,6 @@ import com.example.feature.R
 
 /**
  * Quiet, light "Name of Allah for today" card.
- *
- * v2 - Reduced-information layout:
- *   - Section eyebrow ("اسم اليوم")
- *   - Single Arabic name (large, brand color)
- *   - Short meaning (one line)
- *   - Compact chevron-only CTA pointing to the full Asma list
- *
- * The English transliteration was removed because the card is now used
- * as a quick glance, not a translation reference.
  */
 @Composable
 fun AsmaHighlightCard(
@@ -169,7 +164,7 @@ fun AsmaHighlightCard(
                     )
                     Spacer(modifier = Modifier.size(2.dp))
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(14.dp)
@@ -384,7 +379,7 @@ internal fun HomeShortcutCard(
                     )
                     Spacer(modifier = Modifier.size(4.dp))
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
@@ -408,6 +403,151 @@ internal fun HomeShortcutCard(
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(22.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Requirement 4: Liquid Glass / Glassmorphism 3 Cards:
+ *   1. القرآن الكريم
+ *   2. أذكار الصباح
+ *   3. أذكار المساء
+ */
+@Composable
+fun HomeThreeGlassCards(
+    onNavigateToQuran: () -> Unit,
+    onNavigateToAzkar: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        // 1. Right Card (RTL): القرآن الكريم
+        SingleGlassCard(
+            title = "القرآن الكريم",
+            subtitle = "نور لقلوبنا",
+            imageRes = R.drawable.ihsan_quran_card_background,
+            iconRes = R.drawable.ihsan_icon_quran,
+            onClick = onNavigateToQuran,
+            modifier = Modifier.weight(1f)
+        )
+
+        // 2. Middle Card (RTL): أذكار الصباح
+        SingleGlassCard(
+            title = "أذكار الصباح",
+            subtitle = "ابدأ يومك بذكر الله",
+            imageRes = R.drawable.ihsan_mosque_sunrise_landscape,
+            iconRes = R.drawable.ihsan_icon_prayer_indicator,
+            onClick = onNavigateToAzkar,
+            modifier = Modifier.weight(1f)
+        )
+
+        // 3. Left Card (RTL): أذكار المساء
+        SingleGlassCard(
+            title = "أذكار المساء",
+            subtitle = "اقرأ واطمئن",
+            imageRes = R.drawable.ihsan_live_mosque_sunset,
+            iconRes = R.drawable.ic_azkar_evening,
+            onClick = onNavigateToAzkar,
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun SingleGlassCard(
+    title: String,
+    subtitle: String,
+    imageRes: Int,
+    iconRes: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val darkTealColor = Color(0xFF003B46)
+
+    Card(
+        modifier = modifier
+            .height(148.dp)
+            .semantics(mergeDescendants = true) {
+                role = Role.Button
+                contentDescription = "$title، $subtitle"
+            }
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle.copy(alpha = 0.5f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp)
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Top Image 55%
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1.1f)
+            ) {
+                Image(
+                    painter = painterResource(id = imageRes),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            // Bottom Glass Panel 45%
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .background(Color.White.copy(alpha = 0.90f))
+                    .padding(horizontal = 8.dp, vertical = 6.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = title,
+                            fontSize = 13.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = darkTealColor,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(id = iconRes),
+                                contentDescription = null,
+                                modifier = Modifier.size(13.dp)
+                            )
+                            Spacer(modifier = Modifier.width(3.dp))
+                            Text(
+                                text = subtitle,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = darkTealColor.copy(alpha = 0.75f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = darkTealColor,
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }

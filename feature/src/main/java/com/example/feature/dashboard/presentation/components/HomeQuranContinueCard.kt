@@ -81,17 +81,17 @@ fun HomeQuranContinueCard(
                 contentDescription = "$titleText، $bodyText"
             }
             .clickable(onClick = handleClick),
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle.copy(alpha = 0.5f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(125.dp)
+                .height(144.dp)
         ) {
-            // Background Image: Decorative Quran Card Background
+            // Background Image: Quran background spanning smoothly across card
             Image(
                 painter = painterResource(id = R.drawable.ihsan_quran_card_background),
                 contentDescription = null,
@@ -103,14 +103,14 @@ fun HomeQuranContinueCard(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                    .padding(horizontal = 16.dp, vertical = 14.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Calligraphy Header Text
                 Text(
-                    text = "بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ",
-                    fontSize = 15.sp,
+                    text = "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ",
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = darkTealColor,
                     textAlign = TextAlign.Center,
@@ -121,9 +121,9 @@ fun HomeQuranContinueCard(
                 // Surah & Ayah / Start Info Text
                 Text(
                     text = bodyText,
-                    fontSize = 13.sp,
+                    fontSize = 14.5.sp,
                     fontWeight = FontWeight.Bold,
-                    color = darkTealColor.copy(alpha = 0.85f),
+                    color = darkTealColor.copy(alpha = 0.90f),
                     textAlign = TextAlign.Center,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -132,14 +132,14 @@ fun HomeQuranContinueCard(
                 // Action Button with Quran Icon
                 Button(
                     onClick = handleClick,
-                    shape = RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(22.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = darkTealColor,
                         contentColor = Color.White
                     ),
                     modifier = Modifier
-                        .fillMaxWidth(0.65f)
-                        .height(36.dp)
+                        .fillMaxWidth(0.68f)
+                        .height(42.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -148,12 +148,12 @@ fun HomeQuranContinueCard(
                         Image(
                             painter = painterResource(id = R.drawable.ihsan_icon_quran),
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(20.dp)
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = titleText,
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }

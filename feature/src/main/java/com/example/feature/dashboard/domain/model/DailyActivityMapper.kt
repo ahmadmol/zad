@@ -4,10 +4,10 @@ import com.example.feature.core.preferences.DailyActivityIds
 
 object DailyActivityMapper {
     private val templates = listOf(
-        Template(DailyActivityIds.QURAN_READING, "قراءة قرآن", "مرة", "quran_list"),
+        Template(DailyActivityIds.QURAN_READING, "قراءة القرآن", "مرة", "quran_list"),
         Template(DailyActivityIds.MORNING_AZKAR, "أذكار الصباح", "مرة", "azkar_screen"),
         Template(DailyActivityIds.EVENING_AZKAR, "أذكار المساء", "مرة", "azkar_screen"),
-        Template(DailyActivityIds.TASBEEH, "تسبيح", "حبة", "tasbih_screen"),
+        Template(DailyActivityIds.TASBEEH, "التسبيح", "حبة", "tasbih_screen"),
         Template(DailyActivityIds.DAILY_DUA, "دعاء اليوم", "مرة", "dua_screen"),
         Template(DailyActivityIds.DAILY_NAME, "اسم اليوم", "مرة", "asma_screen")
     )

@@ -1,8 +1,8 @@
 package com.example.feature.dashboard
 
+import com.example.designsystem.theme.IhsanTheme
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -91,7 +91,7 @@ fun GlobalSearchScreen(
     val ehsanState by ehsanViewModel.uiState.collectAsStateWithLifecycle()
 
     val focusManager = LocalFocusManager.current
-    val isDark = isSystemInDarkTheme()
+    val isDark = IhsanTheme.isDark
 
     LaunchedEffect(query) {
         if (query.isNotBlank()) {
@@ -106,7 +106,7 @@ fun GlobalSearchScreen(
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
-            containerColor = if (isDark) DarkSurface else LightCream,
+            containerColor = IhsanTheme.colors.surfaceBase,
             topBar = {
                 // Custom Header with Mosque Skyline Artwork
                 Box(
@@ -144,7 +144,7 @@ fun GlobalSearchScreen(
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = "رجوع",
-                                    tint = if (isDark) Color.White else DeepTeal
+                                    tint = if (isDark) Color.White else IhsanTheme.colors.brand
                                 )
                             }
                             Column(modifier = Modifier.padding(start = 8.dp)) {
@@ -152,12 +152,12 @@ fun GlobalSearchScreen(
                                     text = "البحث",
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (isDark) Color.White else DeepTeal
+                                    color = if (isDark) Color.White else IhsanTheme.colors.brand
                                 )
                                 Text(
                                     text = "ابحث في محتوى إحسان",
                                     fontSize = 12.sp,
-                                    color = if (isDark) Color.White.copy(alpha = 0.8f) else DeepTeal.copy(alpha = 0.8f)
+                                    color = if (isDark) Color.White.copy(alpha = 0.8f) else IhsanTheme.colors.brand.copy(alpha = 0.8f)
                                 )
                             }
                         }
@@ -170,7 +170,7 @@ fun GlobalSearchScreen(
                                 .fillMaxWidth()
                                 .height(52.dp),
                             shape = RoundedCornerShape(26.dp),
-                            color = if (isDark) DarkCardBackground else Color.White,
+                            color = if (isDark) IhsanTheme.colors.surfaceElevated else Color.White,
                             shadowElevation = 2.dp
                         ) {
                             Row(

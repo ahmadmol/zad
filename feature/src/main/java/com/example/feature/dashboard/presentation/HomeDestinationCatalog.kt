@@ -23,7 +23,7 @@ object HomeDestinationCatalog {
         "live_chooser"
     )
 
-    /** Routes shown once in the grouped services carousel. */
+    /** Routes shown once in the grouped services grid. */
     val serviceRoutes: List<String> = listOf(
         "hadith",
         "azkar",
@@ -31,7 +31,11 @@ object HomeDestinationCatalog {
         "prayer",
         "search",
         "daily",
-        "statistics"
+        "statistics",
+        "donations",
+        "fahm",
+        "nabi_ihsan",
+        "sanhya"
     )
 
     /** Every route reachable from a Home tile. */

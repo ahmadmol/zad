@@ -30,6 +30,12 @@ class HomeFeaturePreservationTest {
         )
     }
 
+    private val discoverServices by lazy {
+        read(
+            "feature/src/main/java/com/example/feature/dashboard/presentation/components/HomeDiscoverServicesGrid.kt"
+        )
+    }
+
     private val contentCards by lazy {
         read(
             "feature/src/main/java/com/example/feature/dashboard/presentation/components/HomeContentCards.kt"
@@ -86,10 +92,11 @@ class HomeFeaturePreservationTest {
     @Test
     fun `home does not hide services with take 5`() {
         assertFalse(homeScreen.contains("actions.take(5)"))
-        assertTrue(homeScreen.contains("HomeServicesSection"))
-        assertTrue(quickActions.contains("HomeServicesSection"))
+        assertTrue(homeScreen.contains("HomeDiscoverServicesGrid"))
+        assertTrue(discoverServices.contains("services.chunked(3)"))
+        assertFalse(discoverServices.contains("services.take("))
         assertTrue(
-            quickActions.contains("home_services_title") || quickActions.contains("الخدمات")
+            discoverServices.contains("home_services_title") || quickActions.contains("home_services_title")
         )
     }
 
@@ -129,10 +136,11 @@ class HomeFeaturePreservationTest {
     }
 
     @Test
-    fun `splash uses Fit and not Crop`() {
+    fun `splash crops its full screen background and fits its logo`() {
+        assertTrue(splash.contains("ihsan_splash_background"))
+        assertTrue(splash.contains("splash_ihsan_logo_transparent"))
+        assertTrue(splash.contains("ContentScale.Crop"))
         assertTrue(splash.contains("ContentScale.Fit"))
-        assertFalse(splash.contains("ContentScale.Crop"))
-        assertTrue(splash.contains("aspectRatio"))
     }
 }
 

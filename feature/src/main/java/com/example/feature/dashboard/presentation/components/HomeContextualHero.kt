@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -67,9 +66,9 @@ fun HomeContextualHero(
     onQiblaClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isDark = isSystemInDarkTheme()
-    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
-    val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else Color(0xFF1B535D)
+    val isDark = IhsanTheme.isDark
+    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else IhsanTheme.colors.brand
+    val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else IhsanTheme.colors.brand.copy(alpha = 0.82f)
     val isPrayerUnavailable = currentPrayerName.isBlank() || currentPrayerName == "—"
 
     Box(
@@ -115,22 +114,22 @@ fun HomeContextualHero(
                         Image(
                             painter = painterResource(id = R.drawable.ihsan_icon_location),
                             contentDescription = null,
-                            modifier = Modifier.size(15.dp)
+                            modifier = Modifier.size(17.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = location.ifBlank { stringResource(R.string.default_city) },
-                            fontSize = 13.sp,
+                            fontSize = 14.5.sp,
                             fontWeight = FontWeight.Bold,
                             color = darkTealColor
                         )
                     }
                     Text(
                         text = hijriDate,
-                        fontSize = 10.5.sp,
+                        fontSize = 11.5.sp,
                         color = darkTealSubtext,
                         fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(start = 19.dp)
+                        modifier = Modifier.padding(start = 21.dp)
                     )
                 }
 
@@ -140,19 +139,19 @@ fun HomeContextualHero(
                         painter = painterResource(id = R.drawable.ihsan_brand_mark),
                         contentDescription = null,
                         contentScale = ContentScale.Fit,
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(36.dp)
                     )
                     Spacer(modifier = Modifier.height(1.dp))
                     Text(
                         text = stringResource(R.string.home_hero_title),
-                        fontSize = 17.sp,
+                        fontSize = 19.sp,
                         fontWeight = FontWeight.Bold,
                         color = darkTealColor,
                         letterSpacing = 0.2.sp
                     )
                     Text(
                         text = stringResource(R.string.home_hero_subtitle),
-                        fontSize = 8.5.sp,
+                        fontSize = 10.sp,
                         fontWeight = FontWeight.Medium,
                         color = darkTealSubtext.copy(alpha = 0.85f)
                     )
@@ -177,7 +176,7 @@ fun HomeContextualHero(
                         Image(
                             painter = painterResource(id = R.drawable.ihsan_icon_search),
                             contentDescription = null,
-                            modifier = Modifier.size(22.dp)
+                            modifier = Modifier.size(24.dp)
                         )
                     }
 
@@ -195,7 +194,7 @@ fun HomeContextualHero(
                         Image(
                             painter = painterResource(id = R.drawable.ihsan_icon_notification),
                             contentDescription = null,
-                            modifier = Modifier.size(22.dp)
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }
@@ -263,7 +262,7 @@ fun HomeContextualHero(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
                             .offset(y = (-14).dp)
-                            .size(28.dp)
+                            .size(30.dp)
                     )
                 }
 
@@ -276,8 +275,8 @@ fun HomeContextualHero(
                 ) {
                     Text(
                         text = stringResource(R.string.home_hero_prayer_time_label),
-                        fontSize = 11.sp,
-                        color = Color.White.copy(alpha = 0.82f),
+                        fontSize = 12.5.sp,
+                        color = Color.White.copy(alpha = 0.85f),
                         fontWeight = FontWeight.Medium
                     )
 
@@ -285,7 +284,7 @@ fun HomeContextualHero(
 
                     Text(
                         text = currentPrayerName.ifBlank { "—" },
-                        fontSize = if (isPrayerUnavailable) 22.sp else 30.sp,
+                        fontSize = if (isPrayerUnavailable) 24.sp else 32.sp,
                         fontWeight = if (isPrayerUnavailable) FontWeight.Normal else FontWeight.Bold,
                         color = if (isPrayerUnavailable) Color.White.copy(alpha = 0.6f) else Color.White
                     )
@@ -295,8 +294,8 @@ fun HomeContextualHero(
                     if (countdownText.isNotBlank()) {
                         Text(
                             text = "يتبقى $countdownText",
-                            fontSize = 13.sp,
-                            color = Color.White.copy(alpha = 0.92f),
+                            fontSize = 14.sp,
+                            color = Color.White.copy(alpha = 0.95f),
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -316,22 +315,22 @@ fun HomeContextualHero(
                     ) {
                         Row(
                             modifier = Modifier
-                                .height(32.dp)
+                                .height(34.dp)
                                 .clip(CircleShape)
                                 .background(Color.White.copy(alpha = 0.18f))
                                 .border(0.6.dp, Color.White.copy(alpha = 0.30f), CircleShape)
-                                .padding(horizontal = 12.dp),
+                                .padding(horizontal = 14.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.ihsan_icon_qibla),
                                 contentDescription = null,
-                                modifier = Modifier.size(14.dp)
+                                modifier = Modifier.size(16.dp)
                             )
-                            Spacer(modifier = Modifier.width(5.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = stringResource(R.string.home_hero_qibla_btn),
-                                fontSize = 11.5.sp,
+                                fontSize = 12.5.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = Color.White
                             )
@@ -346,7 +345,7 @@ fun HomeContextualHero(
                         .padding(horizontal = 16.dp)
                 ) {
                     val maxW = this.maxWidth
-                    val sideWidth = minOf(maxW * 0.28f, 105.dp)
+                    val sideWidth = minOf(maxW * 0.28f, 110.dp)
 
                     // RTL Right: Daily Verse
                     Column(
@@ -358,10 +357,10 @@ fun HomeContextualHero(
                     ) {
                         Text(
                             text = dailyVerseText.ifBlank { stringResource(R.string.daily_verse_default) },
-                            fontSize = 10.sp,
-                            color = Color.White.copy(alpha = 0.90f),
+                            fontSize = 11.5.sp,
+                            color = Color.White.copy(alpha = 0.92f),
                             fontWeight = FontWeight.Normal,
-                            lineHeight = 14.sp,
+                            lineHeight = 15.5.sp,
                             maxLines = 3,
                             overflow = TextOverflow.Ellipsis,
                             textAlign = TextAlign.Start
@@ -369,8 +368,8 @@ fun HomeContextualHero(
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = dailyVerseSource.ifBlank { stringResource(R.string.daily_verse_source_default) },
-                            fontSize = 8.5.sp,
-                            color = Color.White.copy(alpha = 0.65f),
+                            fontSize = 9.5.sp,
+                            color = Color.White.copy(alpha = 0.70f),
                             textAlign = TextAlign.Start
                         )
                     }
@@ -379,20 +378,27 @@ fun HomeContextualHero(
                     Column(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .offset(y = 42.dp)
+                            .offset(y = 38.dp)
                             .widthIn(max = sideWidth),
                         horizontalAlignment = Alignment.End
                     ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ihsan_icon_prayer),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(20.dp)
+                                .padding(bottom = 2.dp)
+                        )
                         Text(
                             text = stringResource(R.string.home_hero_next_prayer),
-                            fontSize = 9.sp,
-                            color = Color.White.copy(alpha = 0.75f),
+                            fontSize = 10.5.sp,
+                            color = Color.White.copy(alpha = 0.85f),
                             textAlign = TextAlign.End
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = nextPrayerName.ifBlank { "—" },
-                            fontSize = 14.sp,
+                            fontSize = 15.5.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White,
                             textAlign = TextAlign.End
@@ -401,9 +407,9 @@ fun HomeContextualHero(
                             Spacer(modifier = Modifier.height(1.dp))
                             Text(
                                 text = nextPrayerTime,
-                                fontSize = 11.5.sp,
+                                fontSize = 12.5.sp,
                                 fontWeight = FontWeight.Medium,
-                                color = Color.White.copy(alpha = 0.90f),
+                                color = Color.White.copy(alpha = 0.95f),
                                 textAlign = TextAlign.End
                             )
                         }

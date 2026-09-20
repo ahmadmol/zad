@@ -124,9 +124,9 @@ class RefreshHomeDashboardFailureTest {
             )
         )
 
-        override suspend fun refreshLocation(): Result<Unit> {
+        override suspend fun refreshLocation() {
             refreshCalls++
-            return refreshResult
+            refreshResult.getOrThrow()
         }
 
         override suspend fun updateSettings(settings: PrayerCalculationSettings) = Unit
