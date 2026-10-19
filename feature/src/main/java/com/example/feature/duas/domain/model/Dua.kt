@@ -7,5 +7,8 @@ data class Dua(
     val category: String,
     val source: String,
     val reference: String,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val explanation: String = "",
+    val whenToSay: String = "",
+    val likesCount: String = ""
 )

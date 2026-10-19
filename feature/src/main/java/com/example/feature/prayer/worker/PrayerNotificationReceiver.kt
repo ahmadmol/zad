@@ -23,6 +23,11 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                val enabled = org.koin.core.context.GlobalContext.get()
+                    .get<com.example.feature.prayer.domain.repository.PrayerSettingsRepository>()
+                    .observeSettings().first().notificationsEnabled
+                // A broadcast queued before cancellation must respect the latest setting.
+                if (!enabled) return@launch
                 val soundType = settingsManager.notificationSoundTypeFlow.first()
                 val customAdhanUri = userPreferences.adhanSoundUri.first()
                 AdhanNotificationChannelFactory.showNotification(
@@ -32,6 +37,10 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
                     soundType = soundType,
                     customAdhanUri = customAdhanUri
                 )
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                throw cancelled
+            } catch (failure: Exception) {
+                android.util.Log.e("PrayerNotificationReceiver", "Unable to deliver prayer notification", failure)
             } finally {
                 pendingResult.finish()
             }

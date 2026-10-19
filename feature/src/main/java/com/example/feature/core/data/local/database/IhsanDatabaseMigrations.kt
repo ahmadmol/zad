@@ -76,6 +76,32 @@ object IhsanDatabaseMigrations {
         }
     }
 
+    /** v6 -> v7: local ownership and session state. Never infer ownership from names or phones. */
+    val MIGRATION_6_7 = object : Migration(6, 7) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE donations ADD COLUMN ownerId TEXT")
+            database.execSQL("ALTER TABLE donations ADD COLUMN origin TEXT NOT NULL DEFAULT 'LEGACY'")
+            database.execSQL("ALTER TABLE users ADD COLUMN isActive INTEGER NOT NULL DEFAULT 1")
+            database.execSQL("UPDATE users SET isActive = 0 WHERE id <> (SELECT MIN(id) FROM users)")
+            // Neutralize only exact old bundled sample fingerprints. Preserve rows/IDs and all other legacy data.
+            val samples = listOf(
+                arrayOf("حقائب مدرسية لأطفال حلب", "جمعية الإحسان", "+963912345678", "drawable/ihsan_ehsan_school_backpack"),
+                arrayOf("دعم أدوية لمرضى مزمن", "أبو أحمد", "+963912345679", "drawable/ihsan_ehsan_care_support"),
+                arrayOf("ملابس شتوية للعائلات المحتاجة", "فاعل خير", "+963912345680", "drawable/ihsan_ehsan_winter_clothes")
+            )
+            samples.forEach { sample ->
+                database.execSQL("UPDATE donations SET origin = 'DEMO', ownerId = 'demo:legacy', phoneNumber = '', title = '[DEMO] ' || title, description = 'مثال تجريبي محلي، لا تواصل أو تبرع حقيقي. ' || description WHERE title = ? AND donorName = ? AND phoneNumber = ? AND imageUrl = ?", sample)
+            }
+        }
+    }
+
+    /** Preserve existing behavior for older rows; new forms store the explicit selection. */
+    val MIGRATION_7_8 = object : Migration(7, 8) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE donations ADD COLUMN contactMethod TEXT NOT NULL DEFAULT 'PHONE'")
+        }
+    }
+
     /** All migrations required to reach the current database version from supported sources. */
-    val ALL: Array<Migration> = arrayOf(MIGRATION_2_3, MIGRATION_3_5, MIGRATION_5_6)
+    val ALL: Array<Migration> = arrayOf(MIGRATION_2_3, MIGRATION_3_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
 }

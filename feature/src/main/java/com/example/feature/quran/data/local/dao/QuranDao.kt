@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.example.feature.quran.data.local.entity.AyahEntity
 import com.example.feature.quran.data.local.entity.BookmarkEntity
 import com.example.feature.quran.data.local.entity.SurahEntity
@@ -54,6 +55,24 @@ interface QuranDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAyahs(ayahs: List<AyahEntity>)
+
+    @Query("SELECT * FROM ayahs ORDER BY surahId, verseNumber")
+    suspend fun getAllAyahs(): List<AyahEntity>
+
+    /** Change the edition's text without replacing stable verse IDs or user bookmarks. */
+    @Transaction
+    suspend fun applyCanonicalEdition(canonical: List<AyahEntity>) {
+        val existing = getAllAyahs().associateBy { it.surahId to it.verseNumber }
+        val changed = canonical.mapNotNull { verse ->
+            val old = existing[verse.surahId to verse.verseNumber]
+            when {
+                old == null -> verse
+                old.text != verse.text -> old.copy(text = verse.text)
+                else -> null
+            }
+        }
+        if (changed.isNotEmpty()) insertAyahs(changed)
+    }
 
     // --- Bookmarks ---
 

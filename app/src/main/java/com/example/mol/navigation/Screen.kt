@@ -131,6 +131,9 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     ) {
         fun createRoute(id: Long) = "donation_detail_screen/$id"
     }
+    object ManageListings : Screen("manage_listings/{type}", "إدارة إحسان", Icons.Default.Favorite) {
+        fun createRoute(type: String) = "manage_listings/${if (type == "REQUEST") "REQUEST" else "OFFER"}"
+    }
     object EditProfile : Screen(
         route = "edit_profile",
         title = "تعديل الملف الشخصي",
@@ -226,7 +229,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
         title = "بحث سنحيا بالقرآن",
         icon = Icons.Default.Search
     ) {
-        fun createRoute(query: String = "") = "sanhya_search?query=$query"
+        fun createRoute(query: String = "") = "sanhya_search?query=${android.net.Uri.encode(query)}"
     }
     object SanhyaSettings : Screen(
         route = "sanhya_settings",
@@ -277,7 +280,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
         title = "بحث نبي الإحسان",
         icon = Icons.Default.Search
     ) {
-        fun createRoute(query: String = "") = "nabi_ihsan_search?query=$query"
+        fun createRoute(query: String = "") = "nabi_ihsan_search?query=${android.net.Uri.encode(query)}"
     }
     object NabiIhsanSettings : Screen(
         route = "nabi_ihsan_settings",
@@ -318,7 +321,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
         title = "بحث الفهم عن الله",
         icon = Icons.Default.Search
     ) {
-        fun createRoute(query: String = "") = "fahm_search?query=$query"
+        fun createRoute(query: String = "") = "fahm_search?query=${android.net.Uri.encode(query)}"
     }
     object FahmSaved : Screen(
         route = "fahm_saved?tab={tab}",

@@ -70,7 +70,7 @@ object FahmFixtureData {
             durationText = record.duration,
             coverUrl = "https://i.ytimg.com/vi/${record.videoId}/hqdefault.jpg",
             publishedAt = record.publishedAt,
-            sourceUrl = "https://amrkhaled.net/episode/${1028886 - number}",
+            sourceUrl = "https://www.youtube.com/watch?v=${record.videoId}",
             playlistId = PLAYLIST_ID,
             playlistPosition = number,
             sourceChannelId = OFFICIAL_CHANNEL_ID,

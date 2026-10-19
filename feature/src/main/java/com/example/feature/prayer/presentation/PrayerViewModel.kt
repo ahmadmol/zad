@@ -59,8 +59,9 @@ class PrayerViewModel(
                     PrayerTime(
                         nameAr = instant.name.arabic,
                         nameEn = instant.name.english,
-                        time = SimpleDateFormat("hh:mm a", Locale.getDefault())
-                            .format(Date(instant.epochMillis)),
+                        time = com.example.feature.prayer.presentation.PrayerTimeFormatter.format(
+                            instant.epochMillis, java.time.ZoneId.of(day.timeZoneId), Locale("ar")
+                        ),
                         timestamp = instant.epochMillis,
                         isPast = now > instant.epochMillis && !isActive,
                         isActive = isActive
@@ -75,6 +76,9 @@ class PrayerViewModel(
                     String.format(Locale.US, "%02d:%02d:%02d", h, m, s)
                 } ?: "00:00:00"
 
+                dateFormat.timeZone = java.util.TimeZone.getTimeZone(
+                    day?.timeZoneId ?: java.time.ZoneId.systemDefault().id
+                )
                 _uiState.update {
                     it.copy(
                         prayerTimes = times,

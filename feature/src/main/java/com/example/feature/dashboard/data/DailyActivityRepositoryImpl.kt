@@ -10,37 +10,42 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.transformLatest
-import java.text.SimpleDateFormat
 import java.time.Clock
-import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DailyActivityRepositoryImpl(
     private val userPreferences: UserPreferences,
-    private val clock: Clock = Clock.systemDefaultZone()
+    private val clock: Clock? = null
 ) : DailyActivityRepository {
 
-    private val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    private fun dayFlow() = kotlinx.coroutines.flow.flow {
+        while (true) { emit(todayKey()); kotlinx.coroutines.delay(30_000) }
+    }
 
     override fun observeToday(): Flow<HomeDailyActivitySummary> =
         combine(
             userPreferences.dailyActivityDate,
-            userPreferences.dailyActivityCounts
-        ) { date, counts -> date to counts }
+            userPreferences.dailyActivityCounts,
+            dayFlow()
+        ) { date, counts, today -> Triple(date, counts, today) }
             .distinctUntilChanged()
-            .transformLatest { (date, counts) ->
-                val today = todayKey()
+            .transformLatest { (date, counts, today) ->
                 if (date != today) {
                     userPreferences.resetDailyActivityCounts(today)
-                    return@transformLatest
-                }
-                emit(
-                    HomeDailyActivitySummary(
-                        dateKey = today,
-                        items = DailyActivityMapper.mapItems(counts)
+                    emit(
+                        HomeDailyActivitySummary(
+                            dateKey = today,
+                            items = DailyActivityMapper.mapItems(emptyMap())
+                        )
                     )
-                )
+                } else {
+                    emit(
+                        HomeDailyActivitySummary(
+                            dateKey = today,
+                            items = DailyActivityMapper.mapItems(counts)
+                        )
+                    )
+                }
             }
 
     override suspend fun increment(activityId: String): Result<Unit> = runCatching {
@@ -63,5 +68,6 @@ class DailyActivityRepositoryImpl(
         }
     }
 
-    private fun todayKey(): String = dateFormatter.format(Date.from(clock.instant()))
+    private fun todayKey(): String = (clock?.let { java.time.LocalDate.now(it) }
+        ?: java.time.LocalDate.now()).toString()
 }

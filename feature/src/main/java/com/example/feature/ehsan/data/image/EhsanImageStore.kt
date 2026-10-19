@@ -8,6 +8,9 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
 import java.util.UUID
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.decodeFromString
 
 /**
  * Phase 8A — stable, app-owned image persistence for Ehsan listings.
@@ -70,6 +73,7 @@ class EhsanImageStore(
      */
     fun resolve(reference: String?): Any? {
         if (reference.isNullOrBlank()) return null
+        if (reference.startsWith(ALBUM_PREFIX)) return imageReferences(reference).firstOrNull()?.let(::resolve)
         when (reference.removePrefix("drawable/")) {
             "ihsan_ehsan_school_backpack" -> return R.drawable.ihsan_ehsan_school_backpack
             "ihsan_ehsan_care_support" -> return R.drawable.ihsan_ehsan_care_support
@@ -85,6 +89,10 @@ class EhsanImageStore(
 
     /** Deletes the image owned by [reference]. No-op for legacy/foreign references. */
     suspend fun delete(reference: String?): Boolean = withContext(Dispatchers.IO) {
+        if (reference?.startsWith(ALBUM_PREFIX) == true) {
+            imageReferences(reference).forEach { delete(it) }
+            return@withContext albumFile(reference)?.delete() ?: false
+        }
         val file = fileFor(reference) ?: return@withContext false
         file.exists() && file.delete()
     }
@@ -95,12 +103,27 @@ class EhsanImageStore(
      * @param referencedBy every image reference currently stored in the database.
      * @return the number of orphan files deleted.
      */
+    /** Remove only this listing's unshared owned files; preserve children shared by another album. */
+    suspend fun deleteUnreferenced(reference: String?, protectedBy: Collection<String?>): Int = withContext(Dispatchers.IO) {
+        val protected = protectedBy.flatMap { imageReferences(it) }.toSet()
+        var deleted = 0
+        imageReferences(reference).distinct().filterNot { it in protected }.forEach { if (delete(it)) deleted++ }
+        if (reference?.startsWith(ALBUM_PREFIX) == true && reference !in protectedBy) {
+            if (albumFile(reference)?.delete() == true) deleted++
+        }
+        deleted
+    }
+
     suspend fun cleanupOrphans(referencedBy: Collection<String?>): Int =
         withContext(Dispatchers.IO) {
             val live = referencedBy
                 .filterNotNull()
-                .filter { it.startsWith(REFERENCE_PREFIX) }
-                .map { it.removePrefix(REFERENCE_PREFIX) }
+                .flatMap { reference ->
+                    if (reference.startsWith(ALBUM_PREFIX)) listOf(reference) + imageReferences(reference)
+                    else listOf(reference)
+                }
+                .filter { it.startsWith(REFERENCE_PREFIX) || it.startsWith(ALBUM_PREFIX) }
+                .map { it.removePrefix(REFERENCE_PREFIX).removePrefix(ALBUM_PREFIX) }
                 .toSet()
 
             imagesDir.listFiles()
@@ -108,6 +131,51 @@ class EhsanImageStore(
                 .filter { it.isFile && it.name !in live }
                 .count { it.delete() }
         }
+
+    /** Ordered images. Existing single references remain valid without any Room migration. */
+    fun imageReferences(reference: String?): List<String> {
+        if (reference.isNullOrBlank()) return emptyList()
+        if (!reference.startsWith(ALBUM_PREFIX)) return listOf(reference)
+        return runCatching {
+            val file = albumFile(reference) ?: return emptyList()
+            Json.decodeFromString<List<String>>(file.readText()).also { references ->
+                require(references.size in 1..3 && references.distinct().size == references.size)
+                require(references.all { it.startsWith(REFERENCE_PREFIX) && fileFor(it) != null })
+            }
+        }.getOrDefault(emptyList())
+    }
+
+    /** Copies all images first, then atomically publishes an app-owned manifest. */
+    suspend fun persistAlbum(sources: List<Uri>): String? = withContext(Dispatchers.IO) {
+        require(sources.size <= 3)
+        if (sources.isEmpty()) return@withContext null
+        if (sources.size == 1) return@withContext persist(sources.first())
+        val copied = mutableListOf<String>()
+        val file = File(imagesDir, UUID.randomUUID().toString() + ".json")
+        val temporary = File(imagesDir, file.name + ".tmp")
+        try {
+            for (source in sources) {
+                val reference = persist(source) ?: throw IOException("Image could not be copied")
+                copied += reference
+            }
+            temporary.writeText(Json.encodeToString(copied.toList()))
+            if (!temporary.renameTo(file)) throw IOException("Album could not be saved")
+            ALBUM_PREFIX + file.name
+        } catch (error: Exception) {
+            copied.forEach { fileFor(it)?.delete() }
+            temporary.delete()
+            file.delete()
+            if (error is kotlinx.coroutines.CancellationException) throw error
+            null
+        }
+    }
+
+    private fun albumFile(reference: String): File? {
+        val name = reference.removePrefix(ALBUM_PREFIX)
+        if (!reference.startsWith(ALBUM_PREFIX) || !name.endsWith(".json") ||
+            name.contains('/') || name.contains('\\') || name.contains("..")) return null
+        return File(imagesDir, name)
+    }
 
     /** Resolves a reference to its backing file, guarding against path traversal. */
     private fun fileFor(reference: String?): File? {
@@ -131,10 +199,11 @@ class EhsanImageStore(
 
     companion object {
         const val REFERENCE_PREFIX = "ihsan-image:"
+        const val ALBUM_PREFIX = "ihsan-album:"
         private const val DIR_NAME = "ehsan_images"
 
         /** True when [reference] is owned by this store (as opposed to a legacy URI). */
         fun isOwned(reference: String?): Boolean =
-            reference != null && reference.startsWith(REFERENCE_PREFIX)
+            reference != null && (reference.startsWith(REFERENCE_PREFIX) || reference.startsWith(ALBUM_PREFIX))
     }
 }

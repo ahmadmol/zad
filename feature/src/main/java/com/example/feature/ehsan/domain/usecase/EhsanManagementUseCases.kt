@@ -5,7 +5,7 @@ import com.example.feature.ehsan.domain.repository.EhsanRepository
 import kotlinx.coroutines.flow.Flow
 
 class GetMyDonationsUseCase(private val repository: EhsanRepository) {
-    operator fun invoke(name: String): Flow<List<Donation>> = repository.getMyDonations(name)
+    operator fun invoke(ownerId: String): Flow<List<Donation>> = repository.getMyDonations(ownerId)
 }
 
 class UpdateDonationStatusUseCase(private val repository: EhsanRepository) {

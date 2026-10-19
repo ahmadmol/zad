@@ -42,10 +42,10 @@ class HadithViewModel(
                 "المفضلة" -> it.isFavorite
                 else -> it.category == category
             }
-            categoryOk && (query.isBlank() || it.text.contains(query, ignoreCase = true)
-                    || it.narrator.contains(query, ignoreCase = true)
-                    || it.source.contains(query, ignoreCase = true)
-                    || it.category.contains(query, ignoreCase = true))
+            categoryOk && (query.isBlank() || com.example.feature.core.search.ArabicSearch.matches(it.text, query)
+                    || com.example.feature.core.search.ArabicSearch.matches(it.narrator, query)
+                    || com.example.feature.core.search.ArabicSearch.matches(it.source, query)
+                    || com.example.feature.core.search.ArabicSearch.matches(it.category, query))
         }
 
         val hadithOfTheDay = if (hadiths.isNotEmpty()) {

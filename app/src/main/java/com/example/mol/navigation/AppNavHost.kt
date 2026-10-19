@@ -100,7 +100,13 @@ fun AppNavHost(
         startDestination = Screen.Splash.route,
         modifier = modifier
     ) {
-        composable(route = Screen.Splash.route) {
+        composable(
+            route = Screen.Splash.route,
+            // The root bottom bar becomes visible as soon as Home is selected.
+            // Remove Splash immediately instead of fading it above that bar.
+            exitTransition = { androidx.compose.animation.ExitTransition.None },
+            popExitTransition = { androidx.compose.animation.ExitTransition.None }
+        ) {
             SplashScreen(
                 onNavigateToOnboarding = {
                     navController.navigate(Screen.Onboarding.route) {
@@ -208,7 +214,17 @@ fun AppNavHost(
 
         composable(route = Screen.Tasbih.route) {
             TasbihScreen(
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateHome = {
+                    if (!navController.popBackStack(Screen.Home.route, inclusive = false)) {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Home.route) { inclusive = true }
+                        }
+                    }
+                },
+                onNavigateToStatistics = {
+                    navController.navigate(Screen.Statistics.route)
+                }
             )
         }
 
@@ -218,6 +234,7 @@ fun AppNavHost(
                 onNavigateToQuran = { surahId, ayah -> 
                     navController.navigate(Screen.QuranReader.createRoute(surahId, ayah))
                 },
+                onNavigateToDuaLibrary = { navController.navigate(Screen.Dua.route) },
                 onNavigateToDua = { duaId -> 
                     navController.navigate(Screen.DuaDetail.createRoute(duaId))
                 },
@@ -226,7 +243,21 @@ fun AppNavHost(
                 onNavigateToAsma = { navController.navigate(Screen.Asma.route) },
                 onNavigateToPrayer = { navController.navigate(Screen.Prayer.route) },
                 onNavigateToQibla = { navController.navigate(Screen.Qibla.route) },
-                onNavigateToDonations = { navController.navigate(Screen.Donations.route) }
+                onNavigateToDonations = { navController.navigate(Screen.Donations.route) },
+                onOpenResult = { kind, id ->
+                    val target = when (kind) {
+                        com.example.feature.dashboard.presentation.SearchResultKind.HADITH -> "${Screen.Hadith.route}?hadithId=$id"
+                        com.example.feature.dashboard.presentation.SearchResultKind.ASMA -> "${Screen.Asma.route}?nameId=$id"
+                        com.example.feature.dashboard.presentation.SearchResultKind.ZIKR -> "${Screen.Azkar.route}?zikrId=$id"
+                        com.example.feature.dashboard.presentation.SearchResultKind.COMMUNITY -> Screen.IhsanDetails.createRoute(id.toLong())
+                        com.example.feature.dashboard.presentation.SearchResultKind.SANHYA -> Screen.SanhyaStoryDetail.createRoute(id)
+                        com.example.feature.dashboard.presentation.SearchResultKind.NABI -> Screen.NabiIhsanEpisodeDetails.createRoute(id)
+                        com.example.feature.dashboard.presentation.SearchResultKind.FAHM -> Screen.FahmEpisodeDetail.createRoute(id)
+                        com.example.feature.dashboard.presentation.SearchResultKind.TASBIH -> Screen.Tasbih.route
+                    }
+                    navController.navigate(target)
+                },
+                onNavigateToLive = { navController.navigate(Screen.HaramLive.route) }
             )
         }
 
@@ -247,6 +278,7 @@ fun AppNavHost(
                         "dua", "dua_screen", Screen.Dua.route -> navController.navigate(Screen.Dua.route)
                         "asma", "asma_screen", Screen.Asma.route -> navController.navigate(Screen.Asma.route)
                         "tasbih", "tasbih_screen", Screen.Tasbih.route -> navController.navigate(Screen.Tasbih.route)
+                        "statistics", "statistics_screen", Screen.Statistics.route -> navController.navigate(Screen.Statistics.route)
                         Screen.Qibla.route -> navController.navigate(Screen.Qibla.route)
                         Screen.HaramLive.route -> navController.navigate(Screen.HaramLive.route)
                         Screen.NabawiLive.route -> navController.navigate(Screen.NabawiLive.route)
@@ -262,8 +294,9 @@ fun AppNavHost(
             QiblaScreen(onNavigateBack = { navController.popBackStack() })
         }
 
-        composable(route = Screen.Asma.route) {
+        composable(route = Screen.Asma.route + "?nameId={nameId}", arguments = listOf(navArgument("nameId") { type = NavType.IntType; defaultValue = -1 })) { entry ->
             AsmaScreen(
+                initialNameId = entry.arguments?.getInt("nameId")?.takeIf { it > 0 },
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -331,22 +364,25 @@ fun AppNavHost(
                 onSelectReader = { reader -> viewModel.onAction(QuranAction.SelectReader(reader)) },
                 onDownloadSurah = { viewModel.onAction(QuranAction.DownloadSurah) },
                 onSeekTo = { viewModel.onAction(QuranAction.SeekTo(it)) },
-                onUpdateFontSize = { viewModel.onAction(QuranAction.UpdateFontSize(it)) }
+                onUpdateFontSize = { viewModel.onAction(QuranAction.UpdateFontSize(it)) },
+                onSelectPageSurah = { id, verse -> viewModel.onAction(QuranAction.SelectSurah(id, verse)) }
             )
         }
 
-        composable(route = Screen.Azkar.route) {
+        composable(route = Screen.Azkar.route + "?zikrId={zikrId}", arguments = listOf(navArgument("zikrId") { type = NavType.LongType; defaultValue = -1L })) { entry ->
             val viewModel: AzkarViewModel = koinViewModel()
             AzkarScreen(
+                initialZikrId = entry.arguments?.getLong("zikrId")?.takeIf { it > 0 },
                 viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onOpenSebha = { navController.navigate(Screen.Tasbih.route) }
             )
         }
 
-        composable(route = Screen.Hadith.route) {
+        composable(route = Screen.Hadith.route + "?hadithId={hadithId}", arguments = listOf(navArgument("hadithId") { type = NavType.LongType; defaultValue = -1L })) { entry ->
             val viewModel: HadithViewModel = koinViewModel()
             HadithScreen(
+                initialHadithId = entry.arguments?.getLong("hadithId")?.takeIf { it > 0 },
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() }
             )
@@ -428,7 +464,8 @@ fun AppNavHost(
             arguments = listOf(navArgument("type") { type = NavType.StringType })
         ) { backStackEntry ->
             val type = backStackEntry.arguments?.getString("type") ?: "OFFER"
-            AddEhsanScreen(
+            if (type == "REQUEST") RequestHelpScreen(onNavigateBack = { navController.popBackStack() })
+            else AddEhsanScreen(
                 onNavigateBack = { navController.popBackStack() },
                 initialType = type
             )
@@ -471,6 +508,7 @@ fun AppNavHost(
                 onBackClick = { navController.popBackStack() },
                 onEditProfileClick = { navController.navigate(Screen.EditProfile.route) },
                 onNavigateToDonationHistory = { navController.navigate(Screen.DonationHistory.route) },
+                onManageListings = { navController.navigate(Screen.ManageListings.createRoute(it)) },
                 onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
                 onNavigateToPrayer = { navController.navigate(Screen.Prayer.route) },
                 onNavigateToReminders = { navController.navigate(Screen.Reminders.route) },
@@ -485,6 +523,14 @@ fun AppNavHost(
                 onItemClick = { id ->
                     navController.navigate(Screen.IhsanDetails.createRoute(id))
                 }
+            )
+        }
+
+        composable(route = Screen.ManageListings.route) { entry ->
+            com.example.feature.profile.ManageListingsScreen(
+                type = entry.arguments?.getString("type") ?: "OFFER",
+                onBack = { navController.popBackStack() },
+                onItemClick = { navController.navigate(Screen.IhsanDetails.createRoute(it)) }
             )
         }
 

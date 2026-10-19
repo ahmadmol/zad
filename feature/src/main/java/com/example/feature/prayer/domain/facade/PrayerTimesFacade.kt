@@ -77,6 +77,7 @@ class DefaultPrayerTimesFacade(
     override val systemStatus: StateFlow<PrayerSystemStatus> = _systemStatus.asStateFlow()
 
     private var lastDate: LocalDate? = null
+    private var lastZone: java.time.ZoneId? = null
     private var tickerJob: Job? = null
 
     init {
@@ -103,13 +104,15 @@ class DefaultPrayerTimesFacade(
         tickerJob = scope.launch {
             while (isActive) {
                 val today = clock.today()
-                if (lastDate != null && lastDate != today) {
+                val zone = clock.zoneId()
+                if (lastDate != null && (lastDate != today || lastZone != zone)) {
                     val loc = _locationState.value
                     val settings = settingsRepository.observeSettings().first()
                     recalculate(loc, settings)
                     reconcileSchedule(PrayerReconciliationReason.TimeChanged)
                 }
                 lastDate = today
+                lastZone = zone
                 val next = _nextPrayer.value
                 if (next != null) {
                     val now = clock.nowEpochMillis()

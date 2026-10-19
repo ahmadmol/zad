@@ -14,6 +14,7 @@ import org.koin.dsl.module
 import com.example.feature.settings.presentation.SettingsViewModel
 import com.example.feature.statistics.presentation.StatisticsViewModel
 import com.example.feature.tasbih.presentation.TasbihViewModel
+import com.example.feature.dashboard.presentation.GlobalLearningSearchViewModel
 
 val viewModelModule = module {
     viewModelOf(::AzkarViewModel)
@@ -21,6 +22,7 @@ val viewModelModule = module {
     viewModelOf(::AsmaViewModel)
     // HomeDashboardViewModel registered in homeDashboardModule
     viewModelOf(::TasbihViewModel)
+    viewModelOf(::GlobalLearningSearchViewModel)
     viewModelOf(::SettingsViewModel)
     viewModelOf(::StatisticsViewModel)
     viewModelOf(::PrayerViewModel)

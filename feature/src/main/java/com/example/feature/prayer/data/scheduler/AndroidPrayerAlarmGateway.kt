@@ -23,9 +23,19 @@ class AndroidPrayerAlarmGateway(
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     private val mutex = Mutex()
+    private val ledger = context.getSharedPreferences("ihsan_prayer_alarm_ledger", Context.MODE_PRIVATE)
     private val permissionState = MutableStateFlow(readPermissionState())
     private var lastFingerprint: String? = null
-    private var lastAlarmIds: Set<Int> = emptySet()
+    private var lastAlarmIds: Set<Int> = storedAlarmIds()
+
+    private fun storedAlarmIds(): Set<Int> = ledger.getStringSet("alarm_ids", emptySet()).orEmpty()
+        .mapNotNull(String::toIntOrNull).toSet()
+
+    private fun storeAlarmIds(ids: Set<Int>) {
+        check(ledger.edit().putStringSet("alarm_ids", ids.map(Int::toString).toSet()).commit()) {
+            "تعذر حفظ سجل تنبيهات الصلاة"
+        }
+    }
 
     override fun observePermissionState(): Flow<PrayerAlarmPermissionState> = permissionState.asStateFlow()
 
@@ -42,7 +52,8 @@ class AndroidPrayerAlarmGateway(
             return PrayerScheduleResult.Skipped("notifications_denied")
         }
 
-        val fingerprint = schedule.settingsFingerprint + "|" + schedule.dateEpochDay + "|" + schedule.alarms.size
+        // Equal counts/IDs do not imply equal trigger times after offsets, clock or policy changes.
+        val fingerprint = schedule.toString()
         if (fingerprint == lastFingerprint && schedule.alarms.map { it.stableId }.toSet() == lastAlarmIds) {
             return PrayerScheduleResult.Scheduled(
                 scheduledCount = schedule.alarms.size,
@@ -58,6 +69,11 @@ class AndroidPrayerAlarmGateway(
         var usedInexact = false
         val newIds = mutableSetOf<Int>()
 
+        // Persist the planned IDs before calling AlarmManager so a new process can cancel
+        // even a schedule interrupted during creation. No personal content is stored here.
+        lastAlarmIds = schedule.alarms.map { it.stableId }.toSet()
+        storeAlarmIds(lastAlarmIds)
+
         schedule.alarms.forEach { alarm ->
             val ok = scheduleAlarm(alarm.stableId, alarm.triggerEpochMillis, alarm.title, alarm.message)
             if (ok.scheduled) {
@@ -71,6 +87,7 @@ class AndroidPrayerAlarmGateway(
 
         lastFingerprint = fingerprint
         lastAlarmIds = newIds
+        storeAlarmIds(lastAlarmIds)
 
         return if (failed > 0 && scheduled == 0) {
             PrayerScheduleResult.Failed("all_alarms_failed")
@@ -93,18 +110,21 @@ class AndroidPrayerAlarmGateway(
     }
 
     private fun cancelTrackedAlarms() {
-        lastAlarmIds.forEach { id ->
+        (lastAlarmIds + storedAlarmIds()).forEach { id ->
             val intent = Intent(context, PrayerNotificationReceiver::class.java)
             val pending = PendingIntent.getBroadcast(
                 context,
                 id,
                 intent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
             )
-            alarmManager.cancel(pending)
-            pending.cancel()
+            if (pending != null) {
+                alarmManager.cancel(pending)
+                pending.cancel()
+            }
         }
         lastAlarmIds = emptySet()
+        storeAlarmIds(emptySet())
     }
 
     private data class ScheduleOutcome(val scheduled: Boolean, val inexact: Boolean)

@@ -10,4 +10,5 @@ class GetLast7DaysStatsUseCase(
     operator fun invoke(): Flow<List<DailyStat>> {
         return repository.getLast7DaysStats()
     }
+    fun currentPeriodStats(): Flow<List<DailyStat>> = repository.getAllDailyStats()
 }

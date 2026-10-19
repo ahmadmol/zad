@@ -28,7 +28,7 @@ object SanhyaFixtureData {
         durationLabel = record.duration,
         thumbnailUrl = record.videoId?.let { "https://i.ytimg.com/vi/$it/hqdefault.jpg" },
         publishedAt = record.publishedAt,
-        sourceUrl = "https://amrkhaled.net/episode/${record.sourceEpisodeId}",
+        sourceUrl = record.videoId?.let { "https://www.youtube.com/watch?v=$it" } ?: PROGRAM_URL,
         playlistId = PLAYLIST_ID,
         playlistPosition = record.number,
         sourceChannelId = OFFICIAL_CHANNEL_ID,

@@ -11,49 +11,67 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import com.example.feature.learning.data.LearningBookmarkStore
+import com.example.feature.learning.data.LearningCollection
 
-class NabiIhsanRepositoryImpl : NabiIhsanRepository {
+class NabiIhsanRepositoryImpl(private val bookmarks: LearningBookmarkStore? = null) : NabiIhsanRepository {
 
     private val _episodesFlow = MutableStateFlow(NabiIhsanFixtureData.defaultEpisodes)
     private val _recipesFlow = MutableStateFlow(NabiIhsanFixtureData.defaultRecipes)
 
-    override fun observeEpisodes(): Flow<List<NabiIhsanEpisode>> = _episodesFlow.asStateFlow()
+    override fun observeEpisodes(): Flow<List<NabiIhsanEpisode>> = bookmarks?.let { saved ->
+        combine(_episodesFlow, saved.observe(LearningCollection.NABI_FAVORITES), saved.observe(LearningCollection.NABI_LATER)) {
+            episodes, favorites, later -> episodes.map { it.copy(isFavorite = it.id in favorites, isWatchLater = it.id in later) }
+        }
+    } ?: _episodesFlow.asStateFlow()
 
-    override fun observeRecipes(): Flow<List<PropheticRecipe>> = _recipesFlow.asStateFlow()
+    override fun observeRecipes(): Flow<List<PropheticRecipe>> = bookmarks?.let { saved ->
+        combine(_recipesFlow, saved.observe(LearningCollection.NABI_RECIPE_FAVORITES)) { recipes, favorites ->
+            recipes.map { it.copy(isFavorite = it.id in favorites) }
+        }
+    } ?: _recipesFlow.asStateFlow()
 
     override fun observeFavoriteEpisodes(): Flow<List<NabiIhsanEpisode>> {
-        return _episodesFlow.map { list -> list.filter { it.isFavorite } }
+        return observeEpisodes().map { list -> list.filter { it.isFavorite } }
     }
 
     override fun observeFavoriteRecipes(): Flow<List<PropheticRecipe>> {
-        return _recipesFlow.map { list -> list.filter { it.isFavorite } }
+        return observeRecipes().map { list -> list.filter { it.isFavorite } }
     }
 
     override fun observeWatchLaterEpisodes(): Flow<List<NabiIhsanEpisode>> {
-        return _episodesFlow.map { list -> list.filter { it.isWatchLater } }
+        return observeEpisodes().map { list -> list.filter { it.isWatchLater } }
     }
 
     override suspend fun getEpisodeById(id: String): NabiIhsanEpisode? {
-        return _episodesFlow.value.find { it.id == id }
+        return observeEpisodes().first().find { it.id == id }
     }
 
     override suspend fun getRecipeById(id: String): PropheticRecipe? {
-        return _recipesFlow.value.find { it.id == id }
+        return observeRecipes().first().find { it.id == id }
     }
 
     override suspend fun toggleEpisodeFavorite(episodeId: String) {
+        if (_episodesFlow.value.none { it.id == episodeId }) return
+        if (bookmarks != null) { bookmarks.toggle(LearningCollection.NABI_FAVORITES, episodeId); return }
         _episodesFlow.value = _episodesFlow.value.map { ep ->
             if (ep.id == episodeId) ep.copy(isFavorite = !ep.isFavorite) else ep
         }
     }
 
     override suspend fun toggleRecipeFavorite(recipeId: String) {
+        if (_recipesFlow.value.none { it.id == recipeId }) return
+        if (bookmarks != null) { bookmarks.toggle(LearningCollection.NABI_RECIPE_FAVORITES, recipeId); return }
         _recipesFlow.value = _recipesFlow.value.map { recipe ->
             if (recipe.id == recipeId) recipe.copy(isFavorite = !recipe.isFavorite) else recipe
         }
     }
 
     override suspend fun toggleEpisodeWatchLater(episodeId: String) {
+        if (_episodesFlow.value.none { it.id == episodeId }) return
+        if (bookmarks != null) { bookmarks.toggle(LearningCollection.NABI_LATER, episodeId); return }
         _episodesFlow.value = _episodesFlow.value.map { ep ->
             if (ep.id == episodeId) ep.copy(isWatchLater = !ep.isWatchLater) else ep
         }
@@ -61,7 +79,7 @@ class NabiIhsanRepositoryImpl : NabiIhsanRepository {
 
     override suspend fun getEpisodesForRecipe(recipeId: String): List<NabiIhsanEpisode> {
         val recipe = getRecipeById(recipeId) ?: return emptyList()
-        val allEpisodes = _episodesFlow.value
+        val allEpisodes = observeEpisodes().first()
         return allEpisodes.filter { ep ->
             ep.recipeIds.contains(recipeId) || recipe.relatedEpisodeIds.contains(ep.id)
         }
@@ -69,7 +87,7 @@ class NabiIhsanRepositoryImpl : NabiIhsanRepository {
 
     override suspend fun getRecipesForEpisode(episodeId: String): List<PropheticRecipe> {
         val episode = getEpisodeById(episodeId) ?: return emptyList()
-        val allRecipes = _recipesFlow.value
+        val allRecipes = observeRecipes().first()
         return allRecipes.filter { recipe ->
             recipe.relatedEpisodeIds.contains(episodeId) || episode.recipeIds.contains(recipe.id)
         }
@@ -80,8 +98,8 @@ class NabiIhsanRepositoryImpl : NabiIhsanRepository {
         filterState: NabiIhsanFilterState
     ): NabiSearchResult {
         val q = query.trim().lowercase()
-        val allEpisodes = _episodesFlow.value
-        val allRecipes = _recipesFlow.value
+        val allEpisodes = observeEpisodes().first()
+        val allRecipes = observeRecipes().first()
 
         val filteredEpisodes = allEpisodes.filter { ep ->
             val matchesQuery = q.isEmpty() ||
@@ -111,8 +129,8 @@ class NabiIhsanRepositoryImpl : NabiIhsanRepository {
             matchesQuery && matchesCategory && matchesEpisodeFilter && matchesDuration
         }.let { list ->
             when (filterState.sortOption) {
-                NabiSortOption.NEWEST_FIRST -> list
-                NabiSortOption.OLDEST_FIRST -> list.reversed()
+                NabiSortOption.NEWEST_FIRST -> list.sortedByDescending { it.publishedAt.orEmpty() }
+                NabiSortOption.OLDEST_FIRST -> list.sortedBy { it.publishedAt ?: "9999" }
                 NabiSortOption.SERIES_ORDER -> list.sortedBy { it.episodeNumber ?: Int.MAX_VALUE }
             }
         }

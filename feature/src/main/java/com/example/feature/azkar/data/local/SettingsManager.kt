@@ -26,6 +26,8 @@ class SettingsManager(private val context: Context) {
         val DARK_MODE = booleanPreferencesKey("dark_mode")
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val PRAYER_NOTIFICATIONS_ENABLED = booleanPreferencesKey("prayer_notifications_enabled")
+        private val PRAYER_OFFSET_KEYS = listOf("fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha")
+            .map { intPreferencesKey("prayer_offset_$it") }
         val CALCULATION_METHOD = stringPreferencesKey("calculation_method")
         val MADHAB = stringPreferencesKey("madhab")
         val USE_AUTO_LOCATION = booleanPreferencesKey("use_auto_location")
@@ -48,6 +50,17 @@ class SettingsManager(private val context: Context) {
 
     val fontSizeFlow: Flow<Float> = context.dataStore.data.map { preferences ->
         preferences[FONT_SIZE] ?: 24f
+    }
+
+    val prayerOffsetsFlow: Flow<com.example.feature.prayer.domain.model.PrayerOffsets> = context.dataStore.data.map { prefs ->
+        val values = PRAYER_OFFSET_KEYS.map { (prefs[it] ?: 0).coerceIn(-120, 120) }
+        com.example.feature.prayer.domain.model.PrayerOffsets(values[0], values[1], values[2], values[3], values[4], values[5])
+    }
+    suspend fun setPrayerOffsets(offsets: com.example.feature.prayer.domain.model.PrayerOffsets) {
+        val values = listOf(offsets.fajrMinutes, offsets.sunriseMinutes, offsets.dhuhrMinutes,
+            offsets.asrMinutes, offsets.maghribMinutes, offsets.ishaMinutes)
+        require(values.all { it in -120..120 }) { "تعديل الموعد يجب أن يكون بين -120 و120 دقيقة" }
+        context.dataStore.edit { prefs -> PRAYER_OFFSET_KEYS.zip(values).forEach { (key, value) -> prefs[key] = value } }
     }
 
     val vibrationEnabledFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->

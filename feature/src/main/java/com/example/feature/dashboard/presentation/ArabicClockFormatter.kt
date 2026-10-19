@@ -1,7 +1,7 @@
 package com.example.feature.dashboard.presentation
 
-import java.text.SimpleDateFormat
-import java.util.Calendar
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -10,17 +10,17 @@ import java.util.Locale
  */
 object ArabicClockFormatter {
 
-    private val timeNoSeconds = SimpleDateFormat("hh:mm", Locale.US)
-    private val timeWithSeconds = SimpleDateFormat("hh:mm:ss", Locale.US)
+    private val timeNoSeconds = DateTimeFormatter.ofPattern("hh:mm", Locale.US)
+    private val timeWithSeconds = DateTimeFormatter.ofPattern("hh:mm:ss", Locale.US)
 
     fun format(date: Date, includeSeconds: Boolean = false): String {
+        val localTime = date.toInstant().atZone(ZoneId.systemDefault())
         val base = if (includeSeconds) {
-            timeWithSeconds.format(date)
+            timeWithSeconds.format(localTime)
         } else {
-            timeNoSeconds.format(date)
+            timeNoSeconds.format(localTime)
         }
-        val calendar = Calendar.getInstance().apply { time = date }
-        val suffix = if (calendar.get(Calendar.AM_PM) == Calendar.AM) "ص" else "م"
+        val suffix = if (localTime.hour < 12) "ص" else "م"
         return "$base $suffix"
     }
 

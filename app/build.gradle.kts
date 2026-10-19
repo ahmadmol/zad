@@ -11,7 +11,11 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.mol"
+        applicationId = if (providers.gradleProperty("ihsanPhysicalQa").orNull == "true") {
+            "com.example.mol.referenceqa"
+        } else {
+            "com.example.mol"
+        }
         minSdk = 25
         targetSdk = 35
         versionCode = 1
@@ -105,6 +109,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.datastore.preferences)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

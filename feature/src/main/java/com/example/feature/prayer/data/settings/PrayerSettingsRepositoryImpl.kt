@@ -31,8 +31,8 @@ class PrayerSettingsRepositoryImpl(
             notificationsEnabled = true
         )
     }.let { settingsFlow ->
-        combine(settingsFlow, settingsManager.prayerNotificationsEnabledFlow) { settings, enabled ->
-            settings.copy(notificationsEnabled = enabled)
+        combine(settingsFlow, settingsManager.prayerNotificationsEnabledFlow, settingsManager.prayerOffsetsFlow) { settings, enabled, offsets ->
+            settings.copy(notificationsEnabled = enabled, offsets = offsets)
         }
     }
 
@@ -45,7 +45,7 @@ class PrayerSettingsRepositoryImpl(
     }
 
     override suspend fun updateOffsets(offsets: PrayerOffsets) {
-        // Offsets persistence not present in SettingsManager yet; no-op keeps single settings source.
+        settingsManager.setPrayerOffsets(offsets)
     }
 
     override suspend fun updateUseAutoLocation(enabled: Boolean) {

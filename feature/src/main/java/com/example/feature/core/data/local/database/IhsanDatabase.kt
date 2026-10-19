@@ -33,7 +33,7 @@ import com.example.feature.quran.data.local.entity.SurahEntity
         BookmarkEntity::class,
         DownloadedAyahEntity::class
     ],
-    version = 6,
+    version = 8,
     exportSchema = true
 )
 abstract class IhsanDatabase : RoomDatabase() {

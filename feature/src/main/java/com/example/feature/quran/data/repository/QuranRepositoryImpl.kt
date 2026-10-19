@@ -100,9 +100,30 @@ class QuranRepositoryImpl(
         return dao.observeIsBookmarked(surahId, verseNumber)
     }
 
-    override suspend fun searchAyahs(query: String): List<Verse> {
+    private var searchIndex: List<Triple<com.example.feature.quran.data.local.entity.AyahEntity, String, String>>? = null
+    private val searchMutex = kotlinx.coroutines.sync.Mutex()
+
+    override suspend fun searchAyahs(query: String): List<Verse> = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+        if (query.isBlank()) return@withContext emptyList()
         assetLoader.loadIfNeeded()
-        return dao.searchAyahs(query).map { it.toDomain() }
+        searchMutex.lock()
+        try {
+            val index = searchIndex ?: dao.getAllAyahs().map {
+                Triple(it, com.example.feature.core.search.ArabicSearch.key(it.text),
+                    com.example.feature.quran.domain.model.QuranSearch.expandedVerseKey(it.text))
+            }
+                .also { searchIndex = it }
+            val words = com.example.feature.core.search.ArabicSearch.key(query).split(' ').filter(String::isNotBlank)
+            if (words.isEmpty()) return@withContext emptyList()
+            val chapters = dao.getAllSurahs().filter {
+                com.example.feature.quran.domain.model.QuranSearch.matchesSurah(it.name, query)
+            }.map { it.id }.toSet()
+            // A chapter hit opens its first verse; don't flood search with every verse in it.
+            val chapterHits = index.filter { (ayah, _, _) -> ayah.surahId in chapters && ayah.verseNumber == 1 }
+            val verseHits = index.filter { (_, key, expanded) -> words.all { key.contains(it) || expanded.contains(it) } }
+                .sortedBy { (_, key, _) -> if (words.all(key::contains)) 0 else 1 }
+            (chapterHits + verseHits).distinctBy { it.first.id }.map { it.first.toDomain() }
+        } finally { searchMutex.unlock() }
     }
 
     override fun observeDownloadedAyahs(surahId: Int, readerId: String): Flow<List<Int>> {

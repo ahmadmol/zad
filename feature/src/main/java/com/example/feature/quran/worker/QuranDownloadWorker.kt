@@ -18,6 +18,10 @@ class QuranDownloadWorker(
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
+        // Also block work that was queued by an older installation.
+        if (!com.example.feature.quran.util.RecitationAvailability.RECORDINGS_APPROVED) {
+            return Result.failure(workDataOf("error" to com.example.feature.quran.util.RecitationAvailability.MESSAGE))
+        }
         val surahId = inputData.getInt("surah_id", -1)
         val readerId = inputData.getString("reader_id") ?: "Alafasy_128kbps"
         

@@ -99,7 +99,7 @@ class AzkarReminderCoordinator(
             .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.NOT_REQUIRED).build())
             .addTag(CANONICAL_TAG)
             .build()
-        workManager.enqueueUniquePeriodicWork(uniqueName, ExistingPeriodicWorkPolicy.UPDATE, request)
+        workManager.enqueueUniquePeriodicWork(uniqueName, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, request)
     }
 
     private fun nextDelay(hour: Int, minute: Int): Long {

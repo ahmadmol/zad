@@ -7,7 +7,12 @@ interface EhsanRepository {
     fun getAllDonations(): Flow<List<Donation>>
     suspend fun getDonationById(id: Long): Donation?
     suspend fun addDonation(donation: Donation)
+    suspend fun updateDonation(donation: Donation)
+    suspend fun updateDonation(donation: Donation, imageSources: List<String>?) {
+        require(imageSources == null) { "تعديل الصور غير متاح في هذا المصدر" }
+        updateDonation(donation)
+    }
     suspend fun deleteDonation(donation: Donation)
     suspend fun updateDonationStatus(id: Long, status: String)
-    fun getMyDonations(name: String): Flow<List<Donation>>
+    fun getMyDonations(ownerId: String): Flow<List<Donation>>
 }

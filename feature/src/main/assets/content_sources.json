@@ -1,0 +1,39 @@
+{
+  "verified_at": "2026-10-14",
+  "quran": {
+    "source": "Tanzil Project Uthmani 1.1",
+    "url": "https://tanzil.net",
+    "license": "CC-BY-3.0 with verbatim-only condition",
+    "notice": "licenses/Tanzil-COPYRIGHT.txt",
+    "original": "licenses/tanzil-uthmani-1.1.xml",
+    "sha256": "203f0f1bf3158b1e5be4ab9f8f6870e570aab6d9a626fe6192a70b75d4afe0fd",
+    "verification": "114 chapters / 6236 verses; every Unicode codepoint equals original XML"
+  },
+  "page_metadata": {
+    "source": "Tanzil Quran metadata 1.0",
+    "url": "https://tanzil.net/docs/Quran_Metadata",
+    "verification": "604 page boundaries matched exactly; 30 juz starts"
+  },
+  "font": {
+    "name": "Amiri Quran",
+    "license": "OFL-1.1",
+    "notice": "licenses/AmiriQuran-OFL.txt"
+  },
+  "hadith": {
+    "coverage": 3582,
+    "publisher": "HadeethEnc.com",
+    "edition": "ar v1.7.0",
+    "publisher_updated_at": "2025-11-12 00:00:55",
+    "url": "https://hadeethenc.com/ar/",
+    "status": "VERIFIED_SOURCE — nine original fields unchanged; edition/source notices retained"
+  },
+  "asma": {
+    "coverage": 99,
+    "status": "Existing editorial meanings: source and scholarly review pending"
+  },
+  "audio": {
+    "source": "EveryAyah",
+    "url": "https://everyayah.com/",
+    "status": "PENDING_LICENSE — recording playback and download disabled"
+  }
+}

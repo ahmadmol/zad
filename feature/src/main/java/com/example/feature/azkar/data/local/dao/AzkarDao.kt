@@ -27,7 +27,7 @@ interface AzkarDao {
 
     @Query("""
         UPDATE azkar_table 
-        SET currentCount = currentCount + 1, 
+        SET currentCount = CASE WHEN category <> 'تسبيح' AND lastUpdatedDate <> :date THEN 1 ELSE currentCount + 1 END, 
             dailyProgress = CASE WHEN lastUpdatedDate = :date THEN dailyProgress + 1 ELSE 1 END,
             lastUpdatedDate = :date
         WHERE id = :zikrId
@@ -61,6 +61,9 @@ interface AzkarDao {
     """)
     suspend fun countByContentKey(title: String, category: String, text: String): Int
 
+    @Query("UPDATE azkar_table SET text = :newText, source = :source WHERE title = :title AND category = :category AND text = :oldText AND source = ''")
+    suspend fun repairCanonicalText(title: String, category: String, oldText: String, newText: String, source: String)
+
     // Daily Stats
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateDailyStat(stat: DailyStatEntity)
@@ -70,6 +73,9 @@ interface AzkarDao {
 
     @Query("SELECT * FROM daily_stats ORDER BY date DESC LIMIT 7")
     fun getLast7DaysStats(): Flow<List<DailyStatEntity>>
+
+    @Query("SELECT * FROM daily_stats ORDER BY date ASC")
+    fun getAllDailyStats(): Flow<List<DailyStatEntity>>
 
     @Query("UPDATE daily_stats SET totalCount = totalCount + 1 WHERE date = :date")
     suspend fun incrementDailyTotal(date: String)

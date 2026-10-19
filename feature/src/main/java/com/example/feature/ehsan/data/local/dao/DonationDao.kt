@@ -12,6 +12,18 @@ interface DonationDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDonation(donation: DonationEntity)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertDemoDonations(donations: List<DonationEntity>)
+
+    @Update
+    suspend fun updateDonation(donation: DonationEntity)
+
+    @Query("DELETE FROM donations WHERE origin = 'DEMO'")
+    suspend fun deleteDemoDonations()
+
+    @Query("SELECT * FROM donations WHERE ownerId = :ownerId AND origin = 'USER' ORDER BY createdAt DESC")
+    fun getDonationsByOwner(ownerId: String): Flow<List<DonationEntity>>
+
     @Delete
     suspend fun deleteDonation(donation: DonationEntity)
 

@@ -36,7 +36,20 @@ class IhsanApp : Application(), Configuration.Provider, KoinComponent {
             androidContext(this@IhsanApp)
             modules(appModule)
         }
-        
+        // Run after the full dependency graph is registered, on every launch so an
+        // interrupted first database creation can recover without clearing user data.
+        applicationScope.launch {
+            try {
+                getKoin().get<com.example.feature.azkar.data.local.database.AzkarSeedManager>().ensureSeeded()
+                getKoin().get<com.example.feature.quran.data.local.QuranAssetLoader>().loadIfNeeded()
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                throw cancelled
+            } catch (failure: Exception) {
+                getKoin().get<com.example.feature.core.observability.AppLogger>()
+                    .error("IhsanApp", "bundled_content_initialization_failed", failure)
+            }
+        }
+
         setupWorkers()
     }
 

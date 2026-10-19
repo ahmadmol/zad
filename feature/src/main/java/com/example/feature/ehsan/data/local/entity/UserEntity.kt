@@ -12,5 +12,6 @@ data class UserEntity(
     val phoneNumber: String,
     val city: String = "",
     val address: String = "",
-    val role: String = "USER"
+    val role: String = "USER",
+    @androidx.room.ColumnInfo(defaultValue = "1") val isActive: Boolean = true
 )

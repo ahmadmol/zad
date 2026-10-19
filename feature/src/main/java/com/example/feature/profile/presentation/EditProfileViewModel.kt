@@ -21,8 +21,10 @@ class EditProfileViewModel(
     private val _uiState = MutableStateFlow(
         EditProfileUiState(
             name = savedStateHandle[KEY_NAME] ?: "",
-            city = savedStateHandle[KEY_CITY] ?: "",
+            phone = savedStateHandle[KEY_PHONE] ?: "",
+            city = savedStateHandle[KEY_CITY] ?: "حلب",
             address = savedStateHandle[KEY_ADDRESS] ?: "",
+            bio = savedStateHandle[KEY_BIO] ?: "",
             avatarUrl = savedStateHandle[KEY_AVATAR]
         )
     )
@@ -36,13 +38,16 @@ class EditProfileViewModel(
         viewModelScope.launch {
             val user = userRepository.getUser().first()
             val savedAvatar = userPreferences.userAvatarUri.first()
+            val savedBio = userPreferences.userBio.first()
             user?.let {
+                val fullName = "${it.firstName} ${it.lastName}".trim()
                 _uiState.value = _uiState.value.copy(
-                    name = savedStateHandle[KEY_NAME] ?: "${it.firstName} ${it.lastName}",
-                    phone = it.phoneNumber,
-                    city = savedStateHandle[KEY_CITY] ?: it.city,
+                    name = savedStateHandle[KEY_NAME] ?: if (fullName.isNotBlank()) fullName else "",
+                    phone = savedStateHandle[KEY_PHONE] ?: if (it.phoneNumber.isNotBlank()) it.phoneNumber else "",
+                    city = savedStateHandle[KEY_CITY] ?: if (it.city.isNotBlank()) it.city else "حلب",
                     address = savedStateHandle[KEY_ADDRESS] ?: it.address,
-                    avatarUrl = savedStateHandle[KEY_AVATAR] ?: savedAvatar
+                    avatarUrl = savedStateHandle[KEY_AVATAR] ?: savedAvatar,
+                    bio = savedStateHandle[KEY_BIO] ?: savedBio
                 )
             }
         }
@@ -53,6 +58,11 @@ class EditProfileViewModel(
         _uiState.value = _uiState.value.copy(name = newName)
     }
 
+    fun onPhoneChange(newPhone: String) {
+        savedStateHandle[KEY_PHONE] = newPhone
+        _uiState.value = _uiState.value.copy(phone = newPhone)
+    }
+
     fun onCityChange(newCity: String) {
         savedStateHandle[KEY_CITY] = newCity
         _uiState.value = _uiState.value.copy(city = newCity)
@@ -61,6 +71,13 @@ class EditProfileViewModel(
     fun onAddressChange(newAddress: String) {
         savedStateHandle[KEY_ADDRESS] = newAddress
         _uiState.value = _uiState.value.copy(address = newAddress)
+    }
+
+    fun onBioChange(newBio: String) {
+        if (newBio.length <= 200) {
+            savedStateHandle[KEY_BIO] = newBio
+            _uiState.value = _uiState.value.copy(bio = newBio)
+        }
     }
 
     fun onAvatarSelected(uri: Uri) {
@@ -101,10 +118,13 @@ class EditProfileViewModel(
                     address = _uiState.value.address
                 )
                 userPreferences.setUserAvatarUri(_uiState.value.avatarUrl)
+                userPreferences.setUserBio(_uiState.value.bio)
 
                 savedStateHandle.remove<String>(KEY_NAME)
+                savedStateHandle.remove<String>(KEY_PHONE)
                 savedStateHandle.remove<String>(KEY_CITY)
                 savedStateHandle.remove<String>(KEY_ADDRESS)
+                savedStateHandle.remove<String>(KEY_BIO)
                 savedStateHandle.remove<String>(KEY_AVATAR)
                 
                 _uiState.value = _uiState.value.copy(
@@ -126,8 +146,10 @@ class EditProfileViewModel(
 
     companion object {
         private const val KEY_NAME = "edit_profile_name"
+        private const val KEY_PHONE = "edit_profile_phone"
         private const val KEY_CITY = "edit_profile_city"
         private const val KEY_ADDRESS = "edit_profile_address"
+        private const val KEY_BIO = "edit_profile_bio"
         private const val KEY_AVATAR = "edit_profile_avatar"
     }
 }

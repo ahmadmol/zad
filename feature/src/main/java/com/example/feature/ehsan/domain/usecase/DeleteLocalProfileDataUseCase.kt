@@ -19,14 +19,13 @@ import kotlinx.coroutines.flow.first
  * | Data | Deleted | Reason |
  * |------|---------|--------|
  * | User profile row (name, phone, city, address) | always | direct PII |
- * | Listings created by this user | always | carry the user's name + phone |
- * | Images attached to those listings | always | may show the user's home/goods |
+ * | Listings and attached images | EVERYTHING_ON_DEVICE only | no trusted author identity exists |
  * | Orphaned images in app storage | always | no longer referenced by anything |
  * | Manual prayer log | always | private worship record tied to the person |
  * | Listings created by *other* people on this device | [DeleteScope] decides | not this user's data to erase by default |
  *
- * Ownership on a local board is established by the donor name recorded on the
- * listing, since that is the only identity the app has.
+ * A donor name or phone does not establish ownership. MINE_ONLY preserves all
+ * listings until the storage model provides a trusted author identity.
  */
 class DeleteLocalProfileDataUseCase(
     private val userDao: UserDao,
@@ -36,7 +35,7 @@ class DeleteLocalProfileDataUseCase(
 ) {
 
     enum class DeleteScope {
-        /** Profile + this user's own listings + their private records. */
+        /** Profile and private prayer records; listings have no trusted owner identity. */
         MINE_ONLY,
 
         /** Everything local, including listings authored by other people on the device. */
@@ -52,34 +51,32 @@ class DeleteLocalProfileDataUseCase(
 
     suspend operator fun invoke(scope: DeleteScope = DeleteScope.MINE_ONLY): Result {
         val user = userDao.getUser().first()
-        val ownerName = user?.let { (it.firstName + " " + it.lastName).trim() }
 
         val all = donationDao.getAllDonations().first()
         val toDelete = when (scope) {
             DeleteScope.EVERYTHING_ON_DEVICE -> all
-            DeleteScope.MINE_ONLY ->
-                if (ownerName.isNullOrBlank()) emptyList()
-                else all.filter { it.donorName.trim() == ownerName }
+            DeleteScope.MINE_ONLY -> all.filter { user != null && it.origin == "USER" && it.ownerId == "local-profile:${user.id}" }
         }
 
-        toDelete.forEach { donation ->
-            // Delete the image before the row, so a crash mid-way leaves an orphan
-            // file (cleaned below) rather than an unreachable row pointing at PII.
-            imageStore.delete(donation.imageUrl)
-            donationDao.deleteDonation(donation)
-        }
+        // Rows first: an interrupted file cleanup leaves recoverable orphan files,
+        // never surviving rows pointing to images that were already removed.
+        toDelete.forEach { donationDao.deleteDonation(it) }
 
         // Any file no surviving listing references is removed too.
         val surviving = donationDao.getAllDonations().first().map { it.imageUrl }
+        var referencedFilesRemoved = 0
+        toDelete.map { it.imageUrl }.distinct().forEach { reference ->
+            referencedFilesRemoved += imageStore.deleteUnreferenced(reference, surviving)
+        }
         val orphansRemoved = imageStore.cleanupOrphans(surviving)
 
         manualPrayerLogRepository.clearAll()
-        userDao.clearUser()
+        if (scope == DeleteScope.EVERYTHING_ON_DEVICE) userDao.clearUser() else userDao.clearCurrentUser()
 
         return Result(
             profileDeleted = user != null,
             listingsDeleted = toDelete.size,
-            imagesDeleted = toDelete.count { it.imageUrl != null } + orphansRemoved,
+            imagesDeleted = referencedFilesRemoved + orphansRemoved,
             prayerLogCleared = true
         )
     }

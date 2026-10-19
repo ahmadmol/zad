@@ -7,7 +7,12 @@ data class TasbihUiState(
     val selectedTasbihIndex: Int = 0,
     val isLoading: Boolean = false,
     val error: String? = null,
-    val isVibrationEnabled: Boolean = true
+    val isVibrationEnabled: Boolean = true,
+    val todayCount: Int = 0,
+    val weekCount: Int = 0,
+    val monthCount: Int = 0,
+    val locationName: String = "حلب",
+    val hijriDate: String = ""
 ) {
     val currentTasbih: Zikr? = tasbihList.getOrNull(selectedTasbihIndex)
 }

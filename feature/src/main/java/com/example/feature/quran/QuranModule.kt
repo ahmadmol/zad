@@ -22,7 +22,7 @@ import org.koin.dsl.module
 val quranModule = module {
     single { QuranAssetLoader(androidContext(), get()) }
     single<QuranRepository> { QuranRepositoryImpl(get(), get(), get(), get()) }
-    single { AudioPlayerHandler(androidContext()) }
+    single { AudioPlayerHandler(androidContext(), get()) }
     single { QuranAudioDownloader() }
     single<QuranDownloadScheduler> { WorkManagerQuranDownloadScheduler(androidContext()) }
     single { GetSurahsUseCase(get()) }

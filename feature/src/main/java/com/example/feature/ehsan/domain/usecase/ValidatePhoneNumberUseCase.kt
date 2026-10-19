@@ -14,19 +14,19 @@ class ValidatePhoneNumberUseCase {
         }
 
         val trimmed = phone.trim()
-        if (trimmed == "0000000000") {
-            return PhoneValidationResult.Placeholder
-        }
-
-        // Normalize: retain leading + and digits only
-        val normalized = trimmed.filter { it.isDigit() || it == '+' }
-        
-        // Basic digit check: must have at least some digits (e.g., 7+ for most regions)
-        val digitsOnly = normalized.filter { it.isDigit() }
-        if (digitsOnly.length < 7) {
+        if (trimmed.any { !it.isDigit() && !it.isWhitespace() && it !in "+()- ." }) {
             return PhoneValidationResult.InvalidFormat
         }
-
+        val normalized = buildString {
+            trimmed.forEach { ch ->
+                if (ch == '+') append(ch)
+                else if (ch.isDigit()) append(('0'.code + Character.digit(ch, 10)).toChar())
+            }
+        }
+        val digitsOnly = normalized.removePrefix("+")
+        if (digitsOnly.length !in 7..15 || digitsOnly.any { !it.isDigit() } ||
+            (normalized.startsWith('+') && digitsOnly.startsWith('0'))) return PhoneValidationResult.InvalidFormat
+        if (digitsOnly.all { it == '0' }) return PhoneValidationResult.Placeholder
         return PhoneValidationResult.Valid(normalized)
     }
 }

@@ -148,7 +148,7 @@ class AsmaViewModel(
     }
 
     private fun filterNames(list: List<AllahName>, query: String): List<AllahName> {
-        if (query.isBlank()) return emptyList()
+        if (query.isBlank() || com.example.feature.core.search.ArabicSearch.key(query).isBlank()) return emptyList()
         val cleanQuery = normalizeArabic(query.trim())
         return list.filter { item ->
             normalizeArabic(item.name).contains(cleanQuery, ignoreCase = true) ||

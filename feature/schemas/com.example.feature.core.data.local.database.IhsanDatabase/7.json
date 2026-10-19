@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "31274f16eba89940ee30e5e7d4c5c2f9",
+    "identityHash": "b65997247c58755e97020b7d51a49953",
     "entities": [
       {
         "tableName": "azkar_table",
@@ -168,7 +168,7 @@
       },
       {
         "tableName": "donations",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `category` TEXT NOT NULL, `location` TEXT NOT NULL, `type` TEXT NOT NULL, `status` TEXT NOT NULL, `donorName` TEXT NOT NULL, `phoneNumber` TEXT NOT NULL, `imageUrl` TEXT, `createdAt` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `category` TEXT NOT NULL, `location` TEXT NOT NULL, `type` TEXT NOT NULL, `status` TEXT NOT NULL, `donorName` TEXT NOT NULL, `phoneNumber` TEXT NOT NULL, `imageUrl` TEXT, `createdAt` INTEGER NOT NULL, `ownerId` TEXT, `origin` TEXT NOT NULL DEFAULT 'LEGACY')",
         "fields": [
           {
             "fieldPath": "id",
@@ -235,6 +235,19 @@
             "columnName": "createdAt",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "ownerId",
+            "columnName": "ownerId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "origin",
+            "columnName": "origin",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'LEGACY'"
           }
         ],
         "primaryKey": {
@@ -248,7 +261,7 @@
       },
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL, `phoneNumber` TEXT NOT NULL, `city` TEXT NOT NULL, `address` TEXT NOT NULL, `role` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL, `phoneNumber` TEXT NOT NULL, `city` TEXT NOT NULL, `address` TEXT NOT NULL, `role` TEXT NOT NULL, `isActive` INTEGER NOT NULL DEFAULT 1)",
         "fields": [
           {
             "fieldPath": "id",
@@ -291,6 +304,13 @@
             "columnName": "role",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "isActive",
+            "columnName": "isActive",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
           }
         ],
         "primaryKey": {
@@ -544,61 +564,12 @@
         },
         "indices": [],
         "foreignKeys": []
-      },
-      {
-        "tableName": "prayer_log",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dateEpochDay` INTEGER NOT NULL, `prayerName` TEXT NOT NULL, `status` TEXT NOT NULL, `loggedAtEpochMillis` INTEGER NOT NULL, PRIMARY KEY(`dateEpochDay`, `prayerName`))",
-        "fields": [
-          {
-            "fieldPath": "dateEpochDay",
-            "columnName": "dateEpochDay",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "prayerName",
-            "columnName": "prayerName",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "status",
-            "columnName": "status",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "loggedAtEpochMillis",
-            "columnName": "loggedAtEpochMillis",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "dateEpochDay",
-            "prayerName"
-          ]
-        },
-        "indices": [
-          {
-            "name": "index_prayer_log_dateEpochDay",
-            "unique": false,
-            "columnNames": [
-              "dateEpochDay"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_prayer_log_dateEpochDay` ON `${TABLE_NAME}` (`dateEpochDay`)"
-          }
-        ],
-        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '31274f16eba89940ee30e5e7d4c5c2f9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b65997247c58755e97020b7d51a49953')"
     ]
   }
 }

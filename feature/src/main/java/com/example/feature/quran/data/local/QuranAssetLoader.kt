@@ -6,6 +6,8 @@ import com.example.feature.quran.data.local.entity.AyahEntity
 import com.example.feature.quran.data.local.entity.SurahEntity
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class QuranAssetLoader(
     private val context: Context,
@@ -17,16 +19,21 @@ class QuranAssetLoader(
         coerceInputValues = true
     }
 
-    suspend fun loadIfNeeded() {
+    private val editionLock = Mutex()
+    private var editionLoaded = false
+
+    suspend fun loadIfNeeded() = editionLock.withLock {
+        if (editionLoaded && dao.countSurahs() == 114 && dao.countAyahs() == 6236) return@withLock
         if (dao.countSurahs() < 114) {
             loadSurahs()
         }
-        if (dao.countAyahs() < 6236) { // Ensure full load
-            loadAyahs()
-        }
+        // Existing installations must also receive the verified edition. The DAO updates only
+        // changed text, in one transaction, retaining IDs, bookmarks and reading preferences.
+        loadAyahs()
         val surahCount = dao.countSurahs()
         val ayahCount = dao.countAyahs()
         if (surahCount == 114 && ayahCount == 6236) {
+            editionLoaded = true
             android.util.Log.d("QuranAssetLoader", "Data validation successful: 114 Surahs, 6236 Ayahs.")
         } else {
             android.util.Log.e("QuranAssetLoader", "Data validation failed: Surahs: $surahCount, Ayahs: $ayahCount")
@@ -60,7 +67,7 @@ class QuranAssetLoader(
         val surahs = json.decodeFromString<List<FullSurahDto>>(raw)
         val allAyahs = surahs.flatMap { surah ->
             surah.verses.map { verse ->
-                val tafsir = tafsirMap["${surah.id}_${verse.id}"]?.tafsir
+                val tafsir: String? = null // Bundled sample explanation has no verified edition/rights; see source register.
                 AyahEntity(
                     surahId = surah.id,
                     verseNumber = verse.id,
@@ -69,7 +76,8 @@ class QuranAssetLoader(
                 )
             }
         }
-        dao.insertAyahs(allAyahs)
+        require(allAyahs.size == 6236 && surahs.size == 114) { "Incomplete canonical Quran asset" }
+        dao.applyCanonicalEdition(allAyahs)
     }
 
     @Serializable

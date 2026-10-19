@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.feature.azkar.data.local.SettingsManager
+import kotlinx.coroutines.flow.first
 
 class ReminderWorker(
     context: Context,
@@ -19,6 +20,10 @@ class ReminderWorker(
 
     override suspend fun doWork(): Result {
         val kind = inputData.getString(KEY_KIND) ?: return Result.failure()
+        if (AzkarReminderKind.entries.none { it.name == kind }) return Result.failure()
+        val settings = SettingsManager(applicationContext)
+        val enabled = (if (kind == AzkarReminderKind.MORNING.name) settings.morningReminderEnabledFlow else settings.eveningReminderEnabledFlow).first()
+        if (!enabled) return Result.success() // A cancelled/running stale request must not notify.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(
                 applicationContext,

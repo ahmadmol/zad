@@ -9,26 +9,36 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import com.example.feature.learning.data.LearningBookmarkStore
+import com.example.feature.learning.data.LearningCollection
 
-class SanhyaRepositoryImpl : SanhyaRepository {
+class SanhyaRepositoryImpl(private val bookmarks: LearningBookmarkStore? = null) : SanhyaRepository {
 
     private val _storiesFlow = MutableStateFlow(SanhyaFixtureData.defaultStories)
 
-    override fun observeStories(): Flow<List<QuranStory>> = _storiesFlow.asStateFlow()
+    override fun observeStories(): Flow<List<QuranStory>> = bookmarks?.let { saved ->
+        combine(_storiesFlow, saved.observe(LearningCollection.SANHYA_FAVORITES), saved.observe(LearningCollection.SANHYA_LATER)) {
+            stories, favorites, later -> stories.map { it.copy(isFavorite = it.id in favorites, isInWatchLater = it.id in later) }
+        }
+    } ?: _storiesFlow.asStateFlow()
 
     override fun observeFavorites(): Flow<List<QuranStory>> {
-        return _storiesFlow.map { list -> list.filter { it.isFavorite } }
+        return observeStories().map { list -> list.filter { it.isFavorite } }
     }
 
     override fun observeWatchLater(): Flow<List<QuranStory>> {
-        return _storiesFlow.map { list -> list.filter { it.isInWatchLater } }
+        return observeStories().map { list -> list.filter { it.isInWatchLater } }
     }
 
     override suspend fun getStoryById(id: String): QuranStory? {
-        return _storiesFlow.value.find { it.id == id }
+        return observeStories().first().find { it.id == id }
     }
 
     override suspend fun toggleFavorite(storyId: String) {
+        if (_storiesFlow.value.none { it.id == storyId }) return
+        if (bookmarks != null) { bookmarks.toggle(LearningCollection.SANHYA_FAVORITES, storyId); return }
         _storiesFlow.value = _storiesFlow.value.map { story ->
             if (story.id == storyId) {
                 story.copy(isFavorite = !story.isFavorite)
@@ -37,6 +47,8 @@ class SanhyaRepositoryImpl : SanhyaRepository {
     }
 
     override suspend fun toggleWatchLater(storyId: String) {
+        if (_storiesFlow.value.none { it.id == storyId }) return
+        if (bookmarks != null) { bookmarks.toggle(LearningCollection.SANHYA_LATER, storyId); return }
         _storiesFlow.value = _storiesFlow.value.map { story ->
             if (story.id == storyId) {
                 story.copy(isInWatchLater = !story.isInWatchLater)
@@ -45,7 +57,7 @@ class SanhyaRepositoryImpl : SanhyaRepository {
     }
 
     override suspend fun filterStories(query: String, filterState: StoryFilterState): List<QuranStory> {
-        val all = _storiesFlow.value
+        val all = observeStories().first()
         val q = query.trim().lowercase()
 
         return all.filter { story ->
@@ -71,8 +83,8 @@ class SanhyaRepositoryImpl : SanhyaRepository {
             matchesQuery && matchesCategory && matchesEpisodes
         }.let { list ->
             when (filterState.sortOption) {
-                StorySortOption.NEWEST_FIRST -> list
-                StorySortOption.OLDEST_FIRST -> list.reversed()
+                StorySortOption.NEWEST_FIRST -> list.sortedByDescending { story -> story.episodes.mapNotNull { it.publishedAt }.maxOrNull().orEmpty() }
+                StorySortOption.OLDEST_FIRST -> list.sortedBy { story -> story.episodes.mapNotNull { it.publishedAt }.minOrNull() ?: "9999" }
                 StorySortOption.SERIES_ORDER -> list.sortedBy { it.id }
             }
         }

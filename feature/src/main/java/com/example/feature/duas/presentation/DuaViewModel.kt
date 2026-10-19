@@ -27,11 +27,8 @@ class DuaViewModel(
         combine(_isLoading, _errorMessage) { loading, error -> loading to error }
     ) { allDuas, category, query, favoritesOnly, loadState ->
         val filtered = allDuas.filter { dua ->
-            (category == null || dua.category == category) &&
-            (query.isBlank() ||
-                dua.title.contains(query, ignoreCase = true) ||
-                dua.text.contains(query, ignoreCase = true) ||
-                dua.category.contains(query, ignoreCase = true)) &&
+            (category == null || DuaSections.matches(category, dua.category)) &&
+            com.example.feature.duas.domain.model.DuaSearch.matches(dua.title, dua.text, dua.category, query) &&
             (!favoritesOnly || dua.isFavorite)
         }
         DuaUiState(

@@ -24,8 +24,12 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
+import com.example.feature.quran.domain.model.RecitationPosition
+import com.example.feature.quran.domain.repository.QuranRepository
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
-class AudioPlayerHandler(context: Context) {
+class AudioPlayerHandler(context: Context, private val repository: QuranRepository? = null) {
 
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var progressJob: Job? = null
@@ -47,6 +51,11 @@ class AudioPlayerHandler(context: Context) {
 
     private val _duration = MutableStateFlow(0L)
     val duration = _duration.asStateFlow()
+    private val _isBuffering = MutableStateFlow(false)
+    val isBuffering = _isBuffering.asStateFlow()
+    private val _currentRecitation = MutableStateFlow<RecitationPosition?>(null)
+    val currentRecitation = _currentRecitation.asStateFlow()
+    private val transition = Mutex()
 
     private val _ayahCompleted = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val ayahCompleted: SharedFlow<Unit> = _ayahCompleted.asSharedFlow()
@@ -76,18 +85,25 @@ class AudioPlayerHandler(context: Context) {
             }
 
             override fun onPlaybackStateChanged(playbackState: Int) {
+                _isBuffering.value = playbackState == Player.STATE_BUFFERING && player.playWhenReady
                 when (playbackState) {
                     Player.STATE_READY -> _duration.value = player.duration.coerceAtLeast(0L)
                     Player.STATE_ENDED -> {
                         _isPlaying.value = false
                         _ayahCompleted.tryEmit(Unit)
+                        val completed = _currentRecitation.value
+                        scope.launch { if (completed != null && _currentRecitation.value == completed) playNext(completed) }
                     }
                 }
             }
 
             override fun onPlayerError(error: PlaybackException) {
                 _isPlaying.value = false
+                _isBuffering.value = false
                 _playbackError.tryEmit("تعذر تشغيل التلاوة. تحقق من الاتصال بالإنترنت.")
+            }
+            override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+                _isBuffering.value = playWhenReady && player.playbackState == Player.STATE_BUFFERING
             }
         })
     }
@@ -113,12 +129,15 @@ class AudioPlayerHandler(context: Context) {
             player.playbackState != Player.STATE_ENDED
     }
 
-    suspend fun playAyah(url: String): Boolean {
+    suspend fun playAyah(url: String, position: RecitationPosition? = null): Boolean {
         if (!ensureReady()) return false
         return withContext(Dispatchers.Main) {
             val player = controller ?: return@withContext false
             runCatching {
+                _currentPosition.value = 0L
+                _duration.value = 0L
                 player.setMediaItem(MediaItem.fromUri(url))
+                _currentRecitation.value = position
                 player.prepare()
                 player.playWhenReady = true
                 player.play()
@@ -128,6 +147,47 @@ class AudioPlayerHandler(context: Context) {
                 false
             }
         }
+    }
+
+    suspend fun playPosition(position: RecitationPosition, expected: RecitationPosition? = null): Boolean = transition.withLock {
+        if (!RecitationAvailability.RECORDINGS_APPROVED) {
+            _playbackError.emit(RecitationAvailability.MESSAGE)
+            return@withLock false
+        }
+        val repo = repository ?: return@withLock false
+        val surah = repo.getSurahById(position.surahId) ?: return@withLock false
+        if (position.verseNumber !in 1..surah.totalVerses) return@withLock false
+        val local = repo.getLocalAyahPath(position.surahId, position.verseNumber, position.readerId)
+        if (expected != null && _currentRecitation.value != expected) return@withLock false
+        val url = QuranAudioSourceResolver.selectInitialSource(local,
+            QuranAudioSourceResolver.remoteUrl(position.readerId, position.surahId, position.verseNumber))
+        val accepted = playAyah(url, position)
+        if (accepted) repo.saveLastRead(position.surahId, position.verseNumber)
+        accepted
+    }
+
+    suspend fun playNext(from: RecitationPosition? = _currentRecitation.value): Boolean {
+        val current = from ?: return false
+        val startingIdentity = _currentRecitation.value
+        if (startingIdentity != null && startingIdentity != current) return false
+        val total = repository?.getSurahById(current.surahId)?.totalVerses ?: return false
+        val next = when {
+            current.verseNumber < total -> current.copy(verseNumber = current.verseNumber + 1)
+            current.surahId < 114 -> current.copy(surahId = current.surahId + 1, verseNumber = 1)
+            else -> { pause(); return false }
+        }
+        return playPosition(next, expected = startingIdentity)
+    }
+
+    suspend fun playPrevious(from: RecitationPosition? = _currentRecitation.value): Boolean {
+        val current = from ?: return false
+        val previous = when {
+            current.verseNumber > 1 -> current.copy(verseNumber = current.verseNumber - 1)
+            current.surahId > 1 -> current.copy(surahId = current.surahId - 1,
+                verseNumber = repository?.getSurahById(current.surahId - 1)?.totalVerses ?: return false)
+            else -> return false
+        }
+        return playPosition(previous)
     }
 
     fun togglePlay() {

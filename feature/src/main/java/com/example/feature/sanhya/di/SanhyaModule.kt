@@ -7,6 +7,6 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val sanhyaModule = module {
-    single<SanhyaRepository> { SanhyaRepositoryImpl() }
+    single<SanhyaRepository> { SanhyaRepositoryImpl(get()) }
     viewModel { SanhyaViewModel(get(), get(), get()) }
 }

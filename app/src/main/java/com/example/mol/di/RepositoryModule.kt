@@ -21,6 +21,15 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val repositoryModule = module {
+    single {
+        com.example.feature.azkar.data.local.database.AzkarSeedManager(
+            get(), get<com.example.feature.azkar.data.local.SettingsManager>(),
+            com.example.feature.azkar.data.local.database.VerifiedSleepAzkar.load(androidContext())
+        )
+    }
+    single<com.example.feature.learning.data.LearningBookmarkStore> {
+        com.example.feature.learning.data.PreferenceLearningBookmarkStore(get())
+    }
     single { AsmaLocalDataSource(androidContext(), get()) }
     single<AsmaRepository> { AsmaRepositoryImpl(get()) }
 
@@ -28,10 +37,11 @@ val repositoryModule = module {
     single<StatisticsRepository> { StatisticsRepositoryImpl(get()) }
     single<DuaRepository> { DuaRepositoryImpl(androidContext(), get()) }
 
-    single<EhsanRepository> { EhsanRepositoryImpl(get(), get()) }
+    single { com.example.feature.ehsan.data.demo.CommunityDemoManager(get()) }
+    single<EhsanRepository> { EhsanRepositoryImpl(get(), get(), get(), get(), get()) }
     single<UserRepository> { UserRepositoryImpl(get()) }
     single { EhsanImageStore(androidContext()) }
-    single<HadithRepository> { HadithRepositoryImpl(get()) }
+    single<HadithRepository> { HadithRepositoryImpl(get(), androidContext()) }
 
     single { QiblaManager(androidContext()) }
 }

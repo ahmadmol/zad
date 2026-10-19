@@ -32,6 +32,7 @@ class PrayerSystemReconciliationReceiver : BroadcastReceiver(), KoinComponent {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 reconcileUseCase(reason)
+                org.koin.core.context.GlobalContext.get().get<com.example.feature.reminders.AzkarReminderCoordinator>().reconcileAll()
             } finally {
                 pending.finish()
             }

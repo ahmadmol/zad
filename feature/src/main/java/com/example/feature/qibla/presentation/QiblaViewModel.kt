@@ -14,11 +14,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 data class QiblaUiState(
     val compassRotation: Float = 0f,
     val qiblaAngle: Float = 0f,
+    val hasCalculatedBearing: Boolean = false,
     val locationName: String = "",
     val cityAndCountry: String = "",
     val isLoading: Boolean = true,
@@ -26,6 +28,7 @@ data class QiblaUiState(
     val error: String? = null,
     val calibrationMessage: String? = null,
     val sensorAccuracy: Int? = null,
+    val hasCompassSensors: Boolean = true,
     val isAligned: Boolean = false
 )
 
@@ -34,14 +37,25 @@ class QiblaViewModel(
     private val qiblaManager: QiblaManager,
     private val locationRepository: PrayerLocationRepository
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(QiblaUiState())
+    private val _uiState = MutableStateFlow(QiblaUiState(hasCompassSensors = qiblaManager.hasCompassSensors))
     val uiState: StateFlow<QiblaUiState> = _uiState.asStateFlow()
     private var alignedState = false
+    private var compassJob: kotlinx.coroutines.Job? = null
+    private var accuracyJob: kotlinx.coroutines.Job? = null
 
     init {
-        observeCompass()
-        observeSensorAccuracy()
         observeLocation()
+    }
+
+    fun setCompassActive(active: Boolean) {
+        if (active) {
+            if (compassJob?.isActive != true) compassJob = observeCompass()
+            if (accuracyJob?.isActive != true) accuracyJob = observeSensorAccuracy()
+        } else {
+            compassJob?.cancel(); accuracyJob?.cancel()
+            alignedState = false
+            _uiState.update { it.copy(isAligned = false, sensorAccuracy = null) }
+        }
     }
 
     private fun observeCompass() = viewModelScope.launch {
@@ -49,7 +63,7 @@ class QiblaViewModel(
             val qibla = _uiState.value.qiblaAngle
             val difference = abs((rotation - qibla + 540f) % 360f - 180f)
             alignedState = when {
-                qibla == 0f -> false
+                !_uiState.value.hasCalculatedBearing -> false
                 !alignedState && difference < 3f -> true
                 alignedState && difference > 5f -> false
                 else -> alignedState
@@ -74,7 +88,7 @@ class QiblaViewModel(
             when (state) {
                 PrayerLocationState.Loading -> _uiState.update { it.copy(isLoading = true) }
                 is PrayerLocationState.Available -> applyLocation(state.location, state.source)
-                is PrayerLocationState.Unavailable -> if (_uiState.value.qiblaAngle == 0f) {
+                is PrayerLocationState.Unavailable -> if (!_uiState.value.hasCalculatedBearing) {
                     _uiState.update {
                         it.copy(isLoading = false, error = unavailableMessage(state.reason))
                     }
@@ -85,11 +99,18 @@ class QiblaViewModel(
 
     fun updateLocationAndCalculateQibla() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = it.qiblaAngle == 0f, error = null) }
+            _uiState.update { it.copy(isLoading = !it.hasCalculatedBearing, error = null) }
             locationRepository.refreshLocation()
-                .onSuccess { applyLocation(it, PrayerLocationSource.Device) }
+                .onSuccess { location ->
+                    // Refresh may return the selected manual city without requesting GPS.
+                    // Keep the canonical source instead of presenting that city as a device fix.
+                    val canonical = locationRepository.observeLocation().first()
+                    val source = (canonical as? PrayerLocationState.Available)
+                        ?.takeIf { it.location == location }?.source ?: PrayerLocationSource.Device
+                    applyLocation(location, source)
+                }
                 .onFailure {
-                    if (_uiState.value.qiblaAngle == 0f) {
+                    if (!_uiState.value.hasCalculatedBearing) {
                         _uiState.update {
                             it.copy(isLoading = false, error = "تعذر تحديث الموقع. تحقق من الإذن وخدمة الموقع أو استخدم موقعًا محفوظًا.")
                         }
@@ -109,6 +130,7 @@ class QiblaViewModel(
         _uiState.update {
             it.copy(
                 qiblaAngle = angle,
+                hasCalculatedBearing = true,
                 locationName = location.displayName,
                 cityAndCountry = sourceLabel,
                 isLoading = false,

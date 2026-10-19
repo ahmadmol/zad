@@ -8,12 +8,12 @@ import java.time.ZoneId
 /**
  * Thin wrapper so domain logic can inject a fixed clock in tests.
  */
-class PrayerClock(private val clock: Clock = Clock.systemDefaultZone()) {
-    fun nowEpochMillis(): Long = Instant.now(clock).toEpochMilli()
+class PrayerClock(private val clock: Clock? = null) {
+    fun nowEpochMillis(): Long = (clock?.instant() ?: Instant.now()).toEpochMilli()
 
-    fun zoneId(): ZoneId = clock.zone
+    fun zoneId(): ZoneId = clock?.zone ?: ZoneId.systemDefault()
 
-    fun today(): LocalDate = LocalDate.now(clock)
+    fun today(): LocalDate = Instant.ofEpochMilli(nowEpochMillis()).atZone(zoneId()).toLocalDate()
 
-    fun withZone(zoneId: ZoneId): PrayerClock = PrayerClock(clock.withZone(zoneId))
+    fun withZone(zoneId: ZoneId): PrayerClock = PrayerClock((clock ?: Clock.systemUTC()).withZone(zoneId))
 }

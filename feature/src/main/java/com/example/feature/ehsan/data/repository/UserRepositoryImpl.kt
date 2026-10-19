@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 class UserRepositoryImpl(private val userDao: UserDao) : UserRepository {
     override suspend fun saveUser(user: UserEntity) {
-        userDao.insertUser(user)
+        userDao.saveActiveUser(user)
     }
 
     override fun getUser(): Flow<UserEntity?> {
@@ -15,11 +15,11 @@ class UserRepositoryImpl(private val userDao: UserDao) : UserRepository {
     }
 
     override suspend fun login(phoneNumber: String): UserEntity? {
-        return userDao.login(phoneNumber)
+        return userDao.openLocalProfile(phoneNumber)
     }
 
     override suspend fun logout() {
-        userDao.clearUser()
+        userDao.deactivateAll()
     }
 
     override suspend fun updateName(firstName: String, lastName: String) {

@@ -11,6 +11,6 @@ import org.koin.dsl.module
 
 val nabiIhsanModule = module {
     single<ConnectivityMonitor> { AndroidConnectivityMonitor(androidContext()) }
-    single<NabiIhsanRepository> { NabiIhsanRepositoryImpl() }
+    single<NabiIhsanRepository> { NabiIhsanRepositoryImpl(get()) }
     viewModel { NabiIhsanViewModel(get(), get()) }
 }

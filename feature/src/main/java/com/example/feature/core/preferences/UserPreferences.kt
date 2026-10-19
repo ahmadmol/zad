@@ -10,15 +10,11 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 private val Context.dataStore by preferencesDataStore(name = "user_preferences")
 
 class UserPreferences(private val context: Context) {
 
-    private val activityDateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
     val userName: Flow<String> = context.dataStore.data
         .map { it[KEY_USER_NAME] ?: DEFAULT_USER_NAME }
@@ -40,6 +36,39 @@ class UserPreferences(private val context: Context) {
 
     val adhanSoundUri: Flow<String?> = context.dataStore.data
         .map { it[KEY_ADHAN_SOUND_URI] }
+
+    val quranFontSize: Flow<Float> = context.dataStore.data.map { (it[androidx.datastore.preferences.core.floatPreferencesKey("quran_font_size")] ?: 28f).coerceIn(20f, 48f) }
+    val quranReaderId: Flow<String?> = context.dataStore.data.map { it[stringPreferencesKey("quran_reader_id")] }
+    suspend fun setQuranFontSize(size: Float) { context.dataStore.edit { it[androidx.datastore.preferences.core.floatPreferencesKey("quran_font_size")] = size.coerceIn(20f, 48f) } }
+    suspend fun setQuranReaderId(id: String) { context.dataStore.edit { it[stringPreferencesKey("quran_reader_id")] = id } }
+
+    val userBio: Flow<String> = context.dataStore.data.map { it[KEY_USER_BIO] ?: "" }
+
+    fun learningIds(collection: String): Flow<Set<String>> = context.dataStore.data
+        .map { it[stringSetPreferencesKey("learning_$collection")] ?: emptySet() }
+
+    suspend fun toggleLearningId(collection: String, id: String) {
+        val key = stringSetPreferencesKey("learning_$collection")
+        context.dataStore.edit { prefs ->
+            val current = prefs[key].orEmpty()
+            prefs[key] = if (id in current) current - id else current + id
+        }
+    }
+
+    suspend fun updateLearningIds(collection: String, transform: (Set<String>) -> Set<String>) {
+        val key = stringSetPreferencesKey("learning_$collection")
+        context.dataStore.edit { prefs -> prefs[key] = transform(prefs[key].orEmpty()) }
+    }
+
+    suspend fun setUserBio(bio: String) { context.dataStore.edit { it[KEY_USER_BIO] = bio.take(200) } }
+
+    suspend fun clearUserPresentation() {
+        context.dataStore.edit { prefs ->
+            prefs.remove(KEY_USER_BIO)
+            // Local learning bookmarks belong to this device. Signing out of a local
+            // community profile must not silently erase the saved learning library.
+        }
+    }
 
     val userAvatarUri: Flow<String?> = context.dataStore.data
         .map { it[KEY_USER_AVATAR_URI] }
@@ -163,7 +192,7 @@ class UserPreferences(private val context: Context) {
         }
     }
 
-    private fun todayDate(): String = activityDateFormatter.format(Date())
+    private fun todayDate(): String = java.time.LocalDate.now().toString()
 
     private fun ensureTodayLocked(
         prefs: androidx.datastore.preferences.core.MutablePreferences,
@@ -180,6 +209,7 @@ class UserPreferences(private val context: Context) {
 
     private companion object {
         val KEY_USER_NAME = stringPreferencesKey("user_name")
+        val KEY_USER_BIO = stringPreferencesKey("user_bio")
         val KEY_USER_AVATAR_URI = stringPreferencesKey("user_avatar_uri")
         val KEY_HAS_COMPLETED_ONBOARDING = booleanPreferencesKey("has_completed_onboarding")
         val KEY_LAST_READ_SURAH_ID = intPreferencesKey("last_read_surah_id")

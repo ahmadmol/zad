@@ -11,6 +11,6 @@ import org.koin.dsl.module
 
 val fahmModule = module {
     single<ConnectivityMonitor> { AndroidConnectivityMonitor(androidContext()) }
-    single<FahmRepository> { FahmRepositoryImpl() }
+    single<FahmRepository> { FahmRepositoryImpl(get()) }
     viewModel { FahmViewModel(get(), get()) }
 }

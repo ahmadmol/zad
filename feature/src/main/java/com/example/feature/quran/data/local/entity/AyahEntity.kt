@@ -23,5 +23,5 @@ fun AyahEntity.toDomain(): Verse = Verse(
     surahId = surahId,
     verseNumber = verseNumber,
     text = text,
-    tafsir = tafsir
+    tafsir = null // No verified tafsir edition is bundled; original stored value is preserved.
 )

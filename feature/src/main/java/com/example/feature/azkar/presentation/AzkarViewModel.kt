@@ -49,9 +49,9 @@ class AzkarViewModel(
             (category == null || zikr.category == category) &&
                 (!favoritesOnly || zikr.isFavorite) &&
                 (query.isBlank() ||
-                    zikr.title.contains(query, ignoreCase = true) ||
-                    zikr.text.contains(query, ignoreCase = true) ||
-                    zikr.category.contains(query, ignoreCase = true))
+                    com.example.feature.core.search.ArabicSearch.matches(zikr.title, query) ||
+                    com.example.feature.core.search.ArabicSearch.matches(zikr.text, query) ||
+                    com.example.feature.core.search.ArabicSearch.matches(zikr.category, query))
         }
 
         AzkarUiState(
@@ -104,10 +104,13 @@ class AzkarViewModel(
                 val category = uiState.value.azkarList.find { it.id == zikrId }?.category
                     ?: uiState.value.selectedCategory
                 incrementCounterUseCase(zikrId)
+                val categoryComplete = repository.getAllAzkar().first().filter { it.category == category }.let { group ->
+                    group.isNotEmpty() && group.all { it.targetCount > 0 && it.currentCount >= it.targetCount }
+                }
                 when {
-                    category?.contains("صباح") == true ->
+                    categoryComplete && category?.contains("صباح") == true ->
                         userPreferences.markDailyActivityComplete(DailyActivityIds.MORNING_AZKAR)
-                    category?.contains("مساء") == true ->
+                    categoryComplete && category?.contains("مساء") == true ->
                         userPreferences.markDailyActivityComplete(DailyActivityIds.EVENING_AZKAR)
                 }
             } catch (e: Exception) {

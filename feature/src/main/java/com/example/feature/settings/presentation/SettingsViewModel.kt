@@ -17,7 +17,8 @@ import kotlinx.coroutines.launch
  */
 class SettingsViewModel(
     private val settingsManager: SettingsManager,
-    private val userPreferences: UserPreferences
+    private val userPreferences: UserPreferences,
+    private val reminderCoordinator: com.example.feature.reminders.AzkarReminderCoordinator? = null
 ) : ViewModel() {
 
     private val primaryFlow = combine(
@@ -85,6 +86,7 @@ class SettingsViewModel(
             is SettingsAction.SetMorningReminder -> viewModelScope.launch {
                 settingsManager.setMorningReminder(action.enabled, 7, 0)
                 settingsManager.setEveningReminder(action.enabled, 17, 0)
+                reminderCoordinator?.reconcileAll()
             }
         }
     }

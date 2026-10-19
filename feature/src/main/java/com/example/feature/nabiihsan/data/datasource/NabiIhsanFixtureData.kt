@@ -65,7 +65,7 @@ object NabiIhsanFixtureData {
             coverUrl = "https://i.ytimg.com/vi/${record.videoId}/hqdefault.jpg",
             duration = record.duration,
             publishedAt = record.publishedAt,
-            sourceUrl = "https://amrkhaled.net/episode/${record.sourceEpisodeId}",
+            sourceUrl = "https://www.youtube.com/watch?v=${record.videoId}",
             playlistId = PLAYLIST_ID,
             playlistPosition = record.playlistPosition,
             sourceChannelId = OFFICIAL_CHANNEL_ID,
