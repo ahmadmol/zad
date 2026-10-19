@@ -25,7 +25,7 @@ fun IhsanPlusDailyHeader(
             text = greeting,
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = IhsanTheme.colors.accentContent
         )
         Spacer(modifier = Modifier.height(IhsanTheme.spacing.extraSmall))
         Row(

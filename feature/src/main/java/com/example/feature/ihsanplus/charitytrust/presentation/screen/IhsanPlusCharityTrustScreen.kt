@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.example.designsystem.component.IhsanTextWithKaabaIcon
 import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.ihsanplus.charitytrust.presentation.IhsanPlusCharityTrustViewModel
 import com.example.feature.ihsanplus.charitytrust.presentation.components.*
@@ -31,7 +32,13 @@ fun IhsanPlusCharityTrustScreen(
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text("موثوقية إحسان", style = MaterialTheme.typography.titleLarge) }
+                    title = {
+                        IhsanTextWithKaabaIcon(
+                            text = "موثوقية إحسان",
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    }
                 )
             }
         ) { padding ->

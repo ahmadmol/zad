@@ -58,26 +58,7 @@ class SanhyaViewModel(
         _filterState,
         _isFilterSheetVisible
     ) { allStories, query, filter, isSheetVisible ->
-        val filtered = allStories.filter { story ->
-            val q = query.trim().lowercase()
-            val matchesQuery = q.isEmpty() ||
-                    story.title.lowercase().contains(q) ||
-                    story.subtitle.lowercase().contains(q) ||
-                    story.summary.lowercase().contains(q) ||
-                    story.surahs.any { it.lowercase().contains(q) } ||
-                    story.keywords.any { it.lowercase().contains(q) }
-
-            val matchesCategory = filter.selectedCategory == "الكل" ||
-                    story.category == filter.selectedCategory
-
-            val matchesEpisodes = when (filter.selectedEpisodeFilter) {
-                "أكثر من حلقة" -> story.episodes.size > 1
-                "أكثر من 5 حلقات" -> story.episodes.size > 5
-                else -> true
-            }
-
-            matchesQuery && matchesCategory && matchesEpisodes
-        }
+        val filtered = sanhyaRepository.filterStories(query, filter)
 
         SanhyaMainUiState(
             stories = allStories,
@@ -134,7 +115,11 @@ class SanhyaViewModel(
     fun loadStoryDetails(storyId: String) {
         viewModelScope.launch {
             _detailState.update { it.copy(isLoading = true) }
-            val story = sanhyaRepository.getStoryById(storyId)
+            val story = try { sanhyaRepository.getStoryById(storyId) } catch (error: Exception) {
+                if (error is kotlinx.coroutines.CancellationException) throw error
+                _detailState.update { it.copy(isLoading = false, errorMessage = "تعذر تحميل القصة") }
+                return@launch
+            }
             val firstEpId = story?.episodes?.firstOrNull()?.id
             _selectedStory.value = story
             _selectedEpisodeId.value = firstEpId
@@ -142,6 +127,7 @@ class SanhyaViewModel(
                 it.copy(
                     story = story,
                     selectedEpisodeId = firstEpId,
+                    errorMessage = if (story == null) "القصة غير موجودة" else null,
                     isLoading = false
                 )
             }

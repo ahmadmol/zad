@@ -71,50 +71,12 @@ fun NabiIhsanRecipeDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(if (IhsanTheme.isDark) IhsanTheme.colors.surfaceBase else MaterialTheme.colorScheme.surface)
     ) {
         // Header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "رجوع",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-
-            Text(
-                text = "تفاصيل الوصفة",
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            IconButton(
-                onClick = {
-                    if (recipe != null) {
-                        val sendIntent = Intent().apply {
-                            action = Intent.ACTION_SEND
-                            putExtra(Intent.EXTRA_TEXT, "${recipe.title}\n${recipe.meaning}\nوصفة نبوية - نبي الإحسان")
-                            type = "text/plain"
-                        }
-                        context.startActivity(Intent.createChooser(sendIntent, "مشاركة الوصفة"))
-                    }
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Share,
-                    contentDescription = "مشاركة",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        }
+        com.example.designsystem.component.IhsanTopBar(
+            title = "تفاصيل الوصفة", style = com.example.designsystem.component.IhsanTopBarStyle.CompactSkyline,
+            onNavigateBack = onNavigateBack)
 
         if (uiState.isLoading) {
             IhsanLoadingState(modifier = Modifier.fillMaxSize())
@@ -143,7 +105,7 @@ fun NabiIhsanRecipeDetailScreen(
                         text = recipe.title,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = IhsanTheme.colors.accentContent,
                         textAlign = TextAlign.Center
                     )
 
@@ -177,7 +139,7 @@ fun NabiIhsanRecipeDetailScreen(
                                 text = recipe.quranOrHadithQuote,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = IhsanTheme.colors.accentContent,
                                 textAlign = TextAlign.Center,
                                 lineHeight = 24.sp
                             )
@@ -258,7 +220,7 @@ fun NabiIhsanRecipeDetailScreen(
                 // Source Attribution Card
                 NabiSourceCard(
                     sourceTitle = recipe.source,
-                    authorName = "محتوى إحسان التحريري"
+                    authorName = ""
                 )
 
                 // Save Recipe Button
@@ -270,7 +232,7 @@ fun NabiIhsanRecipeDetailScreen(
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (recipe.isFavorite) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.primary,
-                        contentColor = if (recipe.isFavorite) MaterialTheme.colorScheme.onSurface else Color.White
+                        contentColor = if (recipe.isFavorite) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
                     Icon(

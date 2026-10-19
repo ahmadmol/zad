@@ -11,7 +11,9 @@ data class IhsanDetailsUi(
     val donorName: String,
     val phoneNumber: String,
     val imageUrl: String? = null,
-    val createdAt: Long
+    val createdAt: Long,
+    val origin: String = "LEGACY",
+    val contactMethod: String = "PHONE"
 )
 
 data class IhsanDetailsUiState(

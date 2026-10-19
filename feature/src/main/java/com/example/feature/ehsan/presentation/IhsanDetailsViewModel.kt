@@ -32,7 +32,9 @@ class IhsanDetailsViewModel(
                             donorName = donation.donorName,
                             phoneNumber = donation.phoneNumber,
                             imageUrl = donation.imageUrl,
-                            createdAt = donation.createdAt
+                            createdAt = donation.createdAt,
+                            origin = donation.origin,
+                            contactMethod = donation.contactMethod
                         )
                     )
                 } else {

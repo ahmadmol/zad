@@ -45,7 +45,7 @@ fun IhsanPlusPrayerSummaryCard(
                 Icon(
                     imageVector = if (summary.isNotificationEnabled) Icons.Default.Notifications else Icons.Default.NotificationsOff,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = IhsanTheme.colors.accentContent
                 )
             }
             Spacer(modifier = Modifier.height(IhsanTheme.spacing.small))
@@ -53,7 +53,7 @@ fun IhsanPlusPrayerSummaryCard(
                 text = summary.prayerTimeLabel,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Black,
-                color = MaterialTheme.colorScheme.primary
+                color = IhsanTheme.colors.accentContent
             )
             Text(
                 text = summary.remainingTimeLabel,

@@ -39,8 +39,8 @@ fun FahmProgressRing(
         label = "progressRingAnimation"
     )
 
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val trackColor = primaryColor.copy(alpha = 0.15f)
+    val primaryColor = if (IhsanTheme.isDark) IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.primary
+    val trackColor = if (IhsanTheme.isDark) IhsanTheme.colors.progressTrack else primaryColor.copy(alpha = 0.15f)
 
     Card(
         modifier = modifier.fillMaxWidth(),

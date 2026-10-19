@@ -1,5 +1,7 @@
 package com.example.feature.fahmanallah.presentation
 
+import androidx.compose.foundation.layout.statusBarsPadding
+
 import android.content.Intent
 import androidx.core.net.toUri
 import androidx.compose.foundation.BorderStroke
@@ -93,7 +95,7 @@ fun FahmEpisodeDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 10.dp)
+            .statusBarsPadding().padding(top = 10.dp)
     ) {
         // Top Navigation Bar
         Row(
@@ -115,7 +117,7 @@ fun FahmEpisodeDetailScreen(
                 text = "الدرس $formattedNumber",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = primary
+                color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
             )
 
             IconButton(
@@ -141,7 +143,7 @@ fun FahmEpisodeDetailScreen(
                 videoId = ep.videoId,
                 coverUrl = ep.coverUrl,
                 isOnline = state.isOnline,
-                isEmbeddable = ep.isEmbeddable,
+                isEmbeddable = ep.isEmbeddable || !ep.videoId.isNullOrBlank(),
                 onOpenExternalYouTube = {
                     ep.videoId?.let { vId ->
                         val intent = Intent(Intent.ACTION_VIEW, "https://www.youtube.com/watch?v=$vId".toUri())
@@ -156,7 +158,7 @@ fun FahmEpisodeDetailScreen(
                     text = "الدرس $formattedNumber",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
-                    color = primary
+                    color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
                 )
 
                 Spacer(modifier = Modifier.height(2.dp))
@@ -200,7 +202,7 @@ fun FahmEpisodeDetailScreen(
                         Icon(
                             imageVector = if (ep.isFavorite) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
                             contentDescription = "حفظ",
-                            tint = primary,
+                            tint = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else primary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -262,7 +264,7 @@ fun FahmEpisodeDetailScreen(
                         Icon(
                             imageVector = Icons.Default.Share,
                             contentDescription = "مشاركة",
-                            tint = primary,
+                            tint = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else primary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -349,7 +351,7 @@ fun FahmEpisodeDetailScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.OpenInNew,
                             contentDescription = null,
-                            tint = primary,
+                            tint = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else primary,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -357,7 +359,7 @@ fun FahmEpisodeDetailScreen(
                             text = "زيارة القناة على YouTube",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
-                            color = primary
+                            color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
                         )
                     }
                 }
@@ -375,7 +377,7 @@ fun FahmEpisodeDetailScreen(
                 shape = RoundedCornerShape(25.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = primary,
-                    contentColor = Color.White
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Icon(
@@ -403,7 +405,7 @@ fun FahmEpisodeDetailScreen(
                     OutlinedButton(
                         onClick = { onNavigateToDetail(state.previousEpisodeId!!) },
                         shape = RoundedCornerShape(20.dp)
-                    ) {
+                    , colors = com.example.designsystem.theme.ihsanOutlinedButtonColors()) {
                         Icon(
                             imageVector = Icons.Default.ChevronRight,
                             contentDescription = null,
@@ -420,7 +422,7 @@ fun FahmEpisodeDetailScreen(
                     OutlinedButton(
                         onClick = { onNavigateToDetail(state.nextEpisodeId!!) },
                         shape = RoundedCornerShape(20.dp)
-                    ) {
+                    , colors = com.example.designsystem.theme.ihsanOutlinedButtonColors()) {
                         Text(text = "الدرس التالي", fontSize = 12.sp)
                         Spacer(modifier = Modifier.width(4.dp))
                         Icon(

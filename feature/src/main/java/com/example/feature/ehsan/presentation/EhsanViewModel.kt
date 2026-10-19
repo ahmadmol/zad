@@ -27,11 +27,19 @@ data class EhsanUiState(
 
 class EhsanViewModel(
     private val getDonationsUseCase: GetDonationsUseCase,
-    private val prayerLocationRepository: PrayerLocationRepository
+    private val prayerLocationRepository: PrayerLocationRepository,
+    private val demoManager: com.example.feature.ehsan.data.demo.CommunityDemoManager? = null
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EhsanUiState())
     val uiState: StateFlow<EhsanUiState> = _uiState.asStateFlow()
+
+    fun resetDemoOnly() {
+        viewModelScope.launch {
+            try { requireNotNull(demoManager) { "إعادة أمثلة DEMO غير متاحة" }.resetDemoOnly() }
+            catch (e: Exception) { _uiState.update { it.copy(error = e.message ?: "تعذر إعادة أمثلة DEMO") } }
+        }
+    }
 
     init {
         observeDonations()
@@ -101,8 +109,8 @@ class EhsanViewModel(
     private fun applyFilters() {
         val currentState = _uiState.value
         val filtered = currentState.donations.filter { donation ->
-            val matchesQuery = donation.title.contains(currentState.searchQuery, ignoreCase = true) ||
-                              donation.description.contains(currentState.searchQuery, ignoreCase = true)
+            val matchesQuery = com.example.feature.core.search.ArabicSearch.matches(donation.title, currentState.searchQuery) ||
+                              com.example.feature.core.search.ArabicSearch.matches(donation.description, currentState.searchQuery)
             val matchesLocation = currentState.selectedLocation == "الكل" || donation.location == currentState.selectedLocation
             val matchesCategory = currentState.selectedCategory == "الكل" || donation.category == currentState.selectedCategory
             val matchesType = currentState.selectedType == "ALL" || donation.type == currentState.selectedType

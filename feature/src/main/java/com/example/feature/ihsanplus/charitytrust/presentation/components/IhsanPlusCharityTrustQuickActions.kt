@@ -33,7 +33,7 @@ fun IhsanPlusCharityTrustQuickActions(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = IhsanTheme.spacing.extraSmall)
-            ) {
+            , colors = com.example.designsystem.theme.ihsanOutlinedButtonColors()) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(text = action.title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
                     Text(text = action.subtitle, style = MaterialTheme.typography.bodySmall)

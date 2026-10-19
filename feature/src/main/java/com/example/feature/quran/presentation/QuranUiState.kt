@@ -25,6 +25,8 @@ data class QuranUiState(
 
     // Audio State
     val isPlaying: Boolean = false,
+    val isBuffering: Boolean = false,
+    val currentPlayingSurahId: Int? = null,
     val currentPlayingAyah: Int? = null,
     val playbackPosition: Long = 0L,
     val playbackDuration: Long = 0L,

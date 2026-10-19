@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
@@ -30,6 +29,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -41,18 +41,20 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
@@ -62,6 +64,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.theme.IhsanTheme
+import com.example.feature.R
 import com.example.feature.components.AuthBottomSheet
 import com.example.feature.core.util.HijriDateFormatter
 import com.example.feature.ehsan.data.image.EhsanImageStore
@@ -86,8 +89,42 @@ fun ProfileScreen(
     onNavigateToReminders: () -> Unit = {},
     onNavigateToQuran: () -> Unit = {},
     onNavigateToSearch: () -> Unit = {},
+    onManageListings: (String) -> Unit = {},
     viewModel: ProfileViewModel = koinViewModel()
 ) {
+    val accountSectionText = stringResource(R.string.polish_account_section)
+    val editProfileText = stringResource(R.string.polish_edit_profile)
+    val editProfileSubtitleText = stringResource(R.string.polish_edit_profile_subtitle)
+    val contributionHistoryTitleText = stringResource(R.string.polish_contribution_history_title)
+    val appearanceSectionText = stringResource(R.string.polish_appearance_section)
+    val allSettingsText = stringResource(R.string.polish_all_settings)
+    val allSettingsSubtitleText = stringResource(R.string.polish_all_settings_subtitle)
+    val darkModeText = stringResource(R.string.polish_dark_mode)
+    val darkModeSubtitleText = stringResource(R.string.polish_dark_mode_subtitle)
+    val previewSizeText = stringResource(R.string.polish_preview_size)
+    val previewSizeSubtitleText = stringResource(R.string.polish_preview_size_subtitle)
+    val prayerQuranSectionText = stringResource(R.string.polish_prayer_quran_section)
+    val prayerSettingsText = stringResource(R.string.polish_prayer_settings)
+    val prayerSettingsSubtitleText = stringResource(R.string.polish_prayer_settings_subtitle)
+    val readingSettingsText = stringResource(R.string.polish_reading_settings)
+    val readingSettingsSubtitleText = stringResource(R.string.polish_reading_settings_subtitle)
+    val privacySectionText = stringResource(R.string.polish_privacy_section)
+    val localDataText = stringResource(R.string.polish_local_data)
+    val localDataSubtitleText = stringResource(R.string.polish_local_data_subtitle)
+    val aboutAppText = stringResource(R.string.polish_about_app)
+    val aboutAppSubtitleText = stringResource(R.string.polish_about_app_subtitle)
+    val previewBismillahText = stringResource(R.string.polish_preview_bismillah)
+    val currentSizeText = stringResource(R.string.polish_current_size)
+    val cancelText = stringResource(R.string.polish_cancel)
+    val saveText = stringResource(R.string.polish_save)
+    val localProfileInfoText = stringResource(R.string.polish_local_profile_info)
+    val localLogoutInfoText = stringResource(R.string.polish_local_logout_info)
+    val logoutText = stringResource(R.string.polish_logout)
+    val closeText = stringResource(R.string.polish_close)
+    val aboutTitleText = stringResource(R.string.polish_about_title)
+    val aboutDescriptionText = stringResource(R.string.polish_about_description)
+    val privacyDescriptionText = stringResource(R.string.polish_privacy_description)
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val imageStore: EhsanImageStore = koinInject()
     val avatarModel = remember(uiState.avatarUrl) {
@@ -96,6 +133,7 @@ fun ProfileScreen(
     var showAuthSheet by remember { mutableStateOf(false) }
     var showLocalDataDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
+    var showSourcesDialog by remember { mutableStateOf(false) }
     var showFontSizeDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
@@ -105,6 +143,8 @@ fun ProfileScreen(
             info.versionName
         }.getOrNull().orEmpty().ifBlank { "1.0.0" }
     }
+
+    val aboutVersionText = stringResource(R.string.polish_about_version , appVersion)
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Surface(
@@ -125,9 +165,16 @@ fun ProfileScreen(
                     onNotificationClick = onNavigateToReminders
                 )
 
+                // 2. Avatar straddles the hero/body boundary.
                 // 2. Avatar Overlay Centered on the Curved Boundary
                 Box(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().layout { measurable, constraints ->
+                        val placeable = measurable.measure(constraints)
+                        val overlap = 48.dp.roundToPx()
+                        layout(placeable.width, (placeable.height - overlap).coerceAtLeast(0)) {
+                            placeable.placeRelative(0, -overlap)
+                        }
+                    },
                     contentAlignment = Alignment.TopCenter
                 ) {
                     Column(
@@ -154,16 +201,16 @@ fun ProfileScreen(
                         // 3. Title & Subtitle
                         ProfileTitleHeader()
 
-                        Spacer(modifier = Modifier.height(20.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
                         // 4. Section 1 — الحساب
                         ProfileGroupedSection(
-                            headerTitle = "الحساب",
+                            headerTitle = accountSectionText,
                             headerIcon = Icons.Default.Person
                         ) {
                             ProfileSettingRow(
-                                title = "تحرير الملف الشخصي",
-                                subtitle = "تحديث معلوماتك وصورتك",
+                                title = editProfileText,
+                                subtitle = editProfileSubtitleText,
                                 icon = Icons.Default.Edit,
                                 onClick = {
                                     if (uiState.isUserLoggedIn) {
@@ -179,23 +226,27 @@ fun ProfileScreen(
                                 color = IhsanTheme.colors.divider
                             )
                             ProfileSettingRow(
-                                title = "سجل المساهمات",
-                                subtitle = "اطلع على تاريخ تبرعاتك وإحسانك",
+                                title = contributionHistoryTitleText,
+                                subtitle = stringResource(R.string.polish_contribution_history),
                                 icon = Icons.Default.FavoriteBorder,
                                 onClick = onNavigateToDonationHistory
                             )
+                            ProfileSettingRow("عروضي", "إدارة عروض التبرع", icon = Icons.Default.FavoriteBorder,
+                                onClick = { onManageListings("OFFER") })
+                            ProfileSettingRow("طلباتي", "إدارة طلبات المساعدة", icon = Icons.Default.Person,
+                                onClick = { onManageListings("REQUEST") })
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
 
                         // 5. Section 2 — المظهر والتفضيلات
                         ProfileGroupedSection(
-                            headerTitle = "المظهر والتفضيلات",
+                            headerTitle = appearanceSectionText,
                             headerIcon = Icons.Default.Settings
                         ) {
                             ProfileSettingRow(
-                                title = "جميع الإعدادات",
-                                subtitle = "تخصيص المظهر والإشعارات والموقع والبيانات",
+                                title = allSettingsText,
+                                subtitle = allSettingsSubtitleText,
                                 icon = Icons.Default.Settings,
                                 onClick = onNavigateToSettings
                             )
@@ -205,8 +256,8 @@ fun ProfileScreen(
                                 color = IhsanTheme.colors.divider
                             )
                             ProfileSettingRow(
-                                title = "الوضع الداكن",
-                                subtitle = "تغيير مظهر التطبيق",
+                                title = darkModeText,
+                                subtitle = darkModeSubtitleText,
                                 icon = Icons.Default.DarkMode,
                                 onClick = { viewModel.setDarkMode(!uiState.isDarkMode) },
                                 trailingContent = {
@@ -214,10 +265,10 @@ fun ProfileScreen(
                                         checked = uiState.isDarkMode,
                                         onCheckedChange = { viewModel.setDarkMode(it) },
                                         colors = SwitchDefaults.colors(
-                                            checkedThumbColor = Color.White,
+                                            checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
                                             checkedTrackColor = MaterialTheme.colorScheme.primary,
                                             uncheckedThumbColor = IhsanTheme.colors.textSecondary,
-                                            uncheckedTrackColor = IhsanTheme.colors.surfaceMint
+                                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
                                         )
                                     )
                                 }
@@ -228,8 +279,8 @@ fun ProfileScreen(
                                 color = IhsanTheme.colors.divider
                             )
                             ProfileSettingRow(
-                                title = "حجم نص المعاينة",
-                                subtitle = "يؤثر على نموذج النص في نافذة المعاينة فقط",
+                                title = previewSizeText,
+                                subtitle = previewSizeSubtitleText,
                                 customIconComposable = { FontIconAa() },
                                 onClick = { showFontSizeDialog = true }
                             )
@@ -239,14 +290,14 @@ fun ProfileScreen(
 
                         // 6. Section 3 — الصلاة والقرآن
                         ProfileGroupedSection(
-                            headerTitle = "الصلاة والقرآن",
+                            headerTitle = prayerQuranSectionText,
                             headerIcon = Icons.Default.Mosque
                         ) {
                             ProfileSettingRow(
-                                title = "إعدادات الصلاة",
-                                subtitle = "تنبيهات الأذان وأوقات الصلاة",
+                                title = prayerSettingsText,
+                                subtitle = prayerSettingsSubtitleText,
                                 icon = Icons.Default.Notifications,
-                                onClick = onNavigateToPrayer
+                                onClick = onNavigateToSettings
                             )
                             HorizontalDivider(
                                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -254,10 +305,10 @@ fun ProfileScreen(
                                 color = IhsanTheme.colors.divider
                             )
                             ProfileSettingRow(
-                                title = "القرآن الكريم",
-                                subtitle = "فتح القرآن والقراءة المحفوظة",
-                                icon = Icons.Default.Download,
-                                onClick = onNavigateToQuran
+                                title = readingSettingsText,
+                                subtitle = readingSettingsSubtitleText,
+                                icon = Icons.Default.TextFields,
+                                onClick = { showFontSizeDialog = true }
                             )
                         }
 
@@ -265,12 +316,12 @@ fun ProfileScreen(
 
                         // 7. Section 4 — الخصوصية والبيانات
                         ProfileGroupedSection(
-                            headerTitle = "الخصوصية والبيانات",
+                            headerTitle = privacySectionText,
                             headerIcon = Icons.Default.Shield
                         ) {
                             ProfileSettingRow(
-                                title = "البيانات المحلية",
-                                subtitle = "إدارة بياناتك على الجهاز (نشاطك المحلي)",
+                                title = localDataText,
+                                subtitle = localDataSubtitleText,
                                 icon = Icons.Default.Storage,
                                 onClick = { showLocalDataDialog = true }
                             )
@@ -280,8 +331,8 @@ fun ProfileScreen(
                                 color = IhsanTheme.colors.divider
                             )
                             ProfileSettingRow(
-                                title = "حول التطبيق",
-                                subtitle = "الإصدار وسياسة الخصوصية",
+                                title = aboutAppText,
+                                subtitle = aboutAppSubtitleText,
                                 icon = Icons.Default.Info,
                                 onClick = { showAboutDialog = true }
                             )
@@ -292,7 +343,7 @@ fun ProfileScreen(
                         ProfileVersionText(versionLabel = appVersion)
 
                         // Bottom content breathing room for bottom bar
-                        Spacer(modifier = Modifier.height(96.dp))
+                        Spacer(modifier = Modifier.height(IhsanTheme.dimens.contentBottomSpacing))
                     }
                 }
             }
@@ -342,7 +393,7 @@ fun ProfileScreen(
                                 }
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Text(
-                                    text = "حجم نص المعاينة",
+                                    text = previewSizeText,
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = IhsanTheme.colors.textPrimary
@@ -358,23 +409,23 @@ fun ProfileScreen(
                                     .heightIn(min = 100.dp),
                                 shape = RoundedCornerShape(20.dp),
                                 color = IhsanTheme.colors.surfaceMint.copy(alpha = 0.5f),
-                                border = BorderStroke(1.dp, IhsanTheme.colors.brand.copy(alpha = 0.15f))
+                                border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle)
                             ) {
                                 Box(
                                     contentAlignment = Alignment.Center,
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp)
                                 ) {
                                     Text(
-                                        text = "بسم الله الرحمن الرحيم",
+                                        text = previewBismillahText,
                                         fontSize = currentSize.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = IhsanTheme.colors.brand,
+                                        color = IhsanTheme.colors.accentContent,
                                         textAlign = TextAlign.Center
                                     )
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(20.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
                             // Font Size Info Row with Pill Badge
                             Row(
@@ -383,20 +434,20 @@ fun ProfileScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "الحجم الحالي",
+                                    text = currentSizeText,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = IhsanTheme.colors.textSecondary
                                 )
                                 Surface(
                                     shape = RoundedCornerShape(12.dp),
-                                    color = IhsanTheme.colors.brand.copy(alpha = 0.12f)
+                                    color = IhsanTheme.colors.surfaceMuted
                                 ) {
                                     Text(
                                         text = "${currentSize.toInt()} نقطة",
                                         fontSize = 13.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = IhsanTheme.colors.brand,
+                                        color = IhsanTheme.colors.accentContent,
                                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                                     )
                                 }
@@ -420,9 +471,9 @@ fun ProfileScreen(
                                     onValueChange = { currentSize = it },
                                     valueRange = 16f..36f,
                                     colors = SliderDefaults.colors(
-                                        thumbColor = IhsanTheme.colors.brand,
-                                        activeTrackColor = IhsanTheme.colors.brand,
-                                        inactiveTrackColor = IhsanTheme.colors.brand.copy(alpha = 0.18f),
+                                        thumbColor = MaterialTheme.colorScheme.primary,
+                                        activeTrackColor = MaterialTheme.colorScheme.primary,
+                                        inactiveTrackColor = MaterialTheme.colorScheme.outlineVariant,
                                         activeTickColor = Color.Transparent,
                                         inactiveTickColor = Color.Transparent
                                     ),
@@ -434,7 +485,7 @@ fun ProfileScreen(
                                     text = "A",
                                     fontSize = 22.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = IhsanTheme.colors.brand
+                                    color = IhsanTheme.colors.accentContent
                                 )
                             }
 
@@ -453,11 +504,11 @@ fun ProfileScreen(
                                         .height(48.dp),
                                     shape = RoundedCornerShape(14.dp),
                                     color = IhsanTheme.colors.surfaceMint,
-                                    border = BorderStroke(1.dp, IhsanTheme.colors.brand.copy(alpha = 0.15f))
+                                    border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle)
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
                                         Text(
-                                            text = "إلغاء",
+                                            text = cancelText,
                                             fontSize = 15.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = IhsanTheme.colors.textSecondary
@@ -475,14 +526,14 @@ fun ProfileScreen(
                                         .weight(1f)
                                         .height(48.dp),
                                     shape = RoundedCornerShape(14.dp),
-                                    color = IhsanTheme.colors.brand
+                                    color = IhsanTheme.colors.accentContent
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
                                         Text(
-                                            text = "حفظ",
+                                            text = saveText,
                                             fontSize = 15.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.White
+                                            color = MaterialTheme.colorScheme.onPrimary
                                         )
                                     }
                                 }
@@ -496,18 +547,32 @@ fun ProfileScreen(
             if (showLocalDataDialog) {
                 AlertDialog(
                     onDismissRequest = { showLocalDataDialog = false },
-                    title = { Text("البيانات المحلية") },
+                    shape = RoundedCornerShape(28.dp),
+                    containerColor = IhsanTheme.colors.surfaceElevated,
+                    titleContentColor = IhsanTheme.colors.textPrimary,
+                    textContentColor = IhsanTheme.colors.textPrimary,
+                    title = {
+                        Text(
+                            text = localDataText,
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                            color = IhsanTheme.colors.textPrimary
+                        )
+                    },
                     text = {
-                        Column {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
+                        ) {
                             Text(
-                                text = "تطبيق إحسان يحفظ بيانات ملفك الشخصي ونشاطك المحلي وتفضيلاتك على هذا الجهاز فقط لحماية خصوصيتك.",
+                                text = localProfileInfoText,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = IhsanTheme.colors.textPrimary
                             )
                             if (uiState.isUserLoggedIn) {
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
-                                    text = "يمكنك تسجيل الخروج لإلغاء القيد المحلي على هذا الجهاز.",
+                                    text = localLogoutInfoText,
                                     style = MaterialTheme.typography.bodySmall,
                                     color = IhsanTheme.colors.textSecondary
                                 )
@@ -521,53 +586,70 @@ fun ProfileScreen(
                                     viewModel.logout()
                                     showLocalDataDialog = false
                                 }
-                            ) {
-                                Text("تسجيل الخروج", color = MaterialTheme.colorScheme.error)
+                            , colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
+                                Text(logoutText, color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
                             }
                         } else {
-                            TextButton(onClick = { showLocalDataDialog = false }) {
-                                Text("موافق")
+                            TextButton(onClick = { showLocalDataDialog = false }, colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
+                                Text(stringResource(R.string.polish_ok), fontWeight = FontWeight.Bold)
                             }
                         }
                     },
                     dismissButton = {
-                        TextButton(onClick = { showLocalDataDialog = false }) {
-                            Text("إغلاق")
+                        TextButton(onClick = { showLocalDataDialog = false }, colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
+                            Text(closeText, fontWeight = FontWeight.Medium)
                         }
                     }
                 )
             }
 
+            if (showSourcesDialog) com.example.feature.core.presentation.ContentAttributionsDialog { showSourcesDialog = false }
+
             // About App & Privacy Policy Dialog
             if (showAboutDialog) {
                 AlertDialog(
                     onDismissRequest = { showAboutDialog = false },
-                    title = { Text("حول تطبيق إحسان") },
+                    shape = RoundedCornerShape(28.dp),
+                    containerColor = IhsanTheme.colors.surfaceElevated,
+                    titleContentColor = IhsanTheme.colors.textPrimary,
+                    textContentColor = IhsanTheme.colors.textPrimary,
+                    title = {
+                        Text(
+                            text = aboutTitleText,
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                            color = IhsanTheme.colors.textPrimary
+                        )
+                    },
                     text = {
-                        Column {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
+                        ) {
+                            TextButton(onClick = { showAboutDialog = false; showSourcesDialog = true }) { Text("المصادر والتراخيص") }
                             Text(
-                                text = "إحسان - تطبيق إسلامي شامل للقرآن الكريم، الأذكار، أوقات الصلاة، والعمل الخيري.",
+                                text = aboutDescriptionText,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = IhsanTheme.colors.textPrimary
                             )
-                            Spacer(modifier = Modifier.height(10.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = "الإصدار: $appVersion",
-                                style = MaterialTheme.typography.bodySmall,
+                                text = aboutVersionText,
+                                style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = IhsanTheme.colors.selectedContent
                             )
-                            Spacer(modifier = Modifier.height(10.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = "سياسة الخصوصية: جميع البيانات محلية ومحفوظة بأمان على جهازك، ولا يتم مشاركتها مع أي جهة خارجية.",
+                                text = privacyDescriptionText,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = IhsanTheme.colors.textSecondary
                             )
                         }
                     },
                     confirmButton = {
-                        TextButton(onClick = { showAboutDialog = false }) {
-                            Text("إغلاق")
+                        TextButton(onClick = { showAboutDialog = false }, colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
+                            Text(closeText, fontWeight = FontWeight.Bold)
                         }
                     }
                 )

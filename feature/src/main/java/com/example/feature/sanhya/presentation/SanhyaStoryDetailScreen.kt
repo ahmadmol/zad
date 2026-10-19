@@ -74,65 +74,32 @@ fun SanhyaStoryDetailScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(if (IhsanTheme.isDark) IhsanTheme.colors.surfaceBase else MaterialTheme.colorScheme.surface)
     ) {
         // Top Bar
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .statusBarsPadding()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "رجوع",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-
-            Text(
-                text = story?.title ?: "تفاصيل القصة",
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            IconButton(
-                onClick = {
-                    story?.let {
-                        val shareIntent = Intent().apply {
-                            action = Intent.ACTION_SEND
-                            putExtra(
-                                Intent.EXTRA_TEXT,
-                                "شاهد قصة \"${it.title}\" - ${it.subtitle} عبر تطبيق إحسان"
-                            )
-                            type = "text/plain"
-                        }
-                        context.startActivity(Intent.createChooser(shareIntent, "مشاركة القصة"))
+        com.example.designsystem.component.IhsanTopBar(
+            title = story?.title ?: "تفاصيل القصة", style = com.example.designsystem.component.IhsanTopBarStyle.Minimal,
+            onNavigateBack = onNavigateBack ,
+            actions = { IconButton(onClick = {
+                story?.let { item ->
+                    val intent = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_TEXT, "${item.title}\n${item.episodes.firstOrNull()?.sourceUrl.orEmpty()}")
                     }
+                    runCatching { context.startActivity(Intent.createChooser(intent, "مشاركة القصة")) }
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Share,
-                    contentDescription = "مشاركة",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        }
+            }, enabled = story != null) { Icon(Icons.Default.Share, "مشاركة", tint = IhsanTheme.colors.accentContent) } })
 
         if (story == null) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "جاري تحميل القصة...",
-                    color = IhsanTheme.colors.textSecondary
-                )
+                if (detailState.isLoading) com.example.designsystem.component.IhsanLoadingState(message = "جارٍ تحميل القصة")
+                else com.example.designsystem.component.IhsanErrorState("تعذر تحميل القصة",
+                    message = detailState.errorMessage ?: "القصة غير موجودة في البيانات الحالية",
+                    retryLabel = "إعادة المحاولة", onRetry = { viewModel.loadStoryDetails(storyId) })
+
             }
             return
         }
@@ -153,7 +120,7 @@ fun SanhyaStoryDetailScreen(
                 coverUrl = activeEpisode?.thumbnailUrl ?: story.coverUrl.takeIf { it.isNotBlank() },
                 startSeconds = 0,
                 isOnline = isOnline,
-                isEmbeddable = activeEpisode?.isEmbeddable ?: false,
+                isEmbeddable = activeEpisode?.isEmbeddable == true,
                 onOpenExternalYouTube = {
                     activeEpisode?.youtubeVideoId?.takeIf { it.isNotBlank() }?.let { videoId ->
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$videoId"))
@@ -171,7 +138,7 @@ fun SanhyaStoryDetailScreen(
                     text = story.title,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = IhsanTheme.colors.accentContent
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -188,21 +155,23 @@ fun SanhyaStoryDetailScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.08f))
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
-                    ) {
-                        Text(
-                            text = story.formattedSurahLabel,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                    if (story.formattedSurahLabel.isNotBlank()) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.08f))
+                                .padding(horizontal = 10.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = story.formattedSurahLabel,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = IhsanTheme.colors.accentContent
+                            )
+                        }
                     }
 
-                    activeEpisode?.durationLabel?.let { duration ->
+                    activeEpisode?.durationLabel?.takeIf { it.isNotBlank() }?.let { duration ->
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))
@@ -213,7 +182,7 @@ fun SanhyaStoryDetailScreen(
                                 text = duration,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = IhsanTheme.colors.accentContent
                             )
                         }
                     }
@@ -229,7 +198,7 @@ fun SanhyaStoryDetailScreen(
                                 text = "${story.totalEpisodesCount} حلقات",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = IhsanTheme.colors.accentContent
                             )
                         }
                     }
@@ -249,12 +218,8 @@ fun SanhyaStoryDetailScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.clickable { viewModel.toggleFavorite(story.id) }
                 ) {
-                    Icon(
-                        imageVector = if (story.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = "حفظ",
-                        tint = if (story.isFavorite) IhsanTheme.colors.favorite else MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(24.dp)
-                    )
+                    com.example.feature.learning.presentation.components.FavoriteButton(story.isFavorite, { viewModel.toggleFavorite(story.id) })
+
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = "حفظ",
@@ -282,7 +247,7 @@ fun SanhyaStoryDetailScreen(
                     Icon(
                         imageVector = Icons.Default.Share,
                         contentDescription = "مشاركة",
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = IhsanTheme.colors.accentContent,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.height(2.dp))
@@ -299,15 +264,11 @@ fun SanhyaStoryDetailScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.clickable { viewModel.toggleWatchLater(story.id) }
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.WatchLater,
-                        contentDescription = "لاحقاً",
-                        tint = if (story.isInWatchLater) MaterialTheme.colorScheme.primary else IhsanTheme.colors.textSecondary,
-                        modifier = Modifier.size(24.dp)
-                    )
+                    com.example.feature.learning.presentation.components.WatchLaterButton(story.isInWatchLater, { viewModel.toggleWatchLater(story.id) })
+
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "لاحقاً",
+                        text = "لاحقًا",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurface
@@ -315,22 +276,24 @@ fun SanhyaStoryDetailScreen(
                 }
             }
 
-            // "عن القصة" Section
-            StorySectionHeader(title = "عن القصة")
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(0.8.dp, IhsanTheme.colors.borderSubtle),
-                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-            ) {
-                Text(
-                    text = story.summary,
-                    fontSize = 13.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    lineHeight = 22.sp,
-                    modifier = Modifier.padding(14.dp)
-                )
+            // "عن القصة" Section (only rendered if non-blank)
+            if (story.summary.isNotBlank()) {
+                StorySectionHeader(title = "عن القصة")
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = BorderStroke(0.8.dp, IhsanTheme.colors.borderSubtle),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                ) {
+                    Text(
+                        text = story.summary,
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        lineHeight = 22.sp,
+                        modifier = Modifier.padding(14.dp)
+                    )
+                }
             }
 
             // "آيات القصة" Section
@@ -359,7 +322,7 @@ fun SanhyaStoryDetailScreen(
                         text = "عرض الكل",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = IhsanTheme.colors.accentContent,
                         modifier = Modifier.clickable { onNavigateToEpisodes(story.id) }
                     )
                 }
@@ -384,52 +347,9 @@ fun SanhyaStoryDetailScreen(
 
             // "المصدر" Section
             StorySectionHeader(title = "المصدر")
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(0.8.dp, IhsanTheme.colors.borderSubtle),
-                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "إحسان",
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = story.sourceTitle,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = story.sourceAuthor,
-                            fontSize = 12.sp,
-                            color = IhsanTheme.colors.textSecondary
-                        )
-                    }
-                }
-            }
+            com.example.feature.learning.presentation.components.RelatedContentCard(story.sourceTitle, story.sourceAuthor,
+                onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW,
+                    Uri.parse(com.example.feature.sanhya.data.datasource.SanhyaFixtureData.PROGRAM_URL))) } })
 
             Spacer(modifier = Modifier.height(16.dp))
         }

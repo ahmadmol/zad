@@ -40,7 +40,7 @@ fun NabiSectionHeader(
                 text = actionLabel,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary,
+                color = IhsanTheme.colors.accentContent,
                 modifier = Modifier
                     .semantics { role = Role.Button }
                     .clickable(onClick = onActionClick)

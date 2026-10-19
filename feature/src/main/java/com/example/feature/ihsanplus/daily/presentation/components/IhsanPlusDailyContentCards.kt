@@ -85,7 +85,7 @@ fun IhsanPlusDailyHadithCard(
             Text(
                 text = "حديث اليوم",
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
+                color = IhsanTheme.colors.accentContent,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(IhsanTheme.spacing.small))

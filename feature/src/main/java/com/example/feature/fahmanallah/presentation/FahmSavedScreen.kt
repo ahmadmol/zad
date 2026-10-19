@@ -1,5 +1,9 @@
 package com.example.feature.fahmanallah.presentation
 
+import androidx.compose.material3.LocalContentColor
+
+import androidx.compose.foundation.layout.statusBarsPadding
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,7 +56,7 @@ fun FahmSavedScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 10.dp)
+            .statusBarsPadding().padding(top = 10.dp)
     ) {
         // Header
         Row(
@@ -75,7 +79,7 @@ fun FahmSavedScreen(
                 text = "المحفوظات",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = primary
+                color = if (IhsanTheme.isDark) IhsanTheme.colors.accentContent else primary
             )
         }
 
@@ -86,16 +90,18 @@ fun FahmSavedScreen(
         TabRow(
             selectedTabIndex = state.selectedTab,
             containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = primary,
+            contentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary,
             indicator = { tabPositions ->
                 TabRowDefaults.SecondaryIndicator(
                     modifier = Modifier.tabIndicatorOffset(tabPositions[state.selectedTab.coerceIn(0, tabs.lastIndex)]),
-                    color = primary
+                    color = if (IhsanTheme.isDark) IhsanTheme.colors.accentContent else primary
                 )
             }
         ) {
             tabs.forEachIndexed { index, title ->
                 Tab(
+                    selectedContentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else LocalContentColor.current,
+                    unselectedContentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textSecondary else LocalContentColor.current.copy(alpha = .7f),
                     selected = state.selectedTab == index,
                     onClick = { viewModel.setSavedTab(index) },
                     text = {

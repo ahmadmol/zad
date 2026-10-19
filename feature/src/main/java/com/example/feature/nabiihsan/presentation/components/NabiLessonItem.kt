@@ -45,7 +45,7 @@ fun NabiLessonItem(
             Icon(
                 imageVector = Icons.Default.Check,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = IhsanTheme.colors.accentContent,
                 modifier = Modifier.size(14.dp)
             )
         }

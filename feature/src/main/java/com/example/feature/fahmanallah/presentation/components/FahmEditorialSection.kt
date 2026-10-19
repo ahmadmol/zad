@@ -39,15 +39,15 @@ fun FahmRuleCard(
 ) {
     val amberBg = Color(0xFFFFF8E1)
     val amberBorder = Color(0xFFFFE082)
-    val amberIconColor = Color(0xFFF57F17)
+    val amberIconColor = if (IhsanTheme.isDark) IhsanTheme.colors.goldAccent else Color(0xFFF57F17)
 
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (IhsanTheme.isDark) Color(0xFF2C2415) else amberBg
+            containerColor = if (IhsanTheme.isDark) IhsanTheme.colors.surfaceWarm else amberBg
         ),
-        border = BorderStroke(1.dp, if (IhsanTheme.isDark) Color(0xFF5D4825) else amberBorder)
+        border = BorderStroke(1.dp, if (IhsanTheme.isDark) IhsanTheme.colors.borderSubtle else amberBorder)
     ) {
         Column(
             modifier = Modifier
@@ -105,7 +105,7 @@ fun FahmUnderstandSection(
             text = "ماذا أفهم عن الله؟",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = IhsanTheme.colors.accentContent
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -132,7 +132,7 @@ fun FahmTakeawaysSection(
             text = "ماذا أتعلم؟",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = IhsanTheme.colors.accentContent
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -147,7 +147,7 @@ fun FahmTakeawaysSection(
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = IhsanTheme.colors.accentContent,
                     modifier = Modifier
                         .size(18.dp)
                         .padding(top = 2.dp)

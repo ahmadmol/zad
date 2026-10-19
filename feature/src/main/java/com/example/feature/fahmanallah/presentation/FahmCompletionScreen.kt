@@ -1,5 +1,7 @@
 package com.example.feature.fahmanallah.presentation
 
+import androidx.compose.foundation.layout.statusBarsPadding
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,7 +59,7 @@ fun FahmCompletionScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 10.dp)
+            .statusBarsPadding().padding(top = 10.dp)
     ) {
         // Top Navigation Header
         Row(
@@ -80,7 +82,7 @@ fun FahmCompletionScreen(
                 text = "إتمام الدرس",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = primary
+                color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
             )
 
             Spacer(modifier = Modifier.weight(1f))

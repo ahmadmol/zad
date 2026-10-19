@@ -1,5 +1,7 @@
 package com.example.feature.fahmanallah.presentation
 
+import androidx.compose.foundation.layout.statusBarsPadding
+
 import android.content.Intent
 import androidx.core.net.toUri
 import androidx.compose.foundation.BorderStroke
@@ -54,7 +56,7 @@ fun FahmAboutScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 10.dp)
+            .statusBarsPadding().padding(top = 10.dp)
     ) {
         // Top Header
         Row(
@@ -77,7 +79,7 @@ fun FahmAboutScreen(
                 text = "عن الفهم عن الله",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = primary
+                color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
             )
         }
 
@@ -163,7 +165,7 @@ fun FahmAboutScreen(
                         text = "عن البرنامج",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = primary
+                        color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -196,7 +198,7 @@ fun FahmAboutScreen(
                         text = "المصدر والنسبة",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = primary
+                        color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -226,7 +228,7 @@ fun FahmAboutScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.OpenInNew,
                             contentDescription = null,
-                            tint = primary,
+                            tint = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else primary,
                             modifier = Modifier.size(20.dp)
                         )
 
@@ -237,7 +239,7 @@ fun FahmAboutScreen(
                                 text = "قناة د. عمرو خالد الرسمية",
                                 fontSize = 13.5.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = primary
+                                color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
                             )
 
                             Text(

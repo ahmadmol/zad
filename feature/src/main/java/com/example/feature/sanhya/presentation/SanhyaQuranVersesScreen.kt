@@ -64,44 +64,21 @@ fun SanhyaQuranVersesScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(if (IhsanTheme.isDark) IhsanTheme.colors.surfaceBase else MaterialTheme.colorScheme.surface)
     ) {
         // Top Bar
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .statusBarsPadding()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "رجوع",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text(
-                text = "آيات القصة",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
+        com.example.designsystem.component.IhsanTopBar(
+            title = "آيات القصة", style = com.example.designsystem.component.IhsanTopBarStyle.CompactSkyline,
+            onNavigateBack = onNavigateBack)
 
         if (ref == null) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "جاري تحميل الآيات...",
-                    color = IhsanTheme.colors.textSecondary
-                )
+                if (detailState.isLoading) com.example.designsystem.component.IhsanLoadingState(message = "جارٍ تحميل الآيات")
+                else com.example.designsystem.component.IhsanEmptyState(title = "لا تتوفر آيات مرتبطة",
+                    message = "لا تحتوي بيانات هذه القصة على مراجع آيات موثقة. يمكنك قراءة القرآن من قسم المصحف.")
             }
             return
         }
@@ -127,7 +104,7 @@ fun SanhyaQuranVersesScreen(
                     text = "سورة ${ref.surahName}",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = IhsanTheme.colors.accentContent
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -159,7 +136,7 @@ fun SanhyaQuranVersesScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
+                .background(if (IhsanTheme.isDark) IhsanTheme.colors.surfaceBase else MaterialTheme.colorScheme.surface)
                 .padding(16.dp)
         ) {
             Button(
@@ -197,8 +174,8 @@ private fun VerseItemCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(0.8.dp, IhsanTheme.colors.borderSubtle),
+        colors = CardDefaults.cardColors(containerColor = com.example.designsystem.theme.QuranPaper),
+        border = BorderStroke(0.8.dp, com.example.designsystem.theme.QuranDecorativeGold),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
@@ -219,7 +196,7 @@ private fun VerseItemCard(
                     text = "${verse.verseNumber}",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = com.example.designsystem.theme.QuranInk
                 )
             }
 
@@ -230,7 +207,7 @@ private fun VerseItemCard(
                 text = verse.text,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = com.example.designsystem.theme.QuranInk,
                 lineHeight = 28.sp,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.weight(1f)

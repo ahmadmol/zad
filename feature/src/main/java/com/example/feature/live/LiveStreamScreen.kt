@@ -5,7 +5,7 @@ import android.content.Intent
 import android.graphics.Color as AndroidColor
 import android.net.Uri
 import android.view.ViewGroup
-import android.webkit.WebChromeClient
+import com.example.feature.learning.presentation.components.VideoWebChromeClient
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -68,6 +69,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import com.example.designsystem.component.IhsanTopBar
+import com.example.designsystem.component.IhsanTopBarStyle
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -76,6 +79,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -90,6 +94,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
 
 private enum class LivePlaybackMode {
@@ -113,14 +118,15 @@ fun LiveStreamScreen(
 
     var activeSource by remember(source) { mutableStateOf(source) }
 
-    var playbackMode by remember(activeSource) { mutableStateOf(LivePlaybackMode.Hls) }
+    var playbackMode by remember(activeSource) { mutableStateOf(if (LiveStreamSources.DIRECT_HLS_APPROVED) LivePlaybackMode.Hls else LivePlaybackMode.Youtube) }
     var isLoading by remember(activeSource) { mutableStateOf(true) }
     var isLivePlaying by remember(activeSource) { mutableStateOf(false) }
     var errorMessage by remember(activeSource) { mutableStateOf<String?>(null) }
+    var playbackAttempt by remember(activeSource) { mutableStateOf(0) }
     var isFullscreen by remember { mutableStateOf(false) }
 
-    val darkTealColor = Color(0xFF003B46)
-    val darkTealSubtext = Color(0xFF1B535D)
+    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
+    val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else Color(0xFF1B535D)
     val headerTextColor = if (isDark) MaterialTheme.colorScheme.onBackground else darkTealColor
     val headerSubtextColor = if (isDark) MaterialTheme.colorScheme.onSurfaceVariant else darkTealSubtext
 
@@ -155,16 +161,18 @@ fun LiveStreamScreen(
     }
 
     fun refreshPlayer() {
+        playbackAttempt++
         errorMessage = null
         isLoading = true
         isLivePlaying = false
-        playbackMode = LivePlaybackMode.Hls
+        playbackMode = if (LiveStreamSources.DIRECT_HLS_APPROVED) LivePlaybackMode.Hls else LivePlaybackMode.Youtube
     }
 
     // A movable composition keeps the ExoPlayer/WebView owner and playback state alive while
     // its visual host moves between the inline card and fullscreen dialog.
     val playerContent = remember(activeSource) {
         movableContentOf {
+            androidx.compose.runtime.key(playbackAttempt) {
             PlayerSurfaceContent(
                 errorMessage = errorMessage,
                 playbackMode = playbackMode,
@@ -178,13 +186,14 @@ fun LiveStreamScreen(
                     playbackMode = LivePlaybackMode.Youtube
                 },
                 onWebError = {
-                    errorMessage = "تعذر تحميل البث المباشر حالياً. يرجى التحقق من اتصال الانترنت."
+                    errorMessage = "تعذر تشغيل البث داخل التطبيق. تحقق من الاتصال أو افتح المصدر الرسمي."
                     isLoading = false
                     isLivePlaying = false
                 },
                 onRefresh = ::refreshPlayer,
                 onOpenYoutubeApp = ::openInYoutubeApp
             )
+            }
         }
     }
 
@@ -201,7 +210,7 @@ fun LiveStreamScreen(
                 alignment = Alignment.TopCenter,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(240.dp)
+                    .height(120.dp)
             )
 
             // Scrim overlay for Dark mode legibility
@@ -209,8 +218,8 @@ fun LiveStreamScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(240.dp)
-                        .background(Color.Black.copy(alpha = 0.55f))
+                        .height(120.dp)
+                        .background(Brush.verticalGradient(listOf(IhsanTheme.colors.surfaceBase.copy(alpha = .20f), IhsanTheme.colors.surfaceBase.copy(alpha = .82f))))
                 )
             }
 
@@ -218,61 +227,16 @@ fun LiveStreamScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .statusBarsPadding()
                     .verticalScroll(rememberScrollState())
                     .padding(bottom = 32.dp)
             ) {
                 // Top Navigation Header Row
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 8.dp)
-                ) {
-                    // Back Button (Touch target >= 48dp)
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterStart)
-                            .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
-                            .clip(CircleShape)
-                            .background(
-                                if (isDark) MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
-                                else Color.White.copy(alpha = 0.85f)
-                            )
-                            .clickable(onClick = onBack)
-                            .semantics {
-                                role = Role.Button
-                                contentDescription = "رجوع"
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = null,
-                            tint = headerTextColor,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-
-                    // Title & Subtitle Centered
-                    Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "البث المباشر",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = headerTextColor,
-                            textAlign = TextAlign.Center
-                        )
-                        Text(
-                            text = "من الحرم المكي والنبوي",
-                            fontSize = 12.sp,
-                            color = headerSubtextColor,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
+                IhsanTopBar(
+                    title = "البث المباشر",
+                    subtitle = "من الحرم المكي والنبوي الشريف",
+                    style = IhsanTopBarStyle.Hero, backgroundImageRes = com.example.feature.R.drawable.ihsan_home_hero_background,
+                    onNavigateBack = onBack
+                )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -280,7 +244,7 @@ fun LiveStreamScreen(
                 LiveSourceSegmentedControl(
                     selectedSource = activeSource,
                     onSourceSelected = ::handleSourceSelect,
-                    modifier = Modifier.padding(horizontal = 20.dp)
+                    modifier = Modifier.padding(horizontal = 12.dp)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -288,10 +252,10 @@ fun LiveStreamScreen(
                 // 4. Main Player Card Container
                 Card(
                     modifier = Modifier
-                        .padding(horizontal = 20.dp)
+                        .padding(horizontal = 12.dp)
                         .fillMaxWidth(),
-                    shape = RoundedCornerShape(22.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = .5.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
@@ -305,7 +269,7 @@ fun LiveStreamScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .aspectRatio(16f / 9f)
+                                .heightIn(min = 200.dp).aspectRatio(16f / 9f)
                                 .clip(RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp))
                                 .background(Color.Black)
                         ) {
@@ -368,7 +332,7 @@ fun LiveStreamScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
+                        .padding(horizontal = 12.dp),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     ActionCard(
@@ -397,14 +361,26 @@ fun LiveStreamScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+
+                androidx.compose.material3.TextButton(
+                    colors = com.example.designsystem.theme.ihsanTextButtonColors(),
+                    onClick = {
+                        runCatching {
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(LiveStreamSources.OFFICIAL_LIVE_PORTAL)))
+                        }.onFailure {
+                            com.example.feature.core.notification.UserMessageNotifier.notify(context, "تعذر فتح المصدر في المتصفح")
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) { Text("فتح البث في بوابة الحرمين الرسمية") }
 
                 // 6. Alternate Sources Section ("مصادر أخرى")
                 val alternateSource = if (activeSource == LiveSourceType.HARAM) LiveSourceType.NABAWI else LiveSourceType.HARAM
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
+                        .padding(horizontal = 12.dp)
                 ) {
                     Text(
                         text = "مصادر أخرى",
@@ -500,9 +476,12 @@ private fun PlayerSurfaceContent(
     onOpenYoutubeApp: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
+        Image(painterResource(R.drawable.ihsan_live_mosque_sunset), null, Modifier.matchParentSize(), contentScale = ContentScale.Fit)
+
         when {
             errorMessage != null -> {
                 // Error State Overlay
+                Box(Modifier.matchParentSize().background(Color.Black.copy(alpha = 0.72f)))
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -524,17 +503,18 @@ private fun PlayerSurfaceContent(
                         Button(
                             onClick = onRefresh,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF00695C)
+                                containerColor = if (IhsanTheme.isDark) MaterialTheme.colorScheme.primary else Color(0xFF00695C)
                             ),
-                            modifier = Modifier.defaultMinSize(minWidth = 120.dp, minHeight = 48.dp)
+                            modifier = Modifier.weight(1f).defaultMinSize(minHeight = 48.dp)
                         ) {
                             Text("إعادة المحاولة", fontSize = 13.sp)
                         }
                         OutlinedButton(
                             onClick = onOpenYoutubeApp,
-                            modifier = Modifier.defaultMinSize(minWidth = 120.dp, minHeight = 48.dp)
-                        ) {
-                            Text("تطبيق يوتيوب", color = Color.White, fontSize = 13.sp)
+                            modifier = Modifier.weight(1f).defaultMinSize(minHeight = 48.dp)
+                        , colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.75f))) {
+                            Text("فتح المصدر الرسمي", color = Color.White, fontSize = 13.sp)
                         }
                     }
                 }
@@ -553,13 +533,17 @@ private fun PlayerSurfaceContent(
                 YoutubeLiveWebView(
                     channelId = activeSource.youtubeChannelId,
                     onLoadingChanged = onLoadingChanged,
+                    onIsPlayingChanged = onIsPlayingChanged,
                     onError = onWebError
                 )
             }
         }
 
+        if (playbackMode == LivePlaybackMode.Hls && isLoading && errorMessage == null) Image(painterResource(R.drawable.ihsan_live_mosque_sunset),
+            null, Modifier.matchParentSize(), contentScale = ContentScale.Fit)
+
         // Live / Neutral Status Badge Overlay (Product Truth: only show 'مباشر' when actively playing in ExoPlayer)
-        Box(
+        if (playbackMode == LivePlaybackMode.Hls) Box(
             modifier = Modifier
                 .padding(12.dp)
                 .align(Alignment.TopEnd)
@@ -568,7 +552,7 @@ private fun PlayerSurfaceContent(
         }
 
         // Loading Spinner Overlay
-        if (isLoading && errorMessage == null) {
+        if (playbackMode == LivePlaybackMode.Hls && isLoading && errorMessage == null) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -591,8 +575,8 @@ private fun LiveSourceSegmentedControl(
     onSourceSelected: (LiveSourceType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val darkTealColor = Color(0xFF003B46)
-    val isDark = com.example.designsystem.theme.IhsanTheme.isDark
+    val isDark = IhsanTheme.isDark
+    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
 
     Box(
         modifier = modifier
@@ -618,7 +602,7 @@ private fun LiveSourceSegmentedControl(
                         .weight(1f)
                         .fillMaxHeight()
                         .defaultMinSize(minHeight = 48.dp)
-                        .clip(RoundedCornerShape(22.dp))
+                        .clip(RoundedCornerShape(16.dp))
                         .background(
                             if (isSelected) {
                                 if (isDark) MaterialTheme.colorScheme.primary else darkTealColor
@@ -635,7 +619,7 @@ private fun LiveSourceSegmentedControl(
                         text = source.tabTitle,
                         fontSize = 14.sp,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                        color = if (isSelected) Color.White else {
+                        color = if (isSelected) MaterialTheme.colorScheme.onPrimary else {
                             if (isDark) MaterialTheme.colorScheme.onSurfaceVariant else darkTealColor
                         }
                     )
@@ -651,7 +635,7 @@ private fun LiveStatusBadge(isPlaying: Boolean) {
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
             .background(
-                if (isPlaying) Color(0xFFE53935)
+                if (isPlaying) MaterialTheme.colorScheme.error
                 else Color.Black.copy(alpha = 0.65f)
             )
             .border(0.5.dp, Color.White.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
@@ -686,7 +670,7 @@ private fun ActionCard(
     modifier: Modifier = Modifier
 ) {
     val isDark = com.example.designsystem.theme.IhsanTheme.isDark
-    val darkTealColor = Color(0xFF003B46)
+    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
 
     Card(
         modifier = modifier
@@ -717,7 +701,7 @@ private fun ActionCard(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = if (isDark) MaterialTheme.colorScheme.primary else darkTealColor,
+                tint = if (isDark) IhsanTheme.colors.textSecondary else darkTealColor,
                 modifier = Modifier.size(22.dp)
             )
             Spacer(modifier = Modifier.height(6.dp))
@@ -743,7 +727,7 @@ private fun AlternateChannelCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .defaultMinSize(minHeight = 110.dp)
+            .heightIn(min = 200.dp).aspectRatio(16f / 9f)
             .clickable(onClick = onSelect)
             .semantics {
                 role = Role.Button
@@ -886,17 +870,50 @@ private fun HlsLivePlayer(
 private fun YoutubeLiveWebView(
     channelId: String,
     onLoadingChanged: (Boolean) -> Unit,
+    onIsPlayingChanged: (Boolean) -> Unit,
     onError: () -> Unit
 ) {
     val embedUrl = remember(channelId) { LiveStreamSources.youtubeEmbedUrl(channelId) }
     val latestOnLoadingChanged by rememberUpdatedState(onLoadingChanged)
     val latestOnError by rememberUpdatedState(onError)
+    val latestOnIsPlayingChanged by rememberUpdatedState(onIsPlayingChanged)
+    var hasPlayed by remember(channelId) { mutableStateOf(false) }
+    var isPlaying by remember(channelId) { mutableStateOf(false) }
     var webViewRef by remember { mutableStateOf<WebView?>(null) }
+    val playerContext = androidx.compose.ui.platform.LocalContext.current
+    val fullscreenClient = remember(playerContext) { VideoWebChromeClient(playerContext) }
+
+    androidx.compose.runtime.LaunchedEffect(channelId) {
+        kotlinx.coroutines.delay(25_000)
+        if (!hasPlayed) {
+            android.util.Log.w("IhsanYouTube", "Playback timeout channel=$channelId")
+            latestOnError()
+        }
+    }
+
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner, webViewRef) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            when (event) {
+                androidx.lifecycle.Lifecycle.Event.ON_RESUME -> webViewRef?.onResume()
+                androidx.lifecycle.Lifecycle.Event.ON_PAUSE -> webViewRef?.apply {
+                    fullscreenClient.onHideCustomView()
+                    evaluateJavascript("if(window.player && player.pauseVideo){player.pauseVideo();}", null)
+                    onPause()
+                }
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     DisposableEffect(Unit) {
         onDispose {
             webViewRef?.apply {
+                fullscreenClient.onHideCustomView()
                 stopLoading()
+                removeJavascriptInterface("IhsanPlayback")
                 loadUrl("about:blank")
                 clearHistory()
                 removeAllViews()
@@ -917,14 +934,22 @@ private fun YoutubeLiveWebView(
                 setBackgroundColor(AndroidColor.BLACK)
                 settings.javaScriptEnabled = true
                 settings.domStorageEnabled = true
+                settings.allowFileAccess = false
+                settings.allowContentAccess = false
                 settings.mediaPlaybackRequiresUserGesture = false
                 settings.loadsImagesAutomatically = true
                 settings.mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
                 settings.cacheMode = WebSettings.LOAD_DEFAULT
-                webChromeClient = WebChromeClient()
+                addJavascriptInterface(com.example.feature.learning.presentation.components.YouTubePlaybackBridge(
+                    onReady = { /* Readiness is not proof of playback. */ },
+                    onPlaying = { hasPlayed = true; isPlaying = true; latestOnLoadingChanged(false); latestOnIsPlayingChanged(true) },
+                    onStopped = { isPlaying = false; latestOnIsPlayingChanged(false) },
+                    onError = { latestOnIsPlayingChanged(false); latestOnError() }
+                ), "IhsanPlayback")
+                webChromeClient = fullscreenClient
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView?, url: String?) {
-                        latestOnLoadingChanged(false)
+                        // The iframe can finish loading while displaying an unavailable video.
                     }
 
                     override fun onReceivedError(
@@ -937,9 +962,13 @@ private fun YoutubeLiveWebView(
                         }
                     }
                 }
-                loadUrl(embedUrl)
+                val origin = "https://${ctx.packageName.lowercase(java.util.Locale.ROOT)}/"
+                val html = """<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><style>html,body{margin:0;width:100%;height:100%;background:black}iframe{width:100%;height:100%;border:0}</style></head><body><iframe id="player" src="$embedUrl&enablejsapi=1&origin=${origin.removeSuffix("/")}" allow="autoplay; encrypted-media; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><script>var player; function onYouTubeIframeAPIReady(){player=new YT.Player('player',{events:{onReady:function(){IhsanPlayback.ready();},onStateChange:function(e){if(e.data===1)IhsanPlayback.playing();else IhsanPlayback.stopped();},onError:function(e){IhsanPlayback.failed(e.data);}}});}</script><script src="https://www.youtube.com/iframe_api"></script></body></html>"""
+                loadDataWithBaseURL(origin, html, "text/html", "UTF-8", null)
             }
         },
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().semantics {
+            stateDescription = if (isPlaying) "تشغيل البث مؤكد" else "جارٍ تحميل البث"
+        }
     )
 }

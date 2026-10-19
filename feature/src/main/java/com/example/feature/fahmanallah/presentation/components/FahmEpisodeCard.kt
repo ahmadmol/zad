@@ -115,7 +115,7 @@ fun FahmEpisodeCard(
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
                         contentDescription = "تشغيل",
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -157,7 +157,7 @@ fun FahmEpisodeCard(
                         text = "الدرس $formattedNumber",
                         fontSize = 11.5.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = IhsanTheme.colors.accentContent
                     )
 
                     if (episode.progressState == FahmEpisodeProgressState.COMPLETED) {
@@ -165,7 +165,7 @@ fun FahmEpisodeCard(
                             Icon(
                                 imageVector = Icons.Default.CheckCircle,
                                 contentDescription = "مكتمل",
-                                tint = MaterialTheme.colorScheme.primary,
+                                tint = IhsanTheme.colors.accentContent,
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(2.dp))
@@ -173,7 +173,7 @@ fun FahmEpisodeCard(
                                 text = "مكتمل",
                                 fontSize = 10.5.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = IhsanTheme.colors.accentContent
                             )
                         }
                     }
@@ -211,7 +211,7 @@ fun FahmEpisodeCard(
                     Icon(
                         imageVector = if (episode.isFavorite) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
                         contentDescription = if (episode.isFavorite) "محتفظ به" else "حفظ",
-                        tint = if (episode.isFavorite) MaterialTheme.colorScheme.primary else IhsanTheme.colors.textSecondaryMuted,
+                        tint = if (episode.isFavorite) IhsanTheme.colors.accentContent else IhsanTheme.colors.textSecondaryMuted,
                         modifier = Modifier.size(18.dp)
                     )
                 }

@@ -1,5 +1,7 @@
 package com.example.feature.sanhya.presentation
 
+import com.example.designsystem.theme.IhsanTheme
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -52,35 +54,12 @@ fun SanhyaSearchResultsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(if (IhsanTheme.isDark) IhsanTheme.colors.surfaceBase else MaterialTheme.colorScheme.surface)
     ) {
         // Top Bar & Search Input
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .statusBarsPadding()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "رجوع",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-
-            Spacer(modifier = Modifier.width(4.dp))
-
-            StorySearchBar(
-                query = uiState.searchQuery,
-                onQueryChange = viewModel::onSearchQueryChanged,
-                onFilterClick = { viewModel.setFilterSheetVisible(true) },
-                placeholderText = "ابحث عن قصة، سورة، شخصية أو معنى...",
-                modifier = Modifier.weight(1f)
-            )
-        }
+        com.example.designsystem.component.IhsanTopBar(
+            title = "نتائج البحث", style = com.example.designsystem.component.IhsanTopBarStyle.CompactSkyline,
+            onNavigateBack = onNavigateBack)
 
         Spacer(modifier = Modifier.height(8.dp))
 

@@ -48,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -60,6 +61,7 @@ import com.example.feature.nabiihsan.presentation.components.NabiLessonItem
 import com.example.feature.nabiihsan.presentation.components.NabiRecipeCard
 import com.example.feature.nabiihsan.presentation.components.NabiSectionHeader
 import com.example.feature.nabiihsan.presentation.components.NabiSourceCard
+import com.example.feature.nabiihsan.util.cleanEpisodeTitle
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -84,50 +86,21 @@ fun NabiIhsanEpisodeDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(if (IhsanTheme.isDark) IhsanTheme.colors.surfaceBase else MaterialTheme.colorScheme.surface)
     ) {
         // Top Header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "رجوع",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-
-            Text(
-                text = episode?.title ?: "تفاصيل الحلقة",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            IconButton(
-                onClick = {
-                    if (episode != null) {
-                        val sendIntent = Intent().apply {
-                            action = Intent.ACTION_SEND
-                            putExtra(Intent.EXTRA_TEXT, "${episode.title}\n${episode.subtitle}\nسلسلة نبي الإحسان")
-                            type = "text/plain"
-                        }
-                        context.startActivity(Intent.createChooser(sendIntent, "مشاركة الحلقة"))
+        com.example.designsystem.component.IhsanTopBar(
+            title = "تفاصيل الحلقة", style = com.example.designsystem.component.IhsanTopBarStyle.Minimal,
+            onNavigateBack = onNavigateBack ,
+            actions = { IconButton(onClick = {
+                episode?.let { item ->
+                    val intent = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_TEXT, "${item.title}\n${item.sourceUrl.orEmpty()}")
                     }
+                    runCatching { context.startActivity(Intent.createChooser(intent, "مشاركة الحلقة")) }
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Share,
-                    contentDescription = "مشاركة",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        }
+            }, enabled = episode != null) { Icon(Icons.Default.Share, "مشاركة", tint = IhsanTheme.colors.accentContent) } })
 
         if (uiState.isLoading) {
             IhsanLoadingState(modifier = Modifier.fillMaxSize())
@@ -161,105 +134,102 @@ fun NabiIhsanEpisodeDetailScreen(
                     }
                 )
 
+                val displayTitle = remember(episode.title, episode.episodeNumber) {
+                    cleanEpisodeTitle(episode.title, episode.episodeNumber)
+                }
+
                 // Title & Subtitle Block
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (episode.episodeNumber != null) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(6.dp))
-                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
-                                    .padding(horizontal = 8.dp, vertical = 3.dp)
-                            ) {
-                                Text(
-                                    text = "الحلقة ${episode.episodeNumber}",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(8.dp))
+                    if (episode.episodeNumber != null) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                        ) {
+                            Text(
+                                text = "الحلقة ${episode.episodeNumber}",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = IhsanTheme.colors.accentContent
+                            )
                         }
-
-                        Text(
-                            text = episode.title,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        Spacer(modifier = Modifier.height(6.dp))
                     }
 
-                    Spacer(modifier = Modifier.height(4.dp))
-
                     Text(
-                        text = episode.subtitle,
-                        fontSize = 13.sp,
-                        color = IhsanTheme.colors.textSecondary
+                        text = displayTitle,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis
                     )
-                }
 
-                // Action Row (حفظ / مشاركة / لاحقاً)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    ActionButtonItem(
-                        icon = if (episode.isFavorite) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
-                        label = "حفظ",
-                        isHighlight = episode.isFavorite,
-                        onClick = { viewModel.toggleEpisodeFavorite(episode.id) }
-                    )
-                    ActionButtonItem(
-                        icon = Icons.Default.Share,
-                        label = "مشاركة",
-                        onClick = {
-                            val sendIntent = Intent().apply {
-                                action = Intent.ACTION_SEND
-                                putExtra(Intent.EXTRA_TEXT, "${episode.title}\n${episode.subtitle}\nنبي الإحسان")
-                                type = "text/plain"
-                            }
-                            context.startActivity(Intent.createChooser(sendIntent, "مشاركة"))
-                        }
-                    )
-                    ActionButtonItem(
-                        icon = if (episode.isWatchLater) Icons.Default.WatchLater else Icons.Outlined.WatchLater,
-                        label = "لاحقاً",
-                        isHighlight = episode.isWatchLater,
-                        onClick = { viewModel.toggleEpisodeWatchLater(episode.id) }
-                    )
-                }
-
-                // About Episode
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f))
-                ) {
-                    Column(modifier = Modifier.padding(14.dp)) {
+                    if (episode.subtitle.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "عن الحلقة",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = episode.aboutText,
+                            text = episode.subtitle,
                             fontSize = 13.sp,
-                            color = IhsanTheme.colors.textSecondary,
-                            maxLines = if (isAboutExpanded) Int.MAX_VALUE else 3,
-                            lineHeight = 18.sp
+                            color = IhsanTheme.colors.textSecondary
                         )
-                        if (episode.aboutText.length > 100) {
-                            TextButton(
-                                onClick = { isAboutExpanded = !isAboutExpanded },
-                                modifier = Modifier.align(Alignment.End)
-                            ) {
-                                Text(
-                                    text = if (isAboutExpanded) "عرض أقل" else "عرض المزيد",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
+                    }
+                }
+
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        com.example.feature.learning.presentation.components.FavoriteButton(episode.isFavorite, { viewModel.toggleEpisodeFavorite(episode.id) })
+                        Text("حفظ", fontSize = 12.sp)
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        IconButton(onClick = {
+                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"; putExtra(Intent.EXTRA_TEXT, "${episode.title}\n${episode.sourceUrl.orEmpty()}")
+                            }
+                            runCatching { context.startActivity(Intent.createChooser(intent, "مشاركة")) }
+                        }) { Icon(Icons.Default.Share, "مشاركة", tint = IhsanTheme.colors.accentContent) }
+                        Text("مشاركة", fontSize = 12.sp)
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        com.example.feature.learning.presentation.components.WatchLaterButton(episode.isWatchLater, { viewModel.toggleEpisodeWatchLater(episode.id) })
+                        Text("لاحقًا", fontSize = 12.sp)
+                    }
+                }
+
+                // About Episode (only rendered if non-blank)
+                if (episode.aboutText.isNotBlank()) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f))
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Text(
+                                text = "عن الحلقة",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = episode.aboutText,
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = if (isAboutExpanded) Int.MAX_VALUE else 3,
+                                lineHeight = 18.sp
+                            )
+                            if (episode.aboutText.length > 100) {
+                                TextButton(
+                                    onClick = { isAboutExpanded = !isAboutExpanded },
+                                    modifier = Modifier.align(Alignment.End),
+                                    colors = com.example.designsystem.theme.ihsanTextButtonColors()
+                                ) {
+                                    Text(
+                                        text = if (isAboutExpanded) "عرض أقل" else "عرض المزيد",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
                             }
                         }
                     }
@@ -352,7 +322,7 @@ fun NabiIhsanEpisodeDetailScreen(
                             onClick = { onOpenEpisode(uiState.nextEpisodeId!!) },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = Color.White
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
                             shape = RoundedCornerShape(12.dp)
                         ) {
@@ -390,14 +360,14 @@ private fun ActionButtonItem(
         Icon(
             imageVector = icon,
             contentDescription = label,
-            tint = if (isHighlight) MaterialTheme.colorScheme.primary else IhsanTheme.colors.textSecondary,
+            tint = if (isHighlight) IhsanTheme.colors.accentContent else IhsanTheme.colors.textSecondary,
             modifier = Modifier.size(22.dp)
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = label,
             fontSize = 11.sp,
-            color = if (isHighlight) MaterialTheme.colorScheme.primary else IhsanTheme.colors.textSecondary,
+            color = if (isHighlight) IhsanTheme.colors.accentContent else IhsanTheme.colors.textSecondary,
             fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Medium
         )
     }

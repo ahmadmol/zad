@@ -41,7 +41,7 @@ fun IhsanPlusQuranContinueCard(
                     imageVector = Icons.AutoMirrored.Filled.MenuBook,
                     contentDescription = null,
                     modifier = Modifier.size(32.dp),
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = IhsanTheme.colors.accentContent
                 )
             }
             Spacer(modifier = Modifier.width(IhsanTheme.spacing.medium))
@@ -62,7 +62,7 @@ fun IhsanPlusQuranContinueCard(
                 LinearProgressIndicator(
                     progress = { progress.progressPercent / 100f },
                     modifier = Modifier.fillMaxWidth().height(4.dp),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = IhsanTheme.colors.accentContent,
                     trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                 )
                 Text(

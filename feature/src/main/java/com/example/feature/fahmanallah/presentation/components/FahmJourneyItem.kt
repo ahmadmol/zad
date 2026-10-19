@@ -90,7 +90,7 @@ fun FahmJourneyItem(
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
                         contentDescription = "في التقدم",
-                        tint = primaryColor,
+                        tint = IhsanTheme.colors.accentContent,
                         modifier = Modifier.size(20.dp)
                     )
                 } else {
@@ -111,7 +111,7 @@ fun FahmJourneyItem(
                     text = episode.title,
                     fontSize = 13.5.sp,
                     fontWeight = if (isInProgress || isCompleted) FontWeight.Bold else FontWeight.Medium,
-                    color = if (isCompleted) primaryColor else IhsanTheme.colors.textPrimary,
+                    color = if (isCompleted) IhsanTheme.colors.accentContent else IhsanTheme.colors.textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

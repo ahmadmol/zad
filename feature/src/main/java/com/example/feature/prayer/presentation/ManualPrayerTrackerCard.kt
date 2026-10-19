@@ -1,5 +1,7 @@
 package com.example.feature.prayer.presentation
 
+import com.example.designsystem.theme.IhsanTheme
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -62,7 +64,7 @@ fun ManualPrayerTrackerCard(
                 text = stringResource(R.string.prayer_tracker_title),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.primary
+                color = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary
             )
             Spacer(Modifier.height(4.dp))
             Text(

@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.component.IhsanSearchBar
+import com.example.designsystem.component.IhsanTopBar
+import com.example.designsystem.component.IhsanTopBarStyle
 import com.example.designsystem.component.shimmerEffect
 import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.hadith.domain.model.Hadith
@@ -41,13 +43,14 @@ import com.example.feature.core.notification.UserMessageNotifier
 @Composable
 fun HadithScreen(
     viewModel: HadithViewModel = koinViewModel(),
+    initialHadithId: Long? = null,
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
-    var selectedHadith by rememberSaveable { mutableStateOf<Long?>(null) }
+    var selectedHadith by rememberSaveable(initialHadithId) { mutableStateOf(initialHadithId) }
     val selectedHadithObj by remember(uiState.hadiths, selectedHadith) {
         derivedStateOf { uiState.hadiths.find { it.id == selectedHadith } }
     }
@@ -56,17 +59,10 @@ fun HadithScreen(
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
-                CenterAlignedTopAppBar(
-                    title = { Text("الأحاديث النبوية", fontWeight = FontWeight.Bold) },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
-                        }
-                    },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        titleContentColor = MaterialTheme.colorScheme.onSurface
-                    )
+                IhsanTopBar(
+                    title = "الأحاديث النبوية",
+                    onNavigateBack = onBack,
+                    style = IhsanTopBarStyle.Hero, backgroundImageRes = com.example.feature.R.drawable.ihsan_home_hero_background
                 )
             }
         ) { padding ->
@@ -91,6 +87,7 @@ fun HadithScreen(
                 // Hadith of the Day
                 uiState.hadithOfTheDay?.let { today ->
                     Card(
+                        onClick = { selectedHadith = today.id },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
@@ -100,7 +97,7 @@ fun HadithScreen(
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(text = "حديث اليوم", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
                             Spacer(Modifier.height(8.dp))
-                            Text(text = "« ${today.text} »", color = MaterialTheme.colorScheme.onPrimaryContainer)
+                            Text(text = "« ${today.text} »", color = MaterialTheme.colorScheme.onPrimaryContainer, style = MaterialTheme.typography.bodyMedium, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                         }
                     }
                 }
@@ -111,7 +108,7 @@ fun HadithScreen(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         items(uiState.hadiths, key = { it.id }) { hadith ->
                             HadithCard(hadith = hadith, onToggleFavorite = {
@@ -141,7 +138,7 @@ private fun HadithShimmerList() {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         items(5) {
             Box(
@@ -160,7 +157,7 @@ fun CategoryChips(
     selectedCategory: String?,
     onCategorySelected: (String?) -> Unit
 ) {
-    val categories = listOf("الكل", "المفضلة", "الإيمان", "القرآن", "الأخلاق", "الصلاة")
+    val categories = listOf("الكل", "المفضلة", "موسوعة الأحاديث")
     
     androidx.compose.foundation.lazy.LazyRow(
         modifier = Modifier.fillMaxWidth(),
@@ -191,7 +188,7 @@ fun HadithCard(hadith: Hadith, onToggleFavorite: () -> Unit, onOpenDetails: () -
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(24.dp)) {
+        Column(modifier = Modifier.padding(12.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -219,19 +216,19 @@ fun HadithCard(hadith: Hadith, onToggleFavorite: () -> Unit, onOpenDetails: () -
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "« ${hadith.text} »",
                 style = MaterialTheme.typography.titleLarge.copy(
-                    lineHeight = 34.sp,
+                    fontSize = 16.sp, lineHeight = 24.sp,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Medium
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(), maxLines = 3, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
 
@@ -251,7 +248,7 @@ fun HadithCard(hadith: Hadith, onToggleFavorite: () -> Unit, onOpenDetails: () -
                     Text(
                         text = "المصدر: ${hadith.source}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = IhsanTheme.colors.accentContent,
                         fontWeight = FontWeight.SemiBold
                     )
                 }

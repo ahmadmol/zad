@@ -70,7 +70,7 @@ private fun IhsanPlusDailyActivityRow(
                 progress = { activity.progressPercent / 100f },
                 modifier = Modifier.size(32.dp),
                 strokeWidth = 3.dp,
-                color = MaterialTheme.colorScheme.primary
+                color = IhsanTheme.colors.accentContent
             )
         }
     }

@@ -55,7 +55,7 @@ fun DailyExperienceCard(
                 text = "تجربة اليوم",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
+                color = IhsanTheme.colors.accentContent,
                 textAlign = TextAlign.Start
             )
         }

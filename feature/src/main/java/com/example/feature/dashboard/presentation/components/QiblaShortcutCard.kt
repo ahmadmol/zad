@@ -1,5 +1,7 @@
 package com.example.feature.dashboard.presentation.components
 
+import com.example.designsystem.theme.IhsanTheme
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -55,13 +57,13 @@ fun QiblaShortcutCard(
             Icon(
                 imageVector = Icons.Default.Explore,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
+                tint = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary
             )
             Text(
                 text = "البوصلة",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary
             )
         }
     }

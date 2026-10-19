@@ -65,91 +65,24 @@ fun SanhyaMainScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(if (IhsanTheme.isDark) IhsanTheme.colors.surfaceBase else MaterialTheme.colorScheme.surface)
     ) {
-        // Hero / Header Surface (Ehsan Brand Teal #073028)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(IhsanTheme.colors.brand)
-                .statusBarsPadding()
-                .padding(horizontal = 16.dp)
-                .padding(top = 8.dp, bottom = 24.dp)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                // Top Bar Row with Back and Navigation Icons
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = onNavigateBack,
-                        modifier = Modifier.size(36.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "رجوع",
-                            tint = Color.White
-                        )
-                    }
-
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        IconButton(onClick = onNavigateToWatchLater) {
-                            Icon(
-                                imageVector = Icons.Default.WatchLater,
-                                contentDescription = "المشاهدة لاحقاً",
-                                tint = Color.White
-                            )
-                        }
-                        IconButton(onClick = onNavigateToFavorites) {
-                            Icon(
-                                imageVector = Icons.Default.Favorite,
-                                contentDescription = "المفضلة",
-                                tint = Color.White
-                            )
-                        }
-                        IconButton(onClick = onNavigateToSettings) {
-                            Icon(
-                                imageVector = Icons.Default.Settings,
-                                contentDescription = "الإعدادات",
-                                tint = Color.White
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Title & Subtitle
-                Text(
-                    text = "سنحيا بالقرآن",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = "قصص من القرآن.. نفهمها ونعيش معانيها",
-                    fontSize = 13.sp,
-                    color = Color.White.copy(alpha = 0.85f),
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
+        com.example.designsystem.component.IhsanTopBar(
+            title = "سنحيا بالقرآن",
+            subtitle = "قصص من القرآن.. نفهمها ونعيش معانيها",
+            style = com.example.designsystem.component.IhsanTopBarStyle.Hero,
+            onNavigateBack = onNavigateBack,
+            actions = {
+                IconButton(onNavigateToWatchLater) { Icon(Icons.Default.WatchLater, "المشاهدة لاحقًا", tint = IhsanTheme.colors.accentContent) }
+                IconButton(onNavigateToFavorites) { Icon(Icons.Default.Favorite, "المفضلة", tint = IhsanTheme.colors.accentContent) }
+                IconButton(onNavigateToSettings) { Icon(Icons.Default.Settings, "الإعدادات", tint = IhsanTheme.colors.accentContent) }
             }
-        }
+        )
 
         // Main Surface with Rounded Top Corners
         Surface(
             modifier = Modifier
-                .fillMaxSize()
-                .offset(y = (-14).dp),
+                .fillMaxSize(),
             color = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
         ) {

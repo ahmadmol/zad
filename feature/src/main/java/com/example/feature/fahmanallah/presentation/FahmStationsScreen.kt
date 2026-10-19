@@ -1,5 +1,7 @@
 package com.example.feature.fahmanallah.presentation
 
+import androidx.compose.foundation.layout.statusBarsPadding
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,7 +41,7 @@ fun FahmStationsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 10.dp)
+            .statusBarsPadding().padding(top = 10.dp)
     ) {
         // Top Header
         Row(
@@ -63,7 +65,7 @@ fun FahmStationsScreen(
                     text = "منازل الرحلة",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = primary
+                    color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
                 )
 
                 Text(

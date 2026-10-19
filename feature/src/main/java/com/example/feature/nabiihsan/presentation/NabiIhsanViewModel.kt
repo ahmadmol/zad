@@ -21,6 +21,7 @@ class NabiIhsanViewModel(
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
+    private var searchJob: kotlinx.coroutines.Job? = null
     private val _filterState = MutableStateFlow(NabiIhsanFilterState())
     private val _isFilterSheetVisible = MutableStateFlow(false)
 
@@ -109,9 +110,14 @@ class NabiIhsanViewModel(
     }
 
     fun performSearch(query: String, filterState: NabiIhsanFilterState) {
-        viewModelScope.launch {
-            _searchUiState.update { it.copy(isLoading = true, query = query, filterState = filterState) }
-            val result = repository.search(query, filterState)
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            _searchUiState.update { it.copy(isLoading = true, query = query, filterState = filterState, errorMessage = null) }
+            val result = try { repository.search(query, filterState) } catch (error: Exception) {
+                if (error is kotlinx.coroutines.CancellationException) throw error
+                _searchUiState.update { it.copy(isLoading = false, errorMessage = "تعذر تحميل نتائج البحث") }
+                return@launch
+            }
             _searchUiState.update {
                 it.copy(
                     query = query,
@@ -147,7 +153,11 @@ class NabiIhsanViewModel(
     fun loadEpisodeDetail(episodeId: String) {
         viewModelScope.launch {
             _episodeDetailState.update { it.copy(isLoading = true) }
-            val ep = repository.getEpisodeById(episodeId)
+            val ep = try { repository.getEpisodeById(episodeId) } catch (error: Exception) {
+                if (error is kotlinx.coroutines.CancellationException) throw error
+                _episodeDetailState.update { it.copy(isLoading = false, episode = null, errorMessage = "تعذر تحميل الحلقة") }
+                return@launch
+            }
             if (ep != null) {
                 val linkedRecipes = repository.getRecipesForEpisode(episodeId)
                 val allEpisodes = repository.search("", NabiIhsanFilterState()).episodes
@@ -176,7 +186,11 @@ class NabiIhsanViewModel(
     fun loadRecipeDetail(recipeId: String) {
         viewModelScope.launch {
             _recipeDetailState.update { it.copy(isLoading = true) }
-            val recipe = repository.getRecipeById(recipeId)
+            val recipe = try { repository.getRecipeById(recipeId) } catch (error: Exception) {
+                if (error is kotlinx.coroutines.CancellationException) throw error
+                _recipeDetailState.update { it.copy(isLoading = false, recipe = null, errorMessage = "تعذر تحميل الوصفة") }
+                return@launch
+            }
             if (recipe != null) {
                 val relatedEps = repository.getEpisodesForRecipe(recipeId)
                 _recipeDetailState.update {

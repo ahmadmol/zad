@@ -57,7 +57,7 @@ fun FahmMainScreen(
     onBackClick: (() -> Unit)? = null
 ) {
     val state by viewModel.mainState.collectAsStateWithLifecycle()
-    val primaryColor = MaterialTheme.colorScheme.primary
+    val primaryColor = if (IhsanTheme.isDark) IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.primary
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -163,9 +163,9 @@ fun FahmMainScreen(
                             .clickable { onNavigateToDetail(ep.id) },
                         shape = RoundedCornerShape(18.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = primaryColor.copy(alpha = 0.08f)
+                            containerColor = if (IhsanTheme.isDark) IhsanTheme.colors.surfaceMuted else primaryColor.copy(alpha = 0.08f)
                         ),
-                        border = BorderStroke(1.dp, primaryColor.copy(alpha = 0.3f))
+                        border = BorderStroke(1.dp, if (IhsanTheme.isDark) IhsanTheme.colors.borderSubtle else primaryColor.copy(alpha = 0.3f))
                     ) {
                         Row(
                             modifier = Modifier
@@ -271,8 +271,8 @@ fun FahmMainScreen(
                         .height(52.dp),
                     shape = RoundedCornerShape(26.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = primaryColor,
-                        contentColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
                     Icon(

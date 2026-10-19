@@ -5,7 +5,6 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,18 +12,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,22 +28,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.example.designsystem.R
+import com.example.designsystem.component.IhsanTopBar
+import com.example.designsystem.component.IhsanTopBarStyle
 import com.example.designsystem.theme.IhsanTheme
+import com.example.feature.R
 import com.example.feature.core.notification.UserMessageNotifier
 import com.example.feature.ehsan.data.image.EhsanImageStore
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+
+val SyrianCities = listOf("حلب", "دمشق", "حمص", "حماة", "اللاذقية", "طرطوس", "إدلب")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,6 +54,7 @@ fun EditProfileScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val imageStore: EhsanImageStore = koinInject()
+    var isCityDropdownExpanded by remember { mutableStateOf(false) }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -92,64 +88,12 @@ fun EditProfileScreen(
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
             topBar = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
-                ) {
-                    Image(
-                        painter = painterResource(id = com.example.feature.R.drawable.ihsan_home_hero_background),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        alignment = Alignment.Center,
-                        modifier = Modifier.matchParentSize()
-                    )
-
-                    if (isDark) {
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .background(Color.Black.copy(alpha = 0.55f))
-                        )
-                    }
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .statusBarsPadding()
-                            .padding(horizontal = 16.dp, vertical = 12.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            IconButton(
-                                onClick = onBack,
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .semantics {
-                                        role = Role.Button
-                                        contentDescription = "رجوع"
-                                    }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "رجوع",
-                                    tint = darkTealColor
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            Text(
-                                text = "تعديل الملف الشخصي",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = darkTealColor
-                            )
-                        }
-                    }
-                }
+                IhsanTopBar(
+                    title = "تعديل الملف الشخصي",
+                    style = IhsanTopBarStyle.CompactSkyline,
+                    backgroundImageRes = R.drawable.ihsan_mosque_sunrise_landscape,
+                    onNavigateBack = onBack
+                )
             },
             containerColor = colors.surfaceBase
         ) { padding ->
@@ -157,14 +101,14 @@ fun EditProfileScreen(
                 modifier = Modifier
                     .padding(padding)
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 24.dp),
+                    .imePadding().navigationBarsPadding().verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp, vertical = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Avatar Section with Camera Icon Overlay
+                // Profile Avatar Section with Camera Icon Overlay
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 28.dp)
+                    modifier = Modifier.padding(top = 4.dp, bottom = 24.dp)
                 ) {
                     Surface(
                         modifier = Modifier
@@ -175,8 +119,9 @@ fun EditProfileScreen(
                                 )
                             },
                         shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primary,
-                        shadowElevation = 4.dp
+                        color = darkTealColor.copy(alpha = 0.1f),
+                        shadowElevation = 3.dp,
+                        border = BorderStroke(2.dp, Color.White)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             if (resolvedAvatarModel != null) {
@@ -189,17 +134,19 @@ fun EditProfileScreen(
                                         .clip(CircleShape)
                                 )
                             } else {
-                                Text(
-                                    text = uiState.name.take(1).ifBlank { "م" },
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    fontSize = 42.sp,
-                                    fontWeight = FontWeight.Bold
+                                Image(
+                                    painter = painterResource(id = R.drawable.polish_avatar_placeholder),
+                                    contentDescription = "صورة الملف الشخصي",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(CircleShape)
                                 )
                             }
                         }
                     }
 
-                    // Camera Icon Badge Overlay
+                    // Camera Badge Button Overlay
                     Surface(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
@@ -210,150 +157,206 @@ fun EditProfileScreen(
                                 )
                             },
                         shape = CircleShape,
-                        color = colors.surfaceElevated,
-                        shadowElevation = 2.dp,
-                        border = BorderStroke(1.5.dp, colors.borderSubtle)
+                        color = MaterialTheme.colorScheme.primary,
+                        shadowElevation = 3.dp,
+                        border = BorderStroke(2.dp, Color.White)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
                                 imageVector = Icons.Default.CameraAlt,
                                 contentDescription = "تغيير الصورة",
                                 modifier = Modifier.size(18.dp),
-                                tint = MaterialTheme.colorScheme.primary
+                                tint = Color.White
                             )
                         }
                     }
                 }
 
-                // Form Input Fields (matching UserEntity: firstName, lastName, phoneNumber, city, address)
+                // Form Input Fields (الاسم الكامل, رقم الهاتف, المدينة, نبذة مختصرة عنك)
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(18.dp)
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Full Name (combining firstName & lastName)
+                    // Field 1: الاسم الكامل
                     OutlinedTextField(
                         value = uiState.name,
                         onValueChange = viewModel::onNameChange,
-                        label = { Text("الاسم الكامل") },
+                        label = { Text("الاسم الكامل", fontSize = 13.sp) },
                         leadingIcon = {
-                            Icon(Icons.Default.Person, contentDescription = null, tint = colors.textSecondary)
+                            Icon(Icons.Outlined.Person, contentDescription = null, tint = darkTealColor)
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
                         colors = OutlinedTextFieldDefaults.colors(
+                            cursorColor = if (com.example.designsystem.theme.IhsanTheme.isDark) com.example.designsystem.theme.IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.primary,
                             focusedContainerColor = colors.fieldContainer,
                             unfocusedContainerColor = colors.fieldContainer,
-                            focusedBorderColor = colors.fieldFocusedBorder,
+                            focusedBorderColor = if (isDark) colors.fieldFocusedBorder else darkTealColor,
                             unfocusedBorderColor = colors.fieldBorder
                         ),
                         singleLine = true
                     )
 
-                    // Phone Number (Read-only, general placeholder)
+                    // Field 2: رقم الهاتف
                     OutlinedTextField(
                         value = uiState.phone,
                         onValueChange = {},
-                        label = { Text("رقم الهاتف") },
-                        placeholder = { Text("رقم الهاتف غير متاح") },
-                        supportingText = { Text("رقم الهاتف غير قابل للتعديل", fontSize = 11.sp) },
-                        leadingIcon = {
-                            Icon(Icons.Default.Phone, contentDescription = null, tint = colors.textSecondary)
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
                         readOnly = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = colors.surfaceMuted,
-                            unfocusedContainerColor = colors.surfaceMuted,
-                            focusedBorderColor = colors.borderSubtle,
-                            unfocusedBorderColor = colors.borderSubtle
-                        ),
-                        singleLine = true
-                    )
-
-                    // City
-                    OutlinedTextField(
-                        value = uiState.city,
-                        onValueChange = viewModel::onCityChange,
-                        label = { Text("المدينة") },
-                        placeholder = { Text("أدخل مدينتك") },
+                        label = { Text("رقم الهاتف", fontSize = 13.sp) },
                         leadingIcon = {
-                            Icon(Icons.Default.LocationOn, contentDescription = null, tint = colors.textSecondary)
+                            Icon(Icons.Outlined.Phone, contentDescription = null, tint = darkTealColor)
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
                         colors = OutlinedTextFieldDefaults.colors(
+                            cursorColor = if (com.example.designsystem.theme.IhsanTheme.isDark) com.example.designsystem.theme.IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.primary,
                             focusedContainerColor = colors.fieldContainer,
                             unfocusedContainerColor = colors.fieldContainer,
-                            focusedBorderColor = colors.fieldFocusedBorder,
+                            focusedBorderColor = if (isDark) colors.fieldFocusedBorder else darkTealColor,
                             unfocusedBorderColor = colors.fieldBorder
                         ),
                         singleLine = true
                     )
 
-                    // Address
-                    OutlinedTextField(
-                        value = uiState.address,
-                        onValueChange = viewModel::onAddressChange,
-                        label = { Text("العنوان بالتفصيل") },
-                        placeholder = { Text("أدخل عنوانك بالتفصيل") },
-                        leadingIcon = {
-                            Icon(Icons.Default.Place, contentDescription = null, tint = colors.textSecondary)
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = colors.fieldContainer,
-                            unfocusedContainerColor = colors.fieldContainer,
-                            focusedBorderColor = colors.fieldFocusedBorder,
-                            unfocusedBorderColor = colors.fieldBorder
-                        ),
-                        singleLine = true
-                    )
+                    // Field 3: المدينة (with Dropdown Menu)
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = uiState.city,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("المدينة", fontSize = 13.sp) },
+                            leadingIcon = {
+                                Icon(Icons.Outlined.LocationOn, contentDescription = null, tint = darkTealColor)
+                            },
+                            trailingIcon = {
+                                IconButton(onClick = { isCityDropdownExpanded = !isCityDropdownExpanded }) {
+                                    Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = darkTealColor)
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { isCityDropdownExpanded = true },
+                            shape = RoundedCornerShape(16.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                            cursorColor = if (com.example.designsystem.theme.IhsanTheme.isDark) com.example.designsystem.theme.IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.primary,
+                                focusedContainerColor = colors.fieldContainer,
+                                unfocusedContainerColor = colors.fieldContainer,
+                                focusedBorderColor = if (isDark) colors.fieldFocusedBorder else darkTealColor,
+                                unfocusedBorderColor = colors.fieldBorder
+                            ),
+                            singleLine = true
+                        )
+
+                        DropdownMenu(
+                            expanded = isCityDropdownExpanded,
+                            onDismissRequest = { isCityDropdownExpanded = false },
+                            modifier = Modifier.fillMaxWidth(0.85f)
+                        ) {
+                            SyrianCities.forEach { city ->
+                                DropdownMenuItem(
+                                    text = { Text(city, fontSize = 14.sp) },
+                                    onClick = {
+                                        viewModel.onCityChange(city)
+                                        isCityDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    // Field 4: نبذة مختصرة عنك (Multi-line text area with character counter 51/200)
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = uiState.bio,
+                            onValueChange = viewModel::onBioChange,
+                            label = { Text("نبذة مختصرة عنك", fontSize = 13.sp) },
+                            leadingIcon = {
+                                Icon(Icons.Outlined.Description, contentDescription = null, tint = darkTealColor)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 100.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                            cursorColor = if (com.example.designsystem.theme.IhsanTheme.isDark) com.example.designsystem.theme.IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.primary,
+                                focusedContainerColor = colors.fieldContainer,
+                                unfocusedContainerColor = colors.fieldContainer,
+                                focusedBorderColor = if (isDark) colors.fieldFocusedBorder else darkTealColor,
+                                unfocusedBorderColor = colors.fieldBorder
+                            ),
+                            maxLines = 4
+                        )
+
+                        // Character Counter Label (e.g. 51/200)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp, start = 8.dp),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            Text(
+                                text = "${uiState.bio.length}/200",
+                                fontSize = 12.sp,
+                                color = if (isDark) colors.textSecondary else Color(0xFF8A9A97),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
-                // Save CTA Button (54dp height, Deep Teal, spinner on loading)
-                Button(
-                    onClick = viewModel::saveChanges,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(54.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                    enabled = !uiState.isLoading
+                // Action Buttons: حفظ التغييرات (Primary) and إلغاء (Outlined)
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    if (uiState.isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(22.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            strokeWidth = 2.5.dp
-                        )
-                    } else {
+                    // Primary Action Button: حفظ التغييرات
+                    Button(
+                        onClick = viewModel::saveChanges,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(54.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        enabled = !uiState.isLoading
+                    ) {
+                        if (uiState.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(22.dp),
+                                color = Color.White,
+                                strokeWidth = 2.5.dp
+                            )
+                        } else {
+                            Text(
+                                text = "حفظ التغييرات",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                color = Color.White
+                            )
+                        }
+                    }
+
+                    // Secondary Action Button: إلغاء
+                    OutlinedButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        border = BorderStroke(1.dp, darkTealColor)
+                    , colors = com.example.designsystem.theme.ihsanOutlinedButtonColors()) {
                         Text(
-                            text = "حفظ التغييرات",
+                            text = "إلغاء",
+                            color = darkTealColor,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
+                            fontSize = 15.sp
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Cancel / Ignore Action Button
-                TextButton(
-                    onClick = onBack,
-                    modifier = Modifier.height(48.dp)
-                ) {
-                    Text(
-                        text = "تجاهل التغييرات",
-                        color = colors.textSecondary,
-                        fontSize = 14.sp
-                    )
-                }
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
 }
-

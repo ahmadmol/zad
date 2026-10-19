@@ -158,7 +158,7 @@ fun QuranRepeatSheet(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 if (current.isActive) {
-                    TextButton(onClick = onClear, modifier = Modifier.weight(1f)) {
+                    TextButton(onClick = onClear, modifier = Modifier.weight(1f), colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
                         Text(stringResource(R.string.quran_repeat_stop))
                     }
                 }

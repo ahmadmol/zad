@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
 
 @Composable
@@ -53,7 +54,7 @@ fun HomeLiveStreamCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(120.dp)
+            .height(86.dp)
             .semantics(mergeDescendants = true) {
                 role = Role.Button
                 contentDescription = "$liveTitle، $liveSubtitle"
@@ -61,7 +62,7 @@ fun HomeLiveStreamCard(
             .clickable(onClick = onLiveClick),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             // Background Image: ihsan_live_mosque_sunset (Editorial Poster)
@@ -79,9 +80,9 @@ fun HomeLiveStreamCard(
                     .background(
                         Brush.horizontalGradient(
                             colors = listOf(
-                                Color.Black.copy(alpha = 0.75f),
-                                Color.Black.copy(alpha = 0.45f),
-                                Color.Black.copy(alpha = 0.65f)
+                                (if (IhsanTheme.isDark) IhsanTheme.colors.surfaceBase else Color.Black).copy(alpha = if (IhsanTheme.isDark) .60f else .75f),
+                                (if (IhsanTheme.isDark) IhsanTheme.colors.surfaceBase else Color.Black).copy(alpha = if (IhsanTheme.isDark) .20f else .45f),
+                                (if (IhsanTheme.isDark) IhsanTheme.colors.surfaceBase else Color.Black).copy(alpha = if (IhsanTheme.isDark) .50f else .65f)
                             )
                         )
                     )
@@ -103,7 +104,7 @@ fun HomeLiveStreamCard(
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = liveTitle,
-                        fontSize = 18.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
@@ -123,7 +124,7 @@ fun HomeLiveStreamCard(
                 // Translucent Circular Play Button (Left side in RTL)
                 Box(
                     modifier = Modifier
-                        .size(44.dp)
+                        .size(40.dp)
                         .clip(CircleShape)
                         .background(Color.White.copy(alpha = 0.22f))
                         .border(1.dp, Color.White.copy(alpha = 0.6f), CircleShape)

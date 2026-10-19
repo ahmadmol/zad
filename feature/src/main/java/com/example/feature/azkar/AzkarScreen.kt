@@ -31,6 +31,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material.icons.filled.NightsStay
+import androidx.compose.material.icons.filled.Bedtime
+import androidx.compose.material.icons.filled.Mosque
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -90,6 +94,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.component.IhsanEmptyState
 import com.example.designsystem.component.IhsanErrorState
 import com.example.designsystem.component.IhsanLoadingState
+import com.example.designsystem.component.IhsanTopBar
+import com.example.designsystem.component.IhsanTopBarStyle
 import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
 import com.example.feature.azkar.domain.model.Zikr
@@ -103,11 +109,20 @@ private val ScreenHorizontalPadding = 12.dp
 @Composable
 fun AzkarScreen(
     viewModel: AzkarViewModel = koinViewModel(),
+    initialZikrId: Long? = null,
     onNavigateBack: () -> Unit = {},
     @Suppress("UNUSED_PARAMETER") onOpenSebha: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var openedCategory by remember { mutableStateOf<String?>(null) }
+    var initialTargetHandled by remember(initialZikrId) { mutableStateOf(false) }
+    androidx.compose.runtime.LaunchedEffect(initialZikrId, uiState.azkarList.map { it.id }) {
+        if (!initialTargetHandled) uiState.azkarList.firstOrNull { it.id == initialZikrId }?.let { zikr ->
+            initialTargetHandled = true
+            openedCategory = zikr.category
+            viewModel.onAction(AzkarAction.OnSearchQueryChanged(zikr.text))
+        }
+    }
 
     BackHandler(enabled = openedCategory != null) {
         openedCategory = null
@@ -122,15 +137,30 @@ fun AzkarScreen(
                     .padding(bottom = scaffoldPadding.calculateBottomPadding())
                     .background(colors.surfaceBase)
             ) {
-                AzkarHero(
-                    favoritesOnly = uiState.showFavoritesOnly,
-                    onBack = {
+                IhsanTopBar(
+                    title = "الأذكار والتسابيح",
+                    subtitle = "أذكار الصباح والمساء واليوم والليلة",
+                    style = IhsanTopBarStyle.Hero, backgroundImageRes = com.example.feature.R.drawable.ihsan_home_hero_background,
+                    onNavigateBack = {
                         if (openedCategory != null) openedCategory = null else onNavigateBack()
                     },
-                    onToggleFavorites = {
-                        viewModel.onAction(
-                            AzkarAction.OnToggleShowFavorites(!uiState.showFavoritesOnly)
-                        )
+                    actions = {
+                        IconButton(
+                            onClick = {
+                                viewModel.onAction(
+                                    AzkarAction.OnToggleShowFavorites(!uiState.showFavoritesOnly)
+                                )
+                            },
+                            modifier = Modifier.size(IhsanTheme.dimens.minTouchTarget)
+                        ) {
+                            Icon(
+                                imageVector = if (uiState.showFavoritesOnly) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                contentDescription = stringResource(
+                                    if (uiState.showFavoritesOnly) R.string.azkar_show_all else R.string.azkar_show_favorites
+                                ),
+                                tint = if (uiState.showFavoritesOnly) IhsanTheme.colors.favorite else IhsanTheme.colors.onBrand
+                            )
+                        }
                     }
                 )
 
@@ -145,8 +175,12 @@ fun AzkarScreen(
                     categories = uiState.availableCategories,
                     selectedCategory = uiState.selectedCategory,
                     onCategorySelected = { category ->
-                        openedCategory = null
-                        viewModel.onAction(AzkarAction.OnCategorySelected(category))
+                        if (category == "تسبيح") {
+                            onOpenSebha()
+                        } else {
+                            openedCategory = null
+                            viewModel.onAction(AzkarAction.OnCategorySelected(category))
+                        }
                     }
                 )
 
@@ -186,10 +220,14 @@ fun AzkarScreen(
                         else -> CategoryCards(
                             azkar = uiState.azkarList,
                             onOpenCategory = { category ->
-                                if (uiState.selectedCategory != category) {
-                                    viewModel.onAction(AzkarAction.OnCategorySelected(category))
+                                if (category == "تسبيح") {
+                                    onOpenSebha()
+                                } else {
+                                    if (uiState.selectedCategory != category) {
+                                        viewModel.onAction(AzkarAction.OnCategorySelected(category))
+                                    }
+                                    openedCategory = category
                                 }
-                                openedCategory = category
                             }
                         )
                     }
@@ -303,47 +341,13 @@ private fun AzkarSearchField(
     query: String,
     onQueryChange: (String) -> Unit
 ) {
-    val colors = IhsanTheme.colors
-    val focusManager = LocalFocusManager.current
-    val searchDescription = stringResource(R.string.azkar_search_description)
-    OutlinedTextField(
-        value = query,
-        onValueChange = onQueryChange,
-        singleLine = true,
-        leadingIcon = {
-            Image(
-                painter = painterResource(R.drawable.ic_azkar_search),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(colors.textSecondary),
-                modifier = Modifier.size(20.dp)
-            )
-        },
-        placeholder = {
-            Text(
-                text = stringResource(R.string.azkar_search_placeholder),
-                color = colors.textSecondary
-            )
-        },
-        shape = RoundedCornerShape(22.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = colors.surfaceElevated,
-            unfocusedContainerColor = colors.surfaceElevated,
-            focusedBorderColor = colors.fieldFocusedBorder,
-            unfocusedBorderColor = colors.borderSubtle,
-            focusedTextColor = colors.textPrimary,
-            unfocusedTextColor = colors.textPrimary,
-            cursorColor = colors.selectedContent
-        ),
-        keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
+    val focus = LocalFocusManager.current
+    com.example.designsystem.component.IhsanSearchBar(query = query, onQueryChange = onQueryChange,
+        placeholder = stringResource(R.string.azkar_search_placeholder),
+        keyboardActions = KeyboardActions(onSearch = { focus.clearFocus() }),
         keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = ImeAction.Search),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = ScreenHorizontalPadding)
-            .heightIn(min = 56.dp)
-            .semantics {
-                contentDescription = searchDescription
-            }
-    )
+        modifier = Modifier.padding(horizontal = ScreenHorizontalPadding)
+            .semantics { contentDescription = "البحث في الأذكار" })
 }
 
 @Composable
@@ -394,7 +398,7 @@ private fun CategoryChip(
         shape = RoundedCornerShape(24.dp),
         border = BorderStroke(1.dp, if (isSelected) content.copy(alpha = 0.22f) else colors.borderSubtle),
         modifier = Modifier
-            .defaultMinSize(minHeight = 48.dp)
+            .defaultMinSize(minHeight = 36.dp)
             .semantics {
                 selected = isSelected
                 role = Role.RadioButton
@@ -402,7 +406,7 @@ private fun CategoryChip(
             .clickable(onClick = onClick)
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -462,7 +466,7 @@ private fun AzkarCategoryCard(
         border = BorderStroke(1.dp, colors.borderSubtle),
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 84.dp)
+            .heightIn(min = 72.dp)
             .semantics(mergeDescendants = true) {
                 contentDescription = description
                 role = Role.Button
@@ -472,17 +476,18 @@ private fun AzkarCategoryCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(5.dp),
+                .padding(10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(categoryImage(category)),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(74.dp)
-                    .clip(RoundedCornerShape(12.dp))
-            )
+            Box(Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(colors.surfaceMint),
+                contentAlignment = Alignment.Center) {
+                Icon(imageVector = when {
+                    category.contains("الصباح") -> Icons.Default.WbSunny
+                    category.contains("المساء") -> Icons.Default.NightsStay
+                    category.contains("النوم") -> Icons.Default.Bedtime
+                    else -> Icons.Default.Mosque
+                }, contentDescription = null, modifier = Modifier.size(24.dp), tint = colors.brand)
+            }
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -550,8 +555,8 @@ private fun AzkarList(
                     )
                     TextButton(
                         onClick = { onAction(AzkarAction.OnResetCategory(category)) },
-                        modifier = Modifier.defaultMinSize(minHeight = 48.dp)
-                    ) {
+                        modifier = Modifier.defaultMinSize(minHeight = 36.dp)
+                    , colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
                         Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.size(4.dp))
                         Text(stringResource(R.string.azkar_reset_all))
@@ -695,7 +700,7 @@ private fun ZikrCard(zikr: Zikr, fontSize: Float, onAction: (AzkarAction) -> Uni
                             disabledContentColor = colors.textSecondary
                         ),
                         modifier = Modifier
-                            .defaultMinSize(minHeight = 48.dp)
+                            .defaultMinSize(minHeight = 36.dp)
                             .semantics {
                                 contentDescription = incrementDescription
                             }

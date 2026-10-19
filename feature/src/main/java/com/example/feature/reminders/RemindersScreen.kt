@@ -7,6 +7,7 @@ import android.os.Build
 import android.text.format.DateFormat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -112,6 +113,8 @@ fun RemindersScreen(onBack: () -> Unit) {
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { notificationsAllowed = it }
+    // The state is assigned by both Flow terminal callbacks below.
+    @Suppress("ProduceStateDoesNotAssignValue")
     val uiState by produceState<RemindersUiState>(RemindersUiState.Loading, coordinator) {
         combine(
             coordinator.config(AzkarReminderKind.MORNING),
@@ -145,7 +148,7 @@ fun RemindersScreen(onBack: () -> Unit) {
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .offset(y = (-22).dp),
+                ,
             shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
             color = IhsanTheme.colors.surfaceBase
         ) {
@@ -174,8 +177,8 @@ fun RemindersScreen(onBack: () -> Unit) {
                                 .verticalScroll(rememberScrollState())
                                 .navigationBarsPadding()
                                 .imePadding()
-                                .padding(horizontal = 16.dp, vertical = 22.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             if (!notificationsAllowed && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                                 NotificationPermissionCard {
@@ -210,77 +213,8 @@ fun RemindersScreen(onBack: () -> Unit) {
 
 @Composable
 private fun RemindersHero(onBack: () -> Unit) {
-    val isDark = IhsanTheme.isDark
-    val heroText = if (isDark) IhsanTheme.colors.textPrimary else IhsanTheme.colors.brand
-    val backDescription = stringResource(R.string.cd_back)
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(214.dp)
-            .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
-    ) {
-        Image(
-            painter = painterResource(R.drawable.ihsan_home_hero_background),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            alignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
-        )
-        if (isDark) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.55f))
-            )
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = onBack,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .semantics {
-                            role = Role.Button
-                            contentDescription = backDescription
-                        }
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = null,
-                        tint = heroText
-                    )
-                }
-            }
-            Spacer(Modifier.weight(1f))
-            Text(
-                text = stringResource(R.string.reminders_redesign_title),
-                style = MaterialTheme.typography.headlineSmall.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 25.sp
-                ),
-                color = heroText,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = stringResource(R.string.reminders_redesign_subtitle),
-                style = MaterialTheme.typography.bodyMedium,
-                color = heroText.copy(alpha = 0.84f),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(38.dp))
-        }
-    }
+    com.example.designsystem.component.IhsanTopBar(title = stringResource(R.string.reminders_redesign_title),
+        style = com.example.designsystem.component.IhsanTopBarStyle.Hero, backgroundImageRes = com.example.feature.R.drawable.ihsan_home_hero_background, onNavigateBack = onBack)
 }
 
 @Composable
@@ -302,7 +236,8 @@ private fun ReminderCard(
             set(Calendar.HOUR_OF_DAY, config.hour)
             set(Calendar.MINUTE, config.minute)
         }
-        DateFormat.getTimeFormat(context).format(calendar.time)
+        com.example.feature.dashboard.presentation.ArabicClockFormatter.sanitize(
+            DateFormat.getTimeFormat(context).format(calendar.time))
     }
     val timePicker = remember(config.hour, config.minute, config.enabled, context) {
         TimePickerDialog(
@@ -318,8 +253,9 @@ private fun ReminderCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .sizeIn(minHeight = 96.dp),
-        shape = RoundedCornerShape(20.dp),
+            .clickable(onClick = timePicker::show)
+            .sizeIn(minHeight = 58.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = IhsanTheme.colors.surfaceElevated),
         border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
@@ -327,11 +263,11 @@ private fun ReminderCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 14.dp),
+                .padding(horizontal = 10.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier.size(34.dp),
                 shape = CircleShape,
                 color = IhsanTheme.colors.surfaceWarm
             ) {
@@ -348,7 +284,7 @@ private fun ReminderCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = IhsanTheme.colors.textPrimary
                 )
@@ -357,22 +293,6 @@ private fun ReminderCard(
                     text = stringResource(R.string.reminders_schedule_format, time),
                     style = MaterialTheme.typography.bodySmall,
                     color = IhsanTheme.colors.textSecondary
-                )
-            }
-            IconButton(
-                onClick = timePicker::show,
-                modifier = Modifier
-                    .size(48.dp)
-                    .semantics {
-                        role = Role.Button
-                        contentDescription = context.getString(R.string.reminders_edit_time, title)
-                    }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.AccessTime,
-                    contentDescription = null,
-                    tint = IhsanTheme.colors.selectedContent,
-                    modifier = Modifier.size(22.dp)
                 )
             }
             Switch(
@@ -387,8 +307,8 @@ private fun ReminderCard(
                         stateDescription = enabledDescription
                     },
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = IhsanTheme.colors.selectedContent,
-                    checkedTrackColor = IhsanTheme.colors.selectedContainer,
+                    checkedThumbColor = IhsanTheme.colors.accentContent,
+                    checkedTrackColor = MaterialTheme.colorScheme.primary,
                     checkedBorderColor = IhsanTheme.colors.selectedContainer,
                     uncheckedThumbColor = IhsanTheme.colors.textSecondary,
                     uncheckedTrackColor = IhsanTheme.colors.surfaceMuted,
@@ -427,10 +347,10 @@ private fun NotificationPermissionCard(onRequestPermission: () -> Unit) {
             TextButton(
                 onClick = onRequestPermission,
                 modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
-            ) {
+            , colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
                 Text(
                     text = stringResource(R.string.reminders_permission_action),
-                    color = IhsanTheme.colors.selectedContent
+                    color = IhsanTheme.colors.textPrimary
                 )
             }
         }

@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.sp
 import com.example.designsystem.component.IhsanEmptyState
 import com.example.designsystem.component.IhsanErrorState
 import com.example.designsystem.component.IhsanLoadingState
+import com.example.designsystem.component.IhsanTopBar
+import com.example.designsystem.component.IhsanTopBarStyle
 import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
 import com.example.feature.azkar.domain.model.DailyStat
@@ -38,19 +40,10 @@ fun StatisticsScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.stats_title)) },
-                navigationIcon = {
-                    IconButton(
-                        onClick = onBack,
-                        modifier = Modifier.size(IhsanTheme.dimens.minTouchTarget)
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.cd_back)
-                        )
-                    }
-                }
+            IhsanTopBar(
+                title = stringResource(R.string.stats_title),
+                style = IhsanTopBarStyle.Hero, backgroundImageRes = com.example.feature.R.drawable.ihsan_home_hero_background,
+                onNavigateBack = onBack
             )
         }
     ) { padding ->
@@ -82,12 +75,6 @@ fun StatisticsScreen(
                     verticalArrangement = Arrangement.spacedBy(IhsanTheme.dimens.sectionSpacing)
                 ) {
                     item {
-                        Text(stringResource(R.string.chart_title), style = MaterialTheme.typography.titleLarge)
-                        Spacer(modifier = Modifier.height(IhsanTheme.spacing.medium))
-                        DailyProgressChart(stats = state.last7DaysStats)
-                    }
-
-                    item {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(IhsanTheme.dimens.radiusLarge),
@@ -105,12 +92,23 @@ fun StatisticsScreen(
                                         R.string.statistics_total_count_value,
                                         state.summary.totalDailyCount
                                     ),
-                                    style = MaterialTheme.typography.displayMedium.copy(
-                                        color = MaterialTheme.colorScheme.primary,
+                                    style = MaterialTheme.typography.headlineMedium.copy(
+                                        color = IhsanTheme.colors.accentContent,
                                         fontWeight = FontWeight.Bold
                                     )
                                 )
                             }
+                        }
+                    }
+
+                    item {
+                        Text(stringResource(R.string.chart_title), style = MaterialTheme.typography.titleLarge)
+                        Spacer(modifier = Modifier.height(IhsanTheme.spacing.medium))
+                        if (state.last7DaysStats.isNotEmpty()) {
+                            DailyProgressChart(stats = state.last7DaysStats)
+                        } else {
+                            Text(stringResource(R.string.statistics_empty_body),
+                                style = MaterialTheme.typography.bodySmall, color = IhsanTheme.colors.textSecondary)
                         }
                     }
 
@@ -123,10 +121,8 @@ fun StatisticsScreen(
 
                     if (state.isEmpty) {
                         item {
-                            IhsanEmptyState(
-                                title = stringResource(R.string.statistics_empty_title),
-                                message = stringResource(R.string.statistics_empty_body)
-                            )
+                            Text(stringResource(R.string.statistics_empty_title),
+                                style = MaterialTheme.typography.bodySmall, color = IhsanTheme.colors.textSecondary)
                         }
                     }
 
@@ -157,14 +153,14 @@ fun StatisticsScreen(
 
 @Composable
 fun DailyProgressChart(stats: List<DailyStat>) {
-    val primaryColor = MaterialTheme.colorScheme.primary
+    val primaryColor = if (IhsanTheme.isDark) IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.primary
     val labelColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     val chartDescription = stats.joinToString(separator = "، ") { "${it.date}: ${it.totalCount}" }
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(160.dp)
             .semantics { contentDescription = "نشاط الأذكار خلال سبعة أيام: $chartDescription" }
     ) {
         val slotWidth = if (stats.isEmpty()) size.width else size.width / stats.size

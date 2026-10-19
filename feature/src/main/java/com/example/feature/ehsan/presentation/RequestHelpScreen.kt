@@ -3,6 +3,7 @@ package com.example.feature.ehsan.presentation
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -140,6 +141,7 @@ fun RequestHelpScreen(
 
     Scaffold(
         containerColor = colors.surfaceBase,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(
@@ -189,13 +191,13 @@ fun RequestHelpScreen(
                 // 3. Step Content
                 when (currentStep) {
                     1 -> {
+                        EhsanFormCard {
                         /* ---- Stage 1: المعلومات ---- */
 
                         // Section: نوع المساعدة (Category Cards Grid)
-                        EhsanFormCard {
+                        Column(Modifier.fillMaxWidth()) {
                             EhsanSectionHeader(
-                                title = "نوع المساعدة",
-                                description = "اختر الفئة الأقرب لاحتياجك"
+                                title = "نوع المساعدة"
                             )
                             Spacer(Modifier.height(12.dp))
                             EhsanCategoryGrid(
@@ -206,12 +208,7 @@ fun RequestHelpScreen(
                         }
 
                         // Section: المعلومات الأساسية (العنوان، الفئة، المدينة)
-                        EhsanFormCard {
-                            EhsanSectionHeader(
-                                title = "المعلومات الأساسية",
-                                description = "أدخل عنوان ونوع وموقع الطلب"
-                            )
-
+                        Column(Modifier.fillMaxWidth()) {
                             Spacer(Modifier.height(EhsanFormSpacing.FieldGap))
 
                             // العنوان
@@ -256,6 +253,10 @@ fun RequestHelpScreen(
 
                             Spacer(Modifier.height(EhsanFormSpacing.FieldGap))
 
+                            EhsanTextField(value = details, onValueChange = { details = it },
+                                label = "الوصف", placeholder = "اكتب وصفًا مختصرًا ومفيدًا…", errorText = detailsError,
+                                singleLine = false, minLines = 2, maxLines = 4)
+                            Spacer(Modifier.height(EhsanFormSpacing.FieldGap))
                             // المدينة
                             Box {
                                 EhsanSelectorField(
@@ -286,7 +287,7 @@ fun RequestHelpScreen(
                         }
 
                         // Section: وسيلة التواصل
-                        EhsanFormCard {
+                        Column(Modifier.fillMaxWidth()) {
                             EhsanSectionHeader(
                                 title = "وسيلة التواصل المفضلة",
                                 description = "حدد كيف تود أن يتواصل معك المتبرعون"
@@ -309,6 +310,7 @@ fun RequestHelpScreen(
                                 }
                             }
                         )
+                        }
                     }
 
                     2 -> {
@@ -349,7 +351,7 @@ fun RequestHelpScreen(
                                         model = imageUri,
                                         contentDescription = null,
                                         modifier = Modifier.fillMaxSize(),
-                                        contentScale = ContentScale.Crop
+                                        contentScale = ContentScale.Fit
                                     )
                                 }
                             )
@@ -383,7 +385,7 @@ fun RequestHelpScreen(
                             category = selectedCategoryKey,
                             city = selectedCity,
                             description = details,
-                            contactPhone = uiState.currentUserPhone.ifBlank { "0912345678" }
+                            contactPhone = uiState.currentUserPhone.ifBlank { "غير متوفر" }
                         )
 
                         // Final Submit CTA -> create REQUEST
@@ -396,7 +398,8 @@ fun RequestHelpScreen(
                                     category = selectedCategoryKey,
                                     location = selectedCity,
                                     type = "REQUEST",
-                                    imageUrl = imageUri
+                                    imageUrl = imageUri,
+                                    contactMethod = contactMethod
                                 )
                             },
                             enabled = title.isNotBlank() && details.isNotBlank() && selectedCity.isNotBlank(),
@@ -428,3 +431,4 @@ private val RequestHelpCities = listOf(
     "اللاذقية",
     "حماة"
 )
+

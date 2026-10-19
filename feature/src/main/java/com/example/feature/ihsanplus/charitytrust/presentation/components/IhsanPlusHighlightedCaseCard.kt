@@ -73,7 +73,7 @@ fun IhsanPlusHighlightedCaseCard(
             LinearProgressIndicator(
                 progress = { case.progressPercent / 100f },
                 modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.primary,
+                color = IhsanTheme.colors.accentContent,
                 trackColor = MaterialTheme.colorScheme.surface
             )
 
@@ -106,7 +106,7 @@ fun IhsanPlusHighlightedCaseCard(
                 Text(
                     text = case.verificationStatus.name,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = IhsanTheme.colors.accentContent,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.width(IhsanTheme.spacing.medium))

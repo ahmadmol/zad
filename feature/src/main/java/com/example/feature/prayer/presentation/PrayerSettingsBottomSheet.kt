@@ -69,7 +69,7 @@ fun PrayerSettingsBottomSheet(
                     text = "إعدادات الصلاة",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = IhsanTheme.colors.accentContent,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
 
@@ -163,7 +163,7 @@ fun PrayerSettingsBottomSheet(
                             modifier = Modifier.padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.LocationCity, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                            Icon(Icons.Default.LocationCity, contentDescription = null, tint = IhsanTheme.colors.accentContent)
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text("المدينة المختارة", style = MaterialTheme.typography.labelSmall, color = colors.textSecondary)
@@ -220,7 +220,7 @@ fun BatteryOptimizationCard(onAction: () -> Unit) {
             TextButton(
                 onClick = onAction,
                 modifier = Modifier.align(Alignment.End)
-            ) {
+            , colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
                 Text("فتح الإعدادات", fontWeight = FontWeight.Bold)
             }
         }
@@ -250,7 +250,7 @@ fun SelectableItem(label: String, isSelected: Boolean, onClick: () -> Unit) {
     ) {
         Text(
             text = label,
-            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+            color = if (isSelected) IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.onSurface,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
         )
         RadioButton(selected = isSelected, onClick = onClick)

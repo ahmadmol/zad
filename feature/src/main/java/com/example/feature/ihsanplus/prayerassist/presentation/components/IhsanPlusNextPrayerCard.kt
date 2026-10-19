@@ -35,7 +35,7 @@ fun IhsanPlusNextPrayerCard(
                 text = nextPrayer.prayerName,
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Black,
-                color = MaterialTheme.colorScheme.primary
+                color = IhsanTheme.colors.accentContent
             )
             Text(
                 text = nextPrayer.prayerTimeLabel,
@@ -45,7 +45,7 @@ fun IhsanPlusNextPrayerCard(
             )
             Spacer(modifier = Modifier.height(IhsanTheme.spacing.small))
             Surface(
-                color = MaterialTheme.colorScheme.primary,
+                color = IhsanTheme.colors.accentContent,
                 shape = MaterialTheme.shapes.extraLarge
             ) {
                 Text(

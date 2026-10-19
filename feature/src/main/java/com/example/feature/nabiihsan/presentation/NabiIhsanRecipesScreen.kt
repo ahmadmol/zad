@@ -1,5 +1,7 @@
 package com.example.feature.nabiihsan.presentation
 
+import com.example.designsystem.theme.IhsanTheme
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,7 +53,7 @@ fun NabiIhsanRecipesScreen(
     var query by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("الكل") }
 
-    val categories = listOf("الكل", "الأخلاق", "العبادة", "القيادة", "الأسرة")
+    val categories = listOf("الكل") + allRecipes.map { it.category }.filter { it.isNotBlank() }.distinct()
 
     val filteredRecipes = remember(allRecipes, query, selectedCategory) {
         allRecipes.filter { recipe ->
@@ -68,30 +70,12 @@ fun NabiIhsanRecipesScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(if (IhsanTheme.isDark) IhsanTheme.colors.surfaceBase else MaterialTheme.colorScheme.surface)
     ) {
         // Header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "رجوع",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-
-            Text(
-                text = "الوصفات النبوية",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
+        com.example.designsystem.component.IhsanTopBar(
+            title = "الوصفات النبوية", style = com.example.designsystem.component.IhsanTopBarStyle.CompactSkyline,
+            onNavigateBack = onNavigateBack)
 
         Column(
             modifier = Modifier
@@ -119,8 +103,8 @@ fun NabiIhsanRecipesScreen(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
                             .background(
-                                if (isSelected) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                if (isSelected) IhsanTheme.colors.selectedContainer
+                                else if (IhsanTheme.isDark) IhsanTheme.colors.surfaceMuted else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                             )
                             .clickable { selectedCategory = cat }
                             .padding(horizontal = 14.dp, vertical = 8.dp)
@@ -129,7 +113,7 @@ fun NabiIhsanRecipesScreen(
                             text = cat,
                             fontSize = 12.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
+                            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }

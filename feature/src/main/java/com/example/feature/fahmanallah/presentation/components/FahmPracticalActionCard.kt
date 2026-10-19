@@ -63,7 +63,7 @@ fun FahmPracticalActionCard(
                     Icon(
                         imageVector = Icons.Default.TaskAlt,
                         contentDescription = null,
-                        tint = primary,
+                        tint = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -74,7 +74,7 @@ fun FahmPracticalActionCard(
                     text = title,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = primary
+                    color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
                 )
             }
 

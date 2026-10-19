@@ -19,6 +19,7 @@ data class RequestHelpUiState(
     val submissionSuccess: Boolean = false,
     val currentUserName: String = "",
     val currentUserPhone: String = "",
+    val currentUserId: Long? = null,
     /**
      * Set to true once the user presses the primary action at
      * least once. Used to decide whether to show inline field
@@ -47,7 +48,7 @@ class AddEhsanViewModel(
                 _uiState.update { 
                     it.copy(
                         currentUserName = "${user?.firstName ?: ""} ${user?.lastName ?: ""}".trim(),
-                        currentUserPhone = user?.phoneNumber ?: ""
+                        currentUserPhone = user?.phoneNumber ?: "", currentUserId = user?.id
                     )
                 }
             }
@@ -60,7 +61,9 @@ class AddEhsanViewModel(
         category: String,
         location: String,
         type: String = "REQUEST",
-        imageUrl: String?
+        imageUrl: String?,
+        imageUrls: List<String> = emptyList(),
+        contactMethod: String = "PHONE"
     ) {
         if (_uiState.value.isSubmitting) return
 
@@ -68,6 +71,10 @@ class AddEhsanViewModel(
         // can show inline field errors for empty fields.
         _uiState.update { it.copy(submitAttempted = true) }
 
+        if (_uiState.value.currentUserId == null) {
+            _uiState.update { it.copy(submissionError = "أنشئ أو افتح ملفًا شخصيًا محليًا لحفظ سجلك") }
+            return
+        }
         val phone = _uiState.value.currentUserPhone
         val validationResult = validatePhoneNumberUseCase(phone)
 
@@ -87,13 +94,21 @@ class AddEhsanViewModel(
             return
         }
 
+        if (contactMethod == "WHATSAPP" && !validationResult.normalizedPhone.startsWith('+')) {
+            _uiState.update { it.copy(phoneError = "لاستخدام واتساب، أضف رمز الدولة مسبوقًا بـ + في رقم الملف الشخصي، أو اختر الاتصال الهاتفي") }
+            return
+        }
+
         _uiState.update { it.copy(isSubmitting = true, phoneError = null, submissionError = null) }
 
         viewModelScope.launch {
             var ownedImageReference: String? = null
             try {
-                if (!imageUrl.isNullOrBlank()) {
-                    ownedImageReference = imageStore.persist(Uri.parse(imageUrl))
+                val selectedImages = imageUrls.ifEmpty { listOfNotNull(imageUrl?.takeIf { it.isNotBlank() }) }.distinct()
+                if (selectedImages.size > 3) throw IllegalArgumentException("يمكنك إضافة ثلاث صور كحد أقصى")
+                if (selectedImages.isNotEmpty()) {
+                    ownedImageReference = if (selectedImages.size == 1) imageStore.persist(Uri.parse(selectedImages.first()))
+                        else imageStore.persistAlbum(selectedImages.map(Uri::parse))
                     if (ownedImageReference == null) {
                         _uiState.update {
                             it.copy(
@@ -106,6 +121,8 @@ class AddEhsanViewModel(
                 }
                 addDonationUseCase(
                     Donation(
+                        ownerId = _uiState.value.currentUserId?.let { "local-profile:$it" },
+                        origin = "USER",
                         title = title,
                         description = description,
                         category = category,
@@ -113,7 +130,8 @@ class AddEhsanViewModel(
                         type = type,
                         donorName = _uiState.value.currentUserName.ifBlank { "مستخدم" },
                         phoneNumber = validationResult.normalizedPhone,
-                        imageUrl = ownedImageReference
+                        imageUrl = ownedImageReference,
+                        contactMethod = if (contactMethod == "WHATSAPP") "WHATSAPP" else "PHONE"
                     )
                 )
                 _uiState.update { it.copy(isSubmitting = false, submissionSuccess = true) }

@@ -19,6 +19,8 @@ class FahmViewModel(
     private val repository: FahmRepository,
     private val connectivityMonitor: ConnectivityMonitor
 ) : ViewModel() {
+    private var detailJob: kotlinx.coroutines.Job? = null
+    private var searchJob: kotlinx.coroutines.Job? = null
 
     private val _mainState = MutableStateFlow(FahmMainUiState())
     val mainState: StateFlow<FahmMainUiState> = _mainState.asStateFlow()
@@ -77,7 +79,8 @@ class FahmViewModel(
     }
 
     fun loadEpisodeDetail(episodeId: String) {
-        viewModelScope.launch {
+        detailJob?.cancel()
+        detailJob = viewModelScope.launch {
             _detailState.update { it.copy(isLoading = true) }
             repository.getEpisodes().collect { list ->
                 val ep = list.find { it.id == episodeId || it.number.toString() == episodeId }
@@ -113,8 +116,9 @@ class FahmViewModel(
     }
 
     fun search(query: String) {
+        searchJob?.cancel()
         _searchState.update { it.copy(query = query, isLoading = true) }
-        viewModelScope.launch {
+        searchJob = viewModelScope.launch {
             repository.searchEpisodes(query).collect { results ->
                 _searchState.update {
                     it.copy(isLoading = false, results = results)

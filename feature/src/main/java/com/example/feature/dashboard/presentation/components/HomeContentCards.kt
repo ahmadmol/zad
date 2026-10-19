@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -99,7 +100,7 @@ fun AsmaHighlightCard(
                     Text(
                         text = stringResource(R.string.home_asma_today_title),
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                        color = IhsanTheme.colors.accentContent.copy(alpha = 0.6f),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium
                     )
@@ -113,7 +114,7 @@ fun AsmaHighlightCard(
                         Icon(
                             imageVector = Icons.Default.AutoAwesome,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = IhsanTheme.colors.accentContent,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -127,7 +128,7 @@ fun AsmaHighlightCard(
                             lineHeight = 26.sp
                         ),
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = IhsanTheme.colors.accentContent,
                         textAlign = TextAlign.Center,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -159,14 +160,14 @@ fun AsmaHighlightCard(
                         text = stringResource(R.string.home_show_more),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = IhsanTheme.colors.accentContent,
                         fontSize = 11.sp
                     )
                     Spacer(modifier = Modifier.size(2.dp))
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = IhsanTheme.colors.accentContent,
                         modifier = Modifier.size(14.dp)
                     )
                 }
@@ -245,7 +246,7 @@ private fun NearbyCharityEmptyCard(
                 Text(
                     text = stringResource(R.string.home_nearby_charity_title),
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                    color = IhsanTheme.colors.accentContent.copy(alpha = 0.6f),
                     fontSize = 11.sp
                 )
                 Spacer(modifier = Modifier.height(6.dp))
@@ -254,7 +255,7 @@ private fun NearbyCharityEmptyCard(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = IhsanTheme.colors.accentContent,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -273,7 +274,7 @@ private fun NearbyCharityEmptyCard(
                     TextButton(
                         onClick = onRetry,
                         contentPadding = PaddingValues(0.dp)
-                    ) {
+                    , colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
                         Text(stringResource(R.string.home_retry))
                     }
                 }
@@ -289,7 +290,7 @@ private fun NearbyCharityEmptyCard(
                 Icon(
                     imageVector = Icons.Default.Place,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = IhsanTheme.colors.accentContent,
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -337,7 +338,7 @@ internal fun HomeShortcutCard(
                 Text(
                     text = eyebrow,
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                    color = IhsanTheme.colors.accentContent.copy(alpha = 0.6f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     fontSize = 11.sp
@@ -347,7 +348,7 @@ internal fun HomeShortcutCard(
                     text = title,
                     style = MaterialTheme.typography.titleLarge.copy(fontSize = 16.sp),
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = IhsanTheme.colors.accentContent,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -373,7 +374,7 @@ internal fun HomeShortcutCard(
                         text = actionLabel,
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = IhsanTheme.colors.accentContent,
                         fontSize = 12.sp,
                         maxLines = 1
                     )
@@ -381,7 +382,7 @@ internal fun HomeShortcutCard(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = IhsanTheme.colors.accentContent,
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -401,7 +402,7 @@ internal fun HomeShortcutCard(
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = IhsanTheme.colors.accentContent,
                         modifier = Modifier.size(22.dp)
                     )
                 }
@@ -422,135 +423,45 @@ fun HomeThreeGlassCards(
     onNavigateToAzkar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        // 1. Right Card (RTL): القرآن الكريم
-        SingleGlassCard(
-            title = "القرآن الكريم",
-            subtitle = "نور لقلوبنا",
-            imageRes = R.drawable.ihsan_quran_card_background,
-            iconRes = R.drawable.ihsan_icon_quran,
-            onClick = onNavigateToQuran,
-            modifier = Modifier.weight(1f)
-        )
-
-        // 2. Middle Card (RTL): أذكار الصباح
-        SingleGlassCard(
-            title = "أذكار الصباح",
-            subtitle = "ابدأ يومك بذكر الله",
-            imageRes = R.drawable.ihsan_mosque_sunrise_landscape,
-            iconRes = R.drawable.ihsan_icon_prayer_indicator,
-            onClick = onNavigateToAzkar,
-            modifier = Modifier.weight(1f)
-        )
-
-        // 3. Left Card (RTL): أذكار المساء
-        SingleGlassCard(
-            title = "أذكار المساء",
-            subtitle = "اقرأ واطمئن",
-            imageRes = R.drawable.ihsan_live_mosque_sunset,
-            iconRes = R.drawable.ic_azkar_evening,
-            onClick = onNavigateToAzkar,
-            modifier = Modifier.weight(1f)
-        )
+    androidx.compose.foundation.layout.BoxWithConstraints(modifier.fillMaxWidth()) {
+        val stack = maxWidth < 328.dp || androidx.compose.ui.platform.LocalDensity.current.fontScale > 1.15f
+        val cards: @Composable (Modifier, Boolean) -> Unit = { cardModifier, horizontal ->
+            SingleGlassCard(stringResource(R.string.polish_quran_title), stringResource(R.string.polish_quran_subtitle),
+                R.drawable.ihsan_quran_card_background, onNavigateToQuran, horizontal, cardModifier)
+            SingleGlassCard(stringResource(R.string.polish_morning_title), stringResource(R.string.polish_morning_subtitle),
+                R.drawable.ihsan_mosque_sunrise_landscape, onNavigateToAzkar, horizontal, cardModifier)
+            SingleGlassCard(stringResource(R.string.polish_evening_title), stringResource(R.string.polish_evening_subtitle),
+                R.drawable.ihsan_live_mosque_sunset, onNavigateToAzkar, horizontal, cardModifier)
+        }
+        if (stack) Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            cards(Modifier.fillMaxWidth(), true)
+        } else Row(Modifier.height(androidx.compose.foundation.layout.IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            cards(Modifier.weight(1f).fillMaxHeight(), false)
+        }
     }
 }
 
 @Composable
-private fun SingleGlassCard(
-    title: String,
-    subtitle: String,
-    imageRes: Int,
-    iconRes: Int,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val darkTealColor = Color(0xFF003B46)
-
-    Card(
-        modifier = modifier
-            .height(148.dp)
-            .semantics(mergeDescendants = true) {
-                role = Role.Button
-                contentDescription = "$title، $subtitle"
+private fun SingleGlassCard(title: String, subtitle: String, imageRes: Int, onClick: () -> Unit,
+    horizontal: Boolean, modifier: Modifier = Modifier) {
+    Card(onClick = onClick, modifier = modifier,
+        shape = RoundedCornerShape(IhsanTheme.dimens.radiusLarge),
+        colors = CardDefaults.cardColors(containerColor = IhsanTheme.colors.surfaceElevated),
+        border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle)) {
+        val caption: @Composable () -> Unit = {
+            Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(title, style = MaterialTheme.typography.titleSmall, color = IhsanTheme.colors.textPrimary)
+                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = IhsanTheme.colors.textSecondary)
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = IhsanTheme.colors.accentContent,
+                    modifier = Modifier.size(20.dp))
             }
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle.copy(alpha = 0.5f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.5.dp)
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            // Top Image 55%
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1.1f)
-            ) {
-                Image(
-                    painter = painterResource(id = imageRes),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-
-            // Bottom Glass Panel 45%
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .background(Color.White.copy(alpha = 0.90f))
-                    .padding(horizontal = 8.dp, vertical = 6.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = title,
-                            fontSize = 13.5.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = darkTealColor,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Image(
-                                painter = painterResource(id = iconRes),
-                                contentDescription = null,
-                                modifier = Modifier.size(13.dp)
-                            )
-                            Spacer(modifier = Modifier.width(3.dp))
-                            Text(
-                                text = subtitle,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = darkTealColor.copy(alpha = 0.75f),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = darkTealColor,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
+        }
+        if (horizontal) Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Image(painterResource(imageRes), null, contentScale = ContentScale.Crop, modifier = Modifier.width(80.dp).height(100.dp))
+            Box(Modifier.weight(1f)) { caption() }
+        } else Column {
+            Image(painterResource(imageRes), null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxWidth().height(80.dp))
+            caption()
         }
     }
 }

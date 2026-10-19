@@ -1,5 +1,9 @@
 package com.example.feature.quran.presentation
 
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+
+import com.example.designsystem.theme.IhsanTheme
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.designsystem.component.IhsanActionCard
 import com.example.designsystem.component.IhsanSearchBar
+import com.example.designsystem.component.IhsanTopBar
+import com.example.designsystem.component.IhsanTopBarStyle
 import com.example.designsystem.component.LastReadCard
 import com.example.designsystem.component.shimmerEffect
 
@@ -62,13 +68,10 @@ fun QuranListScreen(
                     }
                 )
             } else {
-                CenterAlignedTopAppBar(
-                    title = { Text("القرآن الكريم", fontWeight = FontWeight.Bold) },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع")
-                        }
-                    },
+                IhsanTopBar(
+                    title = "القرآن الكريم",
+                    onNavigateBack = onBack,
+                    style = IhsanTopBarStyle.Surface,
                     actions = {
                         IconButton(onClick = { isSearchActive = true }) {
                             Icon(Icons.Default.Search, contentDescription = "بحث")
@@ -83,17 +86,28 @@ fun QuranListScreen(
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
             if (!isSearchActive) {
-                TabRow(selectedTabIndex = selectedTab) {
+                TabRow(selectedTabIndex = selectedTab, indicator = { positions ->
+                    TabRowDefaults.SecondaryIndicator(Modifier.tabIndicatorOffset(positions[selectedTab]),
+                        color = IhsanTheme.colors.accentContent)
+                }) {
                     Tab(
+                    selectedContentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else LocalContentColor.current,
+                    unselectedContentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textSecondary else LocalContentColor.current.copy(alpha = .7f),
                         selected = selectedTab == 0,
                         onClick = { selectedTab = 0 },
                         text = { Text("السور") }
                     )
                     Tab(
+                    selectedContentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else LocalContentColor.current,
+                    unselectedContentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textSecondary else LocalContentColor.current.copy(alpha = .7f),
                         selected = selectedTab == 1,
                         onClick = { selectedTab = 1 },
                         text = { Text("المحفوظات") }
                     )
+                    Tab(selected = selectedTab == 2, onClick = { selectedTab = 2 },
+                        selectedContentColor = IhsanTheme.colors.textPrimary,
+                        unselectedContentColor = IhsanTheme.colors.textSecondary,
+                        text = { Text("الأجزاء") })
                 }
             }
 
@@ -184,12 +198,20 @@ fun QuranListScreen(
                                                 .fillMaxWidth()
                                                 .height(6.dp)
                                                 .padding(horizontal = 4.dp),
-                                            color = MaterialTheme.colorScheme.primary,
+                                            color = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary,
                                             trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
                                         )
                                         Spacer(modifier = Modifier.height(4.dp))
                                     }
                                 }
+                            }
+                        }
+                    } else if (selectedTab == 2) {
+                        LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            items(com.example.feature.quran.domain.model.QuranNavigation.juzStarts.withIndex().toList()) { (index, start) ->
+                                val surah = state.surahs.firstOrNull { it.id == start.first }
+                                IhsanActionCard(title = "الجزء ${index + 1}", subtitle = "${surah?.name.orEmpty()} — آية ${start.second}",
+                                    icon = Icons.AutoMirrored.Filled.MenuBook, onClick = { onSurahClick(start.first, start.second) }, modifier = Modifier.fillMaxWidth())
                             }
                         }
                     } else {
@@ -267,14 +289,14 @@ fun KhatmaProgressCard(progress: Float) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "تقدم الختمة",
+                    "موضع القراءة في المصحف",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                     "${progress.toInt()}%",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -285,12 +307,12 @@ fun KhatmaProgressCard(progress: Float) {
                     .fillMaxWidth()
                     .height(8.dp)
                     .clip(RoundedCornerShape(4.dp)),
-                color = MaterialTheme.colorScheme.primary,
+                color = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                "استمر في القراءة لتصل لختم القرآن الكريم",
+                "يمثل آخر موضع فتحته، وليس مقدار ما أتممت قراءته",
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

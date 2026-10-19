@@ -1,6 +1,10 @@
 package com.example.mol.ui
 
+import androidx.compose.ui.platform.LocalDensity
+import com.example.designsystem.theme.IhsanTheme
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,9 +43,9 @@ fun MainScreen() {
     val currentRoute = navBackStackEntry?.destination?.route
 
     val mainItems = listOf(
-        NavigationItem(Screen.Home, "الرئيسية", Icons.Outlined.Home, Icons.Filled.Home),
-        NavigationItem(Screen.Donations, "إحسان", Icons.Outlined.FavoriteBorder, Icons.Filled.Favorite),
-        NavigationItem(Screen.Profile, "حسابي", Icons.Outlined.Person, Icons.Filled.Person)
+        NavigationItem(Screen.Home, stringResource(com.example.feature.R.string.polish_nav_home), Icons.Outlined.Home, Icons.Filled.Home),
+        NavigationItem(Screen.Donations, stringResource(com.example.feature.R.string.home_hero_title), Icons.Outlined.FavoriteBorder, Icons.Filled.Favorite),
+        NavigationItem(Screen.Profile, stringResource(com.example.feature.R.string.polish_nav_profile), Icons.Outlined.Person, Icons.Filled.Person)
     )
 
     // Visibility + selection derive only from the route resolver (no Home fallback).
@@ -61,9 +65,9 @@ fun MainScreen() {
                             .fillMaxWidth()
                             .navigationBarsPadding()
                             .padding(
-                                start = 14.dp,
-                                end = 14.dp,
-                                bottom = 10.dp
+                                start = 8.dp,
+                                end = 8.dp,
+                                bottom = if (WindowInsets.navigationBars.getBottom(LocalDensity.current) == 0) 16.dp else 4.dp
                             )
                     ) {
                         IhsanBottomNavigation(
@@ -87,7 +91,7 @@ fun MainScreen() {
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(62.dp)
+                                .heightIn(min = IhsanTheme.dimens.bottomNavigationMinHeight * LocalDensity.current.fontScale.coerceAtLeast(1f))
                         )
                     }
                 }

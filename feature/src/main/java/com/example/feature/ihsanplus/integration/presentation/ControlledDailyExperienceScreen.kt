@@ -1,5 +1,7 @@
 package com.example.feature.ihsanplus.integration.presentation
 
+import com.example.designsystem.theme.IhsanTheme
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -56,7 +58,7 @@ fun ControlledDailyExperienceScreen(
                         Text(
                             "تجربة اليوم",
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
+                            color = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary
                         )
                     },
                     navigationIcon = {

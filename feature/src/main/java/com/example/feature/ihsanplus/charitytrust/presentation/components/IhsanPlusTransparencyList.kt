@@ -35,7 +35,7 @@ fun IhsanPlusTransparencyList(
                     Text(
                         item.valueLabel, 
                         style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = IhsanTheme.colors.accentContent,
                         fontWeight = FontWeight.Bold
                     ) 
                 },

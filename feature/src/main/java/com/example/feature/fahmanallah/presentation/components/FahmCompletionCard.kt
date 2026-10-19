@@ -61,7 +61,7 @@ fun FahmCompletionCard(
             Icon(
                 imageVector = Icons.Default.Star,
                 contentDescription = null,
-                tint = primary,
+                tint = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else primary,
                 modifier = Modifier.size(46.dp)
             )
         }
@@ -72,7 +72,7 @@ fun FahmCompletionCard(
             text = "أحسنت!",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = primary
+            color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
         )
 
         Spacer(modifier = Modifier.height(6.dp))
@@ -115,7 +115,7 @@ fun FahmCompletionCard(
                         text = "«${episode.quote}»",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = primary,
+                        color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary,
                         textAlign = TextAlign.Center
                     )
 
@@ -144,7 +144,7 @@ fun FahmCompletionCard(
             shape = RoundedCornerShape(25.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = primary,
-                contentColor = Color.White
+                contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
             Text(
@@ -164,12 +164,12 @@ fun FahmCompletionCard(
                 .height(50.dp),
             shape = RoundedCornerShape(25.dp),
             border = BorderStroke(1.dp, primary)
-        ) {
+        , colors = com.example.designsystem.theme.ihsanOutlinedButtonColors()) {
             Text(
                 text = "العودة إلى رحلتي",
                 fontSize = 14.5.sp,
                 fontWeight = FontWeight.Bold,
-                color = primary
+                color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
             )
         }
     }

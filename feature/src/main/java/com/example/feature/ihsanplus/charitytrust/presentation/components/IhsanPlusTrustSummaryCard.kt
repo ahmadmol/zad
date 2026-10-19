@@ -28,7 +28,7 @@ fun IhsanPlusTrustSummaryCard(
                 text = "ملخص الثقة",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = IhsanTheme.colors.accentContent
             )
             
             Spacer(modifier = Modifier.height(IhsanTheme.spacing.small))

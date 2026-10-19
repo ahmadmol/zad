@@ -73,7 +73,7 @@ fun HomeServicesSection(
             text = stringResource(R.string.home_services_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.ExtraBold,
-            color = MaterialTheme.colorScheme.primary,
+            color = IhsanTheme.colors.accentContent,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp),
@@ -134,7 +134,7 @@ private fun HomeQuickActionItem(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = if (IhsanTheme.isDark) IhsanTheme.colors.textSecondary else IhsanTheme.colors.accentContent,
                 modifier = Modifier.size(22.dp)
             )
         }
@@ -143,7 +143,7 @@ private fun HomeQuickActionItem(
             text = title,
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.primary,
+            color = IhsanTheme.colors.accentContent,
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -184,7 +184,7 @@ private fun HomeServiceGridItem(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
+            tint = if (IhsanTheme.isDark) IhsanTheme.colors.textSecondary else IhsanTheme.colors.accentContent,
             modifier = Modifier.size(22.dp)
         )
         Spacer(modifier = Modifier.height(6.dp))
@@ -192,7 +192,7 @@ private fun HomeServiceGridItem(
             text = title,
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.primary,
+            color = IhsanTheme.colors.accentContent,
             textAlign = TextAlign.Center,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,

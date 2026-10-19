@@ -13,6 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +31,7 @@ class QuranViewModel(
     val uiState: StateFlow<QuranUiState> = _uiState.asStateFlow()
 
     private var searchJob: Job? = null
+    private var surahLoadJob: Job? = null
     private var downloadedAyahsJob: Job? = null
     private var downloadStatusJob: Job? = null
 
@@ -46,12 +48,21 @@ class QuranViewModel(
         onAction(QuranAction.LoadSurahs)
         onAction(QuranAction.LoadBookmarks)
         onAction(QuranAction.LoadKhatmaProgress)
+        userPreferences.quranFontSize.take(1).onEach { size -> _uiState.update { it.copy(fontSize = size) } }.launchIn(viewModelScope)
+        userPreferences.quranReaderId.take(1).onEach { id ->
+            defaultReaders.firstOrNull { it.id == id }?.let { reader -> _uiState.update { it.copy(selectedReader = reader) } }
+        }.launchIn(viewModelScope)
         observeLastRead()
         observeAudioState()
-        observePlaybackCompletion()
+
     }
 
     private fun observeAudioState() {
+        audioHandler.isBuffering.onEach { value -> _uiState.update { it.copy(isBuffering = value) } }.launchIn(viewModelScope)
+        audioHandler.currentRecitation.onEach { position ->
+            if (position != null) _uiState.update { it.copy(currentPlayingSurahId = position.surahId, currentPlayingAyah = position.verseNumber) }
+        }.launchIn(viewModelScope)
+
         audioHandler.isPlaying.onEach { isPlaying ->
             _uiState.update { it.copy(isPlaying = isPlaying) }
         }.launchIn(viewModelScope)
@@ -66,12 +77,6 @@ class QuranViewModel(
 
         audioHandler.playbackError.onEach { message ->
             _uiState.update { it.copy(errorMessage = message, isPlaying = false) }
-        }.launchIn(viewModelScope)
-    }
-
-    private fun observePlaybackCompletion() {
-        audioHandler.ayahCompleted.onEach {
-            playNext()
         }.launchIn(viewModelScope)
     }
 
@@ -96,17 +101,20 @@ class QuranViewModel(
             is QuranAction.PlayPrevious -> playPrevious()
             is QuranAction.SeekTo -> audioHandler.seekTo(action.position)
             is QuranAction.SelectReader -> {
-                _uiState.update { it.copy(selectedReader = action.reader) }
-                _uiState.value.selectedSurah?.id?.let {
-                    observeDownloads(it)
-                    observeDownloadWork(it)
+                val resume = _uiState.value.isPlaying || _uiState.value.isBuffering
+                val position = audioHandler.currentRecitation.value
+                audioHandler.pause()
+                _uiState.update { it.copy(selectedReader = action.reader, playbackPosition = 0L, playbackDuration = 0L) }
+                viewModelScope.launch {
+                    userPreferences.setQuranReaderId(action.reader.id)
+                    if (resume && position != null) audioHandler.playPosition(position.copy(readerId = action.reader.id))
                 }
-                val current = _uiState.value.currentPlayingAyah
-                if (_uiState.value.isPlaying && current != null) {
-                    playAyah(current)
-                }
+                _uiState.value.selectedSurah?.id?.let { observeDownloads(it); observeDownloadWork(it) }
             }
-            is QuranAction.UpdateFontSize -> _uiState.update { it.copy(fontSize = action.size) }
+            is QuranAction.UpdateFontSize -> {
+                _uiState.update { it.copy(fontSize = action.size.coerceIn(20f, 48f)) }
+                viewModelScope.launch { userPreferences.setQuranFontSize(action.size) }
+            }
             QuranAction.DownloadSurah -> downloadSurah()
             is QuranAction.Retry -> {
                 if (_uiState.value.selectedSurah != null) {
@@ -205,11 +213,11 @@ class QuranViewModel(
     }
 
     private fun search(query: String) {
-        _uiState.update { it.copy(searchQuery = query, isSearching = true) }
+        _uiState.update { it.copy(searchQuery = query, isSearching = true, isLoading = query.isNotBlank(), searchResults = emptyList()) }
         searchJob?.cancel()
         if (query.isBlank()) {
             _uiState.update {
-                it.copy(searchResults = emptyList(), isSearching = false)
+                it.copy(searchResults = emptyList(), isSearching = false, isLoading = false)
             }
             return
         }
@@ -220,9 +228,10 @@ class QuranViewModel(
             try {
                 val results = repository.searchAyahs(query)
                 _uiState.update {
-                    it.copy(isLoading = false, searchResults = results)
+                    it.copy(isLoading = false, isSearching = false, searchResults = results)
                 }
             } catch (e: Exception) {
+                if (e is kotlinx.coroutines.CancellationException) throw e
                 _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
             }
         }
@@ -230,43 +239,30 @@ class QuranViewModel(
 
     private fun togglePlay() {
         viewModelScope.launch {
-            if (_uiState.value.isPlaying) {
-                audioHandler.togglePlay()
-                return@launch
-            }
-
-            if (audioHandler.hasActiveMedia() && _uiState.value.currentPlayingAyah != null) {
-                audioHandler.togglePlay()
-                return@launch
-            }
-
-            val startAyah = _uiState.value.currentPlayingAyah
-                ?: _uiState.value.initialAyahScroll
-                ?: 1
-            playAyah(startAyah)
+            if (_uiState.value.isPlaying || _uiState.value.isBuffering) { audioHandler.pause(); return@launch }
+            val current = audioHandler.currentRecitation.value
+            val reader = _uiState.value.selectedReader?.id ?: return@launch
+            if (current != null && audioHandler.hasActiveMedia() && current.readerId == reader) audioHandler.togglePlay()
+            else if (current != null) audioHandler.playPosition(current.copy(readerId = reader))
+            else playAyah(_uiState.value.initialAyahScroll ?: 1)
         }
     }
 
-    private fun playNext() {
-        val currentAyah = _uiState.value.currentPlayingAyah ?: return
-        val maxAyah = _uiState.value.ayahs.size
-        if (currentAyah < maxAyah) {
-            playAyah(currentAyah + 1)
-        } else {
-            _uiState.update { it.copy(isPlaying = false) }
+    private fun readingAudioPosition(): com.example.feature.quran.domain.model.RecitationPosition? {
+        val state = _uiState.value
+        return audioHandler.currentRecitation.value ?: state.selectedSurah?.let { surah ->
+            state.selectedReader?.let { reader -> com.example.feature.quran.domain.model.RecitationPosition(surah.id, state.initialAyahScroll ?: 1, reader.id) }
         }
     }
 
-    private fun playPrevious() {
-        val currentAyah = _uiState.value.currentPlayingAyah ?: 1
-        if (currentAyah > 1) {
-            playAyah(currentAyah - 1)
-        } else {
-            playAyah(1)
-        }
-    }
+    private fun playNext() { viewModelScope.launch { audioHandler.playNext(readingAudioPosition()) } }
+    private fun playPrevious() { viewModelScope.launch { audioHandler.playPrevious(readingAudioPosition()) } }
 
     private fun downloadSurah() {
+        if (!com.example.feature.quran.util.RecitationAvailability.RECORDINGS_APPROVED) {
+            _uiState.update { it.copy(errorMessage = com.example.feature.quran.util.RecitationAvailability.MESSAGE) }
+            return
+        }
         val surahId = _uiState.value.selectedSurah?.id ?: return
         val readerId = _uiState.value.selectedReader?.id ?: "Alafasy_128kbps"
         val tag = downloadScheduler.enqueue(surahId, readerId)
@@ -274,13 +270,13 @@ class QuranViewModel(
     }
 
     private fun loadSurahDetails(surahId: Int, ayahNumber: Int? = null) {
-        viewModelScope.launch {
+        surahLoadJob?.cancel()
+        surahLoadJob = viewModelScope.launch {
             _uiState.update {
                 it.copy(
                     isLoading = true,
                     errorMessage = null,
-                    initialAyahScroll = ayahNumber,
-                    currentPlayingAyah = ayahNumber
+                    initialAyahScroll = ayahNumber
                 )
             }
             try {
@@ -302,6 +298,7 @@ class QuranViewModel(
                     }
                 }
             } catch (e: Exception) {
+                if (e is kotlinx.coroutines.CancellationException) throw e
                 _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
             }
         }
@@ -339,31 +336,11 @@ class QuranViewModel(
 
     private fun playAyah(ayahNumber: Int) {
         viewModelScope.launch {
-            val surahId = _uiState.value.selectedSurah?.id ?: return@launch
-            val readerId = _uiState.value.selectedReader?.id ?: "Alafasy_128kbps"
-            val maxAyah = _uiState.value.ayahs.size
-            if (ayahNumber !in 1..maxAyah && maxAyah > 0) return@launch
-
-            _uiState.update {
-                it.copy(
-                    currentPlayingAyah = ayahNumber,
-                    errorMessage = null,
-                    playbackPosition = 0L
-                )
-            }
-            // Track surah reading from audio position as well as scroll
-            saveLastRead(surahId, ayahNumber)
-
-            val localPath = repository.getLocalAyahPath(surahId, ayahNumber, readerId)
-            val source = if (localPath != null && java.io.File(localPath).exists()) {
-                localPath
-            } else {
-                val surahStr = surahId.toString().padStart(3, '0')
-                val ayahStr = ayahNumber.toString().padStart(3, '0')
-                "https://everyayah.com/data/$readerId/$surahStr$ayahStr.mp3"
-            }
-
-            audioHandler.playAyah(source)
+            val state = _uiState.value
+            val surahId = state.selectedSurah?.id ?: return@launch
+            val readerId = state.selectedReader?.id ?: return@launch
+            _uiState.update { it.copy(errorMessage = null) }
+            audioHandler.playPosition(com.example.feature.quran.domain.model.RecitationPosition(surahId, ayahNumber, readerId))
         }
     }
 

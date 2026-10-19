@@ -2,12 +2,17 @@ package com.example.feature.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -21,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -41,7 +47,7 @@ import com.example.feature.dashboard.presentation.components.HomeEhsanCommunityC
 import com.example.feature.dashboard.presentation.components.HomeQuranContinueCard
 import com.example.feature.dashboard.presentation.components.HomeRefreshErrorNotice
 import com.example.feature.dashboard.presentation.components.HomeSectionStateNotice
-import com.example.feature.dashboard.presentation.components.HomeThreeGlassCards
+import com.example.feature.dashboard.presentation.components.HomeLiveStreamCard
 import com.example.feature.prayer.presentation.CitySelectionBottomSheet
 import com.example.feature.prayer.presentation.PrayerDetailsBottomSheet
 import com.example.feature.prayer.presentation.PrayerSettingsBottomSheet
@@ -137,89 +143,103 @@ fun HomeDashboardScreen(
     }
     val nextPrayerTimeLabel = nextPrayerItem?.time ?: "—"
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
-            .verticalScroll(rememberScrollState())
-    ) {
-        // 1. Contextual Skyline Hero Banner
-        HomeContextualHero(
-            location = uiState.data.location,
-            hijriDate = uiState.data.hijriDate.ifBlank { HijriDateFormatter.nowFormatted() },
-            currentPrayerName = currentPrayerTitle,
-            countdownText = uiState.data.nextPrayerTimeLeft,
-            nextPrayerName = nextPrayerTitle,
-            nextPrayerTime = nextPrayerTimeLabel,
-            dailyVerseText = uiState.data.dailyVerse,
-            dailyVerseSource = uiState.data.dailyVerseSource,
-            onNotificationClick = onNavigateToReminders,
-            onSearchClick = onNavigateToSearch,
-            onQiblaClick = onNavigateToQibla
-        )
+    val scrollState = rememberScrollState()
 
-        // 2. Main Content Surface Overlay
-        Surface(
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .offset(y = (-16).dp),
-            color = MaterialTheme.colorScheme.surface,
-            shape = RoundedCornerShape(
-                topStart = 24.dp,
-                topEnd = 24.dp
-            )
+                .background(MaterialTheme.colorScheme.background)
+                .verticalScroll(scrollState)
         ) {
-            Column(
+            // 1. Contextual Skyline Hero Banner
+            HomeContextualHero(
+                location = uiState.data.location,
+                hijriDate = uiState.data.hijriDate.ifBlank { HijriDateFormatter.nowFormatted() },
+                currentPrayerName = currentPrayerTitle,
+                countdownText = uiState.data.nextPrayerTimeLeft,
+                nextPrayerName = nextPrayerTitle,
+                nextPrayerTime = nextPrayerTimeLabel,
+                dailyVerseText = uiState.data.dailyVerse,
+                dailyVerseSource = uiState.data.dailyVerseSource,
+                onNotificationClick = onNavigateToReminders,
+                onSearchClick = onNavigateToSearch,
+                onQiblaClick = onNavigateToQibla
+            )
+
+            // 2. Main Content Surface Overlay
+            Surface(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 14.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .offset(y = (-16).dp),
+                color = MaterialTheme.colorScheme.background,
+                shape = RoundedCornerShape(
+                    topStart = 24.dp,
+                    topEnd = 24.dp
+                )
             ) {
-                uiState.refreshErrorMessage?.let { message ->
-                    HomeRefreshErrorNotice(
-                        message = message,
-                        onRetry = { viewModel.onAction(HomeDashboardAction.OnRefresh) }
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    uiState.refreshErrorMessage?.let { message ->
+                        HomeRefreshErrorNotice(
+                            message = message,
+                            onRetry = { viewModel.onAction(HomeDashboardAction.OnRefresh) }
+                        )
+                    }
+
+                    HomeSectionStateNotice(
+                        state = uiState.prayer,
+                        onRetry = { viewModel.onAction(HomeDashboardAction.OnRetryPrayer) }
                     )
+
+                    // 2.1 Continue / Start Quran Card (Requirement 2)
+                    HomeQuranContinueCard(
+                        surahName = uiState.data.lastReadSurahName,
+                        surahId = uiState.data.lastReadSurahId,
+                        ayahNumber = uiState.data.lastReadAyahNumber,
+                        onContinueClick = onContinueLastRead,
+                        onStartQuranClick = onNavigateToQuran
+                    )
+
+                    // 2.2 Journey Card ("رحلتي مع الإحسان") (Requirement 3)
+                    HomeDailyJourneyCard(
+                        onGoToChecklist = onNavigateToDailyActivities,
+                        activities = uiState.data.dailyActivities,
+                        onPrayerClick = onNavigateToPrayer,
+                        onQuranClick = onNavigateToQuran,
+                        onAzkarClick = onNavigateToAzkar
+                    )
+
+                    // 2.4 Ehsan Community Donation Card ("عروض التبرع والمساعدة") (Requirement 5)
+                    HomeEhsanCommunityCard(
+                        onNavigateToDonations = onNavigateToDonations
+                    )
+
+                    HomeLiveStreamCard(onLiveClick = { showLiveChooser = true })
+
+                    // 2.5 Discover Services ("الخدمات") (Requirement 6)
+                    HomeDiscoverServicesGrid(
+                        onServiceClick = onActionClick
+                    )
+
+                    Spacer(modifier = Modifier.height(IhsanTheme.dimens.contentBottomSpacing))
                 }
-
-                HomeSectionStateNotice(
-                    state = uiState.prayer,
-                    onRetry = { viewModel.onAction(HomeDashboardAction.OnRetryPrayer) }
-                )
-
-                // 2.1 Continue / Start Quran Card (Requirement 2)
-                HomeQuranContinueCard(
-                    surahName = uiState.data.lastReadSurahName,
-                    surahId = uiState.data.lastReadSurahId,
-                    ayahNumber = uiState.data.lastReadAyahNumber,
-                    onContinueClick = onContinueLastRead,
-                    onStartQuranClick = onNavigateToQuran
-                )
-
-                // 2.2 Journey Card ("رحلتي مع الإحسان") (Requirement 3)
-                HomeDailyJourneyCard(
-                    onGoToChecklist = onNavigateToDailyActivities
-                )
-
-                // 2.3 Three Glass Cards (القرآن الكريم / أذكار الصباح / أذكار المساء) (Requirement 4)
-                HomeThreeGlassCards(
-                    onNavigateToQuran = onNavigateToQuran,
-                    onNavigateToAzkar = onNavigateToAzkar
-                )
-
-                // 2.4 Ehsan Community Donation Card ("عروض التبرع والمساعدة") (Requirement 5)
-                HomeEhsanCommunityCard(
-                    onNavigateToDonations = onNavigateToDonations
-                )
-
-                // 2.5 Discover Services ("الخدمات") (Requirement 6)
-                HomeDiscoverServicesGrid(
-                    onServiceClick = onActionClick
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
             }
         }
+
+        // Pinned Status Bar Protection Layer with smooth alpha transition
+        val statusBarAlpha = (scrollState.value / 120f).coerceIn(0f, 1f)
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsTopHeight(WindowInsets.statusBars)
+                .background(MaterialTheme.colorScheme.background.copy(alpha = statusBarAlpha))
+                .align(Alignment.TopCenter)
+        )
     }
 
     if (showLiveChooser) {
@@ -233,7 +253,7 @@ fun HomeDashboardScreen(
                         showLiveChooser = false
                         onNavigateToHaramLive()
                     }
-                ) {
+                , colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
                     Text(stringResource(R.string.home_live_haram))
                 }
             },
@@ -243,7 +263,7 @@ fun HomeDashboardScreen(
                         showLiveChooser = false
                         onNavigateToNabawiLive()
                     }
-                ) {
+                , colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
                     Text(stringResource(R.string.home_live_nabawi))
                 }
             }

@@ -267,6 +267,7 @@ fun AuthTextField(
         keyboardOptions = keyboardOptions,
         shape = RoundedCornerShape(12.dp),
         colors = OutlinedTextFieldDefaults.colors(
+                            cursorColor = if (com.example.designsystem.theme.IhsanTheme.isDark) com.example.designsystem.theme.IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.primary,
             unfocusedBorderColor = fieldColors.fieldBorder,
             focusedBorderColor = fieldColors.fieldFocusedBorder,
             unfocusedContainerColor = fieldColors.fieldContainer,

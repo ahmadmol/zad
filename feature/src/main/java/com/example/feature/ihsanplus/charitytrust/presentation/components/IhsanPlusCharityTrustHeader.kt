@@ -24,7 +24,7 @@ fun IhsanPlusCharityTrustHeader(
             text = title,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = IhsanTheme.colors.accentContent
         )
         Spacer(modifier = Modifier.height(IhsanTheme.spacing.small))
         Text(

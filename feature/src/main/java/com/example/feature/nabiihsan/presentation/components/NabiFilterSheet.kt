@@ -64,15 +64,14 @@ fun NabiFilterSheet(
 ) {
     var tempState by remember(filterState) { mutableStateOf(filterState) }
 
-    val categories = listOf("الكل", "السيرة", "الأخلاق", "العبادة", "الأسرة", "القيادة")
+    val categories = listOf("الكل") + com.example.feature.nabiihsan.data.datasource.NabiIhsanFixtureData.defaultEpisodes.flatMap { it.topics }.distinct()
     val episodeCounts = listOf("الكل", "حلقة واحدة", "أكثر من حلقة")
     val durationOptions = listOf("الكل", "أقل من 20 دقيقة", "20 - 40 دقيقة", "أكثر من 40 دقيقة")
 
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
+    com.example.designsystem.component.IhsanFilterSheet(
+        onDismiss = onDismiss,
         sheetState = sheetState,
-        modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.surface
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier
@@ -107,7 +106,7 @@ fun NabiFilterSheet(
                         tempState = reset
                         onResetFilter()
                     }
-                ) {
+                , colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
                     Text(
                         text = "إعادة التعيين",
                         fontSize = 12.sp,
@@ -131,25 +130,6 @@ fun NabiFilterSheet(
                         label = category,
                         isSelected = tempState.selectedCategory == category,
                         onClick = { tempState = tempState.copy(selectedCategory = category) }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // 2. Episode Count Section
-            FilterSectionHeader(title = "عدد الحلقات")
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                episodeCounts.forEach { count ->
-                    FilterChip(
-                        label = count,
-                        isSelected = tempState.selectedEpisodeFilter == count,
-                        onClick = { tempState = tempState.copy(selectedEpisodeFilter = count) },
-                        modifier = Modifier.weight(1f)
                     )
                 }
             }
@@ -220,7 +200,7 @@ fun NabiFilterSheet(
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Text(
@@ -246,34 +226,6 @@ private fun FilterSectionHeader(title: String) {
 }
 
 @Composable
-private fun FilterChip(
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val shape = RoundedCornerShape(12.dp)
-    val containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-    val textColor = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
-
-    Box(
-        modifier = modifier
-            .clip(shape)
-            .background(containerColor)
-            .then(
-                if (!isSelected) {
-                    Modifier.border(0.8.dp, IhsanTheme.colors.borderSubtle.copy(alpha = 0.4f), shape)
-                } else Modifier
-            )
-            .clickable(onClick = onClick)
-            .padding(horizontal = 14.dp, vertical = 8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-            color = textColor
-        )
-    }
+private fun FilterChip(label: String, isSelected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    com.example.designsystem.component.IhsanFilterChip(label, isSelected, onClick, modifier)
 }

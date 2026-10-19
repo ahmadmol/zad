@@ -28,10 +28,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.designsystem.component.IhsanTextWithKaabaIcon
 import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
 
@@ -49,8 +51,8 @@ fun FahmHeroHeader(
     val isDark = IhsanTheme.isDark
     val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else IhsanTheme.colors.brand
     val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else IhsanTheme.colors.brand.copy(alpha = 0.82f)
-    val iconBgColor = if (isDark) Color.White.copy(alpha = 0.15f) else IhsanTheme.colors.brand.copy(alpha = 0.08f)
-    val pillBgColor = if (isDark) Color.White.copy(alpha = 0.18f) else IhsanTheme.colors.brand.copy(alpha = 0.12f)
+    val iconBgColor = if (isDark) IhsanTheme.colors.surfaceMuted else IhsanTheme.colors.brand.copy(alpha = 0.08f)
+    val pillBgColor = if (isDark) IhsanTheme.colors.selectedContainer else IhsanTheme.colors.brand.copy(alpha = 0.12f)
 
     Box(
         modifier = modifier
@@ -70,7 +72,10 @@ fun FahmHeroHeader(
             Box(
                 modifier = Modifier
                     .matchParentSize()
-                    .background(Color.Black.copy(alpha = 0.55f))
+                    .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(
+                        IhsanTheme.colors.surfaceBase.copy(alpha = .50f),
+                        IhsanTheme.colors.surfaceBase.copy(alpha = .65f),
+                        IhsanTheme.colors.surfaceBase.copy(alpha = .82f))))
             )
         }
 
@@ -161,22 +166,26 @@ fun FahmHeroHeader(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            Text(
+            IhsanTextWithKaabaIcon(
                 text = title,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
                 color = darkTealColor,
+                style = TextStyle(
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Text(
+            IhsanTextWithKaabaIcon(
                 text = subtitle,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
                 color = darkTealSubtext,
+                style = TextStyle(
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium
+                ),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )

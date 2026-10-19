@@ -9,11 +9,15 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +45,8 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
@@ -80,29 +86,41 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.designsystem.R as DesignR
-import com.example.feature.R as FeatureR
 import com.example.designsystem.component.IhsanButton
 import com.example.designsystem.component.IhsanEmptyState
 import com.example.designsystem.component.IhsanErrorState
 import com.example.designsystem.component.IhsanLoadingState
 import com.example.designsystem.theme.IhsanTheme
+import com.example.feature.R as FeatureR
 import com.example.feature.asma.domain.model.AllahName
 import org.koin.androidx.compose.koinViewModel
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
 @Composable
 fun AsmaScreen(
     viewModel: AsmaViewModel = koinViewModel(),
+    initialNameId: Int? = null,
     onNavigateBack: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var initialTargetHandled by remember(initialNameId) { mutableStateOf(false) }
+    androidx.compose.runtime.LaunchedEffect(initialNameId, uiState.asmaList) {
+        if (!initialTargetHandled) uiState.asmaList.firstOrNull { it.id == initialNameId }?.let { name ->
+            initialTargetHandled = true
+            viewModel.onAction(AsmaAction.OnNameClick(name)); viewModel.onAction(AsmaAction.OnOpenDetails)
+        }
+    }
     val context = LocalContext.current
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
             topBar = {
-                AsmaHeroHeader(onNavigateBack = onNavigateBack)
+                AsmaHeroHeader(
+                    onNavigateBack = onNavigateBack
+                )
             },
             containerColor = IhsanTheme.colors.surfaceBase
         ) { paddingValues ->
@@ -132,7 +150,7 @@ fun AsmaScreen(
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             item {
                                 AsmaSearchBar(
@@ -193,58 +211,15 @@ fun AsmaScreen(
                                             },
                                             onNextClick = {
                                                 viewModel.onAction(AsmaAction.OnSelectNext)
+                                            },
+                                            onReflectClick = {
+                                                viewModel.onAction(AsmaAction.OnOpenDetails)
                                             }
                                         )
                                     }
-
-                                    item {
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            Text(
-                                                text = selected.name,
-                                                style = MaterialTheme.typography.headlineLarge.copy(
-                                                    fontWeight = FontWeight.ExtraBold,
-                                                    fontSize = 32.sp
-                                                ),
-                                                color = IhsanTheme.colors.brand,
-                                                textAlign = TextAlign.Center
-                                            )
-
-                                            Spacer(modifier = Modifier.height(10.dp))
-
-                                            Text(
-                                                text = selected.explanation,
-                                                style = MaterialTheme.typography.bodyLarge.copy(
-                                                    lineHeight = 24.sp
-                                                ),
-                                                color = IhsanTheme.colors.textSecondary,
-                                                textAlign = TextAlign.Center,
-                                                modifier = Modifier.padding(horizontal = 12.dp)
-                                            )
-
-                                            Spacer(modifier = Modifier.height(24.dp))
-
-                                            IhsanButton(
-                                                onClick = { viewModel.onAction(AsmaAction.OnOpenDetails) },
-                                                modifier = Modifier
-                                                    .fillMaxWidth(0.8f)
-                                                    .height(50.dp),
-                                                containerColor = IhsanTheme.colors.brand,
-                                                contentColor = IhsanTheme.colors.onBrand
-                                            ) {
-                                                Text(
-                                                    text = stringResource(FeatureR.string.asma_reflect_cta),
-                                                    style = MaterialTheme.typography.titleMedium.copy(
-                                                        fontWeight = FontWeight.Bold
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    }
+                                }
+                                items(uiState.visibleAsmaList, key = { "name-${it.id}" }) { name ->
+                                    AsmaSearchResultCard(name, onClick = { viewModel.onAction(AsmaAction.OnNameClick(name)) })
                                 }
                             }
                         }
@@ -295,81 +270,9 @@ private fun AsmaHeroHeader(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isDark = IhsanTheme.isDark
-    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else IhsanTheme.colors.brand
-    val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else IhsanTheme.colors.brand.copy(alpha = 0.82f)
-    val iconBgColor = if (isDark) Color.White.copy(alpha = 0.15f) else IhsanTheme.colors.brand.copy(alpha = 0.08f)
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
-    ) {
-        Image(
-            painter = painterResource(id = FeatureR.drawable.ihsan_home_hero_background),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            alignment = Alignment.Center,
-            modifier = Modifier.matchParentSize()
-        )
-
-        if (isDark) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(Color.Black.copy(alpha = 0.55f))
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(horizontal = 20.dp, vertical = 16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = onNavigateBack,
-                    modifier = Modifier
-                        .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
-                        .clip(CircleShape)
-                        .background(iconBgColor)
-                        .semantics { contentDescription = "رجوع" }
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = null,
-                        tint = darkTealColor,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(FeatureR.string.asma_hero_title),
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 22.sp
-                        ),
-                        color = darkTealColor
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = stringResource(FeatureR.string.asma_hero_subtitle),
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontSize = 13.sp
-                        ),
-                        color = darkTealSubtext
-                    )
-                }
-            }
-        }
-    }
+    com.example.designsystem.component.IhsanTopBar(
+        title = stringResource(FeatureR.string.asma_hero_title), modifier = modifier,
+        style = com.example.designsystem.component.IhsanTopBarStyle.Hero, backgroundImageRes = com.example.feature.R.drawable.ihsan_home_hero_background, onNavigateBack = onNavigateBack)
 }
 
 @Composable
@@ -378,67 +281,8 @@ private fun AsmaSearchBar(
     onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .shadow(elevation = 2.dp, shape = RoundedCornerShape(18.dp)),
-        shape = RoundedCornerShape(18.dp),
-        color = IhsanTheme.colors.surfaceElevated,
-        border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = stringResource(FeatureR.string.cd_asma_search),
-                tint = IhsanTheme.colors.textSecondary,
-                modifier = Modifier.size(22.dp)
-            )
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                if (query.isEmpty()) {
-                    Text(
-                        text = stringResource(FeatureR.string.asma_search_placeholder),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = IhsanTheme.colors.textDisabled
-                    )
-                }
-                BasicTextField(
-                    value = query,
-                    onValueChange = onQueryChange,
-                    singleLine = true,
-                    textStyle = MaterialTheme.typography.bodyMedium.copy(
-                        color = IhsanTheme.colors.textPrimary
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            if (query.isNotEmpty()) {
-                IconButton(
-                    onClick = { onQueryChange("") },
-                    modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = "مسح البحث",
-                        tint = IhsanTheme.colors.textSecondary,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
-        }
-    }
+    com.example.designsystem.component.IhsanSearchBar(query = query, onQueryChange = onQueryChange,
+        placeholder = stringResource(FeatureR.string.asma_search_placeholder), modifier = modifier)
 }
 
 @Composable
@@ -447,124 +291,36 @@ private fun FeaturedAsmaCard(
     totalCount: Int,
     onPreviousClick: () -> Unit,
     onNextClick: () -> Unit,
+    onReflectClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .shadow(elevation = 3.dp, shape = RoundedCornerShape(28.dp)),
-        shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = IhsanTheme.colors.surfaceWarm
-        ),
-        border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle.copy(alpha = 0.6f))
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 24.dp, horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "اللَّه",
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 2.sp
-                ),
-                color = IhsanTheme.colors.goldAccent.copy(alpha = 0.85f),
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                IconButton(
-                    onClick = onNextClick,
-                    modifier = Modifier
-                        .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
-                        .clip(CircleShape)
-                        .background(IhsanTheme.colors.surfaceElevated.copy(alpha = 0.8f))
-                        .semantics { contentDescription = "الاسم التالي" }
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.NavigateNext,
-                        contentDescription = null,
-                        tint = IhsanTheme.colors.brand,
-                        modifier = Modifier.size(28.dp)
-                    )
+    val font = FontFamily(Font(FeatureR.font.amiri_quran))
+    Card(modifier.fillMaxWidth().heightIn(min = 380.dp), shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = IhsanTheme.colors.surfaceWarm),
+        border = BorderStroke(.5.dp, IhsanTheme.colors.borderSubtle)) {
+        Column(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 18.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("اللَّهُ", fontFamily = font, fontSize = 30.sp, lineHeight = 46.sp, color = if (IhsanTheme.isDark) IhsanTheme.colors.goldAccent else IhsanTheme.colors.textPrimary)
+            Row(Modifier.fillMaxWidth().heightIn(min = 172.dp), verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onNextClick, Modifier.size(40.dp)) {
+                    Icon(Icons.AutoMirrored.Filled.NavigateNext, "الاسم التالي", tint = IhsanTheme.colors.accentContent)
                 }
-
-                Box(
-                    modifier = Modifier
-                        .size(200.dp)
-                        .clip(CircleShape)
-                        .background(
-                            brush = Brush.radialGradient(
-                                colors = listOf(
-                                    IhsanTheme.colors.surfaceMint,
-                                    IhsanTheme.colors.surfaceMuted.copy(alpha = 0.5f)
-                                )
-                            )
-                        )
-                        .border(1.dp, IhsanTheme.colors.goldAccent.copy(alpha = 0.3f), CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    AnimatedContent(
-                        targetState = selectedName,
-                        transitionSpec = {
-                            (fadeIn(animationSpec = tween(180)) + scaleIn(initialScale = 0.92f))
-                                .togetherWith(fadeOut(animationSpec = tween(120)))
-                        },
-                        label = "AsmaNameAnimation"
-                    ) { target ->
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center,
-                            modifier = Modifier.padding(12.dp)
-                        ) {
-                            Text(
-                                text = target.name,
-                                style = MaterialTheme.typography.displayMedium.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 38.sp
-                                ),
-                                color = IhsanTheme.colors.textPrimary,
-                                textAlign = TextAlign.Center
-                            )
-
-                            Spacer(modifier = Modifier.height(6.dp))
-
-                            Text(
-                                text = stringResource(FeatureR.string.asma_index_format, target.id, totalCount),
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    fontWeight = FontWeight.SemiBold
-                                ),
-                                color = IhsanTheme.colors.goldAccent,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
+                Column(Modifier.weight(1f).background(IhsanTheme.colors.surfaceElevated.copy(alpha = .6f), CircleShape)
+                    .padding(vertical = 22.dp).clickable(onClick = onReflectClick), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(selectedName.name, fontFamily = font, fontSize = 54.sp, lineHeight = 92.sp,
+                        color = IhsanTheme.colors.textPrimary, textAlign = TextAlign.Center)
+                    Text("${selectedName.id} من $totalCount", fontSize = 11.sp, color = IhsanTheme.colors.textSecondary)
                 }
-
-                IconButton(
-                    onClick = onPreviousClick,
-                    modifier = Modifier
-                        .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
-                        .clip(CircleShape)
-                        .background(IhsanTheme.colors.surfaceElevated.copy(alpha = 0.8f))
-                        .semantics { contentDescription = "الاسم السابق" }
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.NavigateBefore,
-                        contentDescription = null,
-                        tint = IhsanTheme.colors.brand,
-                        modifier = Modifier.size(28.dp)
-                    )
+                IconButton(onPreviousClick, Modifier.size(40.dp)) {
+                    Icon(Icons.AutoMirrored.Filled.NavigateBefore, "الاسم السابق", tint = IhsanTheme.colors.accentContent)
                 }
+            }
+            Text(selectedName.name, fontSize = 21.sp, lineHeight = 29.sp, fontWeight = FontWeight.Bold,
+                color = IhsanTheme.colors.textPrimary, modifier = Modifier.padding(top = 10.dp))
+            Text(selectedName.explanation, fontSize = 13.sp, lineHeight = 20.sp,
+                color = IhsanTheme.colors.textSecondary, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 3.dp, bottom = 14.dp))
+            Button(onReflectClick, shape = RoundedCornerShape(18.dp), contentPadding = PaddingValues(horizontal = 24.dp, vertical = 6.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = IhsanTheme.colors.selectedContainer, contentColor = IhsanTheme.colors.selectedContent)) {
+                Text("تأمل في الاسم", fontSize = 14.sp)
             }
         }
     }
@@ -590,19 +346,19 @@ private fun AsmaSearchResultCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(44.dp)
+                    .size(44.dp).border(1.dp, IhsanTheme.colors.goldAccent.copy(alpha = .4f), CircleShape)
                     .clip(CircleShape)
                     .background(IhsanTheme.colors.surfaceMint),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "${asma.id}",
-                    style = MaterialTheme.typography.labelLarge.copy(
+                    text = asma.id.toString(),
+                    style = MaterialTheme.typography.labelSmall.copy(
                         fontWeight = FontWeight.Bold
                     ),
                     color = IhsanTheme.colors.goldAccent
@@ -621,7 +377,7 @@ private fun AsmaSearchResultCard(
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = asma.explanation,
+                    text = asma.meaning,
                     style = MaterialTheme.typography.bodySmall,
                     color = IhsanTheme.colors.textSecondary,
                     maxLines = 1,
@@ -673,103 +429,103 @@ private fun AsmaDetailsDialog(
                             fontWeight = FontWeight.Bold,
                             fontSize = 26.sp
                         ),
-                        color = IhsanTheme.colors.brand
+                        color = if (IhsanTheme.isDark) IhsanTheme.colors.goldAccent else IhsanTheme.colors.brand
                     )
                 }
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                text = name.transliteration,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.SemiBold
-                ),
-                color = IhsanTheme.colors.goldAccent
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = name.meaning,
-                style = MaterialTheme.typography.bodyMedium,
-                color = IhsanTheme.colors.textSecondary,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = IhsanTheme.colors.surfaceWarm.copy(alpha = 0.5f),
-                border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle)
-            ) {
                 Text(
-                    text = name.explanation,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        lineHeight = 22.sp
+                    text = name.transliteration,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.SemiBold
                     ),
-                    color = IhsanTheme.colors.textPrimary,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(16.dp)
+                    color = IhsanTheme.colors.goldAccent
                 )
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextButton(
-                    onClick = onToggleFavorite,
-                    modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                Text(
+                    text = name.meaning,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = IhsanTheme.colors.textSecondary,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    color = IhsanTheme.colors.surfaceWarm.copy(alpha = 0.5f),
+                    border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle)
                 ) {
-                    Icon(
-                        imageVector = if (name.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = null,
-                        tint = if (name.isFavorite) IhsanTheme.colors.favorite else IhsanTheme.colors.textSecondary
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = if (name.isFavorite) stringResource(FeatureR.string.asma_remove_favorite) else stringResource(FeatureR.string.asma_add_favorite),
-                        color = IhsanTheme.colors.textPrimary
+                        text = "شرح تحريري يحتاج توثيق المصدر والمراجعة:\n${name.explanation}",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            lineHeight = 22.sp
+                        ),
+                        color = IhsanTheme.colors.textPrimary,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(16.dp)
                     )
                 }
 
-                TextButton(
-                    onClick = onCopy,
-                    modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ContentCopy,
-                        contentDescription = null,
-                        tint = IhsanTheme.colors.textSecondary
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = stringResource(FeatureR.string.asma_copy_action),
-                        color = IhsanTheme.colors.textPrimary
-                    )
-                }
+                Spacer(modifier = Modifier.height(24.dp))
 
-                TextButton(
-                    onClick = onShare,
-                    modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = null,
-                        tint = IhsanTheme.colors.textSecondary
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = stringResource(FeatureR.string.asma_share_action),
-                        color = IhsanTheme.colors.textPrimary
-                    )
+                    TextButton(
+                        onClick = onToggleFavorite,
+                        modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                    , colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
+                        Icon(
+                            imageVector = if (name.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = null,
+                            tint = if (name.isFavorite) IhsanTheme.colors.favorite else IhsanTheme.colors.textSecondary
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = if (name.isFavorite) stringResource(FeatureR.string.asma_remove_favorite) else stringResource(FeatureR.string.asma_add_favorite),
+                            color = IhsanTheme.colors.textPrimary
+                        )
+                    }
+
+                    TextButton(
+                        onClick = onCopy,
+                        modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                    , colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
+                        Icon(
+                            imageVector = Icons.Default.ContentCopy,
+                            contentDescription = null,
+                            tint = IhsanTheme.colors.textSecondary
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = stringResource(FeatureR.string.asma_copy_action),
+                            color = IhsanTheme.colors.textPrimary
+                        )
+                    }
+
+                    TextButton(
+                        onClick = onShare,
+                        modifier = Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                    , colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = null,
+                            tint = IhsanTheme.colors.textSecondary
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = stringResource(FeatureR.string.asma_share_action),
+                            color = IhsanTheme.colors.textPrimary
+                        )
+                    }
                 }
-            }
 
                 Spacer(modifier = Modifier.height(16.dp))
             }

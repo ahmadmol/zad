@@ -69,12 +69,12 @@ fun NabiIhsanMainScreen(
 ) {
     val uiState by viewModel.mainUiState.collectAsStateWithLifecycle()
 
-    val taxonomyList = listOf("الكل", "السيرة", "الأخلاق", "العبادة", "الأسرة", "القيادة")
+    val taxonomyList = listOf("الكل") + uiState.episodes.flatMap { it.topics }.filter { it.isNotBlank() }.distinct()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(if (IhsanTheme.isDark) IhsanTheme.colors.surfaceBase else MaterialTheme.colorScheme.surface)
             .verticalScroll(rememberScrollState())
     ) {
         // Hero Header
@@ -106,9 +106,10 @@ fun NabiIhsanMainScreen(
                             query = uiState.searchQuery,
                             onQueryChange = { q ->
                                 viewModel.onSearchQueryChanged(q)
-                                onNavigateToSearch(q)
                             },
-                            placeholder = "ابحث عن حلقة، وصفة، موضوع..."
+                            placeholder = "ابحث عن حلقة، وصفة، موضوع...",
+                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Search),
+                            keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSearch = { onNavigateToSearch(uiState.searchQuery) })
                         )
                     }
 
@@ -124,40 +125,16 @@ fun NabiIhsanMainScreen(
                         Icon(
                             imageVector = Icons.Default.FilterList,
                             contentDescription = "تصفية",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = IhsanTheme.colors.accentContent
                         )
                     }
                 }
 
-                // Taxonomy Filter Chips Row
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(horizontal = 0.dp)
-                ) {
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(taxonomyList) { tag ->
-                        val isSelected = uiState.filterState.selectedCategory == tag
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(
-                                    if (isSelected) MaterialTheme.colorScheme.primary
-                                    else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                                )
-                                .clickable {
-                                    viewModel.onFilterStateChanged(
-                                        uiState.filterState.copy(selectedCategory = tag)
-                                    )
-                                }
-                                .padding(horizontal = 14.dp, vertical = 8.dp)
-                        ) {
-                            Text(
-                                text = tag,
-                                fontSize = 12.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
-                            )
-                        }
+                        com.example.designsystem.component.IhsanFilterChip(tag, uiState.filterState.selectedCategory == tag, {
+                            viewModel.onFilterStateChanged(uiState.filterState.copy(selectedCategory = tag))
+                        })
                     }
                 }
 
@@ -267,7 +244,7 @@ private fun QuickNavCard(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = IhsanTheme.colors.accentContent,
                 modifier = Modifier.size(20.dp)
             )
 
@@ -277,7 +254,7 @@ private fun QuickNavCard(
                 text = title,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = IhsanTheme.colors.accentContent
             )
         }
     }

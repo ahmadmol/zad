@@ -44,7 +44,7 @@ fun IhsanPlusPrivacySafetyCards(
 @Composable
 private fun SectionHeader(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
+        Icon(imageVector = icon, contentDescription = null, tint = IhsanTheme.colors.accentContent, modifier = Modifier.size(24.dp))
         Spacer(modifier = Modifier.width(IhsanTheme.spacing.small))
         Text(text = title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
     }

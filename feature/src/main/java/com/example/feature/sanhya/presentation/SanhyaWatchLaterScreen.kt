@@ -60,34 +60,12 @@ fun SanhyaWatchLaterScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(if (IhsanTheme.isDark) IhsanTheme.colors.surfaceBase else MaterialTheme.colorScheme.surface)
     ) {
         // Top Bar
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .statusBarsPadding()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "رجوع",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text(
-                text = "المشاهدة لاحقاً",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
+        com.example.designsystem.component.IhsanTopBar(
+            title = "المشاهدة لاحقًا", style = com.example.designsystem.component.IhsanTopBarStyle.CompactSkyline,
+            onNavigateBack = onNavigateBack)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -118,110 +96,10 @@ fun SanhyaWatchLaterScreen(
 }
 
 @Composable
-private fun WatchLaterStoryCard(
-    story: QuranStory,
-    onClick: () -> Unit,
-    onRemoveClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(0.8.dp, IhsanTheme.colors.borderSubtle),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(width = 100.dp, height = 68.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(IhsanTheme.colors.surfaceMuted)
-            ) {
-                AsyncImage(
-                    model = story.coverUrl,
-                    contentDescription = story.title,
-                    modifier = Modifier
-                        .size(width = 100.dp, height = 68.dp)
-                        .clip(RoundedCornerShape(10.dp)),
-                    contentScale = ContentScale.Crop
-                )
-
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(28.dp)
-                        .clip(CircleShape)
-                        .background(Color.Black.copy(alpha = 0.5f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.PlayArrow,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
-
-                story.episodes.firstOrNull()?.durationLabel?.let { duration ->
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(2.dp)
-                            .clip(RoundedCornerShape(3.dp))
-                            .background(Color.Black.copy(alpha = 0.7f))
-                            .padding(horizontal = 4.dp, vertical = 1.dp)
-                    ) {
-                        Text(
-                            text = duration,
-                            color = Color.White,
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = story.title,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(2.dp))
-
-                Text(
-                    text = story.formattedSurahLabel,
-                    fontSize = 12.sp,
-                    color = IhsanTheme.colors.textSecondary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-
-            IconButton(onClick = onRemoveClick) {
-                Icon(
-                    imageVector = Icons.Default.WatchLater,
-                    contentDescription = "إزالة من القائمة",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(22.dp)
-                )
-            }
-        }
-    }
+private fun WatchLaterStoryCard(story: QuranStory, onClick: () -> Unit, onRemoveClick: () -> Unit) {
+    com.example.feature.learning.presentation.components.MediaCard(story.title, story.subtitle, story.coverUrl,
+        story.episodes.firstOrNull()?.durationLabel, false, onClick, onRemoveClick,
+        metadata = story.formattedSurahLabel, showFavorite = false, trailing = {
+            com.example.feature.learning.presentation.components.WatchLaterButton(true, onRemoveClick)
+        })
 }

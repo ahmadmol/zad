@@ -73,7 +73,7 @@ fun PrayerDetailsBottomSheet(
                             text = selectedPrayer.nameAr,
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
+                            color = IhsanTheme.colors.accentContent
                         )
                         Text(
                             text = if (selectedPrayer.isActive) "الصلاة القادمة" else "وقت الصلاة",
@@ -89,7 +89,7 @@ fun PrayerDetailsBottomSheet(
                         text = selectedPrayer.time,
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = IhsanTheme.colors.accentContent
                     )
                 }
 
@@ -162,7 +162,7 @@ fun PrayerDetailsBottomSheet(
                 TextButton(
                     onClick = onSettingsClick,
                     modifier = Modifier.fillMaxWidth()
-                ) {
+                , colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
                     Text("إعدادات طريقة الحساب", color = colors.textSecondary)
                 }
             }
@@ -175,7 +175,7 @@ fun CountdownSection(countdown: String) {
     val colors = IhsanTheme.colors
 
     Surface(
-        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
+        color = IhsanTheme.colors.accentContent.copy(alpha = 0.05f),
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -188,7 +188,7 @@ fun CountdownSection(countdown: String) {
                 text = countdown,
                 style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.primary
+                color = IhsanTheme.colors.accentContent
             )
         }
     }
@@ -225,13 +225,13 @@ fun PrayerItemRow(prayer: PrayerTime, isNext: Boolean) {
             Text(
                 text = prayer.nameAr,
                 fontWeight = if (isNext) FontWeight.Bold else FontWeight.Normal,
-                color = if (isNext) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                color = if (isNext) IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.onSurface
             )
         }
         Text(
             text = prayer.time,
             fontWeight = if (isNext) FontWeight.Bold else FontWeight.Normal,
-            color = if (isNext) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+            color = if (isNext) IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -257,7 +257,7 @@ fun NotificationSettings(
                 
                 Surface(
                     onClick = { onUpdatePrePrayer(mins) },
-                    color = if (isSelected) MaterialTheme.colorScheme.primary else colors.surfaceElevated,
+                    color = if (isSelected) IhsanTheme.colors.selectedContainer else colors.surfaceElevated,
                     border = androidx.compose.foundation.BorderStroke(
                         1.dp,
                         if (isSelected) MaterialTheme.colorScheme.primary else colors.borderSubtle
@@ -293,7 +293,7 @@ fun NotificationSettings(
                 
                 Surface(
                     onClick = { onUpdateIqamah(mins) },
-                    color = if (isSelected) MaterialTheme.colorScheme.primary else colors.surfaceElevated,
+                    color = if (isSelected) IhsanTheme.colors.selectedContainer else colors.surfaceElevated,
                     border = androidx.compose.foundation.BorderStroke(
                         1.dp,
                         if (isSelected) MaterialTheme.colorScheme.primary else colors.borderSubtle

@@ -7,71 +7,67 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Comment
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Handshake
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material.icons.filled.Weekend
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -80,10 +76,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.designsystem.component.IhsanHeroScrim
+import com.example.designsystem.component.IhsanHeroTopRow
+import com.example.designsystem.component.IhsanTextWithKaabaIcon
 import com.example.designsystem.theme.IhsanTheme
 import com.example.designsystem.theme.PrimaryTeal
 import com.example.feature.R
@@ -101,162 +99,13 @@ fun EhsanHeaderBanner(
     onNotificationClick: () -> Unit = {},
     onSearchClick: () -> Unit = {}
 ) {
-    val bannerShape = RoundedCornerShape(bottomStart = 48.dp, bottomEnd = 48.dp)
-    val activeCity = if (cityName.isNullOrBlank()) "حلب" else cityName
-    val activeDate = if (islamicDate.isNullOrBlank()) "١٢ ربيع الأول ١٤٤٨" else islamicDate
-    val headerDarkGreen = Color(0xFF073028)
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(bannerShape)
-    ) {
-        // Mosque sunrise landscape background image (Image 3)
-        Image(
-            painter = painterResource(id = R.drawable.ihsan_mosque_sunrise_landscape),
-            contentDescription = null,
-            modifier = Modifier.matchParentSize(),
-            contentScale = ContentScale.Crop
-        )
-
-        // Subtle gradient overlay for readability and color tone
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0x22073028),
-                            Color(0x10073028),
-                            Color(0x35073028)
-                        )
-                    )
-                )
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(horizontal = IhsanTheme.dimens.screenHorizontal)
-                .padding(top = 8.dp, bottom = 26.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Top Navigation & Control Bar (RTL: First child = Right, Second child = Left)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Right Location & Date Info (First child in RTL = Visual Right)
-                Column(horizontalAlignment = Alignment.Start) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        Text(
-                            text = activeCity,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = headerDarkGreen
-                        )
-                        Icon(
-                            imageVector = Icons.Default.LocationOn,
-                            contentDescription = null,
-                            tint = headerDarkGreen,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                    Text(
-                        text = activeDate,
-                        fontSize = 10.sp,
-                        color = headerDarkGreen.copy(alpha = 0.85f)
-                    )
-                }
-
-                // Left Control Buttons (Search & Notifications in RTL = Visual Left)
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = onSearchClick,
-                        modifier = Modifier
-                            .size(38.dp)
-                            .clip(CircleShape)
-                            .background(Color.White.copy(alpha = 0.85f))
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "بحث",
-                            tint = headerDarkGreen,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-
-                    IconButton(
-                        onClick = onNotificationClick,
-                        modifier = Modifier
-                            .size(38.dp)
-                            .clip(CircleShape)
-                            .background(Color.White.copy(alpha = 0.85f))
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = "التنبيهات",
-                            tint = headerDarkGreen,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Prominent Ihsan Logo with Kaaba replacing "مجتمع إحسان"
-            Image(
-                painter = painterResource(R.drawable.splash_ihsan_logo_transparent),
-                contentDescription = "إحسان",
-                modifier = Modifier.height(56.dp),
-                contentScale = ContentScale.Fit
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // "خير دائم" in prominent, suitable size
-            Text(
-                text = "خير دائم",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = headerDarkGreen,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            // Hero Subtitle
-            Text(
-                text = "معاً نصنع مجتمعاً أكثر تماسكاً\nفي مدينتنا الحبيبة $activeCity",
-                fontSize = 13.5.sp,
-                fontWeight = FontWeight.Medium,
-                color = headerDarkGreen.copy(alpha = 0.9f),
-                textAlign = TextAlign.Center,
-                lineHeight = 18.sp
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Sprout / Leaf icon badge
-            Box(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(headerDarkGreen.copy(alpha = 0.12f))
-                    .padding(horizontal = 8.dp, vertical = 2.dp)
-            ) {
-                Text(text = "🌱", fontSize = 14.sp)
-            }
-        }
-    }
+    com.example.designsystem.component.IhsanSkylineHeader(
+        title = "مجتمع إحسان", subtitle = stringResource(R.string.polish_community_hero),
+        location = cityName, hijriDate = islamicDate, showBrand = true, modifier = modifier,
+        actions = {
+            IconButton(onSearchClick, Modifier.size(36.dp)) { Icon(Icons.Default.Search, "بحث", modifier = Modifier.size(20.dp)) }
+            IconButton(onNotificationClick, Modifier.size(36.dp)) { Icon(Icons.Outlined.Notifications, "الإشعارات", modifier = Modifier.size(20.dp)) }
+        })
 }
 
 /**
@@ -271,21 +120,23 @@ fun EhsanSegmentedTabs(
     val isDark = IhsanTheme.isDark
     val darkTeal = PrimaryTeal
     val activeContainer = if (isDark) IhsanTheme.colors.selectedContainer else darkTeal
-    val activeContent = if (isDark) IhsanTheme.colors.selectedContent else Color.White
+    val activeContent = if (isDark) IhsanTheme.colors.selectedContent else IhsanTheme.colors.onBrand
     val inactiveContainer = if (isDark) IhsanTheme.colors.surfaceMuted else IhsanTheme.colors.surfaceWarm
     val inactiveContent = IhsanTheme.colors.textSecondary
 
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .height(IhsanTheme.dimens.controlHeight),
-        shape = RoundedCornerShape(26.dp),
+            .heightIn(min = 48.dp),
+        shape = RoundedCornerShape(20.dp),
         color = inactiveContainer,
         border = BorderStroke(0.5.dp, IhsanTheme.colors.borderSubtle)
     ) {
         Row(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .selectableGroup()
+                .height(androidx.compose.foundation.layout.IntrinsicSize.Min)
                 .padding(4.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
@@ -295,15 +146,17 @@ fun EhsanSegmentedTabs(
                 onClick = { onTypeSelected("OFFER") },
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxSize(),
+                    .heightIn(min = 36.dp)
+                    .fillMaxHeight()
+                    .semantics { role = Role.Tab; selected = selectedType == "OFFER" },
                 shape = RoundedCornerShape(22.dp),
                 color = if (isOffer) activeContainer else Color.Transparent,
-                shadowElevation = if (isOffer) 2.dp else 0.dp
+                shadowElevation = 0.dp
             ) {
-                Box(contentAlignment = Alignment.Center) {
+                Box(Modifier.padding(horizontal = 8.dp, vertical = 8.dp), contentAlignment = Alignment.Center) {
                     Text(
-                        text = "عروض تبرع",
-                        fontSize = 15.sp,
+                        text = stringResource(R.string.home_ehsan_offers_label),
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = if (isOffer) FontWeight.Bold else FontWeight.Medium,
                         color = if (isOffer) activeContent else inactiveContent
                     )
@@ -316,15 +169,17 @@ fun EhsanSegmentedTabs(
                 onClick = { onTypeSelected("REQUEST") },
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxSize(),
+                    .heightIn(min = 36.dp)
+                    .fillMaxHeight()
+                    .semantics { role = Role.Tab; selected = selectedType == "REQUEST" },
                 shape = RoundedCornerShape(22.dp),
                 color = if (isRequest) activeContainer else Color.Transparent,
-                shadowElevation = if (isRequest) 2.dp else 0.dp
+                shadowElevation = 0.dp
             ) {
-                Box(contentAlignment = Alignment.Center) {
+                Box(Modifier.padding(horizontal = 8.dp, vertical = 8.dp), contentAlignment = Alignment.Center) {
                     Text(
-                        text = "طلبات مساعدة",
-                        fontSize = 15.sp,
+                        text = stringResource(R.string.home_ehsan_requests_label),
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = if (isRequest) FontWeight.Bold else FontWeight.Medium,
                         color = if (isRequest) activeContent else inactiveContent
                     )
@@ -338,44 +193,11 @@ fun EhsanSegmentedTabs(
  * Rounded Search TextField matching reference
  */
 @Composable
-fun EhsanSearchField(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    cityName: String?,
-    modifier: Modifier = Modifier
-) {
-    OutlinedTextField(
-        value = query,
-        onValueChange = onQueryChange,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(IhsanTheme.dimens.controlHeight),
-        placeholder = {
-            Text(
-                text = "ابحث عن فرصة خيرية...",
-                fontSize = 13.sp,
-                color = IhsanTheme.colors.textSecondary
-            )
-        },
-        trailingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = null,
-                tint = IhsanTheme.colors.textSecondary,
-                modifier = Modifier.size(20.dp)
-            )
-        },
-        singleLine = true,
-        shape = RoundedCornerShape(24.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = IhsanTheme.colors.fieldContainer,
-            unfocusedContainerColor = IhsanTheme.colors.fieldContainer,
-            focusedBorderColor = IhsanTheme.colors.fieldFocusedBorder,
-            unfocusedBorderColor = IhsanTheme.colors.fieldBorder,
-            focusedTextColor = IhsanTheme.colors.textPrimary,
-            unfocusedTextColor = IhsanTheme.colors.textPrimary
-        )
-    )
+fun EhsanSearchField(query: String, onQueryChange: (String) -> Unit,
+    cityName: String?, modifier: Modifier = Modifier, onFilterClick: (() -> Unit)? = null) {
+    com.example.designsystem.component.IhsanSearchBar(modifier, query, onQueryChange,
+        placeholder = "ابحث عن فرصة خيرية${cityName?.let { " في $it" }.orEmpty()}...",
+        onFilterClick = onFilterClick)
 }
 
 /**
@@ -387,13 +209,17 @@ fun EhsanFilterRow(
     onSortChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val filterAllText = stringResource(R.string.polish_filter_all)
+    val filterLatestText = stringResource(R.string.polish_filter_latest)
+    val filterNearestText = stringResource(R.string.polish_filter_nearest)
+
     val isDark = IhsanTheme.isDark
     val darkTeal = PrimaryTeal
     val selectedBg = if (isDark) IhsanTheme.colors.selectedContainer else darkTeal
-    val selectedFg = if (isDark) IhsanTheme.colors.selectedContent else Color.White
+    val selectedFg = if (isDark) IhsanTheme.colors.selectedContent else IhsanTheme.colors.onBrand
 
     LazyRow(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 2.dp)
     ) {
@@ -401,12 +227,13 @@ fun EhsanFilterRow(
             val isSelected = selectedSort == "DEFAULT"
             Surface(
                 onClick = { onSortChange("DEFAULT") },
+                modifier = Modifier.semantics { selected = isSelected },
                 shape = RoundedCornerShape(20.dp),
                 color = if (isSelected) selectedBg else IhsanTheme.colors.surfaceMuted,
                 border = BorderStroke(1.dp, if (isSelected) selectedBg else IhsanTheme.colors.borderSubtle)
             ) {
                 Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    modifier = Modifier.heightIn(min = 36.dp).padding(horizontal = 12.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
@@ -417,8 +244,8 @@ fun EhsanFilterRow(
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = "الكل",
-                        fontSize = 13.sp,
+                        text = filterAllText,
+                        style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
                         color = if (isSelected) selectedFg else IhsanTheme.colors.textPrimary
                     )
@@ -430,12 +257,13 @@ fun EhsanFilterRow(
             val isSelected = selectedSort == "LATEST"
             Surface(
                 onClick = { onSortChange("LATEST") },
+                modifier = Modifier.semantics { selected = isSelected },
                 shape = RoundedCornerShape(20.dp),
                 color = if (isSelected) selectedBg else IhsanTheme.colors.surfaceMuted,
                 border = BorderStroke(1.dp, if (isSelected) selectedBg else IhsanTheme.colors.borderSubtle)
             ) {
                 Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    modifier = Modifier.heightIn(min = 36.dp).padding(horizontal = 12.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
@@ -446,8 +274,8 @@ fun EhsanFilterRow(
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = "الأحدث",
-                        fontSize = 13.sp,
+                        text = filterLatestText,
+                        style = MaterialTheme.typography.bodySmall,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                         color = if (isSelected) selectedFg else IhsanTheme.colors.textPrimary
                     )
@@ -455,34 +283,6 @@ fun EhsanFilterRow(
             }
         }
 
-        item {
-            val isSelected = selectedSort == "NEAREST"
-            Surface(
-                onClick = { onSortChange("NEAREST") },
-                shape = RoundedCornerShape(20.dp),
-                color = if (isSelected) selectedBg else IhsanTheme.colors.surfaceMuted,
-                border = BorderStroke(1.dp, if (isSelected) selectedBg else IhsanTheme.colors.borderSubtle)
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.LocationOn,
-                        contentDescription = null,
-                        tint = if (isSelected) selectedFg else IhsanTheme.colors.textSecondary,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        text = "الأقرب",
-                        fontSize = 13.sp,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                        color = if (isSelected) selectedFg else IhsanTheme.colors.textPrimary
-                    )
-                }
-            }
-        }
 
     }
 }
@@ -490,6 +290,7 @@ fun EhsanFilterRow(
 /**
  * Detailed Donation Card item matching reference
  */
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun DonationCardItem(
     donation: Donation,
@@ -498,228 +299,63 @@ fun DonationCardItem(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val isDark = IhsanTheme.isDark
-    val darkTeal = PrimaryTeal
     val isOffer = donation.type == "OFFER"
-
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(22.dp),
-        color = IhsanTheme.colors.surfaceElevated,
-        border = BorderStroke(0.75.dp, IhsanTheme.colors.borderSubtle),
-        shadowElevation = if (isDark) 0.dp else 2.dp
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(14.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Left Content Section (Title, Badge, Metadata, Action Buttons)
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 14.dp)
-            ) {
-                // Top Tag Badge
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = if (isOffer) IhsanTheme.colors.charityOfferContainer else IhsanTheme.colors.charityRequestContainer
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Icon(
-                            imageVector = if (isOffer) Icons.Default.CardGiftcard else Icons.Default.Handshake,
-                            contentDescription = null,
-                            tint = if (isOffer) IhsanTheme.colors.charityOffer else IhsanTheme.colors.charityRequest,
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Text(
-                            text = if (isOffer) "عرض تبرع" else "طلب مساعدة",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (isOffer) IhsanTheme.colors.charityOffer else IhsanTheme.colors.charityRequest
-                        )
+    val badgeColor = if (isOffer) IhsanTheme.colors.charityOffer else IhsanTheme.colors.charityRequest
+    Surface(onClick, modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp),
+        color = IhsanTheme.colors.surfaceElevated, border = BorderStroke(.5.dp, IhsanTheme.colors.borderSubtle)) {
+        Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min).padding(10.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            // First child is on the right in RTL and takes 30 percent of the available width.
+            Surface(Modifier.weight(.30f).fillMaxHeight().heightIn(min = 136.dp),
+                shape = RoundedCornerShape(12.dp), color = IhsanTheme.colors.surfaceMuted) {
+                Box(contentAlignment = Alignment.Center) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(8.dp)) {
+                    Icon(when (donation.category) {
+                        "طعام", "غذاء" -> Icons.Default.Restaurant
+                        "ملابس" -> Icons.Default.Checkroom
+                        "أثاث" -> Icons.Default.Weekend
+                        else -> Icons.Default.Category
+                    }, "صورة توضيحية للفئة", tint = IhsanTheme.colors.textSecondary, modifier = Modifier.size(28.dp))
+                    if (imageModel == null) Text("صورة توضيحية", style = MaterialTheme.typography.labelSmall,
+                        textAlign = TextAlign.Center, color = IhsanTheme.colors.textSecondary)
                     }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Title
-                Text(
-                    text = donation.title,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = IhsanTheme.colors.textPrimary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                // Description
-                if (donation.description.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(3.dp))
-                    Text(
-                        text = donation.description,
-                        fontSize = 12.sp,
-                        color = IhsanTheme.colors.textSecondary,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        lineHeight = 16.sp
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Metadata (Location + Time ago)
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    if (donation.location.isNotBlank()) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(2.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.LocationOn,
-                                contentDescription = null,
-                                tint = IhsanTheme.colors.textSecondary,
-                                modifier = Modifier.size(13.dp)
-                            )
-                            Text(
-                                text = donation.location,
-                                fontSize = 11.sp,
-                                color = IhsanTheme.colors.textSecondary
-                            )
-                        }
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AccessTime,
-                            contentDescription = null,
-                            tint = IhsanTheme.colors.textSecondary,
-                            modifier = Modifier.size(13.dp)
-                        )
-                        Text(
-                            text = truthfulRelativeTime(donation.createdAt),
-                            fontSize = 11.sp,
-                            color = IhsanTheme.colors.textSecondary
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                // Action Buttons Row (عرض التفاصيل + تواصل)
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // View Details Button
-                    Surface(
-                        onClick = onClick,
-                        modifier = Modifier.defaultMinSize(minHeight = IhsanTheme.dimens.minTouchTarget),
-                        shape = RoundedCornerShape(14.dp),
-                        color = IhsanTheme.colors.surfaceMint,
-                        border = BorderStroke(0.5.dp, IhsanTheme.colors.borderSubtle)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Text(
-                                text = "عرض التفاصيل",
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isDark) IhsanTheme.colors.selectedContent else darkTeal
-                            )
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                                contentDescription = null,
-                                tint = if (isDark) IhsanTheme.colors.selectedContent else darkTeal,
-                                modifier = Modifier.size(14.dp)
-                            )
-                        }
-                    }
-
-                    if (donation.phoneNumber.isNotBlank()) {
-                        Surface(
-                            onClick = {
-                                val dialIntent = Intent(
-                                    Intent.ACTION_DIAL,
-                                    Uri.parse("tel:${Uri.encode(donation.phoneNumber.trim())}")
-                                )
-                                runCatching { context.startActivity(dialIntent) }
-                            },
-                            modifier = Modifier.defaultMinSize(minHeight = IhsanTheme.dimens.minTouchTarget),
-                            shape = RoundedCornerShape(14.dp),
-                            color = IhsanTheme.colors.surfaceMuted,
-                            border = BorderStroke(0.5.dp, IhsanTheme.colors.borderSubtle)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Text(
-                                    text = "تواصل",
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    color = IhsanTheme.colors.textPrimary
-                                )
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.Comment,
-                                    contentDescription = null,
-                                    tint = IhsanTheme.colors.textPrimary,
-                                    modifier = Modifier.size(13.dp)
-                                )
-                            }
-                        }
-                    }
+                    if (imageModel != null) AsyncImage(imageModel, null, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Fit)
                 }
             }
-
-            // Right Thumbnail Section
-            Surface(
-                modifier = Modifier
-                    .width(112.dp)
-                    .height(132.dp)
-                    .clip(RoundedCornerShape(16.dp)),
-                color = IhsanTheme.colors.surfaceMuted
-            ) {
-                if (imageModel != null) {
-                    AsyncImage(
-                        model = imageModel,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = when (donation.category) {
-                                "طعام" -> Icons.Default.Restaurant
-                                "ملابس" -> Icons.Default.Checkroom
-                                "أثاث" -> Icons.Default.Weekend
-                                else -> Icons.Default.Category
-                            },
-                            contentDescription = null,
-                            modifier = Modifier.size(32.dp),
-                            tint = IhsanTheme.colors.textSecondary
-                        )
+            Column(Modifier.weight(.70f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Surface(shape = RoundedCornerShape(12.dp),
+                    color = if (isOffer) IhsanTheme.colors.charityOfferContainer else IhsanTheme.colors.charityRequestContainer) {
+                    Row(Modifier.padding(horizontal = 8.dp, vertical = 3.dp), verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Icon(if (isOffer) Icons.Default.CardGiftcard else Icons.Default.Handshake, null, tint = badgeColor, modifier = Modifier.size(14.dp))
+                        Text(stringResource(if (isOffer) R.string.polish_offer_badge else R.string.ehsan_request_label),
+                            style = MaterialTheme.typography.labelSmall, color = badgeColor)
+                    }
+                }
+                Text(donation.title, style = MaterialTheme.typography.titleMedium.copy(fontSize = 16.sp, lineHeight = 22.sp), color = IhsanTheme.colors.textPrimary)
+                if (donation.description.isNotBlank()) Text(donation.description, style = MaterialTheme.typography.bodySmall,
+                    color = IhsanTheme.colors.textSecondary, maxLines = 3, overflow = TextOverflow.Ellipsis)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    if (donation.location.isNotBlank()) Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.LocationOn, null, modifier = Modifier.size(12.dp), tint = IhsanTheme.colors.textSecondary)
+                        Text(donation.location, style = MaterialTheme.typography.labelSmall, color = IhsanTheme.colors.textSecondary)
+                    }
+                    Text(localizedPublicationDate(donation.createdAt), style = MaterialTheme.typography.labelSmall,
+                        color = IhsanTheme.colors.textSecondary)
+                }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    OutlinedButton(onClick, shape = RoundedCornerShape(12.dp), contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp), modifier = Modifier.weight(1f), colors = com.example.designsystem.theme.ihsanOutlinedButtonColors()) {
+                        Text(stringResource(R.string.polish_view_details), style = MaterialTheme.typography.labelSmall)
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, modifier = Modifier.size(14.dp))
+                    }
+                    if (donation.phoneNumber.isNotBlank()) OutlinedButton(shape = RoundedCornerShape(12.dp), onClick = {
+                        val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${Uri.encode(donation.phoneNumber.trim())}"))
+                        runCatching { context.startActivity(dialIntent) }
+                    }, contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp), modifier = Modifier.weight(1f), colors = com.example.designsystem.theme.ihsanOutlinedButtonColors()) {
+                        Text(stringResource(R.string.polish_contact), style = MaterialTheme.typography.labelSmall)
+                        Spacer(Modifier.width(3.dp))
+                        Icon(Icons.AutoMirrored.Filled.Comment, null, modifier = Modifier.size(14.dp))
                     }
                 }
             }
@@ -736,40 +372,14 @@ fun AddEhsanFab(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val label = if (type == "REQUEST") "طلب مساعدة" else "إضافة عرض"
-    val isDark = IhsanTheme.isDark
-    val darkTeal = PrimaryTeal
-    val fabBg = if (isDark) IhsanTheme.colors.selectedContainer else darkTeal
-    val fabFg = if (isDark) IhsanTheme.colors.selectedContent else Color.White
-
-    Surface(
-        onClick = onClick,
-        modifier = modifier,
-        shape = RoundedCornerShape(28.dp),
-        color = fabBg,
-        shadowElevation = if (isDark) 2.dp else 8.dp
-    ) {
-        Column(
-            modifier = Modifier
-                .defaultMinSize(minWidth = 92.dp, minHeight = 72.dp)
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                imageVector = if (type == "REQUEST") Icons.Default.Favorite else Icons.Default.Add,
-                contentDescription = label,
-                tint = fabFg,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.height(2.dp))
-            if (type != "REQUEST") Text(text = "🌱", fontSize = 10.sp)
-            Text(
-                text = label,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                color = fabFg
-            )
+    val label = stringResource(if (type == "REQUEST") R.string.polish_request_action else R.string.polish_offer_action)
+    Surface(onClick = onClick, modifier = modifier.width(72.dp).heightIn(min = 72.dp),
+        shape = CircleShape, color = IhsanTheme.colors.selectedContainer,
+        contentColor = IhsanTheme.colors.selectedContent, shadowElevation = 2.dp) {
+        Column(Modifier.padding(6.dp), horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center) {
+            Icon(if (type == "REQUEST") Icons.Default.Favorite else Icons.Default.Add, null, modifier = Modifier.size(24.dp))
+            Text(label, style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center)
         }
     }
 }
@@ -777,47 +387,11 @@ fun AddEhsanFab(
 /** Local board notice card preserved for safety */
 @Composable
 fun LocalBoardNoticeCard(modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = IhsanTheme.colors.surfaceWarm),
-        border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle.copy(alpha = 0.65f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(14.dp),
-            verticalAlignment = Alignment.Top
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(42.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(IhsanTheme.colors.surfaceMint),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Shield,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(22.dp)
-                )
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "لوحة إحسان المحلية",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = "القوائم محفوظة على جهازك فقط. لا يوجد تحقق رسمي من الحالات، ولا مدفوعات داخل التطبيق.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = IhsanTheme.colors.textSecondaryMuted,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
-        }
+    Row(modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        Icon(Icons.Default.Shield, null, tint = IhsanTheme.colors.textSecondary, modifier = Modifier.size(16.dp))
+        Text(stringResource(R.string.polish_local_board_body), style = MaterialTheme.typography.labelSmall,
+            color = IhsanTheme.colors.textSecondary, modifier = Modifier.weight(1f))
     }
 }
 
@@ -827,6 +401,8 @@ fun EhsanEmptyContent(
     hasActiveFilters: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val charityEmptyText = stringResource(R.string.polish_charity_empty)
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -836,15 +412,15 @@ fun EhsanEmptyContent(
         Icon(
             imageVector = Icons.Default.SearchOff,
             contentDescription = null,
-            tint = Color(0xFF8A9593),
+            tint = IhsanTheme.colors.textSecondary,
             modifier = Modifier.size(48.dp)
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "لا توجد فرص إحسان متاحة حالياً",
-            fontSize = 15.sp,
+            text = charityEmptyText,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = PrimaryTeal,
+            color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else IhsanTheme.colors.accentContent,
             textAlign = TextAlign.Center
         )
     }
@@ -855,28 +431,30 @@ fun AddEhsanButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val addCharityText = stringResource(R.string.polish_add_charity)
+
     Button(
         onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = PrimaryTeal)
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary)
     ) {
         Icon(imageVector = Icons.Default.Add, contentDescription = null)
         Spacer(modifier = Modifier.width(8.dp))
-        Text("إضافة إحسان", fontWeight = FontWeight.Bold)
+        Text(addCharityText, fontWeight = FontWeight.Bold)
     }
 }
 
 val EhsanCategoryFilterOptions = listOf("الكل", "طعام", "ملابس", "أثاث", "أخرى")
 
-private fun truthfulRelativeTime(createdAt: Long): String {
-    val now = System.currentTimeMillis()
-    if (createdAt <= 0L || createdAt > now + DateUtils.MINUTE_IN_MILLIS) {
-        return "وقت النشر غير متاح"
+@Composable
+private fun localizedPublicationDate(createdAt: Long): String {
+    if (createdAt <= 0L || createdAt > System.currentTimeMillis() + DateUtils.MINUTE_IN_MILLIS) {
+        return stringResource(R.string.polish_publication_unavailable)
     }
-    return DateUtils.getRelativeTimeSpanString(
-        createdAt,
-        now,
-        DateUtils.MINUTE_IN_MILLIS
-    ).toString()
+    val locale = if (androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl) {
+        java.util.Locale.forLanguageTag("ar")
+    } else androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
+    return java.time.format.DateTimeFormatter.ofPattern("d MMMM yyyy", locale)
+        .format(java.time.Instant.ofEpochMilli(createdAt).atZone(java.time.ZoneId.systemDefault()))
 }

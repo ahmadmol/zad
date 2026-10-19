@@ -1,0 +1,11 @@
+<resources>
+    <string name="correction_countdown">يتبقى %1$s</string>
+    <string name="correction_journey_title">مسيرتك اليوم</string>
+    <string name="correction_journey_subtitle">خطوات صغيرة تصنع أثرًا كبيرًا</string>
+    <string name="correction_view_all">عرض الكل</string>
+    <string name="correction_quran_portion">الورد القرآني</string>
+    <string name="correction_community_title">إحسان في مجتمعك</string>
+    <string name="correction_services_title">اكتشف الخدمات</string>
+    <string name="correction_ihsan_tagline">يدًا بيد لنشر الخير</string>
+    <string name="correction_daily_title">نشاطاتي اليومية</string>
+</resources>

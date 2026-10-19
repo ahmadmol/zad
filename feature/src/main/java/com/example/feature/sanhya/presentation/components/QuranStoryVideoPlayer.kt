@@ -2,7 +2,7 @@ package com.example.feature.sanhya.presentation.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.feature.learning.presentation.components.IhsanYouTubePlayer
+import com.example.feature.learning.presentation.components.VideoHero
 
 @Composable
 fun QuranStoryVideoPlayer(
@@ -13,9 +13,9 @@ fun QuranStoryVideoPlayer(
     isOnline: Boolean = true,
     isEmbeddable: Boolean = false,
     onOpenExternalYouTube: () -> Unit = {}
-) = IhsanYouTubePlayer(
+) = VideoHero(
     videoId = videoId,
-    thumbnailUrl = coverUrl,
+    image = coverUrl,
     isOnline = isOnline,
     isEmbeddable = isEmbeddable,
     modifier = modifier,

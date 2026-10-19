@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
+import com.example.designsystem.theme.IhsanTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -31,7 +32,7 @@ fun TafsirBottomSheet(
                 text = "$surahName - آية ${verse.verseNumber}",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
+                color = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
@@ -62,7 +63,7 @@ fun TafsirBottomSheet(
             Spacer(modifier = Modifier.height(8.dp))
             
             Text(
-                text = verse.tafsir ?: "لا يتوفر تفسير لهذه الآية ضمن المحتوى المحلي الحالي.",
+                text = verse.tafsir ?: "التفسير غير متاح في هذه النسخة: يلزم مصدر موثق وترخيص قبل عرضه.",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     lineHeight = 28.sp,
                     textAlign = TextAlign.Justify

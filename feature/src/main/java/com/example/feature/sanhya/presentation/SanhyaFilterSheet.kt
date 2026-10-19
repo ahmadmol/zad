@@ -62,10 +62,9 @@ fun SanhyaFilterSheet(
     var selectedEpisodeFilter by remember { mutableStateOf(filterState.selectedEpisodeFilter) }
     var sortOption by remember { mutableStateOf(filterState.sortOption) }
 
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
+    com.example.designsystem.component.IhsanFilterSheet(
+        onDismiss = onDismiss,
         sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surface,
         modifier = modifier
     ) {
         Column(
@@ -96,7 +95,7 @@ fun SanhyaFilterSheet(
                     text = "تصفية القصص",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = IhsanTheme.colors.accentContent
                 )
 
                 Spacer(modifier = Modifier.width(32.dp))
@@ -109,7 +108,7 @@ fun SanhyaFilterSheet(
                 text = "التصنيفات",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = IhsanTheme.colors.accentContent
             )
             Spacer(modifier = Modifier.height(10.dp))
             FlowRow(
@@ -133,7 +132,7 @@ fun SanhyaFilterSheet(
                 text = "عدد الحلقات",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = IhsanTheme.colors.accentContent
             )
             Spacer(modifier = Modifier.height(10.dp))
             FlowRow(
@@ -157,7 +156,7 @@ fun SanhyaFilterSheet(
                 text = "ترتيب العرض",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = IhsanTheme.colors.accentContent
             )
             Spacer(modifier = Modifier.height(8.dp))
             StorySortOption.entries.forEach { option ->
@@ -203,10 +202,10 @@ fun SanhyaFilterSheet(
                     border = ButtonDefaults.outlinedButtonBorder.copy(
                         brush = SolidColor(IhsanTheme.colors.borderSubtle)
                     )
-                ) {
+                , colors = com.example.designsystem.theme.ihsanOutlinedButtonColors()) {
                     Text(
                         text = "إعادة التعيين",
-                        color = MaterialTheme.colorScheme.primary,
+                        color = IhsanTheme.colors.accentContent,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
                     )

@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.SettingsBrightness
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -45,6 +46,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.designsystem.component.IhsanTopBar
+import com.example.designsystem.component.IhsanTopBarStyle
 import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
 import com.example.feature.azkar.data.local.SettingsManager.ThemeMode
@@ -64,6 +67,10 @@ fun SettingsScreen(
 
     var showFontSizeSlider by remember { mutableStateOf(false) }
     var showCitySheet by remember { mutableStateOf(false) }
+    val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        onAction(SettingsAction.SetMorningReminder(granted))
+        if (!granted) com.example.feature.core.notification.UserMessageNotifier.notify(context, "لم يُمنح إذن الإشعارات؛ التذكيرات غير مفعلة")
+    }
 
     val soundPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -89,97 +96,18 @@ fun SettingsScreen(
             .fillMaxSize()
             .background(IhsanTheme.colors.surfaceBase)
     ) {
-        // 1. Hero Header (Nusuk / Home skyline family)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ihsan_home_hero_background),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                alignment = Alignment.Center,
-                modifier = Modifier.matchParentSize()
-            )
-
-            if (isDark) {
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(Color.Black.copy(alpha = 0.55f))
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .statusBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
-            ) {
-                // Navigation Top Bar
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = onBack,
-                        modifier = Modifier
-                            .size(48.dp)
-                            .semantics {
-                                role = Role.Button
-                                contentDescription = backCd
-                            }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = backCd,
-                            tint = darkTealColor
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Text(
-                        text = stringResource(R.string.settings_title),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = darkTealColor
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Hero Subtitle Banner
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 8.dp, bottom = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ihsan_brand_mark),
-                        contentDescription = null,
-                        modifier = Modifier.size(28.dp)
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Column {
-                        Text(
-                            text = stringResource(R.string.settings_subtitle),
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = darkTealSubtext
-                        )
-                    }
-                }
-            }
-        }
+        // 1. Hero Header
+        IhsanTopBar(
+            title = stringResource(R.string.settings_title),
+            subtitle = stringResource(R.string.settings_subtitle),
+            style = IhsanTopBarStyle.Hero, backgroundImageRes = com.example.feature.R.drawable.ihsan_home_hero_background,
+            onNavigateBack = onBack
+        )
 
         // 2. Main Scrollable Content Overlay
         Surface(
             modifier = Modifier
-                .fillMaxSize()
-                .offset(y = (-16).dp),
+                .fillMaxSize(),
             color = IhsanTheme.colors.surfaceBase,
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
@@ -195,8 +123,8 @@ fun SettingsScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp, vertical = 20.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     // --- SECTION 1: المظهر ---
                     SettingsSection(title = stringResource(R.string.settings_section_appearance)) {
@@ -221,7 +149,7 @@ fun SettingsScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .background(IhsanTheme.colors.surfaceMuted)
-                                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                                        .padding(horizontal = 16.dp, vertical = 10.dp)
                                 ) {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
@@ -313,7 +241,12 @@ fun SettingsScreen(
                                 title = stringResource(R.string.settings_reminders_title),
                                 subtitle = stringResource(R.string.settings_reminders_subtitle),
                                 checked = uiState.morningReminderEnabled,
-                                onCheckedChange = { onAction(SettingsAction.SetMorningReminder(it)) }
+                                onCheckedChange = { enabled ->
+                                    if (enabled && Build.VERSION.SDK_INT >= 33 &&
+                                        androidx.core.content.ContextCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                                        notificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                                    } else onAction(SettingsAction.SetMorningReminder(enabled))
+                                }
                             )
                         }
                     }
@@ -348,7 +281,7 @@ fun SettingsScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
@@ -369,32 +302,17 @@ fun SettingsScreen(
 
 @Composable
 private fun ThemeModeRow(selected: ThemeMode, onSelected: (ThemeMode) -> Unit) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.DarkMode, contentDescription = null, tint = IhsanTheme.colors.selectedContent)
-            Spacer(Modifier.width(12.dp))
-            Text(
-                text = stringResource(R.string.theme_mode_label),
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                color = IhsanTheme.colors.textPrimary
-            )
+    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(Icons.Default.DarkMode, null, tint = if (IhsanTheme.isDark) IhsanTheme.colors.textSecondary else IhsanTheme.colors.accentContent, modifier = Modifier.size(22.dp))
+        Text("الوضع الداكن", Modifier.weight(1f).padding(horizontal = 10.dp), style = MaterialTheme.typography.bodyMedium,
+            color = IhsanTheme.colors.textPrimary)
+        IconButton(onClick = { onSelected(ThemeMode.SYSTEM) }, modifier = Modifier.size(36.dp)) {
+            Icon(Icons.Default.SettingsBrightness, "اتباع مظهر النظام", tint = IhsanTheme.colors.textSecondary, modifier = Modifier.size(18.dp))
         }
-        Spacer(Modifier.height(12.dp))
-        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-            val choices = listOf(
-                ThemeMode.SYSTEM to R.string.theme_system,
-                ThemeMode.LIGHT to R.string.theme_light,
-                ThemeMode.DARK to R.string.theme_dark
-            )
-            choices.forEachIndexed { index, (mode, label) ->
-                SegmentedButton(
-                    selected = selected == mode,
-                    onClick = { onSelected(mode) },
-                    shape = SegmentedButtonDefaults.itemShape(index, choices.size),
-                    modifier = Modifier.heightIn(min = 48.dp)
-                ) { Text(stringResource(label)) }
-            }
-        }
+        Switch(checked = if (selected == ThemeMode.SYSTEM) IhsanTheme.isDark else selected == ThemeMode.DARK,
+            onCheckedChange = { onSelected(if (it) ThemeMode.DARK else ThemeMode.LIGHT) },
+            colors = SwitchDefaults.colors(checkedTrackColor = MaterialTheme.colorScheme.primary,
+                checkedThumbColor = MaterialTheme.colorScheme.onPrimary))
     }
 }
 
@@ -444,15 +362,15 @@ private fun SettingsClickableRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 56.dp)
+            .heightIn(min = 48.dp)
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Tonal Icon Halo
         Box(
             modifier = Modifier
-                .size(40.dp)
+                .size(30.dp)
                 .clip(CircleShape)
                 .background(IhsanTheme.colors.surfaceMuted),
             contentAlignment = Alignment.Center
@@ -460,7 +378,7 @@ private fun SettingsClickableRow(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = IhsanTheme.colors.selectedContent,
+                tint = if (IhsanTheme.isDark) IhsanTheme.colors.textSecondary else IhsanTheme.colors.accentContent,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -470,14 +388,14 @@ private fun SettingsClickableRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                 color = IhsanTheme.colors.textPrimary
             )
             if (!subtitle.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = IhsanTheme.colors.textSecondary
                 )
             }
@@ -503,14 +421,14 @@ private fun SettingsSwitchRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 56.dp)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .heightIn(min = 48.dp)
+            .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Tonal Icon Halo
         Box(
             modifier = Modifier
-                .size(40.dp)
+                .size(30.dp)
                 .clip(CircleShape)
                 .background(IhsanTheme.colors.surfaceMuted),
             contentAlignment = Alignment.Center
@@ -518,7 +436,7 @@ private fun SettingsSwitchRow(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = IhsanTheme.colors.selectedContent,
+                tint = if (IhsanTheme.isDark) IhsanTheme.colors.textSecondary else IhsanTheme.colors.accentContent,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -528,14 +446,14 @@ private fun SettingsSwitchRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                 color = IhsanTheme.colors.textPrimary
             )
             if (!subtitle.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = IhsanTheme.colors.textSecondary
                 )
             }
@@ -545,10 +463,14 @@ private fun SettingsSwitchRow(
             checked = checked,
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
-                checkedThumbColor = Color.White,
-                checkedTrackColor = IhsanTheme.colors.selectedContainer,
+                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                checkedTrackColor = MaterialTheme.colorScheme.primary,
                 uncheckedThumbColor = IhsanTheme.colors.textSecondary,
-                uncheckedTrackColor = IhsanTheme.colors.surfaceMuted
+                uncheckedTrackColor = IhsanTheme.colors.surfaceMuted,
+                disabledCheckedThumbColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.38f),
+                disabledCheckedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                disabledUncheckedThumbColor = IhsanTheme.colors.textSecondary.copy(alpha = 0.38f),
+                disabledUncheckedTrackColor = IhsanTheme.colors.surfaceMuted.copy(alpha = 0.12f)
             )
         )
     }

@@ -40,7 +40,7 @@ fun IhsanPlusVerificationChecklist(
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = IhsanTheme.colors.accentContent,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(IhsanTheme.spacing.small))

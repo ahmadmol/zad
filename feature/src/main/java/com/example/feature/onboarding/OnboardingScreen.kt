@@ -1,5 +1,7 @@
 package com.example.feature.onboarding
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -8,6 +10,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -31,8 +36,6 @@ import org.koin.compose.koinInject
 
 private val DeepTeal = Color(0xFF0F5247)
 private val LightCream = Color(0xFFF7F9F8)
-private val DarkSurface = Color(0xFF141D1B)
-private val DarkCardBackground = Color(0xFF1F2A28)
 
 private data class OnboardingFeatureItem(
     val title: String,
@@ -54,12 +57,12 @@ fun OnboardingScreen(
 ) {
     val pagerState = rememberPagerState(pageCount = { 3 })
     val scope = rememberCoroutineScope()
-    val isDark = isSystemInDarkTheme()
+    val isDark = com.example.designsystem.theme.IhsanTheme.isDark
 
     val pages = listOf(
         OnboardingPageData(
-            title = "عبادتك اليومية",
-            subtitle = "تتبع صلواتك، واقرأ القرآن، واذكر الله بسهولة",
+            title = "قربك من الله",
+            subtitle = "كل ما تحتاجه في رحلة إيمانك اليومية",
             heroBgRes = R.drawable.ihsan_onboarding_prayer_quran,
             features = listOf(
                 OnboardingFeatureItem(
@@ -143,157 +146,51 @@ fun OnboardingScreen(
     }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(if (isDark) DarkSurface else LightCream)
-        ) {
-            // Header skyline area
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ihsan_onboarding_header),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-
-                if (isDark) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.35f))
-                    )
-                }
-
-                // Top Skip button
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .statusBarsPadding()
-                        .padding(horizontal = 20.dp, vertical = 12.dp),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextButton(
-                        onClick = { finishOnboarding() }
-                    ) {
-                        Text(
-                            text = "تخطي",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (isDark) Color.White else DeepTeal
-                        )
+        Column(Modifier.fillMaxSize().background(if (isDark) com.example.designsystem.theme.IhsanTheme.colors.surfaceBase else LightCream).statusBarsPadding().navigationBarsPadding()) {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                Button(onClick = { if (pagerState.currentPage < 2) scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) } else finishOnboarding() },
+                    colors = ButtonDefaults.buttonColors(containerColor = if (isDark) MaterialTheme.colorScheme.primary else DeepTeal, contentColor = if (isDark) MaterialTheme.colorScheme.onPrimary else Color.White)) { Text("التالي", fontSize = 14.sp) }
+                TextButton(onClick = { finishOnboarding() }, colors = com.example.designsystem.theme.ihsanTextButtonColors()) { Text("تخطي", color = if (isDark) com.example.designsystem.theme.IhsanTheme.colors.textPrimary else DeepTeal, fontSize = 14.sp) }
+            }
+            HorizontalPager(state = pagerState, modifier = Modifier.weight(1f).fillMaxWidth()) { page ->
+                Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Image(painterResource(pages[page].heroBgRes), null, Modifier.fillMaxWidth().heightIn(max = 340.dp).aspectRatio(1.05f), contentScale = ContentScale.Fit)
+                    Text(pages[page].title, fontSize = 25.sp, lineHeight = 34.sp, fontWeight = FontWeight.Bold,
+                        color = if (isDark) com.example.designsystem.theme.IhsanTheme.colors.textPrimary else DeepTeal, textAlign = TextAlign.Center)
+                    Text(pages[page].subtitle, fontSize = 14.sp, lineHeight = 22.sp, color = if (isDark) com.example.designsystem.theme.IhsanTheme.colors.textBody else DeepTeal,
+                        textAlign = TextAlign.Center, modifier = Modifier.padding(top = 4.dp))
+                    Row(Modifier.padding(vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        repeat(3) { index -> Box(Modifier.size(7.dp).background(if(index == page) (if (isDark) com.example.designsystem.theme.IhsanTheme.colors.accentContent else DeepTeal) else (if (isDark) com.example.designsystem.theme.IhsanTheme.colors.borderSubtle else Color(0xFFDCE6E1)), CircleShape)) }
+                    }
+                    val tiles = if (page == 0) listOf("مواقيت الصلاة" to R.drawable.ihsan_icon_prayer, "القرآن الكريم" to R.drawable.ic_search_quran,
+                        "الأذكار" to R.drawable.ic_search_azkar, "التسبيح" to R.drawable.ic_search_tasbih,
+                        "الأدعية" to R.drawable.ic_search_dua, "إحسان" to R.drawable.ic_search_ehsan)
+                        else pages[page].features.map { it.title to it.iconRes }
+                    tiles.chunked(3).forEach { row ->
+                        Row(Modifier.fillMaxWidth().padding(bottom = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            row.forEach { (title, icon) -> Surface(Modifier.weight(1f), shape = RoundedCornerShape(12.dp),
+                                color = if (isDark) com.example.designsystem.theme.IhsanTheme.colors.surfaceElevated else Color(0xFFE9F1EC)) {
+                                Column(Modifier.padding(horizontal = 4.dp, vertical = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Icon(when (icon) {
+                                        R.drawable.ic_search_quran -> Icons.AutoMirrored.Filled.MenuBook
+                                        R.drawable.ic_search_azkar -> Icons.Default.Eco
+                                        R.drawable.ic_search_tasbih -> Icons.Default.TouchApp
+                                        R.drawable.ic_search_dua -> Icons.Default.VolunteerActivism
+                                        R.drawable.ic_search_ehsan -> Icons.Default.Favorite
+                                        else -> Icons.Default.Mosque
+                                    }, null, Modifier.size(24.dp), tint = if (isDark) com.example.designsystem.theme.IhsanTheme.colors.textSecondary else DeepTeal)
+                                    Text(title, fontSize = 11.sp, lineHeight = 16.sp, color = if (isDark) com.example.designsystem.theme.IhsanTheme.colors.textPrimary else DeepTeal,
+                                        textAlign = TextAlign.Center, modifier = Modifier.padding(top = 6.dp))
+                                }
+                            } }
+                        }
                     }
                 }
-
-                // Header Title inside skyline
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 16.dp, start = 24.dp, end = 24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "مرحباً بك في إحسان",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = if (isDark) Color.White else DeepTeal,
-                        textAlign = TextAlign.Center
-                    )
-                    Text(
-                        text = "تطبيق إسلامي شامل لحياة أكثر قرباً من الله",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = if (isDark) Color.White.copy(alpha = 0.85f) else DeepTeal.copy(alpha = 0.85f),
-                        textAlign = TextAlign.Center
-                    )
-                }
             }
-
-            // Pager for Onboarding Pages
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-            ) { pageIndex ->
-                OnboardingPageContent(
-                    page = pages[pageIndex],
-                    isDark = isDark
-                )
-            }
-
-            // Bottom Navigation & Actions Bar
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
-                    .padding(horizontal = 24.dp, vertical = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Page Indicator Dots
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                ) {
-                    repeat(3) { index ->
-                        val isSelected = pagerState.currentPage == index
-                        val color = if (isSelected) {
-                            if (isDark) Color(0xFF80CBC4) else DeepTeal
-                        } else {
-                            if (isDark) Color.White.copy(alpha = 0.25f) else Color.Gray.copy(alpha = 0.3f)
-                        }
-                        Box(
-                            modifier = Modifier
-                                .width(if (isSelected) 24.dp else 8.dp)
-                                .height(8.dp)
-                                .clip(CircleShape)
-                                .background(color)
-                        )
-                    }
-                }
-
-                // Action Button (Next / Start)
-                Button(
-                    onClick = {
-                        if (pagerState.currentPage < 2) {
-                            scope.launch {
-                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                            }
-                        } else {
-                            finishOnboarding()
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(54.dp),
-                    shape = RoundedCornerShape(27.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isDark) Color(0xFF00695C) else DeepTeal,
-                        contentColor = Color.White
-                    )
-                ) {
-                    Text(
-                        text = if (pagerState.currentPage == 2) "ابدأ الآن" else "التالي",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "لنجعل كل يوم أفضل",
-                    fontSize = 12.sp,
-                    color = if (isDark) Color.White.copy(alpha = 0.6f) else Color.Gray,
-                    textAlign = TextAlign.Center
-                )
-            }
+            Button(onClick = { finishOnboarding() }, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).height(48.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = if (isDark) MaterialTheme.colorScheme.primary else DeepTeal, contentColor = if (isDark) MaterialTheme.colorScheme.onPrimary else Color.White)) { Text("ابدأ الآن", fontSize = 17.sp) }
+            Text("معًا ... لنبني مجتمعًا أكثر تماسكًا", color = if (isDark) com.example.designsystem.theme.IhsanTheme.colors.textPrimary else DeepTeal,
+                fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp))
         }
     }
 }
@@ -312,7 +209,7 @@ private fun OnboardingPageContent(
         Surface(
             modifier = Modifier.fillMaxSize(),
             shape = RoundedCornerShape(24.dp),
-            color = if (isDark) DarkCardBackground else Color.White,
+            color = if (isDark) com.example.designsystem.theme.IhsanTheme.colors.surfaceElevated else Color.White,
             tonalElevation = 2.dp,
             shadowElevation = 1.dp
         ) {
@@ -335,7 +232,7 @@ private fun OnboardingPageContent(
                                 .size(48.dp)
                                 .clip(CircleShape)
                                 .background(
-                                    if (isDark) Color(0xFF0F3832) else Color(0xFFE8F5E9)
+                                    if (isDark) com.example.designsystem.theme.IhsanTheme.colors.surfaceMuted else Color(0xFFE8F5E9)
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
@@ -355,13 +252,13 @@ private fun OnboardingPageContent(
                                 text = feature.title,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isDark) Color.White else DeepTeal
+                                color = if (isDark) com.example.designsystem.theme.IhsanTheme.colors.textPrimary else DeepTeal
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
                                 text = feature.description,
                                 fontSize = 12.sp,
-                                color = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray
+                                color = if (isDark) com.example.designsystem.theme.IhsanTheme.colors.textSecondary else Color.Gray
                             )
                         }
                     }

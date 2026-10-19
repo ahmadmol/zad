@@ -1,5 +1,7 @@
 package com.example.feature.fahmanallah.presentation
 
+import androidx.compose.foundation.layout.statusBarsPadding
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -77,7 +79,7 @@ fun FahmSettingsScreen(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showConfirmDialog = false }) {
+                TextButton(onClick = { showConfirmDialog = false }, colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
                     Text(text = "إلغاء")
                 }
             }
@@ -87,7 +89,7 @@ fun FahmSettingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 10.dp)
+            .statusBarsPadding().padding(top = 10.dp)
     ) {
         // Top Navigation Header
         Row(
@@ -110,7 +112,7 @@ fun FahmSettingsScreen(
                 text = "إعدادات الفهم عن الله",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = primary
+                color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
             )
         }
 
@@ -140,7 +142,7 @@ fun FahmSettingsScreen(
                         text = "إعادة ضبط بيانات القسم",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = primary
+                        color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
                     )
 
                     Text(
@@ -158,7 +160,7 @@ fun FahmSettingsScreen(
                             .height(48.dp),
                         shape = RoundedCornerShape(24.dp),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f))
-                    ) {
+                    , colors = com.example.designsystem.theme.ihsanOutlinedButtonColors()) {
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = null,

@@ -38,7 +38,7 @@ private fun TipItem(number: Int, tip: IhsanPlusCompassCalibrationTip) {
             text = "$number.",
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Black,
-            color = MaterialTheme.colorScheme.primary,
+            color = IhsanTheme.colors.accentContent,
             modifier = Modifier.padding(end = IhsanTheme.spacing.small)
         )
         Column {

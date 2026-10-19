@@ -79,7 +79,7 @@ fun FahmStationCard(
                 Icon(
                     imageVector = stationIcon,
                     contentDescription = station.name,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = IhsanTheme.colors.accentContent,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -143,7 +143,7 @@ fun FahmStationChipTile(
             Icon(
                 imageVector = stationIcon,
                 contentDescription = station.name,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = IhsanTheme.colors.accentContent,
                 modifier = Modifier.size(22.dp)
             )
 

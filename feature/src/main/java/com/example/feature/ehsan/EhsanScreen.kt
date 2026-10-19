@@ -1,5 +1,7 @@
 package com.example.feature.ehsan
 
+import com.example.feature.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,7 +13,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.layout.layout
+import androidx.compose.material3.FabPosition
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -67,6 +70,8 @@ fun EhsanScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val currentUser by authViewModel.currentUser.collectAsStateWithLifecycle()
     var showAuthSheet by remember { mutableStateOf(false) }
+    var showAdvancedFilters by remember { mutableStateOf(false) }
+    var showDemoReset by remember { mutableStateOf(false) }
     var pendingActionType by remember { mutableStateOf("OFFER") }
 
     val hasActiveFilters = remember(
@@ -86,8 +91,15 @@ fun EhsanScreen(
         if (currentUser == null) showAuthSheet = true else onAddEhsanClick(type)
     }
 
+    if (showDemoReset) androidx.compose.material3.AlertDialog(
+        onDismissRequest = { showDemoReset = false }, title = { Text("إعادة أمثلة DEMO؟") },
+        text = { Text("يعاد إنشاء الأمثلة الخيالية فقط. تبقى سجلاتك وصورك وملفك والقرآن والأذكار والإعدادات محفوظة.") },
+        confirmButton = { androidx.compose.material3.TextButton(colors = com.example.designsystem.theme.ihsanTextButtonColors(), onClick = { showDemoReset = false; viewModel.resetDemoOnly() }) { Text("إعادة أمثلة DEMO") } },
+        dismissButton = { androidx.compose.material3.TextButton(colors = com.example.designsystem.theme.ihsanTextButtonColors(), onClick = { showDemoReset = false }) { Text("إلغاء") } })
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
+            floatingActionButtonPosition = FabPosition.Start,
             floatingActionButton = {
                 AddEhsanFab(
                     type = uiState.selectedType,
@@ -107,18 +119,26 @@ fun EhsanScreen(
                 )
             }
 
+            if (showAdvancedFilters) com.example.feature.ehsan.presentation.EhsanAdvancedFilters(
+                uiState, onDismiss = { showAdvancedFilters = false },
+                onApply = { city, category, sort ->
+                    viewModel.onLocationChange(city); viewModel.onCategoryChange(category); viewModel.onSortChange(sort)
+                    showAdvancedFilters = false
+                })
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(
                     bottom = scaffoldPadding.calculateBottomPadding() + 80.dp
                 ),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 // Item 0: Atmospheric Mosque Silhouette Banner
                 item {
                     EhsanHeaderBanner(
                         cityName = uiState.locationName,
-                        islamicDate = HijriDateFormatter.nowFormatted()
+                        islamicDate = HijriDateFormatter.nowFormatted(),
+                        onSearchClick = { showAdvancedFilters = true }
                     )
                 }
 
@@ -127,8 +147,14 @@ fun EhsanScreen(
                     Column(
                         modifier = Modifier
                             .padding(horizontal = IhsanTheme.dimens.screenHorizontal)
-                            .offset(y = (-22).dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                            .layout { measurable, constraints ->
+                                val child = measurable.measure(constraints)
+                                val overlap = 12.dp.roundToPx()
+                                layout(child.width, (child.height - overlap).coerceAtLeast(0)) {
+                                    child.placeRelative(0, -overlap)
+                                }
+                            },
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         EhsanSegmentedTabs(
                             selectedType = uiState.selectedType,
@@ -139,7 +165,8 @@ fun EhsanScreen(
                         EhsanSearchField(
                             query = uiState.searchQuery,
                             onQueryChange = viewModel::onSearchQueryChange,
-                            cityName = uiState.locationName
+                            cityName = uiState.locationName,
+                            onFilterClick = { showAdvancedFilters = true }
                         )
 
                         // Item 3: Sorting controls
@@ -148,7 +175,10 @@ fun EhsanScreen(
                             onSortChange = viewModel::onSortChange
                         )
 
+                        Text("${uiState.filteredDonations.size} نتيجة", style = MaterialTheme.typography.labelSmall,
+                            color = IhsanTheme.colors.textSecondary)
                         LocalBoardNoticeCard()
+                        androidx.compose.material3.TextButton(colors = com.example.designsystem.theme.ihsanTextButtonColors(), onClick = { showDemoReset = true }) { Text("إعادة أمثلة DEMO فقط") }
                     }
                 }
 
@@ -162,7 +192,7 @@ fun EhsanScreen(
                                     .height(200.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                                CircularProgressIndicator(color = IhsanTheme.colors.accentContent)
                             }
                         }
                     }
@@ -203,6 +233,8 @@ fun EhsanScreen(
 
 @Composable
 private fun EhsanErrorContent(message: String) {
+    val charityLoadErrorText = stringResource(R.string.polish_charity_load_error)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -210,7 +242,7 @@ private fun EhsanErrorContent(message: String) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "تعذر تحميل فرص إحسان",
+            text = charityLoadErrorText,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.error

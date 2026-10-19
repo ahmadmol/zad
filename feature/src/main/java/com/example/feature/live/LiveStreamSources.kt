@@ -7,6 +7,10 @@ package com.example.feature.live
  * YouTube channel IDs are published on saudiatv.sba.sa.
  */
 object LiveStreamSources {
+    /** Stable publisher portal; external navigation only, never a rehosting grant. */
+    const val OFFICIAL_LIVE_PORTAL = "https://haramain.prh.gov.sa/ar/live"
+    // Direct HLS rights have not been granted. Retain source configuration for future approval.
+    const val DIRECT_HLS_APPROVED = false
     /** قناة القرآن الكريم — live from Masjid al-Haram (Makkah) */
     const val HARAM_HLS =
         "https://cdn-globecast.akamaized.net/live/eds/saudi_quran/hls_roku/index.m3u8"

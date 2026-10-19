@@ -11,6 +11,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.NavigateBefore
 import androidx.compose.material.icons.filled.*
@@ -38,9 +40,15 @@ import com.example.designsystem.component.IhsanEmptyState
 import com.example.designsystem.component.IhsanErrorState
 import com.example.designsystem.component.IhsanLoadingState
 import com.example.designsystem.component.IhsanSearchBar
+import com.example.designsystem.component.IhsanTopBar
+import com.example.designsystem.component.IhsanTopBarStyle
 import com.example.designsystem.theme.IhsanTheme
+import com.example.designsystem.theme.DarkGoldAccent
+import com.example.designsystem.theme.DarkWarning
+import com.example.designsystem.theme.DarkSurfaceWarm
 import com.example.feature.R
 import com.example.feature.duas.domain.model.Dua
+import com.example.feature.duas.presentation.DuaSections
 import com.example.feature.duas.presentation.DuaAction
 import com.example.feature.duas.presentation.DuaViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -57,6 +65,7 @@ fun DuaScreen(
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
             containerColor = colors.surfaceBase
         ) { padding ->
             Column(
@@ -65,9 +74,17 @@ fun DuaScreen(
                     .fillMaxSize()
             ) {
                 // 1. Header with Mosque Skyline Artwork
-                DuaHeader(
-                    onBack = onBack,
-                    isDark = isDark
+                IhsanTopBar(
+                    title = "الأدعية",
+                    subtitle = "أدعية من الكتاب والسنة",
+                    onNavigateBack = {
+                        if (uiState.selectedCategory != null || uiState.searchQuery.isNotBlank() || uiState.showFavoritesOnly) {
+                            viewModel.onAction(DuaAction.OnCategorySelected(null))
+                            viewModel.onAction(DuaAction.OnSearchQueryChanged(""))
+                            viewModel.onAction(DuaAction.OnToggleFavoritesOnly(false))
+                        } else onBack()
+                    },
+                    style = IhsanTopBarStyle.Hero, backgroundImageRes = com.example.feature.R.drawable.ihsan_home_hero_background
                 )
 
                 // 2. Search Bar
@@ -119,6 +136,15 @@ fun DuaScreen(
                             )
                         }
 
+                        uiState.selectedCategory == null && uiState.searchQuery.isBlank() && !uiState.showFavoritesOnly -> {
+                            LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                                items(DuaSections.titles) { section ->
+                                    DuaSectionCard(section, onClick = { viewModel.onAction(DuaAction.OnCategorySelected(section)) })
+                                }
+                                item { WordOfTheDayCard() }
+                            }
+                        }
+
                         uiState.duas.isEmpty() -> {
                             IhsanEmptyState(
                                 title = "لا توجد نتائج",
@@ -127,7 +153,7 @@ fun DuaScreen(
                                 } else if (uiState.showFavoritesOnly) {
                                     "لا توجد أدعية مضافة للمفضلة بعد"
                                 } else {
-                                    "لم نجد أي أدعية في هذا التصنيف"
+                                    "لا يتوفر محتوى لهذا القسم في البيانات الحالية"
                                 },
                                 icon = Icons.Outlined.SearchOff,
                                 primaryActionLabel = if (uiState.searchQuery.isNotBlank() || uiState.showFavoritesOnly || uiState.selectedCategory != null) {
@@ -155,7 +181,7 @@ fun DuaScreen(
                                         dua = dua,
                                         isDark = isDark,
                                         surfaceMint = colors.surfaceMint,
-                                        primaryColor = MaterialTheme.colorScheme.primary,
+                                        primaryColor = IhsanTheme.colors.accentContent,
                                         onClick = { onDuaClick(dua.id) },
                                         onToggleFavorite = {
                                             viewModel.onAction(
@@ -181,87 +207,6 @@ fun DuaScreen(
 }
 
 @Composable
-private fun DuaHeader(
-    onBack: () -> Unit,
-    isDark: Boolean,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(160.dp)
-            .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ihsan_search_header),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-
-        if (isDark) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.45f))
-            )
-        } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                Color.Black.copy(alpha = 0.25f)
-                            )
-                        )
-                    )
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.2f))
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "رجوع",
-                    tint = Color.White
-                )
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "الأدعية",
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = "أدعية من الكتاب والسنة",
-                    fontSize = 13.sp,
-                    color = Color.White.copy(alpha = 0.88f)
-                )
-            }
-        }
-    }
-}
-
-@Composable
 private fun DuaCategoryChips(
     allDuas: List<Dua>,
     selectedCategory: String?,
@@ -271,27 +216,10 @@ private fun DuaCategoryChips(
     modifier: Modifier = Modifier
 ) {
     val colors = IhsanTheme.colors
-    val categoriesFromData = remember(allDuas) {
-        allDuas.map { it.category }.distinct().filter { it.isNotBlank() }
-    }
-
-    val chipItems = remember(categoriesFromData) {
-        val list = mutableListOf<Pair<String?, String>>()
-        list.add(null to "الكل")
-        if (categoriesFromData.contains("أدعية قرآنية")) list.add("أدعية قرآنية" to "من القرآن الكريم")
-        if (categoriesFromData.contains("أدعية من السنة")) list.add("أدعية من السنة" to "أدعية نبوية")
-        if (categoriesFromData.contains("الهم والحزن")) list.add("الهم والحزن" to "في الشدائد")
-        if (categoriesFromData.contains("السفر")) list.add("السفر" to "أدعية السفر")
-        if (categoriesFromData.contains("الرزق")) list.add("الرزق" to "أدعية الرزق")
-
-        val mappedKeys = list.mapNotNull { it.first }.toSet()
-        categoriesFromData.filterNot { it in mappedKeys }.forEach { cat ->
-            list.add(cat to cat)
-        }
-
-        list.add("FAVORITES" to "المفضلة")
-        list
-    }
+    val chipItems = listOf(null to "الكل",
+        DuaSections.titles[0] to "الصباح", DuaSections.titles[1] to "المساء",
+        DuaSections.titles[2] to "من القرآن", DuaSections.titles[3] to "نبوية",
+        "FAVORITES" to "المفضلة")
 
     LazyRow(
         modifier = modifier.fillMaxWidth(),
@@ -306,61 +234,13 @@ private fun DuaCategoryChips(
                 !showFavoritesOnly && selectedCategory == catId
             }
 
-            val shape = RoundedCornerShape(20.dp)
-            val containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                colors.quickActionSurface
-            }
-            val contentColor = if (isSelected) {
-                MaterialTheme.colorScheme.onPrimary
-            } else {
-                colors.textSecondary
-            }
-            val border = if (isSelected) {
-                BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-            } else {
-                BorderStroke(1.dp, colors.borderSubtle)
-            }
-
-            Surface(
-                onClick = {
-                    if (catId == "FAVORITES") {
-                        onFavoritesSelected()
-                    } else {
-                        onCategorySelected(catId)
-                    }
-                },
-                shape = shape,
-                color = containerColor,
-                contentColor = contentColor,
-                border = border,
-                modifier = Modifier.height(38.dp)
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    if (catId == "FAVORITES") {
-                        Icon(
-                            imageVector = if (isSelected) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp),
-                            tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else colors.favorite
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                    }
-                    Text(
-                        text = label,
-                        fontSize = 13.sp,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
-                    )
-                }
-            }
+            com.example.designsystem.component.IhsanFilterChip(label, isSelected, {
+                if (catId == "FAVORITES") onFavoritesSelected() else onCategorySelected(catId)
+            })
         }
     }
 }
+
 
 @Composable
 private fun DuaCardItem(
@@ -394,13 +274,13 @@ private fun DuaCardItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Icon Circle
             Box(
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(40.dp)
                     .clip(CircleShape)
                     .background(iconStyle.backgroundColor),
                 contentAlignment = Alignment.Center
@@ -513,12 +393,12 @@ private fun WordOfTheDayCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(cardBgBrush)
-                .padding(18.dp)
+                .padding(12.dp)
         ) {
             Column {
                 // Badge
                 Surface(
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                    color = IhsanTheme.colors.accentContent.copy(alpha = 0.15f),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Row(
@@ -528,7 +408,7 @@ private fun WordOfTheDayCard(
                         Icon(
                             imageVector = Icons.Default.Spa,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = IhsanTheme.colors.accentContent,
                             modifier = Modifier.size(14.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
@@ -536,7 +416,7 @@ private fun WordOfTheDayCard(
                             text = "كلمة اليوم",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
+                            color = IhsanTheme.colors.accentContent
                         )
                     }
                 }
@@ -578,43 +458,67 @@ private fun getDuaIconStyle(
     return when {
         category.contains("قرآن") || title.contains("قرآن") -> DuaIconStyle(
             icon = Icons.AutoMirrored.Filled.MenuBook,
-            backgroundColor = if (isDark) Color(0xFF1B382B) else Color(0xFFE8F5E9),
-            iconTint = if (isDark) Color(0xFF81C784) else Color(0xFF2E7D32)
+            backgroundColor = if (isDark) surfaceMint else Color(0xFFE8F5E9),
+            iconTint = if (isDark) primaryColor else Color(0xFF2E7D32)
         )
         category.contains("سنة") || category.contains("نبوية") || title.contains("استخارة") -> DuaIconStyle(
             icon = Icons.Default.Mosque,
-            backgroundColor = if (isDark) Color(0xFF163832) else Color(0xFFE0F2F1),
-            iconTint = if (isDark) Color(0xFF4DB6AC) else Color(0xFF00695C)
+            backgroundColor = if (isDark) surfaceMint else Color(0xFFE0F2F1),
+            iconTint = if (isDark) primaryColor else Color(0xFF00695C)
         )
         category.contains("صباح") || title.contains("صباح") -> DuaIconStyle(
             icon = Icons.Default.WbSunny,
-            backgroundColor = if (isDark) Color(0xFF38321B) else Color(0xFFFFF8E1),
-            iconTint = if (isDark) Color(0xFFFFD54F) else Color(0xFFF57F17)
+            backgroundColor = if (isDark) DarkSurfaceWarm else Color(0xFFFFF8E1),
+            iconTint = if (isDark) DarkGoldAccent else Color(0xFFF57F17)
         )
         category.contains("مساء") || category.contains("نوم") || title.contains("مساء") -> DuaIconStyle(
             icon = Icons.Default.NightsStay,
-            backgroundColor = if (isDark) Color(0xFF1B2B38) else Color(0xFFE3F2FD),
-            iconTint = if (isDark) Color(0xFF64B5F6) else Color(0xFF1976D2)
+            backgroundColor = if (isDark) surfaceMint else Color(0xFFE3F2FD),
+            iconTint = if (isDark) primaryColor else Color(0xFF1976D2)
         )
         category.contains("هم") || category.contains("حزن") || category.contains("شدائد") -> DuaIconStyle(
             icon = Icons.Default.VolunteerActivism,
-            backgroundColor = if (isDark) Color(0xFF2B2238) else Color(0xFFEDE7F6),
-            iconTint = if (isDark) Color(0xFFB39DDB) else Color(0xFF5E35B1)
+            backgroundColor = if (isDark) surfaceMint else Color(0xFFEDE7F6),
+            iconTint = if (isDark) primaryColor else Color(0xFF5E35B1)
         )
         category.contains("سفر") -> DuaIconStyle(
             icon = Icons.Default.Explore,
-            backgroundColor = if (isDark) Color(0xFF382B1B) else Color(0xFFFFF3E0),
-            iconTint = if (isDark) Color(0xFFFFB74D) else Color(0xFFE65100)
+            backgroundColor = if (isDark) DarkSurfaceWarm else Color(0xFFFFF3E0),
+            iconTint = if (isDark) DarkWarning else Color(0xFFE65100)
         )
         category.contains("رزق") -> DuaIconStyle(
             icon = Icons.Default.Spa,
-            backgroundColor = if (isDark) Color(0xFF2B381B) else Color(0xFFF1F8E9),
-            iconTint = if (isDark) Color(0xFFAED581) else Color(0xFF558B2F)
+            backgroundColor = if (isDark) surfaceMint else Color(0xFFF1F8E9),
+            iconTint = if (isDark) primaryColor else Color(0xFF558B2F)
         )
         else -> DuaIconStyle(
             icon = Icons.Default.FormatQuote,
             backgroundColor = surfaceMint,
             iconTint = primaryColor
         )
+    }
+}
+
+@Composable
+private fun DuaSectionCard(title: String, onClick: () -> Unit) {
+    val icons = listOf(Icons.Default.WbSunny, Icons.Default.NightsStay, Icons.AutoMirrored.Filled.MenuBook,
+        Icons.Default.Mosque, Icons.Default.People, Icons.Default.VolunteerActivism, Icons.Default.MoreHoriz)
+    val descriptions = listOf("أدعية لبدء يومك بذكر الله", "أدعية المساء", "أدعية وردت في كتاب الله تعالى",
+        "أدعية من السنة النبوية", "أدعية لمن تحب", "أدعية عند الكرب والهم", "مجموعة مختارة من الأدعية")
+    val index = DuaSections.titles.indexOf(title)
+    Surface(onClick = onClick, color = IhsanTheme.colors.surfaceElevated, shape = RoundedCornerShape(20.dp),
+        shadowElevation = 1.dp, modifier = Modifier.fillMaxWidth()) {
+        Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+            Surface(color = IhsanTheme.colors.surfaceMint, shape = CircleShape, modifier = Modifier.size(52.dp)) {
+                Box(contentAlignment = Alignment.Center) { Icon(icons[index], null, tint = if(index == 0)
+                    IhsanTheme.colors.goldAccent else IhsanTheme.colors.accentContent, modifier = Modifier.size(28.dp)) }
+            }
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(title, fontSize = 17.sp, lineHeight = 24.sp, fontWeight = FontWeight.Bold, color = IhsanTheme.colors.accentContent)
+                Text(descriptions[index], fontSize = 12.sp, lineHeight = 18.sp, color = IhsanTheme.colors.textSecondary)
+            }
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = IhsanTheme.colors.accentContent)
+        }
     }
 }

@@ -1,5 +1,9 @@
 package com.example.feature.fahmanallah.presentation
 
+import androidx.compose.material3.LocalContentColor
+
+import androidx.compose.foundation.layout.statusBarsPadding
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -61,7 +65,7 @@ fun FahmEpisodesScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 10.dp)
+            .statusBarsPadding().padding(top = 10.dp)
     ) {
         // Top Bar Header
         Row(
@@ -101,7 +105,7 @@ fun FahmEpisodesScreen(
                     Icon(
                         imageVector = Icons.Default.Bookmark,
                         contentDescription = "المحفوظات",
-                        tint = primary
+                        tint = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
                     )
                 }
             }
@@ -114,16 +118,18 @@ fun FahmEpisodesScreen(
         TabRow(
             selectedTabIndex = state.selectedTab,
             containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = primary,
+            contentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary,
             indicator = { tabPositions ->
                 TabRowDefaults.SecondaryIndicator(
                     modifier = Modifier.tabIndicatorOffset(tabPositions[state.selectedTab]),
-                    color = primary
+                    color = if (IhsanTheme.isDark) IhsanTheme.colors.accentContent else primary
                 )
             }
         ) {
             tabs.forEachIndexed { index, title ->
                 Tab(
+                    selectedContentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else LocalContentColor.current,
+                    unselectedContentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textSecondary else LocalContentColor.current.copy(alpha = .7f),
                     selected = state.selectedTab == index,
                     onClick = {
                         if (index == 1) {
@@ -168,6 +174,7 @@ fun FahmEpisodesScreen(
                 singleLine = true,
                 shape = RoundedCornerShape(20.dp),
                 colors = OutlinedTextFieldDefaults.colors(
+                            cursorColor = if (com.example.designsystem.theme.IhsanTheme.isDark) com.example.designsystem.theme.IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.primary,
                     focusedBorderColor = primary,
                     unfocusedBorderColor = IhsanTheme.colors.borderSubtle.copy(alpha = 0.6f),
                     focusedContainerColor = MaterialTheme.colorScheme.surface,

@@ -3,6 +3,9 @@ package com.example.feature.ehsan.presentation
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -93,14 +96,16 @@ fun AddEhsanScreen(
     var subCategory by rememberSaveable { mutableStateOf("") }
     var city by rememberSaveable { mutableStateOf("حلب") }
     var contactMethod by rememberSaveable { mutableStateOf("WHATSAPP") }
-    var imageUri by remember { mutableStateOf<String?>(null) }
+    var imageUris by rememberSaveable { mutableStateOf(arrayListOf<String>()) }
     var showCityDropdown by remember { mutableStateOf(false) }
     var showCategoryDropdown by remember { mutableStateOf(false) }
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri ->
-        imageUri = uri?.toString()
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
+        val accepted = uris.filter { uri ->
+            runCatching { context.contentResolver.takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION) }.isSuccess
+        }.map { it.toString() }
+        imageUris = ArrayList((imageUris + accepted).distinct().take(3))
+        if (accepted.size < uris.size) UserMessageNotifier.notify(context, "تعذر الاحتفاظ بإذن قراءة بعض الصور. أعد اختيارها.")
     }
 
     // Intercept system back button when on step 2 or 3
@@ -128,7 +133,7 @@ fun AddEhsanScreen(
             description = ""
             categoryKey = DonationOfferCategories.first().key
             city = "حلب"
-            imageUri = null
+            imageUris = arrayListOf()
             onNavigateBack()
         }
     }
@@ -141,13 +146,14 @@ fun AddEhsanScreen(
 
     Scaffold(
         containerColor = colors.surfaceBase,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .verticalScroll(rememberScrollState())
+                .imePadding().navigationBarsPadding().verticalScroll(rememberScrollState())
         ) {
             // 1. Hero Banner Header
             EhsanHeroHeader(
@@ -190,13 +196,13 @@ fun AddEhsanScreen(
                 // 3. Step Content
                 when (currentStep) {
                     1 -> {
+                        EhsanFormCard {
                         /* ---- Stage 1: المعلومات ---- */
 
                         // Section: نوع التبرع (Category Cards Grid)
-                        EhsanFormCard {
+                        Column(Modifier.fillMaxWidth()) {
                             EhsanSectionHeader(
-                                title = "نوع التبرع",
-                                description = "اختر الفئة التي تريد التبرع بها"
+                                title = "نوع التبرع"
                             )
                             Spacer(Modifier.height(12.dp))
                             EhsanCategoryGrid(
@@ -207,12 +213,7 @@ fun AddEhsanScreen(
                         }
 
                         // Section: المعلومات الأساسية (العنوان، التصنيف، المدينة)
-                        EhsanFormCard {
-                            EhsanSectionHeader(
-                                title = "المعلومات الأساسية",
-                                description = "أدخل بيانات التبرع الرئيسية"
-                            )
-
+                        Column(Modifier.fillMaxWidth()) {
                             Spacer(Modifier.height(EhsanFormSpacing.FieldGap))
 
                             // العنوان
@@ -257,6 +258,10 @@ fun AddEhsanScreen(
 
                             Spacer(Modifier.height(EhsanFormSpacing.FieldGap))
 
+                            EhsanTextField(value = description, onValueChange = { description = it },
+                                label = "الوصف", placeholder = "اكتب وصفًا مختصرًا ومفيدًا…", errorText = descriptionError,
+                                singleLine = false, minLines = 2, maxLines = 4)
+                            Spacer(Modifier.height(EhsanFormSpacing.FieldGap))
                             // المدينة
                             Box {
                                 EhsanSelectorField(
@@ -287,10 +292,9 @@ fun AddEhsanScreen(
                         }
 
                         // Section: وسيلة التواصل
-                        EhsanFormCard {
+                        Column(Modifier.fillMaxWidth()) {
                             EhsanSectionHeader(
-                                title = "وسيلة التواصل المفضلة",
-                                description = "حدد كيف تود أن يتواصل معك المتلقون"
+                                title = "وسيلة التواصل"
                             )
                             Spacer(Modifier.height(12.dp))
                             EhsanContactMethodSelector(
@@ -310,6 +314,7 @@ fun AddEhsanScreen(
                                 }
                             }
                         )
+                        }
                     }
 
                     2 -> {
@@ -354,23 +359,11 @@ fun AddEhsanScreen(
 
                         // Image Picker Card
                         EhsanFormCard {
-                            EhsanImagePicker(
-                                imageUri = imageUri,
-                                onPick = { launcher.launch("image/*") },
-                                onClear = { imageUri = null },
-                                label = "صور العرض",
-                                emptyTitle = "أضف صورة للعنصر المتبرع به",
-                                emptyHint = "اختياري — الصور تزيد من فرصة التفاعل",
-                                imageContent = {
-                                    AsyncImage(
-                                        model = imageUri,
-                                        contentDescription = null,
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentScale = ContentScale.Crop
-                                    )
-                                }
-                            )
+                            OfferImagesPicker(imageUris,
+                                onAdd = { launcher.launch(arrayOf("image/*")) },
+                                onRemove = { image -> imageUris = ArrayList(imageUris.filterNot { it == image }) })
                         }
+
 
                         // Review Summary Card
                         EhsanReviewSummaryCard(
@@ -378,7 +371,7 @@ fun AddEhsanScreen(
                             category = categoryKey,
                             city = city,
                             description = description,
-                            contactPhone = uiState.currentUserPhone.ifBlank { "0912345678" }
+                            contactPhone = uiState.currentUserPhone.ifBlank { "غير متوفر" }
                         )
 
                         // Contact info reminder
@@ -397,7 +390,9 @@ fun AddEhsanScreen(
                                     category = categoryKey,
                                     location = city,
                                     type = "OFFER",
-                                    imageUrl = imageUri
+                                    imageUrl = null,
+                                    imageUrls = imageUris,
+                                    contactMethod = contactMethod
                                 )
                             },
                             enabled = title.isNotBlank() && description.isNotBlank() && city.isNotBlank(),
@@ -429,3 +424,4 @@ private val DonationCities = listOf(
     "اللاذقية",
     "حماة"
 )
+

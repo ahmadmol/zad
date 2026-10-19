@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
+import com.example.designsystem.theme.IhsanTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -44,7 +45,7 @@ fun HadithDetailsBottomSheet(
                 text = "تفاصيل الحديث",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
+                color = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
@@ -74,7 +75,7 @@ fun HadithDetailsBottomSheet(
             Text(
                 text = "المصدر: ${hadith.source}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary,
+                color = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
@@ -102,7 +103,7 @@ fun HadithDetailsBottomSheet(
                         onCopied()
                     },
                     modifier = Modifier.weight(1f).height(52.dp)
-                ) {
+                , colors = com.example.designsystem.theme.ihsanOutlinedButtonColors()) {
                     Icon(Icons.Default.ContentCopy, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("نسخ")
@@ -120,7 +121,7 @@ fun HadithDetailsBottomSheet(
                             .onFailure { UserMessageNotifier.notify(context, "تعذر فتح تطبيق للمشاركة") }
                     },
                     modifier = Modifier.weight(1f).height(52.dp)
-                ) {
+                , colors = com.example.designsystem.theme.ihsanOutlinedButtonColors()) {
                     Icon(Icons.Default.Share, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("مشاركة")

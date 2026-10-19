@@ -1,5 +1,7 @@
 package com.example.feature.fahmanallah.presentation
 
+import androidx.compose.foundation.layout.statusBarsPadding
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,7 +58,7 @@ fun FahmSearchScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 10.dp)
+            .statusBarsPadding().padding(top = 10.dp)
     ) {
         // Top Navigation Header
         Row(
@@ -79,7 +81,7 @@ fun FahmSearchScreen(
                 text = "ابحث في الفهم عن الله",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = primary
+                color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
             )
         }
 
@@ -102,7 +104,7 @@ fun FahmSearchScreen(
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "بحث",
-                        tint = primary
+                        tint = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary
                     )
                 },
                 trailingIcon = {
@@ -119,6 +121,7 @@ fun FahmSearchScreen(
                 singleLine = true,
                 shape = RoundedCornerShape(20.dp),
                 colors = OutlinedTextFieldDefaults.colors(
+                            cursorColor = if (com.example.designsystem.theme.IhsanTheme.isDark) com.example.designsystem.theme.IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.primary,
                     focusedBorderColor = primary,
                     unfocusedBorderColor = IhsanTheme.colors.borderSubtle.copy(alpha = 0.6f),
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -169,7 +172,7 @@ fun FahmSearchScreen(
                     text = "نتائج البحث (${state.results.size})",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = primary,
+                    color = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else primary,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 )
 

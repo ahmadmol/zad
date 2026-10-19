@@ -51,7 +51,7 @@ fun CitySelectionBottomSheet(
                     text = "اختر المدينة",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = IhsanTheme.colors.accentContent,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
@@ -86,7 +86,7 @@ fun CityItem(city: City, onClick: () -> Unit) {
         Icon(
             imageVector = Icons.Default.LocationCity,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
+            tint = IhsanTheme.colors.accentContent,
             modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(16.dp))

@@ -47,7 +47,7 @@ private fun ReminderPreviewRow(item: IhsanPlusPrayerReminderPreviewItem) {
             Icon(
                 imageVector = Icons.Default.NotificationsActive,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = IhsanTheme.colors.accentContent,
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(IhsanTheme.spacing.medium))
@@ -57,7 +57,7 @@ private fun ReminderPreviewRow(item: IhsanPlusPrayerReminderPreviewItem) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(text = item.prayerName, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
-                    Text(text = item.prayerTimeLabel, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
+                    Text(text = item.prayerTimeLabel, style = MaterialTheme.typography.bodyMedium, color = IhsanTheme.colors.accentContent)
                 }
                 Text(text = item.adhanNotificationLabel, style = MaterialTheme.typography.labelSmall)
                 Text(text = item.prePrayerReminderLabel, style = MaterialTheme.typography.labelSmall)
