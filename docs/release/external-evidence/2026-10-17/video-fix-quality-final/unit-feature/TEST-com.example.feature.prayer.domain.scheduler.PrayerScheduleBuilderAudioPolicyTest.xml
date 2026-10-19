@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.prayer.domain.scheduler.PrayerScheduleBuilderAudioPolicyTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:03" hostname="MOLHAMALNAEB" time="0.006">
+  <properties/>
+  <testcase name="sunrise has only an exact marker even when reminders are enabled" classname="com.example.feature.prayer.domain.scheduler.PrayerScheduleBuilderAudioPolicyTest" time="0.001"/>
+  <testcase name="stable identities are unique across the two day schedule" classname="com.example.feature.prayer.domain.scheduler.PrayerScheduleBuilderAudioPolicyTest" time="0.001"/>
+  <testcase name="colliding reminders retain distinct stable ids" classname="com.example.feature.prayer.domain.scheduler.PrayerScheduleBuilderAudioPolicyTest" time="0.0"/>
+  <testcase name="end reminder is disabled by zero and enabled by a positive offset" classname="com.example.feature.prayer.domain.scheduler.PrayerScheduleBuilderAudioPolicyTest" time="0.002"/>
+  <testcase name="schedule output is chronologically sorted" classname="com.example.feature.prayer.domain.scheduler.PrayerScheduleBuilderAudioPolicyTest" time="0.0"/>
+  <testcase name="pre prayer reminder is offset while exact prayer time is unchanged" classname="com.example.feature.prayer.domain.scheduler.PrayerScheduleBuilderAudioPolicyTest" time="0.001"/>
+  <testcase name="exact alarms retain every calculated time" classname="com.example.feature.prayer.domain.scheduler.PrayerScheduleBuilderAudioPolicyTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

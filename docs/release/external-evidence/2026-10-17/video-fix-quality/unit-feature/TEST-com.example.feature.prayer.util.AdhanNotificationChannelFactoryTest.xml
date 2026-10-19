@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.prayer.util.AdhanNotificationChannelFactoryTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:34" hostname="MOLHAMALNAEB" time="0.006">
+  <properties/>
+  <testcase name="same sound and version produce stable channel id" classname="com.example.feature.prayer.util.AdhanNotificationChannelFactoryTest" time="0.005"/>
+  <testcase name="unrelated channel strategies are not treated as prayer legacy" classname="com.example.feature.prayer.util.AdhanNotificationChannelFactoryTest" time="0.0"/>
+  <testcase name="different sound produces different channel id" classname="com.example.feature.prayer.util.AdhanNotificationChannelFactoryTest" time="0.0"/>
+  <testcase name="channel id uses adhan v3 and differs from legacy ids" classname="com.example.feature.prayer.util.AdhanNotificationChannelFactoryTest" time="0.001"/>
+  <testcase name="silent and short tone keep distinct channel ids" classname="com.example.feature.prayer.util.AdhanNotificationChannelFactoryTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

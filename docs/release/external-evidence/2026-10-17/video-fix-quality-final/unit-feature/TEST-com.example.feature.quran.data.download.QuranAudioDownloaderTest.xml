@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.quran.data.download.QuranAudioDownloaderTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:06" hostname="MOLHAMALNAEB" time="0.011">
+  <properties/>
+  <testcase name="transient and permanent http failures are classified separately" classname="com.example.feature.quran.data.download.QuranAudioDownloaderTest" time="0.004"/>
+  <testcase name="successful temporary file replaces target and removes partial file" classname="com.example.feature.quran.data.download.QuranAudioDownloaderTest" time="0.007"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

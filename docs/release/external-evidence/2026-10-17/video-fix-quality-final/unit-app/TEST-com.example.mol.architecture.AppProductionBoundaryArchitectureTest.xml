@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.mol.architecture.AppProductionBoundaryArchitectureTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:56:37" hostname="MOLHAMALNAEB" time="0.058">
+  <properties/>
+  <testcase name="no sebha production route remains" classname="com.example.mol.architecture.AppProductionBoundaryArchitectureTest" time="0.047"/>
+  <testcase name="appModule excludes ihsan plus modules" classname="com.example.mol.architecture.AppProductionBoundaryArchitectureTest" time="0.003"/>
+  <testcase name="quran audio service remains non exported in manifest" classname="com.example.mol.architecture.AppProductionBoundaryArchitectureTest" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

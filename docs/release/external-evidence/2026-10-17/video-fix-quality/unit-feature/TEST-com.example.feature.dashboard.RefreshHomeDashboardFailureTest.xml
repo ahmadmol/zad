@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.dashboard.RefreshHomeDashboardFailureTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:32" hostname="MOLHAMALNAEB" time="0.011">
+  <properties/>
+  <testcase name="daily reset failure is returned before location refresh" classname="com.example.feature.dashboard.RefreshHomeDashboardFailureTest" time="0.008"/>
+  <testcase name="location failure is returned to the caller" classname="com.example.feature.dashboard.RefreshHomeDashboardFailureTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

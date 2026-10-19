@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.profile.presentation.EditProfileViewModelTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:34" hostname="MOLHAMALNAEB" time="0.056">
+  <properties/>
+  <testcase name="saveChanges updates user profile and saves avatar in user preferences" classname="com.example.feature.profile.presentation.EditProfileViewModelTest" time="0.036"/>
+  <testcase name="onAvatarSelected persists image and updates state" classname="com.example.feature.profile.presentation.EditProfileViewModelTest" time="0.013"/>
+  <testcase name="init loads saved avatar from user preferences" classname="com.example.feature.profile.presentation.EditProfileViewModelTest" time="0.007"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

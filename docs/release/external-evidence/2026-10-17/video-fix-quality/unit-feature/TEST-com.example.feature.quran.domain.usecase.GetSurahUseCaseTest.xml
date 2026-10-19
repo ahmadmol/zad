@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.quran.domain.usecase.GetSurahUseCaseTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:37" hostname="MOLHAMALNAEB" time="0.111">
+  <properties/>
+  <testcase name="invoke should return surah from repository" classname="com.example.feature.quran.domain.usecase.GetSurahUseCaseTest" time="0.105"/>
+  <testcase name="invoke should return null when repository returns null" classname="com.example.feature.quran.domain.usecase.GetSurahUseCaseTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

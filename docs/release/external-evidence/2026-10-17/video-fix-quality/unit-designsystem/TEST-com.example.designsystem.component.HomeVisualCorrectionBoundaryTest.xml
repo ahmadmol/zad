@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.designsystem.component.HomeVisualCorrectionBoundaryTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-16T11:22:31" hostname="MOLHAMALNAEB" time="0.044">
+  <properties/>
+  <testcase name="clock keeps hours and minutes together" classname="com.example.designsystem.component.HomeVisualCorrectionBoundaryTest" time="0.024"/>
+  <testcase name="daily activity orders progress and open-list for RTL" classname="com.example.designsystem.component.HomeVisualCorrectionBoundaryTest" time="0.006"/>
+  <testcase name="bottom navigation never coerces unknown index to Home" classname="com.example.designsystem.component.HomeVisualCorrectionBoundaryTest" time="0.005"/>
+  <testcase name="prayer cards do not use AM PM labels" classname="com.example.designsystem.component.HomeVisualCorrectionBoundaryTest" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

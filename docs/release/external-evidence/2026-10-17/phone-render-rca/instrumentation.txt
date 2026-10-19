@@ -1,0 +1,25 @@
+INSTRUMENTATION_STATUS: class=com.example.mol.ui.VideoRenderingRootCauseTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+com.example.mol.ui.VideoRenderingRootCauseTest:
+INSTRUMENTATION_STATUS: test=diagnoseOriginalThenNativeLayoutParameters
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: rcaOutput=/storage/emulated/0/Android/data/com.example.mol.referenceqa/files/video-rca-1792222196573
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.example.mol.ui.VideoRenderingRootCauseTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=diagnoseOriginalThenNativeLayoutParameters
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_RESULT: stream=
+
+Time: 15.879
+
+OK (1 test)
+
+
+INSTRUMENTATION_CODE: -1

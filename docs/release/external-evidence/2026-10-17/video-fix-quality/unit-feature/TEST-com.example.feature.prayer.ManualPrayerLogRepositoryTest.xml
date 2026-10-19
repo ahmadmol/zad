@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.prayer.ManualPrayerLogRepositoryTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:34" hostname="MOLHAMALNAEB" time="0.067">
+  <properties/>
+  <testcase name="unlogged prayers are never reported as missed" classname="com.example.feature.prayer.ManualPrayerLogRepositoryTest" time="0.012"/>
+  <testcase name="unknown stored status degrades instead of dropping the row" classname="com.example.feature.prayer.ManualPrayerLogRepositoryTest" time="0.003"/>
+  <testcase name="clearing returns a prayer to not recorded" classname="com.example.feature.prayer.ManualPrayerLogRepositoryTest" time="0.004"/>
+  <testcase name="days are isolated from each other" classname="com.example.feature.prayer.ManualPrayerLogRepositoryTest" time="0.003"/>
+  <testcase name="sunrise can never be logged" classname="com.example.feature.prayer.ManualPrayerLogRepositoryTest" time="0.003"/>
+  <testcase name="logging a prayer records it for that day" classname="com.example.feature.prayer.ManualPrayerLogRepositoryTest" time="0.004"/>
+  <testcase name="range query groups by day in order" classname="com.example.feature.prayer.ManualPrayerLogRepositoryTest" time="0.019"/>
+  <testcase name="late counts as performed but not performed does not" classname="com.example.feature.prayer.ManualPrayerLogRepositoryTest" time="0.006"/>
+  <testcase name="corrupt prayer name rows are ignored rather than crashing" classname="com.example.feature.prayer.ManualPrayerLogRepositoryTest" time="0.006"/>
+  <testcase name="clearAll removes every entry" classname="com.example.feature.prayer.ManualPrayerLogRepositoryTest" time="0.003"/>
+  <testcase name="logging the same prayer twice is idempotent" classname="com.example.feature.prayer.ManualPrayerLogRepositoryTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

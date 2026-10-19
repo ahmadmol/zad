@@ -1,0 +1,174 @@
+--------- beginning of main
+         1792222736.656 18139 18580 I IhsanPhysicalQa: VIDEO_START id=Kx9Wj4vP69A
+         1792222743.631 18139 18580 I IhsanPhysicalQa: VIDEO_END id=Kx9Wj4vP69A status=Blocked
+         1792222743.669 18139 18580 I IhsanPhysicalQa: VIDEO_START id=Ugh3nGLgZXY
+         1792222749.393 18139 18580 I IhsanPhysicalQa: VIDEO_END id=Ugh3nGLgZXY status=Blocked
+         1792222749.430 18139 18580 I IhsanPhysicalQa: VIDEO_START id=ALiJwsKl-Tg
+         1792222755.156 18139 18580 I IhsanPhysicalQa: VIDEO_END id=ALiJwsKl-Tg status=Blocked
+         1792222755.195 18139 18580 I IhsanPhysicalQa: VIDEO_START id=Er0EPYkCKu0
+         1792222760.778 18139 18580 I IhsanPhysicalQa: VIDEO_END id=Er0EPYkCKu0 status=Blocked
+         1792222760.819 18139 18580 I IhsanPhysicalQa: VIDEO_START id=35trZgpKGoo
+         1792222766.506 18139 18580 I IhsanPhysicalQa: VIDEO_END id=35trZgpKGoo status=Blocked
+         1792222766.549 18139 18580 I IhsanPhysicalQa: VIDEO_START id=WZnSTPuqhXg
+         1792222772.586 18139 18580 I IhsanPhysicalQa: VIDEO_END id=WZnSTPuqhXg status=Blocked
+         1792222772.622 18139 18580 I IhsanPhysicalQa: VIDEO_START id=adr8HqnAwRU
+         1792222778.338 18139 18580 I IhsanPhysicalQa: VIDEO_END id=adr8HqnAwRU status=Blocked
+         1792222778.374 18139 18580 I IhsanPhysicalQa: VIDEO_START id=rbL99lJa31o
+         1792222783.938 18139 18580 I IhsanPhysicalQa: VIDEO_END id=rbL99lJa31o status=Blocked
+         1792222783.973 18139 18580 I IhsanPhysicalQa: VIDEO_START id=QjTLJLkwvSk
+         1792222789.543 18139 18580 I IhsanPhysicalQa: VIDEO_END id=QjTLJLkwvSk status=Blocked
+         1792222789.577 18139 18580 I IhsanPhysicalQa: VIDEO_START id=UVc9YjMloZg
+         1792222795.251 18139 18580 I IhsanPhysicalQa: VIDEO_END id=UVc9YjMloZg status=Blocked
+         1792222795.286 18139 18580 I IhsanPhysicalQa: VIDEO_START id=Gnr9znaOgO8
+         1792222801.027 18139 18580 I IhsanPhysicalQa: VIDEO_END id=Gnr9znaOgO8 status=Blocked
+         1792222801.067 18139 18580 I IhsanPhysicalQa: VIDEO_START id=QALvk--o7kc
+         1792222806.665 18139 18580 I IhsanPhysicalQa: VIDEO_END id=QALvk--o7kc status=Blocked
+         1792222806.702 18139 18580 I IhsanPhysicalQa: VIDEO_START id=y3PiB5eMMK0
+         1792222812.281 18139 18580 I IhsanPhysicalQa: VIDEO_END id=y3PiB5eMMK0 status=Blocked
+         1792222812.317 18139 18580 I IhsanPhysicalQa: VIDEO_START id=vPUEamXZCbI
+         1792222817.950 18139 18580 I IhsanPhysicalQa: VIDEO_END id=vPUEamXZCbI status=Blocked
+         1792222817.987 18139 18580 I IhsanPhysicalQa: VIDEO_START id=1N7MTKOPYc8
+         1792222823.582 18139 18580 I IhsanPhysicalQa: VIDEO_END id=1N7MTKOPYc8 status=Blocked
+         1792222823.617 18139 18580 I IhsanPhysicalQa: VIDEO_START id=VkDN_ZMceBQ
+         1792222829.190 18139 18580 I IhsanPhysicalQa: VIDEO_END id=VkDN_ZMceBQ status=Blocked
+         1792222829.225 18139 18580 I IhsanPhysicalQa: VIDEO_START id=7zdwIlEnZ3M
+         1792222834.707 18139 18580 I IhsanPhysicalQa: VIDEO_END id=7zdwIlEnZ3M status=Blocked
+         1792222834.744 18139 18580 I IhsanPhysicalQa: VIDEO_START id=ZvAZaau77gk
+         1792222840.266 18139 18580 I IhsanPhysicalQa: VIDEO_END id=ZvAZaau77gk status=Blocked
+         1792222840.310 18139 18580 I IhsanPhysicalQa: VIDEO_START id=DDVgES67Qf4
+         1792222845.903 18139 18580 I IhsanPhysicalQa: VIDEO_END id=DDVgES67Qf4 status=Blocked
+         1792222845.938 18139 18580 I IhsanPhysicalQa: VIDEO_START id=6iwUrrrhJ2g
+         1792222851.635 18139 18580 I IhsanPhysicalQa: VIDEO_END id=6iwUrrrhJ2g status=Blocked
+         1792222851.682 18139 18580 I IhsanPhysicalQa: VIDEO_START id=1gCdxksI9TI
+         1792222857.290 18139 18580 I IhsanPhysicalQa: VIDEO_END id=1gCdxksI9TI status=Blocked
+         1792222857.326 18139 18580 I IhsanPhysicalQa: VIDEO_START id=_AFo3bGvpJw
+         1792222862.982 18139 18580 I IhsanPhysicalQa: VIDEO_END id=_AFo3bGvpJw status=Blocked
+         1792222863.019 18139 18580 I IhsanPhysicalQa: VIDEO_START id=jEHVJSMhfio
+         1792222868.762 18139 18580 I IhsanPhysicalQa: VIDEO_END id=jEHVJSMhfio status=Blocked
+         1792222868.798 18139 18580 I IhsanPhysicalQa: VIDEO_START id=YwAkepuLtTo
+         1792222874.394 18139 18580 I IhsanPhysicalQa: VIDEO_END id=YwAkepuLtTo status=Blocked
+         1792222874.433 18139 18580 I IhsanPhysicalQa: VIDEO_START id=6f0gHOw20Jc
+         1792222879.982 18139 18580 I IhsanPhysicalQa: VIDEO_END id=6f0gHOw20Jc status=Blocked
+         1792222880.018 18139 18580 I IhsanPhysicalQa: VIDEO_START id=jCrRcbcJkuQ
+         1792222885.778 18139 18580 I IhsanPhysicalQa: VIDEO_END id=jCrRcbcJkuQ status=Blocked
+         1792222885.820 18139 18580 I IhsanPhysicalQa: VIDEO_START id=S97S7QbGIZ0
+         1792222891.621 18139 18580 I IhsanPhysicalQa: VIDEO_END id=S97S7QbGIZ0 status=Blocked
+         1792222891.659 18139 18580 I IhsanPhysicalQa: VIDEO_START id=_s7K9TWNKX8
+         1792222897.236 18139 18580 I IhsanPhysicalQa: VIDEO_END id=_s7K9TWNKX8 status=Blocked
+         1792222897.276 18139 18580 I IhsanPhysicalQa: VIDEO_START id=SGSfIJOiFmc
+         1792222903.553 18139 18580 I IhsanPhysicalQa: VIDEO_END id=SGSfIJOiFmc status=Blocked
+         1792222903.593 18139 18580 I IhsanPhysicalQa: VIDEO_START id=Xxnj9TV9XtM
+         1792222909.550 18139 18580 I IhsanPhysicalQa: VIDEO_END id=Xxnj9TV9XtM status=Blocked
+         1792222909.593 18139 18580 I IhsanPhysicalQa: VIDEO_START id=bktou86QT88
+         1792222915.633 18139 18580 I IhsanPhysicalQa: VIDEO_END id=bktou86QT88 status=Blocked
+         1792222915.681 18139 18580 I IhsanPhysicalQa: VIDEO_START id=8b9Yu6-JWBI
+         1792222921.514 18139 18580 I IhsanPhysicalQa: VIDEO_END id=8b9Yu6-JWBI status=Blocked
+         1792222921.561 18139 18580 I IhsanPhysicalQa: VIDEO_START id=in9ksqjdL5Q
+         1792222927.619 18139 18580 I IhsanPhysicalQa: VIDEO_END id=in9ksqjdL5Q status=Blocked
+         1792222927.660 18139 18580 I IhsanPhysicalQa: VIDEO_START id=A6K2bvU6Zgw
+         1792222933.415 18139 18580 I IhsanPhysicalQa: VIDEO_END id=A6K2bvU6Zgw status=Blocked
+         1792222933.450 18139 18580 I IhsanPhysicalQa: VIDEO_START id=XRLbiuKkHPY
+         1792222939.354 18139 18580 I IhsanPhysicalQa: VIDEO_END id=XRLbiuKkHPY status=Blocked
+         1792222939.397 18139 18580 I IhsanPhysicalQa: VIDEO_START id=1AHbcZfhV1c
+         1792222945.453 18139 18580 I IhsanPhysicalQa: VIDEO_END id=1AHbcZfhV1c status=Blocked
+         1792222945.496 18139 18580 I IhsanPhysicalQa: VIDEO_START id=T20BWH6nOHg
+         1792222951.402 18139 18580 I IhsanPhysicalQa: VIDEO_END id=T20BWH6nOHg status=Blocked
+         1792222951.438 18139 18580 I IhsanPhysicalQa: VIDEO_START id=A7PIp2iaw4A
+         1792222957.047 18139 18580 I IhsanPhysicalQa: VIDEO_END id=A7PIp2iaw4A status=Blocked
+         1792222957.086 18139 18580 I IhsanPhysicalQa: VIDEO_START id=N5FjmQfxzho
+         1792222963.030 18139 18580 I IhsanPhysicalQa: VIDEO_END id=N5FjmQfxzho status=Blocked
+         1792222963.067 18139 18580 I IhsanPhysicalQa: VIDEO_START id=05Zil2gZob4
+         1792222969.409 18139 18580 I IhsanPhysicalQa: VIDEO_END id=05Zil2gZob4 status=Blocked
+         1792222969.451 18139 18580 I IhsanPhysicalQa: VIDEO_START id=AL7VG6D_i4Y
+         1792222975.431 18139 18580 I IhsanPhysicalQa: VIDEO_END id=AL7VG6D_i4Y status=Blocked
+         1792222975.468 18139 18580 I IhsanPhysicalQa: VIDEO_START id=tZzsSQuh5u4
+         1792222981.316 18139 18580 I IhsanPhysicalQa: VIDEO_END id=tZzsSQuh5u4 status=Blocked
+         1792222981.357 18139 18580 I IhsanPhysicalQa: VIDEO_START id=T1w2TdmQCYs
+         1792222987.230 18139 18580 I IhsanPhysicalQa: VIDEO_END id=T1w2TdmQCYs status=Blocked
+         1792222987.269 18139 18580 I IhsanPhysicalQa: VIDEO_START id=p4fexvfrSpM
+         1792222992.979 18139 18580 I IhsanPhysicalQa: VIDEO_END id=p4fexvfrSpM status=Blocked
+         1792222993.015 18139 18580 I IhsanPhysicalQa: VIDEO_START id=oMIDLd-2_PY
+         1792222998.973 18139 18580 I IhsanPhysicalQa: VIDEO_END id=oMIDLd-2_PY status=Blocked
+         1792222999.017 18139 18580 I IhsanPhysicalQa: VIDEO_START id=9Ikr2klWqcs
+         1792223004.821 18139 18580 I IhsanPhysicalQa: VIDEO_END id=9Ikr2klWqcs status=Blocked
+         1792223004.859 18139 18580 I IhsanPhysicalQa: VIDEO_START id=-IsxNieh8QU
+         1792223011.429 18139 18580 I IhsanPhysicalQa: VIDEO_END id=-IsxNieh8QU status=Blocked
+         1792223011.465 18139 18580 I IhsanPhysicalQa: VIDEO_START id=RXV--P-GRbg
+         1792223017.383 18139 18580 I IhsanPhysicalQa: VIDEO_END id=RXV--P-GRbg status=Blocked
+         1792223017.422 18139 18580 I IhsanPhysicalQa: VIDEO_START id=6wb1W1vQG_0
+         1792223023.783 18139 18580 I IhsanPhysicalQa: VIDEO_END id=6wb1W1vQG_0 status=Blocked
+         1792223023.817 18139 18580 I IhsanPhysicalQa: VIDEO_START id=qrwaTshvlXQ
+         1792223029.486 18139 18580 I IhsanPhysicalQa: VIDEO_END id=qrwaTshvlXQ status=Blocked
+         1792223029.523 18139 18580 I IhsanPhysicalQa: VIDEO_START id=is_w18cH_nI
+         1792223035.342 18139 18580 I IhsanPhysicalQa: VIDEO_END id=is_w18cH_nI status=Blocked
+         1792223035.376 18139 18580 I IhsanPhysicalQa: VIDEO_START id=ImUaE5c9ev8
+         1792223041.347 18139 18580 I IhsanPhysicalQa: VIDEO_END id=ImUaE5c9ev8 status=Blocked
+         1792223041.382 18139 18580 I IhsanPhysicalQa: VIDEO_START id=IuuDzViGr-g
+         1792223046.988 18139 18580 I IhsanPhysicalQa: VIDEO_END id=IuuDzViGr-g status=Blocked
+         1792223047.023 18139 18580 I IhsanPhysicalQa: VIDEO_START id=VOkYAydi-t4
+         1792223052.996 18139 18580 I IhsanPhysicalQa: VIDEO_END id=VOkYAydi-t4 status=Blocked
+         1792223053.035 18139 18580 I IhsanPhysicalQa: VIDEO_START id=eH35xcP0GUE
+         1792223059.007 18139 18580 I IhsanPhysicalQa: VIDEO_END id=eH35xcP0GUE status=Blocked
+         1792223059.042 18139 18580 I IhsanPhysicalQa: VIDEO_START id=7AfOskqadEc
+         1792223065.019 18139 18580 I IhsanPhysicalQa: VIDEO_END id=7AfOskqadEc status=Blocked
+         1792223065.057 18139 18580 I IhsanPhysicalQa: VIDEO_START id=NtZupF-OFYE
+         1792223071.110 18139 18580 I IhsanPhysicalQa: VIDEO_END id=NtZupF-OFYE status=Blocked
+         1792223071.148 18139 18580 I IhsanPhysicalQa: VIDEO_START id=VoHQtkOzwvU
+         1792223077.337 18139 18580 I IhsanPhysicalQa: VIDEO_END id=VoHQtkOzwvU status=Blocked
+         1792223077.376 18139 18580 I IhsanPhysicalQa: VIDEO_START id=f89uFne4br8
+         1792223083.766 18139 18580 I IhsanPhysicalQa: VIDEO_END id=f89uFne4br8 status=Blocked
+         1792223083.803 18139 18580 I IhsanPhysicalQa: VIDEO_START id=S0lPIdx2sy0
+         1792223090.270 18139 18580 I IhsanPhysicalQa: VIDEO_END id=S0lPIdx2sy0 status=Blocked
+         1792223090.305 18139 18580 I IhsanPhysicalQa: VIDEO_START id=9ZtKCmePZTA
+         1792223096.824 18139 18580 I IhsanPhysicalQa: VIDEO_END id=9ZtKCmePZTA status=Blocked
+         1792223096.858 18139 18580 I IhsanPhysicalQa: VIDEO_START id=GNf2CknFU0A
+         1792223103.337 18139 18580 I IhsanPhysicalQa: VIDEO_END id=GNf2CknFU0A status=Blocked
+         1792223103.373 18139 18580 I IhsanPhysicalQa: VIDEO_START id=GypVGtSU8WU
+         1792223109.518 18139 18580 I IhsanPhysicalQa: VIDEO_END id=GypVGtSU8WU status=Blocked
+         1792223109.554 18139 18580 I IhsanPhysicalQa: VIDEO_START id=PuIVd1VBLvw
+         1792223115.878 18139 18580 I IhsanPhysicalQa: VIDEO_END id=PuIVd1VBLvw status=Blocked
+         1792223115.919 18139 18580 I IhsanPhysicalQa: VIDEO_START id=eV-FVl7eMBA
+         1792223122.420 18139 18580 I IhsanPhysicalQa: VIDEO_END id=eV-FVl7eMBA status=Blocked
+         1792223122.456 18139 18580 I IhsanPhysicalQa: VIDEO_START id=dAx43bvNQ9E
+         1792223128.843 18139 18580 I IhsanPhysicalQa: VIDEO_END id=dAx43bvNQ9E status=Blocked
+         1792223128.877 18139 18580 I IhsanPhysicalQa: VIDEO_START id=CTmAa2Ay9IY
+         1792223135.409 18139 18580 I IhsanPhysicalQa: VIDEO_END id=CTmAa2Ay9IY status=Blocked
+         1792223135.446 18139 18580 I IhsanPhysicalQa: VIDEO_START id=WL8vj8zd8RA
+         1792223141.920 18139 18580 I IhsanPhysicalQa: VIDEO_END id=WL8vj8zd8RA status=Blocked
+         1792223141.954 18139 18580 I IhsanPhysicalQa: VIDEO_START id=8nES5-BB68g
+         1792223147.997 18139 18580 I IhsanPhysicalQa: VIDEO_END id=8nES5-BB68g status=Blocked
+         1792223148.030 18139 18580 I IhsanPhysicalQa: VIDEO_START id=P8M8QLfW0u4
+         1792223154.391 18139 18580 I IhsanPhysicalQa: VIDEO_END id=P8M8QLfW0u4 status=Blocked
+         1792223154.420 18139 18580 I IhsanPhysicalQa: VIDEO_START id=VgojMWbww1c
+         1792223161.396 18139 18580 I IhsanPhysicalQa: VIDEO_END id=VgojMWbww1c status=Blocked
+         1792223161.432 18139 18580 I IhsanPhysicalQa: VIDEO_START id=5WMHtvTkaL8
+         1792223167.738 18139 18580 I IhsanPhysicalQa: VIDEO_END id=5WMHtvTkaL8 status=Blocked
+         1792223167.769 18139 18580 I IhsanPhysicalQa: VIDEO_START id=y-mx8gqjuws
+         1792223174.345 18139 18580 I IhsanPhysicalQa: VIDEO_END id=y-mx8gqjuws status=Blocked
+         1792223174.383 18139 18580 I IhsanPhysicalQa: VIDEO_START id=JU0lg47NeKs
+         1792223180.492 18139 18580 I IhsanPhysicalQa: VIDEO_END id=JU0lg47NeKs status=Blocked
+         1792223180.534 18139 18580 I IhsanPhysicalQa: VIDEO_START id=4pQuXGBcD6M
+         1792223186.532 18139 18580 I IhsanPhysicalQa: VIDEO_END id=4pQuXGBcD6M status=Blocked
+         1792223186.562 18139 18580 I IhsanPhysicalQa: VIDEO_START id=xlV5K7NtbkY
+         1792223192.912 18139 18580 I IhsanPhysicalQa: VIDEO_END id=xlV5K7NtbkY status=Blocked
+         1792223192.950 18139 18580 I IhsanPhysicalQa: VIDEO_START id=lpcMODg1Q1M
+         1792223199.437 18139 18580 I IhsanPhysicalQa: VIDEO_END id=lpcMODg1Q1M status=Blocked
+         1792223199.470 18139 18580 I IhsanPhysicalQa: VIDEO_START id=TpOPriKrI0Y
+         1792223205.829 18139 18580 I IhsanPhysicalQa: VIDEO_END id=TpOPriKrI0Y status=Blocked
+         1792223205.859 18139 18580 I IhsanPhysicalQa: VIDEO_START id=Wn9U9pFPkVc
+         1792223212.332 18139 18580 I IhsanPhysicalQa: VIDEO_END id=Wn9U9pFPkVc status=Blocked
+         1792223212.369 18139 18580 I IhsanPhysicalQa: VIDEO_START id=sRNMhAvtuGA
+         1792223218.715 18139 18580 I IhsanPhysicalQa: VIDEO_END id=sRNMhAvtuGA status=Blocked
+         1792223218.747 18139 18580 I IhsanPhysicalQa: VIDEO_START id=zECGBvClad0
+         1792223225.148 18139 18580 I IhsanPhysicalQa: VIDEO_END id=zECGBvClad0 status=Blocked
+         1792223225.180 18139 18580 I IhsanPhysicalQa: VIDEO_START id=PwiyjieTJ1I
+         1792223231.418 18139 18580 I IhsanPhysicalQa: VIDEO_END id=PwiyjieTJ1I status=Blocked
+         1792223231.454 18139 18580 I IhsanPhysicalQa: VIDEO_START id=_KoW1Y8anEg
+         1792223237.551 18139 18580 I IhsanPhysicalQa: VIDEO_END id=_KoW1Y8anEg status=Blocked
+         1792223237.583 18139 18580 I IhsanPhysicalQa: VIDEO_START id=MoEF5APtIRA
+         1792223243.549 18139 18580 I IhsanPhysicalQa: VIDEO_END id=MoEF5APtIRA status=Blocked
+         1792223243.585 18139 18580 I IhsanPhysicalQa: VIDEO_START id=7MRpnyJ0mBg
+         1792223249.589 18139 18580 I IhsanPhysicalQa: VIDEO_END id=7MRpnyJ0mBg status=Blocked
+         1792223249.626 18139 18580 I IhsanPhysicalQa: VIDEO_START id=rd_53eZ-j8E
+         1792223255.758 18139 18580 I IhsanPhysicalQa: VIDEO_END id=rd_53eZ-j8E status=Blocked
+         1792223257.092 18139 18681 W IhsanYouTube: Official player error: 150

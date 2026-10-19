@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" tests="16" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:37" hostname="MOLHAMALNAEB" time="0.004">
+  <properties/>
+  <testcase name="single ayah repeats the same ayah unlimited" classname="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" time="0.003"/>
+  <testcase name="off advances sequentially" classname="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" time="0.0"/>
+  <testcase name="negative repeat count degrades to unlimited" classname="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" time="0.0"/>
+  <testcase name="range wraps to its start at the end of a pass" classname="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" time="0.0"/>
+  <testcase name="range re-enters when playback drifted outside it" classname="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" time="0.0"/>
+  <testcase name="range stops after the requested number of passes" classname="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" time="0.0"/>
+  <testcase name="inverted range bounds are normalized" classname="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" time="0.0"/>
+  <testcase name="off config reports inactive and range reports active" classname="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" time="0.0"/>
+  <testcase name="empty surah stops immediately" classname="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" time="0.0"/>
+  <testcase name="range bounds are clamped to the surah length" classname="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" time="0.0"/>
+  <testcase name="single ayah is clamped into the surah" classname="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" time="0.0"/>
+  <testcase name="unlimited repeat never stops on its own" classname="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" time="0.0"/>
+  <testcase name="a single ayah range behaves like single ayah repeat" classname="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" time="0.0"/>
+  <testcase name="single ayah stops after the requested count" classname="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" time="0.0"/>
+  <testcase name="off stops at the last ayah" classname="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" time="0.0"/>
+  <testcase name="range advances inside the range" classname="com.example.feature.quran.domain.model.QuranRepeatPlannerTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.profile.ProfileReferenceUiBoundaryTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:34" hostname="MOLHAMALNAEB" time="0.011">
+  <properties/>
+  <testcase name="profile screen keeps ProfileViewModel and local-profile wording" classname="com.example.feature.profile.ProfileReferenceUiBoundaryTest" time="0.006"/>
+  <testcase name="main screen shows bottom bar on Home Ehsan and Profile roots" classname="com.example.feature.profile.ProfileReferenceUiBoundaryTest" time="0.002"/>
+  <testcase name="profile presentation components stay free of repositories and viewmodels" classname="com.example.feature.profile.ProfileReferenceUiBoundaryTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

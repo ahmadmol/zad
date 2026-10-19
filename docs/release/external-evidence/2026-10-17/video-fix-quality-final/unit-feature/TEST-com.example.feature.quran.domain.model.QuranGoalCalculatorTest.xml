@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" tests="19" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:06" hostname="MOLHAMALNAEB" time="0.01">
+  <properties/>
+  <testcase name="days remaining is only meaningful for a dated khatma" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.004"/>
+  <testcase name="khatma by date recalculates from the current position not the start" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.001"/>
+  <testcase name="a backwards reader position never yields negative progress" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.002"/>
+  <testcase name="goal type round trips through storage" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.0"/>
+  <testcase name="falling behind adjusts the plan instead of accusing the user" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.001"/>
+  <testcase name="unknown or absent goal type means no goal" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.0"/>
+  <testcase name="over reading is capped and never penalised" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.0"/>
+  <testcase name="partial progress reports a fraction" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.001"/>
+  <testcase name="ayahs per day target is the configured number" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.0"/>
+  <testcase name="a due or overdue khatma asks for everything that is left" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.0"/>
+  <testcase name="an overdue khatma reports negative days remaining rather than hiding it" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.0"/>
+  <testcase name="a finished khatma requires nothing more" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.0"/>
+  <testcase name="khatma by date spreads the remaining ayahs over the remaining days" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.0"/>
+  <testcase name="an out of range reader index is clamped" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.0"/>
+  <testcase name="a completed mushaf reports khatma complete" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.0"/>
+  <testcase name="khatma fraction is derived from the same reader position" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.0"/>
+  <testcase name="zero target daily goal reports no progress rather than dividing by zero" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.0"/>
+  <testcase name="pages per day converts to whole ayahs rounding up" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.001"/>
+  <testcase name="read today is the difference from the day start baseline" classname="com.example.feature.quran.domain.model.QuranGoalCalculatorTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.quran.QuranContentIntegrityTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:36" hostname="MOLHAMALNAEB" time="0.328">
+  <properties/>
+  <testcase name="every bundled Quran character equals Tanzil Uthmani 1_1 original XML" classname="com.example.feature.quran.QuranContentIntegrityTest" time="0.245"/>
+  <testcase name="604 page partition and 30 juz anchors cover whole Quran once in order" classname="com.example.feature.quran.QuranContentIntegrityTest" time="0.052"/>
+  <testcase name="all 6236 unique verse keys belong to their 114 chapters with consecutive numbering" classname="com.example.feature.quran.QuranContentIntegrityTest" time="0.03"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

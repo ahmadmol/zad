@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.prayer.domain.scheduler.PrayerScheduleModeTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:34" hostname="MOLHAMALNAEB" time="0.01">
+  <properties/>
+  <testcase name="include sunrise schedules exact alarm for every time marker" classname="com.example.feature.prayer.domain.scheduler.PrayerScheduleModeTest" time="0.001"/>
+  <testcase name="fingerprint changes when scheduling settings change" classname="com.example.feature.prayer.domain.scheduler.PrayerScheduleModeTest" time="0.007"/>
+  <testcase name="fingerprint is stable for identical inputs" classname="com.example.feature.prayer.domain.scheduler.PrayerScheduleModeTest" time="0.001"/>
+  <testcase name="schedule remains sorted for reminder policy" classname="com.example.feature.prayer.domain.scheduler.PrayerScheduleModeTest" time="0.0"/>
+  <testcase name="excluding sunrise preserves the five prayer exact alarms" classname="com.example.feature.prayer.domain.scheduler.PrayerScheduleModeTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

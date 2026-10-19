@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.core.data.local.database.IhsanDatabaseMigrationMatrixUnitTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:32" hostname="MOLHAMALNAEB" time="0.013">
+  <properties/>
+  <testcase name="instrumented migration test class exists" classname="com.example.feature.core.data.local.database.IhsanDatabaseMigrationMatrixUnitTest" time="0.003"/>
+  <testcase name="schema exports exist for versions 5 and 6" classname="com.example.feature.core.data.local.database.IhsanDatabaseMigrationMatrixUnitTest" time="0.003"/>
+  <testcase name="database module forbids destructive fallback" classname="com.example.feature.core.data.local.database.IhsanDatabaseMigrationMatrixUnitTest" time="0.002"/>
+  <testcase name="supported migrations provide a continuous path from 2 to 8" classname="com.example.feature.core.data.local.database.IhsanDatabaseMigrationMatrixUnitTest" time="0.005"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

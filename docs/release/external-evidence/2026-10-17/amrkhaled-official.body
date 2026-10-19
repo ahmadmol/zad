@@ -1,0 +1,2547 @@
+<!DOCTYPE html>
+<html lang="ar" xml:lang="ar" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <base href="https://amrkhaled.net/">
+        <title>الموقع الرسمي للدكتور عمرو خالد - بناء إنسان</title>
+		<meta name="description" content="موقع عصري ينشغل بالدين والحياة معاً.. ديني.. اجتماعي.. ثقافي، يقدم البرامج والفتاوى والسيرة وقصص القرآن والأنبياء والاستشارات الطبية والنفسية والحلول للمشكلات الزوجية، وكل ما يساعد على تنمية الإنسان، ومهارات الحياة، ومعلومات عامة.. وكل ما يخص الشباب والمرأة والأسرة والتكنولوجيا برؤية عصرية وسطية."/>
+        <link rel="canonical" href="https://amrkhaled.net" />
+
+        <!-- <link rel="icon" href="images/icons/fav.png"> -->
+        <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous"> -->
+        <meta name="viewport" content="width=device-width, user-scalable=no">
+
+        <link rel="stylesheet" href="front/assets/bootstrap.min.css" media="all" type="text/css" />
+        <link href="front/assets/owl.carousel.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+            integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+        <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+        <link rel="stylesheet" href="front/stylesheets/style.css?1">
+		        <meta name="google-site-verification" content="neQzLDAl29f-0Gq41pq0glIqWR_rtBQIY4WywOoR3fM" />
+
+        <!-- ADS Head -->
+		<script async src="https://cdn.fuseplatform.net/publift/tags/2/2227/fuse.js"></script>
+		<div class ="aplvideo">
+<script async id="AV6230878bcd0ef22098408f47" type="text/javascript" src="https://tg1.modoro360.com/api/adserver/spt?AV_TAGID=6230878bcd0ef22098408f47&AV_PUBLISHERID=60095c900c0799791c46d8d4"></script>
+</div>
+
+<script async src="https://jscdn.greeter.me/almesryoonhead.js" defer></script>
+<script async src="https://jscdn.greeter.me/almesryoondynamic.js" defer></script>
+<div id="id-custom_banner" style="width: fit-content;position:fixed;left:50%;bottom:0;transform:translateX(-50%);z-index:999999;opacity:1;transition:bottom 1.5s ease-out 0s,opacity .2s ease-out 1s,transform .2s ease-out 0s"><div style="position:absolute;right:0;top:-21px;cursor:pointer" onclick="removeCustomBanner(this.parentNode)"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" preserveaspectratio="xMidYMid meet" viewbox="0 0 16.6 17" style="width:20px;height:20px;filter:drop-shadow(1px 1px 2px #333);-webkit-filter:drop-shadow(1px 1px 2px #333)"><polygon fill="#FFF" points="15.5,1.7 13.7,0 7.7,6.1 1.8,0 0,1.7 6,7.9 0,14.1 1.8,15.9 7.7,9.7 13.7,15.9 15.5,14.1 9.5,7.9 "></polygon></svg></div><div class="timer" style="position:absolute;left:0;top:0;z-index:10;padding:5px;color:#fff"></div><div id='stick'><script>googletag.cmd.push(function(){googletag.display('stick')}); setInterval(function(){googletag.pubads().refresh([gptAdSlots[0]]);}, '50000');</script></div></div><script type="text/javascript">function removeCustomBanner(n){n.style.transform="translate(-50%, 150%)",setTimeout(function(){clearInterval(customBannerCountdownInterval),n.parentNode.removeChild(n)},200)}var customBannerCountdownInterval;</script>
+
+
+
+<!-- Global site tag (gtag.js) - Google Ads: 790306954 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-790306954"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-790306954');
+</script>
+
+
+<!-- Facebook Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '365056103986996');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=365056103986996&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Facebook Pixel Code -->
+
+<!-- Event snippet for Page view conversion page -->
+<script>
+  gtag('event', 'conversion', {'send_to': 'AW-790306954/aJS2CI7pl_sBEIrB7PgC'});
+</script>
+        <meta property="og:title"              content="الموقع الرسمي للدكتور عمرو خالد - بناء إنسان" />
+<meta property="og:description"        content="موقع عصري ينشغل بالدين والحياة معاً.. ديني.. اجتماعي.. ثقافي، يقدم البرامج والفتاوى والسيرة وقصص القرآن والأنبياء والاستشارات الطبية والنفسية والحلول للمشكلات الزوجية، وكل ما يساعد على تنمية الإنسان، ومهارات الحياة، ومعلومات عامة.. وكل ما يخص الشباب والمرأة والأسرة والتكنولوجيا برؤية عصرية وسطية." />
+<meta property="og:image"              content="https://amrkhaled.net/front/images/logo_big.png" />
+<meta property="og:url" content="https://www.amrkhaled.net/" />
+<meta property="og:type" content="website" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="الموقع الرسمي للدكتور عمرو خالد - بناء إنسان" />
+<meta name="twitter:description" content="موقع عصري ينشغل بالدين والحياة معاً.. ديني.. اجتماعي.. ثقافي، يقدم البرامج والفتاوى والسيرة وقصص القرآن والأنبياء والاستشارات الطبية والنفسية والحلول للمشكلات الزوجية، وكل ما يساعد على تنمية الإنسان، ومهارات الحياة، ومعلومات عامة.. وكل ما يخص الشباب والمرأة والأسرة والتكنولوجيا برؤية عصرية وسطية." />
+<meta name="twitter:image" content="https://amrkhaled.net/front/images/logo_big.png" />
+<style>
+@media    only screen and (min-width: 1024px) {
+  .mob-ads {
+    display: none !important;
+  }
+}
+</style>
+        <style>
+        .hint-admin{
+            display: none;
+        }
+        .article_details , .article_details p{
+            font-size: 16px ;
+        }
+        header .logo  {
+            width: 60px;
+        }
+        .card.normal .card-body p{
+            font-size: 15px;
+        }
+        blockquote , .blockquote{
+            display: block;
+            background: #fff;
+        }
+        blockquote:before , .blockquote:before {
+            content: "”";
+            font-size: 30px;
+            font-family: arial;
+        }
+        blockquote:after , .blockquote:after {
+            content: "“";
+            font-size: 30px;
+            font-family: arial;
+        }
+        small, .card-subtitle, .small-textBlackBold{
+            font-size: 14px;
+        }
+        .article_details h1 , .article_details h2 {
+            color: #2c2c2c;
+            font-size: 22px;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+		.article_details, .article_details p , .article_details p span {
+			font-size: 18px !important;
+		}
+        .article_details h2:before{
+            display:none ;
+        }
+        .side-nav .nav-item .navbar-toggler.nav-link:after{
+            display: none;
+        }
+
+
+		.slide-arrow{
+			top: 30%;
+		}
+		.normal-slider .slide-arrow{
+			top: 25%;
+		}
+		.slide-arrow i{
+			font-size: 25px;
+		}
+		.slick-dots li button::before{
+			font-size: 13px;
+			opacity: .5;
+			color: #0e3486;
+		}
+		.slick-dots li.slick-active button::before {
+			opacity: 1;
+			color: #0e3486;
+		}
+
+		.home-tabs{
+			display: flex;
+			justify-content: space-between;
+		}
+		.home-tabs li.add-border:before{
+			content: '';
+			position: absolute;
+			height: 100%;
+			width: 2px;
+			background: #dee2e6;
+			left: 50%;
+			z-index: 1;
+		}
+		.home-tabs h2:before{
+			background: none;
+			transition: .4s ease;
+		}
+		.home-tabs a{
+			padding:0;
+		}
+		.home-tabs a.active h2:before{
+			background: #1b55d2;
+		}
+		.home-tabs .nav-link:focus, .home-tabs .nav-link:hover , .home-tabs .nav-link.active{
+			border:0;
+		}
+
+		.intro-1 .intro-opacity:before {
+			background: linear-gradient(rgba(0,0,0,0) 0%,rgba(0,0,0,0.14) 23%,rgba(0,0,0,0.47) 44%,rgba(0,0,0,0.67) 56%,#000000 90%);
+		}
+
+
+		@media(min-width: 900px) and (max-width: 1400px) {
+			.page-content{
+									background: url('uploads/') no-repeat;
+					padding-top: 40px;
+				
+
+			}
+		}
+        @media (max-width: 600px){
+            .horizontal-card .card-body p, .horizontal-card .card-body .card-link, .horizontal-card-sm .card-body p, .horizontal-card-sm .card-body .card-link {
+                font-size: 14px !important;
+                line-height: 1.6 !important;
+            }
+            .sticky-top{
+                height: 83px;
+            }
+        }
+
+
+		.fuse_bottom_sticky {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			text-align: center;
+			-webkit-overflow-scrolling: touch;
+			z-index: 1000;
+		  }
+		  .fuse_bottom_sticky .fuse-slot {
+			transform: translate3d(0,0,0);
+		  }
+
+			@media  screen and (min-width: 601px) {
+			  .fuse_bottom_sticky {
+				display: none;
+			  }
+			}
+
+        </style>
+
+
+    </head>
+
+    <body>
+        <!--<div class="se-pre-con"></div>-->
+
+        <header class='sticky-top'>
+    <div class="container">
+        <nav class="navbar p-0">
+            <a class="side-btn ml-lg-3" href="javascript:void(0)">
+                <span class="side-btn-icon"></span>
+                <span class="side-btn-icon"></span>
+                <span class="side-btn-icon"></span>
+            </a>
+            <div class='d-flex align-items-center  ml-lg-auto'>
+                <a class='logo' href="./">
+                    <img src="front/images/logo.png" alt="">
+                </a>
+                <div class="header-links">
+                                        <a class="" href="https://amrkhaled.net/category/16/الدين-للحياة">الدين للحياة</a>
+                                        <a class="" href="https://amrkhaled.net/category/1104/مع-الحبيب">مع  الحبيب</a>
+                                        <a class="" href="https://amrkhaled.net/category/26/استشارات">استشارات</a>
+                                        <a class="" href="https://amrkhaled.net/category/1020/الفتاوى">الفتاوى</a>
+                                        <a class="" href="https://amrkhaled.net/category/1123/صحتك-تهمنا">صحتك تهمنا</a>
+                                        <a class="" href="https://amrkhaled.net/category/1124/المرأة">المرأة</a>
+                                        <a class="" href="https://amrkhaled.net/category/1127/الشباب">الشباب</a>
+                                        <a class="" href="https://amrkhaled.net/category/1133/تفسير-الأحلام-والرؤى">تفسير الأحلام والرؤى</a>
+                                        <a class="" href="https://amrkhaled.net/category/1150/مسابقات">مسابقات</a>
+                                    </div>
+            </div>
+            <div class='d-flex align-items-center'>
+                <div class=''>
+                    <!-- <label class="search" for="search1">
+                        <input class="search1" type="text" />
+                    </label> -->
+                    <!-- <div class="mobile-search text-center">
+                        <a href="#" class="mob-search" title="search">
+                            <i class="fa fa-search fa-lg"></i>
+                        </a>
+                    </div> -->
+                    <!-- Button trigger modal -->
+                    <!-- <button type="button" class=""> -->
+                    <!-- <label class="search" for="search1"> -->
+                    <div class="mobile-search text-center">
+													<a href='https://amrkhaled.net?dark'> 
+								<i class="fa fa-moon fa-lg ml-3"></i>
+							</a>
+						                        <i class="fa fa-search fa-lg" data-toggle="modal" data-target="#exampleModal"></i>
+                    </div>
+
+                    <!-- </button> -->
+                </div>
+
+            </div>
+        </nav>
+    </div>
+</header>
+
+
+<div class="side-nav">
+    <ul class="navbar-nav">
+        <div class="accordion" id="accordionExample">
+			<li class="nav-item">
+				<a class="nav-link" href="./">الرئيسية</a>
+			</li>
+            								            <li class="nav-item">
+                
+                    <!--<a class="navbar-toggler nav-link" data-toggle="collapse" data-target="#dropdown-0"
+                        aria-controls="dropdown-0" aria-expanded="false" aria-label="Toggle navigation">
+                        الدين للحياة
+                    </a>-->
+
+					<div class='navbar-toggler nav-link d-flex align-items-center justify-content-between'>
+						<a class='nav-link ' href="https://amrkhaled.net/category/16/الدين-للحياة">الدين للحياة</a>
+						<i class="fas fa-chevron-down" data-toggle="collapse" data-target="#dropdown-0"
+							aria-controls="dropdown-0" aria-expanded="false" aria-label="Toggle navigation"></i>
+					</div>
+
+                    <ul class="collapse" id="dropdown-0" data-parent="#accordionExample">
+
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1031/افهم-دينك-صح">افهم دينك صح</a></li>
+                                            </ul>
+                            </li>
+            								            <li class="nav-item">
+                                    <a class="nav-link" href="https://amrkhaled.net/category/1104/مع-الحبيب">مع  الحبيب</a>
+                            </li>
+            								            <li class="nav-item">
+                
+                    <!--<a class="navbar-toggler nav-link" data-toggle="collapse" data-target="#dropdown-2"
+                        aria-controls="dropdown-2" aria-expanded="false" aria-label="Toggle navigation">
+                        استشارات
+                    </a>-->
+
+					<div class='navbar-toggler nav-link d-flex align-items-center justify-content-between'>
+						<a class='nav-link ' href="https://amrkhaled.net/category/26/استشارات">استشارات</a>
+						<i class="fas fa-chevron-down" data-toggle="collapse" data-target="#dropdown-2"
+							aria-controls="dropdown-2" aria-expanded="false" aria-label="Toggle navigation"></i>
+					</div>
+
+                    <ul class="collapse" id="dropdown-2" data-parent="#accordionExample">
+
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/593/المرأة">المرأة</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1040/الشباب">الشباب</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1042/علاقات-زوجية">علاقات زوجية</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1055/استشارات-نفسية">استشارات نفسية</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1056/اسأل-مجرب">اسأل مجرب</a></li>
+                                            </ul>
+                            </li>
+            								            <li class="nav-item">
+                                    <a class="nav-link" href="https://amrkhaled.net/category/1020/الفتاوى">الفتاوى</a>
+                            </li>
+            								            <li class="nav-item">
+                                    <a class="nav-link" href="https://amrkhaled.net/category/1123/صحتك-تهمنا">صحتك تهمنا</a>
+                            </li>
+            								            <li class="nav-item">
+                
+                    <!--<a class="navbar-toggler nav-link" data-toggle="collapse" data-target="#dropdown-5"
+                        aria-controls="dropdown-5" aria-expanded="false" aria-label="Toggle navigation">
+                        المرأة
+                    </a>-->
+
+					<div class='navbar-toggler nav-link d-flex align-items-center justify-content-between'>
+						<a class='nav-link ' href="https://amrkhaled.net/category/1124/المرأة">المرأة</a>
+						<i class="fas fa-chevron-down" data-toggle="collapse" data-target="#dropdown-5"
+							aria-controls="dropdown-5" aria-expanded="false" aria-label="Toggle navigation"></i>
+					</div>
+
+                    <ul class="collapse" id="dropdown-5" data-parent="#accordionExample">
+
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1125/الأسرة">الأسرة</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1126/العمل">العمل</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1147/جمالك">جمالك</a></li>
+                                            </ul>
+                            </li>
+            								            <li class="nav-item">
+                
+                    <!--<a class="navbar-toggler nav-link" data-toggle="collapse" data-target="#dropdown-6"
+                        aria-controls="dropdown-6" aria-expanded="false" aria-label="Toggle navigation">
+                        الشباب
+                    </a>-->
+
+					<div class='navbar-toggler nav-link d-flex align-items-center justify-content-between'>
+						<a class='nav-link ' href="https://amrkhaled.net/category/1127/الشباب">الشباب</a>
+						<i class="fas fa-chevron-down" data-toggle="collapse" data-target="#dropdown-6"
+							aria-controls="dropdown-6" aria-expanded="false" aria-label="Toggle navigation"></i>
+					</div>
+
+                    <ul class="collapse" id="dropdown-6" data-parent="#accordionExample">
+
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1128/قضايا-شبابية">قضايا شبابية</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1129/تكنولوجيا">تكنولوجيا</a></li>
+                                            </ul>
+                            </li>
+            								            <li class="nav-item">
+                                    <a class="nav-link" href="https://amrkhaled.net/category/1133/تفسير-الأحلام-والرؤى">تفسير الأحلام والرؤى</a>
+                            </li>
+            								            <li class="nav-item">
+                                    <a class="nav-link" href="https://amrkhaled.net/category/1150/مسابقات">مسابقات</a>
+                            </li>
+            								            <li class="nav-item">
+                                    <a class="nav-link" href="https://amrkhaled.net/category/1034/أدعية-و-أذكار">أدعية و أذكار</a>
+                            </li>
+            									<li class="nav-item">
+						<a class="nav-link" href="program/1132/منازل-الروح-حياة-الإحسان">منازل الروح.. "حياة الإحسان"</a>
+					</li>
+								            <li class="nav-item">
+                
+                    <!--<a class="navbar-toggler nav-link" data-toggle="collapse" data-target="#dropdown-10"
+                        aria-controls="dropdown-10" aria-expanded="false" aria-label="Toggle navigation">
+                        البرامج
+                    </a>-->
+
+					<div class='navbar-toggler nav-link d-flex align-items-center justify-content-between'>
+						<a class='nav-link ' href="https://amrkhaled.net/programs">البرامج</a>
+						<i class="fas fa-chevron-down" data-toggle="collapse" data-target="#dropdown-10"
+							aria-controls="dropdown-10" aria-expanded="false" aria-label="Toggle navigation"></i>
+					</div>
+
+                    <ul class="collapse" id="dropdown-10" data-parent="#accordionExample">
+
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1183/برنامج-لبيك-2--2026">برنامج لبيك 2 -2026</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1182/برنامج-دليل--2026">برنامج دليل -2026</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1180/برنامج-أسرار-أدعية-النبي">برنامج أسرار أدعية النبي</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1181/برنامج-لبيك---2025">برنامج لبيك - 2025</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1179/نبي-الإحسان">نبي الإحسان</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1178/برنامح-أسرار-أدعية-القرآن---الجزء-الثاني">برنامح أسرار أدعية القرآن - الجزء الثاني</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1150/بودكاست-معاني---دكتور-عمرو-خالد">بودكاست معاني - دكتور عمرو خالد</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1177/العشر-الأوائل">العشر الأوائل</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1175/بسمة-أمل---برنامج-جديد">بسمة أمل - برنامج جديد</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1176/حتي-يغيروا-ما-بأنفسهم">حتي يغيروا ما بأنفسهم</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1170/لحظة-صدق">لحظة صدق</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1173/ونلقي-الأحبة">ونلقي الأحبة</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1174/صناع-الحياة">صناع الحياة</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1167/رحلة-السعادة">رحلة السعادة</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1168/قصص-القرآن---الجزء-الأول">قصص القرآن - الجزء الأول</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1169/قصص-القرآن---الجزء-الثاني">قصص القرآن - الجزء الثاني</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1171/لمحات-إنسانية">لمحات إنسانية</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1172/بإسمك-نحيا">بإسمك نحيا</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1164/كلام-من-القلب">كلام من القلب</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1165/مع-التابعين">مع التابعين</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1166/صدق-رسول-الله">صدق رسول الله</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1162/دعوة-للتعايش">دعوة للتعايش</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1163/قصة-الأندلس">قصة الأندلس</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1157/ذكريات-حاج">ذكريات حاج</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1158/حياة-أحسن">حياة أحسن</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1159/خواطر-قرآنية">خواطر قرآنية</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1160/كنوز-رمضانية--الجزء-الأول">كنوز رمضانية- الجزء الأول</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1161/كنوز-رمضانية--الجزء-الثاني">كنوز رمضانية- الجزء الثاني</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1152/بودكاست-الزيارة---الجزء-الثاني">بودكاست الزيارة - الجزء الثاني</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1156/حياة-الحبيب">حياة الحبيب</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1154/الجنة-في-بيوتنا---الجزء-الثاني">الجنة في بيوتنا - الجزء الثاني</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1155/إم-بي-سي-مصر-في-إسبوع">إم بي سي مصر في إسبوع</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1153/الإيمان-والعصر--(-طريق-الحياة-)">الإيمان والعصر  ( طريق الحياة )</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1151/برنامج-الفخ-(-The-Trap---English-Version-)">برنامج الفخ ( The Trap - English Version )</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1146/الفهم-عن-الله-الجزء-الثاني---رمضان-2024">الفهم عن الله الجزء الثاني - رمضان 2024</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1147/برنامج-تراث">برنامج تراث</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1148/الفهم-عن-الله-الجزء-الأول---رمضان-2023">الفهم عن الله الجزء الأول - رمضان 2023</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1149/بحلم-أحج-بإحسان">بحلم أحج بإحسان</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1145/الفخ">الفخ</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1144/يومياتي-مع-الحبيب">يومياتي مع الحبيب</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1143/الزيارة">الزيارة</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1142/أغلى-أيام-الله">أغلى أيام الله</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1141/حياة-الإحسان">حياة الإحسان</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1140/الفاموليا">الفاموليا</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1138/6-خطوات-لأحسن-علاقات">6 خطوات لأحسن علاقات</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1137/حياة-الذاكرين-2">حياة الذاكرين 2</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1136/في-ذكرى-مولده">في ذكرى مولده</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1134/فن-الاختيار">فن الاختيار</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1135/قعدة-تغيير">قعدة تغيير</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1133/منازل-ومناسك">منازل ومناسك</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1132/منازل-الروح..-&quot;حياة-الإحسان&quot;">منازل الروح.. &quot;حياة الإحسان&quot;</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1131/حياة-الذاكرين">حياة الذاكرين</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1130/الجنة-في-بيوتنا">الجنة في بيوتنا</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1129/طريق-للحياة">طريق للحياة</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1124/كأنك-تراه---رمضان-2020">كأنك تراه - رمضان 2020</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1128/عمر-صانع-حضارة">عمر صانع حضارة</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1127/الإيمان-والعصر">الإيمان والعصر</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1126/مشتاق-للحج">مشتاق للحج</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1125/على-خطى-الحبيب">على خطى الحبيب</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1062/أيام-علي-رمضان">أيام علي رمضان</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1046/بسمة-أمل">بسمة أمل</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1052/7-خطوات">7 خطوات</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1053/برنامج-المرأة">برنامج المرأة</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1054/مختارات">مختارات</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1098/نفسي-أحج">نفسي أحج</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1120/منازل-الارتقاء">منازل الارتقاء</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1122/أخلاق-وعبادات">أخلاق وعبادات</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1123/أسرار-أدعية-القرآن">أسرار أدعية القرآن</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1050/نبي-الرحمة-والتسامح">نبي الرحمة والتسامح</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1051/بالحرف-الواحد">بالحرف الواحد</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1090/السيرة-حياة">السيرة حياة</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1117/فاذكروني">فاذكروني</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/program/1118/الرحلة">الرحلة</a></li>
+                                            </ul>
+                            </li>
+            								            <li class="nav-item">
+                                    <a class="nav-link" href="https://amrkhaled.net/category/1032/السيرة">السيرة</a>
+                            </li>
+            								            <li class="nav-item">
+                                    <a class="nav-link" href="https://amrkhaled.net/category/1033/قصص-القرآن-و-الأنبياء">قصص القرآن و الأنبياء</a>
+                            </li>
+            								            <li class="nav-item">
+                
+                    <!--<a class="navbar-toggler nav-link" data-toggle="collapse" data-target="#dropdown-13"
+                        aria-controls="dropdown-13" aria-expanded="false" aria-label="Toggle navigation">
+                        لايت بوكس
+                    </a>-->
+
+					<div class='navbar-toggler nav-link d-flex align-items-center justify-content-between'>
+						<a class='nav-link ' href="https://amrkhaled.net/category/20/لايت-بوكس">لايت بوكس</a>
+						<i class="fas fa-chevron-down" data-toggle="collapse" data-target="#dropdown-13"
+							aria-controls="dropdown-13" aria-expanded="false" aria-label="Toggle navigation"></i>
+					</div>
+
+                    <ul class="collapse" id="dropdown-13" data-parent="#accordionExample">
+
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1103/مدارس-وجامعات">مدارس وجامعات</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1131/البيئة-والحياة">البيئة والحياة</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1146/معلومات-عامة">معلومات عامة</a></li>
+                                            </ul>
+                            </li>
+            								            <li class="nav-item">
+                                    <a class="nav-link" href="https://amrkhaled.net/category/36/تويت-بوك">تويت بوك</a>
+                            </li>
+            								            <li class="nav-item">
+                                    <a class="nav-link" href="https://amrkhaled.net/category/1134/اعملها-ازاي">اعملها ازاي؟</a>
+                            </li>
+            								            <li class="nav-item">
+                                    <a class="nav-link" href="https://amrkhaled.net/category/33/إنفوجرافيك">إنفوجرافيك</a>
+                            </li>
+            								            <li class="nav-item">
+                                    <a class="nav-link" href="https://amrkhaled.net/category/35/أسرار-القلوب">أسرار القلوب</a>
+                            </li>
+            								            <li class="nav-item">
+                
+                    <!--<a class="navbar-toggler nav-link" data-toggle="collapse" data-target="#dropdown-18"
+                        aria-controls="dropdown-18" aria-expanded="false" aria-label="Toggle navigation">
+                        مع عمرو خالد
+                    </a>-->
+
+					<div class='navbar-toggler nav-link d-flex align-items-center justify-content-between'>
+						<a class='nav-link ' href="https://amrkhaled.net/category/29/مع-عمرو-خالد">مع عمرو خالد</a>
+						<i class="fas fa-chevron-down" data-toggle="collapse" data-target="#dropdown-18"
+							aria-controls="dropdown-18" aria-expanded="false" aria-label="Toggle navigation"></i>
+					</div>
+
+                    <ul class="collapse" id="dropdown-18" data-parent="#accordionExample">
+
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1035/علمتني-الحياة">علمتني الحياة</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1048/مقالات">مقالات</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1049/حكم-قرآنية">حكم قرآنية</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1088/رؤيتنا">رؤيتنا</a></li>
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1089/سيرة-و-مسيرة">سيرة و مسيرة</a></li>
+                                            </ul>
+                            </li>
+            								            <li class="nav-item">
+                                    <a class="nav-link" href="https://amrkhaled.net/category/34/أنت-تسأل-وعمرو-خالد-يجيب">أنت تسأل وعمرو خالد يجيب</a>
+                            </li>
+            								                <li class="nav-item">
+                    <div class='navbar-toggler nav-link d-flex align-items-center justify-content-between'>
+						<a class='nav-link ' href="magazine">بإحسان</a>
+						<i class="fas fa-chevron-down" data-toggle="collapse" data-target="#dropdown-magazines"
+							aria-controls="dropdown-magazines" aria-expanded="false" aria-label="Toggle navigation"></i>
+					</div>
+
+                    <ul class="collapse" id="dropdown-magazines" data-parent="#accordionExample">
+                        <li class="dropdown-link">
+                            <a href="magazine">مجلة الإحسان</a>
+                        </li>
+                        <li class="dropdown-link">
+                            <a href="magazine/radio">راديو بإحسان</a>
+                        </li>
+                        <li class="dropdown-link">
+                            <a href="magazine/manazel">منازل وخواطر</a>
+                        </li>
+                        <li class="dropdown-link">
+                            <a href="magazine/ehsan_calendar">أجندة الإحسان</a>
+                        </li>
+                        <li class="dropdown-link">
+                            <a href="magazine/calendar">تقويم الإحسان</a>
+                        </li>
+                    </ul>
+                </li>
+
+				            <li class="nav-item">
+                
+                    <!--<a class="navbar-toggler nav-link" data-toggle="collapse" data-target="#dropdown-20"
+                        aria-controls="dropdown-20" aria-expanded="false" aria-label="Toggle navigation">
+                        رواد وأعلام
+                    </a>-->
+
+					<div class='navbar-toggler nav-link d-flex align-items-center justify-content-between'>
+						<a class='nav-link ' href="https://amrkhaled.net/category/1087/رواد-وأعلام">رواد وأعلام</a>
+						<i class="fas fa-chevron-down" data-toggle="collapse" data-target="#dropdown-20"
+							aria-controls="dropdown-20" aria-expanded="false" aria-label="Toggle navigation"></i>
+					</div>
+
+                    <ul class="collapse" id="dropdown-20" data-parent="#accordionExample">
+
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1102/قالوا">قالوا</a></li>
+                                            </ul>
+                            </li>
+            								            <li class="nav-item">
+                
+                    <!--<a class="navbar-toggler nav-link" data-toggle="collapse" data-target="#dropdown-21"
+                        aria-controls="dropdown-21" aria-expanded="false" aria-label="Toggle navigation">
+                        لايت بوكس
+                    </a>-->
+
+					<div class='navbar-toggler nav-link d-flex align-items-center justify-content-between'>
+						<a class='nav-link ' href="https://amrkhaled.net/category/587/لايت-بوكس">لايت بوكس</a>
+						<i class="fas fa-chevron-down" data-toggle="collapse" data-target="#dropdown-21"
+							aria-controls="dropdown-21" aria-expanded="false" aria-label="Toggle navigation"></i>
+					</div>
+
+                    <ul class="collapse" id="dropdown-21" data-parent="#accordionExample">
+
+                                                    <li class='dropdown-link'><a href="https://amrkhaled.net/category/1135/معلومات-عامة">معلومات عامة</a></li>
+                                            </ul>
+                            </li>
+                    </div>
+
+    </ul>
+</div>
+
+
+<!-- search -->
+<div class="search-field ">
+    <form id="searchForm" class="container search-inner position-relative" action="search" method="get">
+        <input class="form-control" type="text" placeholder="Search...">
+    </form>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header  mr-auto">
+                <button type="button" class="close mr-auto" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="searchForm" class="container search-inner position-relative" action="search" method="get">
+                    <div class="form__group field">
+                        <input type="text" required class="form__field" placeholder="بحث" name="name" id='name' />
+                        <label for="name" class="form__label">بحث</label>
+                    </div>
+                    <div>
+                        <input type="submit" class="btn btn-blue" value="بحث">
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+		
+        
+        <div class="container">
+  <div class='akhbar-wrapper'>
+    <div class='d-flex align-items-center'>
+      <small class="m-0 py-2 px-4">
+        أخبار
+      </small>
+      <i class="fas fa-caret-left"></i>
+    </div>
+    <marquee class='mx-4' scrolldelay="150" >
+            <p style='font-size: 15px;' class='akhbar-detail my-2 mx-4 d-inline'>
+      <a href="https://amrkhaled.net/Story/1077849/10-دقائق-يوميًا-تقهر-الأرق-وتمنحك-نومًا-عميقًا">10 دقائق يوميًا تقهر الأرق وتمنحك نومًا عميقًا</a>
+      </p>
+            <p style='font-size: 15px;' class='akhbar-detail my-2 mx-4 d-inline'>
+      <a href="https://amrkhaled.net/Story/1077848/النوم-بلا-عذاب-جهاز-جديد-ينهي-معاناة-مرضى-متلازمة-تململ-الساقين-بدون-أدوية">&quot;النوم بلا عذاب&quot;.. جهاز جديد ينهي معاناة مرضى متلازمة تململ الساقين بدون أدوية</a>
+      </p>
+            <p style='font-size: 15px;' class='akhbar-detail my-2 mx-4 d-inline'>
+      <a href="https://amrkhaled.net/Story/1066226/حتى-لا-تقع-فريسة-لليأس-أفعال-تحتاج-نوايا-صادقة-لتفتح-أمامك-طرق-الخير">حتى لا تقع فريسة لليأس.. أفعال تحتاج نوايا صادقة لتفتح أمامك طرق الخير</a>
+      </p>
+            <p style='font-size: 15px;' class='akhbar-detail my-2 mx-4 d-inline'>
+      <a href="https://amrkhaled.net/Story/1055309/كيف-رأت-امرأة-نور-النبوة-في-وجه-والد-النبي-وماذا-قالت-عنه-بعد-أن-تزوجت-آمنة-بنت-وهب-الشعراوي-يجيب">كيف رأت امرأة نور النبوة في وجه والد النبي؟ وماذا قالت عنه بعد أن تزوجت آمنة بنت وهب؟ (الشعراوي يجيب)</a>
+      </p>
+            <p style='font-size: 15px;' class='akhbar-detail my-2 mx-4 d-inline'>
+      <a href="https://amrkhaled.net/Story/1051214/من-الأدعية-النبوية-الجامعة--تشتمل-على-كل-أبواب-الخير-في-الدنيا-والآخرة">من الأدعية النبوية الجامعة .. تشتمل على كل أبواب الخير في الدنيا والآخرة</a>
+      </p>
+            <p style='font-size: 15px;' class='akhbar-detail my-2 mx-4 d-inline'>
+      <a href="https://amrkhaled.net/Story/1055241/هكذا-وصف-النبي-النسبة-بين-نار-الدنيا-ونار-الآخرة-لولا--خففت-ما-انتفع-بها-أحد">هكذا وصف النبي النسبة بين نار الدنيا ونار الآخرة.. لولا  خففت ما انتفع بها أحد</a>
+      </p>
+            <p style='font-size: 15px;' class='akhbar-detail my-2 mx-4 d-inline'>
+      <a href="https://amrkhaled.net/Story/1057572/ودّعوا-أحبابكم-بهذه-الأدعية-التي-تجلب-السعادة-والأمان">ودّعوا أحبابكم بهذه الأدعية.. التي تجلب السعادة والأمان</a>
+      </p>
+            <p style='font-size: 15px;' class='akhbar-detail my-2 mx-4 d-inline'>
+      <a href="https://amrkhaled.net/Story/1046049/6طاعات-تقوي-صلتك-مع-الله-وتوثق-علاقتك-بربك-الإكثار-من-النوافل-يجعل-مهمتك-أسهل">6طاعات تقوي صلتك مع الله وتوثق علاقتك بربك ..الإكثار من النوافل يجعل مهمتك أسهل</a>
+      </p>
+            <p style='font-size: 15px;' class='akhbar-detail my-2 mx-4 d-inline'>
+      <a href="https://amrkhaled.net/Story/1051059/تريد-أن-تكون-من-الصالحين-طبق-هذه-الشروط">تريد أن تكون من الصالحين؟.. طبق هذه الشروط</a>
+      </p>
+            <p style='font-size: 15px;' class='akhbar-detail my-2 mx-4 d-inline'>
+      <a href="https://amrkhaled.net/Story/1036511/الصحابيان-الجليلان-أبو-ذر-الغفاري-وبلال-بن-رباح--وقصة-أقوي-اعتذار-في-التاريخ--هكذا-اقتلع-الإسلام-العنصرية-من-جذورها">الصحابيان الجليلان أبو ذر الغفاري وبلال بن رباح .. وقصة أقوي اعتذار في التاريخ .. هكذا اقتلع الإسلام العنصرية من جذورها</a>
+      </p>
+          </marquee>
+  </div>
+</div>
+
+
+        
+
+        <div class="page-content">
+        <!-- <div class="container">
+    <div class='d-block text-center px-lg-5 px-3'>
+        <ins data-revive-zoneid="1" data-revive-id="fdbfa0ce206fb3b709ed2d729e01d508"></ins>
+        <script async src="//mediasci.net/ad-server/www/delivery/asyncjs.php"></script>
+    </div>
+</div> -->
+
+<!-- <div class='sticky-top bg-white pt-2 d-lg-block d-none'> -->
+<div class="container">
+    <a class='d-lg-block d-none text-center px-md-5 px-3' href=" javascript:void(0)" target="_blank">
+        <img class='img-fluid d-none' src="front/images/ad/demo-6.jpg" style='width: 970px; height: 90px;' alt="">
+    </a>
+</div>
+<!-- </div> -->
+
+            
+                    <section class='intro-1'>
+    <div class="container">
+        <div class="intro-wrapper">
+            <div class="intro-items-wrapper position-relative my-1">
+				                <div class="intro-item" style=' width: 66%; height: 400px; padding-right: 0;'>
+                    <div class=' position-relative h-100' style=''>
+                        <div class='intro-opacity'>
+                            <div class="inner">
+                                <a href="https://amrkhaled.net/Story/1066226/حتى-لا-تقع-فريسة-لليأس-أفعال-تحتاج-نوايا-صادقة-لتفتح-أمامك-طرق-الخير">
+                                    <h1>حتى لا تقع فريسة لليأس.. أفعال تحتاج نوايا صادقة لتفتح أمامك طرق الخير</h1>
+                                </a>
+                            </div>
+                        </div>
+                        <a class='text-white inner-title-lg' href="https://amrkhaled.net/category/16/الدين-للحياة">الدين للحياة</a>
+                        <img class='intro-img' src="https://amrkhaled.net/uploads/old/Large/620188231958925832156.jpg" alt="">
+                    </div>
+                </div>
+				                				                <div class="intro-item" style='width: 33%; height: 200px;'>
+                    <div class=' position-relative h-100 '>
+                        <div class='intro-opacity'>
+                            <div class="inner">
+                                <a href="https://amrkhaled.net/Story/1072240/هذه-الأمور-تعينك-على-الصبر-وترفع-درجتك-عند-الله">
+                                    <p class='small-textBlackBold text-white font-weight-bold'>
+                                        هذه الأمور تعينك على الصبر.. وترفع درجتك عند الله
+                                    </p>
+                                </a>
+
+                            </div>
+                        </div>
+                        <a class='text-white inner-title' href="https://amrkhaled.net/category/16/الدين-للحياة">
+                            الدين للحياة
+                        </a>
+                        <img class='intro-img' src="https://amrkhaled.net/uploads/small/04-2021/15ada24ccd145a7289decdf97cedab3a184c7688.jpeg" alt="">
+                    </div>
+                </div>
+				                				                <div class="intro-item" style='width: 33%; height: 200px;'>
+                    <div class=' position-relative h-100 '>
+                        <div class='intro-opacity'>
+                            <div class="inner">
+                                <a href="https://amrkhaled.net/Story/1051214/من-الأدعية-النبوية-الجامعة--تشتمل-على-كل-أبواب-الخير-في-الدنيا-والآخرة">
+                                    <p class='small-textBlackBold text-white font-weight-bold'>
+                                        من الأدعية النبوية الجامعة .. تشتمل على كل أبواب الخير في الدنيا والآخرة
+                                    </p>
+                                </a>
+
+                            </div>
+                        </div>
+                        <a class='text-white inner-title' href="https://amrkhaled.net/category/1034/أدعية-و-أذكار">
+                            أدعية و أذكار
+                        </a>
+                        <img class='intro-img' src="https://amrkhaled.net/uploads/small/04-2020/10e33d3641724b0f65d38d51b4f2011c5cdfac3b.png" alt="">
+                    </div>
+                </div>
+				                				                <div class="intro-item" style='width: 33%; height: 200px;'>
+                    <div class=' position-relative h-100 '>
+                        <div class='intro-opacity'>
+                            <div class="inner">
+                                <a href="https://amrkhaled.net/Story/1055241/هكذا-وصف-النبي-النسبة-بين-نار-الدنيا-ونار-الآخرة-لولا--خففت-ما-انتفع-بها-أحد">
+                                    <p class='small-textBlackBold text-white font-weight-bold'>
+                                        هكذا وصف النبي النسبة بين نار الدنيا ونار الآخرة.. لولا  خففت ما انتفع بها أحد
+                                    </p>
+                                </a>
+
+                            </div>
+                        </div>
+                        <a class='text-white inner-title' href="https://amrkhaled.net/category/16/الدين-للحياة">
+                            الدين للحياة
+                        </a>
+                        <img class='intro-img' src="https://amrkhaled.net/uploads/old/Large/3201920125612301847873.jpg" alt="">
+                    </div>
+                </div>
+				                				                <div class="intro-item" style='width: 33%; height: 200px;'>
+                    <div class=' position-relative h-100 '>
+                        <div class='intro-opacity'>
+                            <div class="inner">
+                                <a href="https://amrkhaled.net/Story/1055309/كيف-رأت-امرأة-نور-النبوة-في-وجه-والد-النبي-وماذا-قالت-عنه-بعد-أن-تزوجت-آمنة-بنت-وهب-الشعراوي-يجيب">
+                                    <p class='small-textBlackBold text-white font-weight-bold'>
+                                        كيف رأت امرأة نور النبوة في وجه والد النبي؟ وماذا قالت عنه بعد أن تزوجت آمنة بنت وهب؟ (الشعراوي يجيب)
+                                    </p>
+                                </a>
+
+                            </div>
+                        </div>
+                        <a class='text-white inner-title' href="https://amrkhaled.net/category/1033/قصص-القرآن-و-الأنبياء">
+                            قصص القرآن و الأنبياء
+                        </a>
+                        <img class='intro-img' src="https://amrkhaled.net/uploads/small/10-2020/aa74fb548a9809cc9e04468791195f1a4b548dec.jpeg" alt="">
+                    </div>
+                </div>
+				                				                <div class="intro-item" style='width: 33%; height: 200px;'>
+                    <div class=' position-relative h-100 '>
+                        <div class='intro-opacity'>
+                            <div class="inner">
+                                <a href="https://amrkhaled.net/Story/1069036/اللؤم-يجعلك-منبوذًا-من-الله-والناس-أجمعين-هذه-مظاهره">
+                                    <p class='small-textBlackBold text-white font-weight-bold'>
+                                        اللؤم يجعلك منبوذًا من الله والناس أجمعين.. هذه مظاهره
+                                    </p>
+                                </a>
+
+                            </div>
+                        </div>
+                        <a class='text-white inner-title' href="https://amrkhaled.net/category/16/الدين-للحياة">
+                            الدين للحياة
+                        </a>
+                        <img class='intro-img' src="https://amrkhaled.s3.eu-central-1.amazonaws.com/uploads/small/08-2022/d67197d02a96b1caf1f8fdf7c8ee1dc25cb97039.jpg" alt="">
+                    </div>
+                </div>
+				                            </div>
+            <div class="ad-div-wrapper">
+                <a class='d-none d-lg-block' href="javascript:void(0)">
+    <img class='my-1 img-fluid d-none' src="front/images/ad/demo-7.jpg" style='width: 300px; height: 250px;' alt="">
+</a>
+                <div class="most-read-div">
+                    <p class='subhead'>الأكثر قراءة</p>
+                                            <div class="card most-read">
+    <div class="card-body">
+        <p style="font-weight: bold">
+            <a href="https://amrkhaled.net/Story/1077842/دراسة-دواء-شهير-لعلاج-العجز-الجنسي-قد-يحمل-سرّ-ترميم-العضلات-للرجال">دراسة: دواء شهير لعلاج العجز الجنسي قد يحمل سرّ &quot;ترميم العضلات&quot; للرجال!</a>
+        </p>
+        <a class='card-link' href="https://amrkhaled.net/category/1123/صحتك-تهمنا">صحتك تهمنا</a>
+    </div>
+</div>
+                                            <div class="card most-read">
+    <div class="card-body">
+        <p style="font-weight: bold">
+            <a href="https://amrkhaled.net/Story/1077843/أحسن-إلى-الناس-ولو-أساؤوا-إليك-كيف-تنتصر-بأخلاقك-على-الإساءة">أحسن إلى الناس ولو أساؤوا إليك.. كيف تنتصر بأخلاقك على الإساءة؟</a>
+        </p>
+        <a class='card-link' href="https://amrkhaled.net/category/1031/افهم-دينك-صح">افهم دينك صح</a>
+    </div>
+</div>
+                                            <div class="card most-read">
+    <div class="card-body">
+        <p style="font-weight: bold">
+            <a href="https://amrkhaled.net/Story/1077841/سلاحك-السري-ضد-الإنفلونزا-نظام-غذائي-يقوي-مناعتك-ضد-العدوى-والفيروسات">سلاحك السري ضد الإنفلونزا.. نظام غذائي يقوي مناعتك ضد العدوى والفيروسات</a>
+        </p>
+        <a class='card-link' href="https://amrkhaled.net/category/1123/صحتك-تهمنا">صحتك تهمنا</a>
+    </div>
+</div>
+                                            <div class="card most-read">
+    <div class="card-body">
+        <p style="font-weight: bold">
+            <a href="https://amrkhaled.net/Story/1077844/بين-اليقين-والانتظار-كيف-يحافظ-المسلم-على-حسن-ظنه-بالله-عندما-تتأخر-أمنيته">بين اليقين والانتظار.. كيف يحافظ المسلم على حسن ظنه بالله عندما تتأخر أمنيته؟</a>
+        </p>
+        <a class='card-link' href="https://amrkhaled.net/category/1031/افهم-دينك-صح">افهم دينك صح</a>
+    </div>
+</div>
+                                            <div class="card most-read">
+    <div class="card-body">
+        <p style="font-weight: bold">
+            <a href="https://amrkhaled.net/Story/1077845/فيه-ساعة-إجابة-أفضل-الأعمال-والسنن-المستحبة-في-يوم-الجمعة">&quot;فيه ساعة إجابة&quot;.. أفضل الأعمال والسنن المستحبة في يوم الجمعة</a>
+        </p>
+        <a class='card-link' href="https://amrkhaled.net/category/1031/افهم-دينك-صح">افهم دينك صح</a>
+    </div>
+</div>
+                                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+            	        
+
+		<section class="pb-0 pt-3 " >
+			<div class="container">
+				<h2>أحدث الموضوعات</h2>
+				<div class="row">
+										<div class="col-lg-3">
+						<div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1077849/10-دقائق-يوميًا-تقهر-الأرق-وتمنحك-نومًا-عميقًا">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/small/05-2020/9261d30fa118291a8f4cefe1e53fb6157522c45e.png" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1077849/10-دقائق-يوميًا-تقهر-الأرق-وتمنحك-نومًا-عميقًا">
+            <p class='card-details'> 10 دقائق يوميًا تقهر الأرق وتمنحك نومًا عميقًا</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1123/صحتك-تهمنا">صحتك تهمنا</a>
+
+    </div>
+</div>
+					</div>
+										<div class="col-lg-3">
+						<div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1077848/النوم-بلا-عذاب-جهاز-جديد-ينهي-معاناة-مرضى-متلازمة-تململ-الساقين-بدون-أدوية">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/4201919134414630202657.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1077848/النوم-بلا-عذاب-جهاز-جديد-ينهي-معاناة-مرضى-متلازمة-تململ-الساقين-بدون-أدوية">
+            <p class='card-details'> &quot;النوم بلا عذاب&quot;.. جهاز جديد ينهي معاناة مرضى متلازمة تململ الساقين بدون أدوية</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1123/صحتك-تهمنا">صحتك تهمنا</a>
+
+    </div>
+</div>
+					</div>
+										<div class="col-lg-3">
+						<div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1057572/ودّعوا-أحبابكم-بهذه-الأدعية-التي-تجلب-السعادة-والأمان">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/320192520623987436057.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1057572/ودّعوا-أحبابكم-بهذه-الأدعية-التي-تجلب-السعادة-والأمان">
+            <p class='card-details'> ودّعوا أحبابكم بهذه الأدعية.. التي تجلب السعادة والأمان</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1034/أدعية-و-أذكار">أدعية و أذكار</a>
+
+    </div>
+</div>
+					</div>
+										<div class="col-lg-3">
+						<div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1046049/6طاعات-تقوي-صلتك-مع-الله-وتوثق-علاقتك-بربك-الإكثار-من-النوافل-يجعل-مهمتك-أسهل">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/320201144419174699712.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1046049/6طاعات-تقوي-صلتك-مع-الله-وتوثق-علاقتك-بربك-الإكثار-من-النوافل-يجعل-مهمتك-أسهل">
+            <p class='card-details'> 6طاعات تقوي صلتك مع الله وتوثق علاقتك بربك ..الإكثار من النوافل يجعل مهمتك أسهل</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1031/افهم-دينك-صح">افهم دينك صح</a>
+
+    </div>
+</div>
+					</div>
+										<div class="col-lg-3">
+						<div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1051059/تريد-أن-تكون-من-الصالحين-طبق-هذه-الشروط">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/small/04-2021/4bc95329d740b6c7faead207a266cd011ae62154.png" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1051059/تريد-أن-تكون-من-الصالحين-طبق-هذه-الشروط">
+            <p class='card-details'> تريد أن تكون من الصالحين؟.. طبق هذه الشروط</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1031/افهم-دينك-صح">افهم دينك صح</a>
+
+    </div>
+</div>
+					</div>
+										<div class="col-lg-3">
+						<div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1036511/الصحابيان-الجليلان-أبو-ذر-الغفاري-وبلال-بن-رباح--وقصة-أقوي-اعتذار-في-التاريخ--هكذا-اقتلع-الإسلام-العنصرية-من-جذورها">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/1120181214297989820475.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1036511/الصحابيان-الجليلان-أبو-ذر-الغفاري-وبلال-بن-رباح--وقصة-أقوي-اعتذار-في-التاريخ--هكذا-اقتلع-الإسلام-العنصرية-من-جذورها">
+            <p class='card-details'> الصحابيان الجليلان أبو ذر الغفاري وبلال بن رباح .. وقصة أقوي اعتذار في التاريخ .. هكذا اقتلع الإسلام العنصرية من جذورها</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1087/رواد-وأعلام">رواد وأعلام</a>
+
+    </div>
+</div>
+					</div>
+										<div class="col-lg-3">
+						<div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1038012/عمرو-خالد-وسع-على-الناس-يوسع-ربنا-عليك-وهذا-هو-الدليل-الحاسم">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/small/08-2020/cea9e6ba9c197002838c1ca45e6019094f72af51.jpeg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1038012/عمرو-خالد-وسع-على-الناس-يوسع-ربنا-عليك-وهذا-هو-الدليل-الحاسم">
+            <p class='card-details'> عمرو خالد: وسع على الناس يوسع ربنا عليك وهذا هو الدليل الحاسم</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1054/مختارات">مختارات</a>
+
+    </div>
+</div>
+					</div>
+										<div class="col-lg-3">
+						<div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1063343/أخبره-النبي-أنه-لا-يضرّه-بشر-كرامة-له-قبل-تعذيبه">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/120202012430255210703.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1063343/أخبره-النبي-أنه-لا-يضرّه-بشر-كرامة-له-قبل-تعذيبه">
+            <p class='card-details'> أخبره النبي أنه لا يضرّه بشر.. كرامة له قبل تعذيبه</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1087/رواد-وأعلام">رواد وأعلام</a>
+
+    </div>
+</div>
+					</div>
+									</div>
+			</div>
+		</section>
+	    <section class="slider-section">
+    <div class="container">
+        <div class="d-flex align-items-start justify-content-between">
+            <h2>استشارات </h2>
+            <a class='d-flex align-items-center more-link' href="category/26/استشارات">
+                المزيد
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </div>
+        <div class="normal-slider">
+                        <div class='px-2'>
+                <div class="card small">
+                    <a href="https://amrkhaled.net/Story/1065576/أنا-شخص-حزين-ومنكوب-غدرت-الحياة-بي-بم-تنصحونني">
+                        <div class="img-wrapper">
+
+                            <img data-src="https://amrkhaled.net/uploads/small/09-2020/1acc9a8aca81bba41de479e2aa5086f0fc44d89f.jpeg" alt="">
+                        </div>
+
+                        <div class="card-body">
+                            <a href="https://amrkhaled.net/Story/1065576/أنا-شخص-حزين-ومنكوب-غدرت-الحياة-بي-بم-تنصحونني">
+                                <p  style='height: 53px;overflow: hidden;' class='card-question'>أنا شخص حزين ومنكوب غدرت الحياة بي.. بم تنصحونني؟</p>
+                            </a>
+                            <p style='height: 114px;overflow: hidden;' class='card-details'> عمري 55 عامًا، لم أحقق في حياتي شيئًا ذي بال!
+
+نعم، فأنا شخص منكوب، طلقت بعد زواج 32 عامًا،  وهاجر ابناي إلى كندا، ولا يتواصلون معي، واستغنوا قبل شهو</p>
+
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+                        <div class='px-2'>
+                <div class="card small">
+                    <a href="https://amrkhaled.net/Story/1066781/خطيب-أختي-تجاوز-معها-جنسيًا-وفسخت-الخطوبة-لكنها-حزينة-ما-الحل">
+                        <div class="img-wrapper">
+
+                            <img data-src="https://amrkhaled.net/uploads/old/Large/2202010165629762020521.jpg" alt="">
+                        </div>
+
+                        <div class="card-body">
+                            <a href="https://amrkhaled.net/Story/1066781/خطيب-أختي-تجاوز-معها-جنسيًا-وفسخت-الخطوبة-لكنها-حزينة-ما-الحل">
+                                <p  style='height: 53px;overflow: hidden;' class='card-question'>خطيب أختي تجاوز معها جنسيًا وفسخت الخطوبة لكنها حزينة.. ما الحل؟</p>
+                            </a>
+                            <p style='height: 114px;overflow: hidden;' class='card-details'> كانت أختي مخطوبة منذ عام لشاب متدين، وبينهما عاطفة جارفة، لكنه تجاوز معها جنسيًا بالتلامس.
+وقد مر على فسخ الخطوبة بسبب ذلك 8 أشهر، وهي لازالت مصدومة ل</p>
+
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+                        <div class='px-2'>
+                <div class="card small">
+                    <a href="https://amrkhaled.net/Story/1052622/حائرة-بين-رغبتي-كأنثى-تريد-الزواج-وحبي-للعزوبية-ما-الحل">
+                        <div class="img-wrapper">
+
+                            <img data-src="https://amrkhaled.net/uploads/small/05-2021/9c7d7ba4d3843ba6bb9369c5453378b2beb0305d.png" alt="">
+                        </div>
+
+                        <div class="card-body">
+                            <a href="https://amrkhaled.net/Story/1052622/حائرة-بين-رغبتي-كأنثى-تريد-الزواج-وحبي-للعزوبية-ما-الحل">
+                                <p  style='height: 53px;overflow: hidden;' class='card-question'>حائرة بين رغبتي كأنثى تريد الزواج وحبي للعزوبية.. ما الحل؟</p>
+                            </a>
+                            <p style='height: 114px;overflow: hidden;' class='card-details'> منذ سنوات وأنا &quot; أطفش &quot; العرسان، نعم فأنا لا أريد أحد أن يتحكم في حياتي، وتصرفاتي، يتقدم لي الكثيرون وأنا حائرة بين رغبتي كأي أنثى في الإرتباط برجل و</p>
+
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+                        <div class='px-2'>
+                <div class="card small">
+                    <a href="https://amrkhaled.net/Story/1054375/والدتي-متسلطة-وتعرض-عليّ-فتيات-للزواج-لا-أرغب-فيهن-دائمًا-كيف-أتصرف-معها">
+                        <div class="img-wrapper">
+
+                            <img data-src="https://amrkhaled.net/uploads/old/Large/6201924195948146947770.jpg" alt="">
+                        </div>
+
+                        <div class="card-body">
+                            <a href="https://amrkhaled.net/Story/1054375/والدتي-متسلطة-وتعرض-عليّ-فتيات-للزواج-لا-أرغب-فيهن-دائمًا-كيف-أتصرف-معها">
+                                <p  style='height: 53px;overflow: hidden;' class='card-question'>والدتي متسلطة وتعرض عليّ فتيات للزواج لا أرغب فيهن دائمًا.. كيف أتصرف معها؟</p>
+                            </a>
+                            <p style='height: 114px;overflow: hidden;' class='card-details'> عمري 33 سنة، وأصبحت جاهز ماديًا للزواج، ومشكلتي هي تسلط والدتي، فهي تبحث لي عن عروس وتعرض عليّ صور فتيات لبنات صديقاتها ومعارفها، وأنا لا أحب هذه الطر</p>
+
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+                        <div class='px-2'>
+                <div class="card small">
+                    <a href="https://amrkhaled.net/Story/1040112/الغنى-والنزاهة-والشبع--أحاسيس-ليس-لهم-أي-علاقة-بالكم">
+                        <div class="img-wrapper">
+
+                            <img data-src="https://amrkhaled.net/uploads/old/Large/32019411654925113949.jpg" alt="">
+                        </div>
+
+                        <div class="card-body">
+                            <a href="https://amrkhaled.net/Story/1040112/الغنى-والنزاهة-والشبع--أحاسيس-ليس-لهم-أي-علاقة-بالكم">
+                                <p  style='height: 53px;overflow: hidden;' class='card-question'>الغنى والنزاهة والشبع .. أحاسيس ليس لهم أي علاقة بالكم</p>
+                            </a>
+                            <p style='height: 114px;overflow: hidden;' class='card-details'> عزيزي المسلم، ليس من الضروري أن تملك المال الكثير حتى تكون (غنيًا)، وليس من الضروري أن تكون مقتدرًا حتى تصبح ( نزيهًا ).. وليس من الضرورة أيضًا أن تتذ</p>
+
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+                        <div class='px-2'>
+                <div class="card small">
+                    <a href="https://amrkhaled.net/Story/1034762/والجبال--أوتادًا-الاستئناس-بالله-والركون-إليه-يمنحك-قوة-لا-نهائية">
+                        <div class="img-wrapper">
+
+                            <img data-src="https://amrkhaled.net/uploads/small/06-2020/f2cb137c3ec568de3f643260c6bb7ac811036c59.png" alt="">
+                        </div>
+
+                        <div class="card-body">
+                            <a href="https://amrkhaled.net/Story/1034762/والجبال--أوتادًا-الاستئناس-بالله-والركون-إليه-يمنحك-قوة-لا-نهائية">
+                                <p  style='height: 53px;overflow: hidden;' class='card-question'>&quot;والجبال  أوتادًا&quot;.. الاستئناس بالله والركون إليه يمنحك قوة لا نهائية</p>
+                            </a>
+                            <p style='height: 114px;overflow: hidden;' class='card-details'> كلنا نعلم أن الجبال هي أوتاد الأرض، وبالعودة للمعنى من وصفها بالأوتاد فهي كتل مغروسة في باطن الأرض بأحجام مختلفة قد تفوق ثلثي ما يظهر أمام الناس .. وأ</p>
+
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+                        <div class='px-2'>
+                <div class="card small">
+                    <a href="https://amrkhaled.net/Story/1045776/نعرف-المثل-الشائع-اخطب-لبنتك-ولا-تخطب-لابنك-فهل-يجوز-أن-أطلب-يد-شاب-لابنتي">
+                        <div class="img-wrapper">
+
+                            <img data-src="https://amrkhaled.net/uploads/small/02-2021/1c774f4230e3dc0f4486ce53aa378aeb54876dc7.png" alt="">
+                        </div>
+
+                        <div class="card-body">
+                            <a href="https://amrkhaled.net/Story/1045776/نعرف-المثل-الشائع-اخطب-لبنتك-ولا-تخطب-لابنك-فهل-يجوز-أن-أطلب-يد-شاب-لابنتي">
+                                <p  style='height: 53px;overflow: hidden;' class='card-question'>نعرف المثل الشائع: &quot;اخطب لبنتك ولا تخطب لابنك&quot;.. فهل يجوز أن أطلب يد شاب لابنتي؟</p>
+                            </a>
+                            <p style='height: 114px;overflow: hidden;' class='card-details'> كنت في المسجد أصلي الجمعة، وسمعت بالصدفة سيدتين إحداهما تطلب من الأخرى عروسًا لابنها، ومواصفته مناسبة جدًا لابنتي، فهل يمكن أن أعرض ابنتي علي والدة ال</p>
+
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+                        <div class='px-2'>
+                <div class="card small">
+                    <a href="https://amrkhaled.net/Story/1060407/فاشل-في-الجامعة-بعد-تفوق-في-كل-مراحل-الدراسة--ماذا-أفعل">
+                        <div class="img-wrapper">
+
+                            <img data-src="https://amrkhaled.net/uploads/old/Large/10201822205243816483168.jpg" alt="">
+                        </div>
+
+                        <div class="card-body">
+                            <a href="https://amrkhaled.net/Story/1060407/فاشل-في-الجامعة-بعد-تفوق-في-كل-مراحل-الدراسة--ماذا-أفعل">
+                                <p  style='height: 53px;overflow: hidden;' class='card-question'>فاشل في الجامعة بعد تفوق في كل مراحل الدراسة .. ماذا أفعل؟</p>
+                            </a>
+                            <p style='height: 114px;overflow: hidden;' class='card-details'> أنا طالب في كلية الهندسة، ومشكلتي كانت القلق الدائم منذ الثانوية العامة، مع أنني كنت متفوقًا دراسيًا في كل المراحل السابقة.</p>
+
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+                        <div class='px-2'>
+                <div class="card small">
+                    <a href="https://amrkhaled.net/Story/1036424/أعاني-من-الخوف-من-المرض-والافلاس-والموت-وكل-شيء-ما-الحل">
+                        <div class="img-wrapper">
+
+                            <img data-src="https://amrkhaled.net/uploads/old/Large/3202011193055359710680.jpg" alt="">
+                        </div>
+
+                        <div class="card-body">
+                            <a href="https://amrkhaled.net/Story/1036424/أعاني-من-الخوف-من-المرض-والافلاس-والموت-وكل-شيء-ما-الحل">
+                                <p  style='height: 53px;overflow: hidden;' class='card-question'>أعاني من الخوف من المرض والافلاس والموت وكل شيء.. ما الحل؟</p>
+                            </a>
+                            <p style='height: 114px;overflow: hidden;' class='card-details'> أنا أعاني من القلق والخوف الشديدين.</p>
+
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+                        <div class='px-2'>
+                <div class="card small">
+                    <a href="https://amrkhaled.net/Story/1067333/كيف-تتغلب-على-شهواتك-وتقلع-عن-العادة-السرية">
+                        <div class="img-wrapper">
+
+                            <img data-src="https://amrkhaled.net/uploads/old/Large/10201825194355646008194.jpg" alt="">
+                        </div>
+
+                        <div class="card-body">
+                            <a href="https://amrkhaled.net/Story/1067333/كيف-تتغلب-على-شهواتك-وتقلع-عن-العادة-السرية">
+                                <p  style='height: 53px;overflow: hidden;' class='card-question'>كيف تتغلب على شهواتك وتقلع عن العادة السرية؟</p>
+                            </a>
+                            <p style='height: 114px;overflow: hidden;' class='card-details'> وصلت إلى سن 35 عامًا، ومنفصل منذ 3 سنوات تقريبًا، ومن وقتها وأنا أعاني من إدمان العادة السرية والأفلام الإباحية، طبعا قبل الزواج كان شأني شأن أي شاب أ</p>
+
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+                        <div class='px-2'>
+                <div class="card small">
+                    <a href="https://amrkhaled.net/Story/1068852/الوحدة-تحرمك-من-سعادة-الونس-بالحياة">
+                        <div class="img-wrapper">
+
+                            <img data-src="https://amrkhaled.net/uploads/old/Large/220202518581667973179.jpg" alt="">
+                        </div>
+
+                        <div class="card-body">
+                            <a href="https://amrkhaled.net/Story/1068852/الوحدة-تحرمك-من-سعادة-الونس-بالحياة">
+                                <p  style='height: 53px;overflow: hidden;' class='card-question'>الوحدة تحرمك من سعادة الونس بالحياة</p>
+                            </a>
+                            <p style='height: 114px;overflow: hidden;' class='card-details'> الوحدة هي الحل، الناس ولمتها كذابة، لا تزيد سوى المشاكل، الكل يأكل في بعضه، حتى المشاعر كلها كذب ونفاق، النفوس تتغير وتتلون ونحن الضحية، فالحل في الوح</p>
+
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+                        <div class='px-2'>
+                <div class="card small">
+                    <a href="https://amrkhaled.net/Story/1077831/الأطفال-مرآة-عاكسة-للأم-كيف-تؤثر-الحالة-النفسية-للأم-في-بناء-شخصية-أبنائها">
+                        <div class="img-wrapper">
+
+                            <img data-src="https://amrkhaled.net/uploads/old/Large/6201918114414366448112.jpg" alt="">
+                        </div>
+
+                        <div class="card-body">
+                            <a href="https://amrkhaled.net/Story/1077831/الأطفال-مرآة-عاكسة-للأم-كيف-تؤثر-الحالة-النفسية-للأم-في-بناء-شخصية-أبنائها">
+                                <p  style='height: 53px;overflow: hidden;' class='card-question'>الأطفال مرآة عاكسة للأم.. كيف تؤثر الحالة النفسية للأم في بناء شخصية أبنائها؟</p>
+                            </a>
+                            <p style='height: 114px;overflow: hidden;' class='card-details'> الأطفال مرآة عاكسة للأم.. كيف تؤثر الحالة النفسية للأم في بناء شخصية أبنائها؟</p>
+
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+                        <div class='px-2'>
+                <div class="card small">
+                    <a href="https://amrkhaled.net/Story/1064883/هل-أتزوج-الأرمل-المتعلم-مثلي-أم-الأعزب-غير-المتعلم-أنا-حائرة">
+                        <div class="img-wrapper">
+
+                            <img data-src="https://amrkhaled.net/uploads/old/Large/8201811151647452776465.jpg" alt="">
+                        </div>
+
+                        <div class="card-body">
+                            <a href="https://amrkhaled.net/Story/1064883/هل-أتزوج-الأرمل-المتعلم-مثلي-أم-الأعزب-غير-المتعلم-أنا-حائرة">
+                                <p  style='height: 53px;overflow: hidden;' class='card-question'>هل أتزوج الأرمل المتعلم مثلي أم الأعزب غير المتعلم.. أنا حائرة؟</p>
+                            </a>
+                            <p style='height: 114px;overflow: hidden;' class='card-details'> أنا خريجة آداب لغات شرقية، وعمري  28 عامًا، حصلت على الطلاق قبل 5 أعوام، ولم أمكث في زواجي سوى شهرين فقط، وتزوجت بدون زفاف بعدها مباشرة باندفاع وتهور</p>
+
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+            
+
+        </div>
+    </div>
+</section>
+
+    
+
+            <section class="slider-section program-slider-section">
+    <div class="container">
+        <div class="d-flex align-items-start justify-content-between">
+            <h2 class='right-sm-line'>برامج </h2>
+            <a class='d-flex align-items-center more-link' href="programs">
+                المزيد
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </div>
+        <a class="a" href="javascript:void(0)">
+            <div class="master-img d-flex justify-content-center text-center position-relative">
+                <div class='intro-opacity  d-flex'>
+                    <div class="inner">
+                        <!-- <h1>أزيد وأنقص في <br>العبادات..فما الحل؟</h1>
+                        <p>أخلاق وعبادات</p> -->
+                        <h1></h1>
+                    </div>
+                </div>
+                <div class='video-icon'>
+                    <img class='' alt="programs">
+                </div>
+            </div>
+        </a>
+        <div class="program-slider">
+            								<div class='px-3 card-parent'>
+					<a href="https://amrkhaled.net/program/1145/الفخ">
+						<div class="img-wrapper img-wrap video-icon">
+							<img class='w-100' src="https://amrkhaled.s3.eu-central-1.amazonaws.com/uploads/10-2022/9e046bfd1f16fa5e96ea21cf44d7b852bb264078.jpg" alt="">
+						</div>
+					</a>
+					<div class="card-body">
+						<p class='card-deails'> الفخ</p>
+					<a class='card-link' href="programs">برامج</a>
+					</div>
+				</div>
+				            								<div class='px-3 card-parent'>
+					<a href="https://amrkhaled.net/program/1144/يومياتي-مع-الحبيب">
+						<div class="img-wrapper img-wrap video-icon">
+							<img class='w-100' src="https://amrkhaled.s3.eu-central-1.amazonaws.com/uploads/10-2022/fd46ba7ffc624ddecf28a4e4f9e5e1b18e784c2f.jpg" alt="">
+						</div>
+					</a>
+					<div class="card-body">
+						<p class='card-deails'> يومياتي مع الحبيب</p>
+					<a class='card-link' href="programs">برامج</a>
+					</div>
+				</div>
+				            								<div class='px-3 card-parent'>
+					<a href="https://amrkhaled.net/program/1143/الزيارة">
+						<div class="img-wrapper img-wrap video-icon">
+							<img class='w-100' src="https://amrkhaled.s3.eu-central-1.amazonaws.com/uploads/09-2022/55ca86bb2abb79d53367fc0cf928973bb1d6bbe7.jpg" alt="">
+						</div>
+					</a>
+					<div class="card-body">
+						<p class='card-deails'> الزيارة</p>
+					<a class='card-link' href="programs">برامج</a>
+					</div>
+				</div>
+				            								<div class='px-3 card-parent'>
+					<a href="https://amrkhaled.net/program/1141/حياة-الإحسان">
+						<div class="img-wrapper img-wrap video-icon">
+							<img class='w-100' src="https://amrkhaled.net/uploads/03-2022/fc733296936008a86ec7ae4e70d64c2465b25051.jpg" alt="">
+						</div>
+					</a>
+					<div class="card-body">
+						<p class='card-deails'> حياة الإحسان</p>
+					<a class='card-link' href="programs">برامج</a>
+					</div>
+				</div>
+				            								<div class='px-3 card-parent'>
+					<a href="https://amrkhaled.net/program/1140/الفاموليا">
+						<div class="img-wrapper img-wrap video-icon">
+							<img class='w-100' src="https://amrkhaled.net/uploads/03-2022/86cd558a1f0e823195cca001103eeecd6bc8e90c.jpg" alt="">
+						</div>
+					</a>
+					<div class="card-body">
+						<p class='card-deails'> الفاموليا</p>
+					<a class='card-link' href="programs">برامج</a>
+					</div>
+				</div>
+				            								<div class='px-3 card-parent'>
+					<a href="https://amrkhaled.net/program/1137/حياة-الذاكرين-2">
+						<div class="img-wrapper img-wrap video-icon">
+							<img class='w-100' src="https://amrkhaled.net/uploads/01-2022/4ab0f6df75124264ee3db172f10feeac9832e537.jpg" alt="">
+						</div>
+					</a>
+					<div class="card-body">
+						<p class='card-deails'> حياة الذاكرين 2</p>
+					<a class='card-link' href="programs">برامج</a>
+					</div>
+				</div>
+				                    </div>
+    </div>
+
+</section>
+
+
+
+
+    
+    <section class='bg-light'>
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between">
+            <h2>الدين للحياة</h2>
+            <a class='d-flex align-items-center more-link' href="category/16/الدين للحياه">
+                المزيد
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </div>
+        <div class="row">
+                        <div class="col-lg-6">
+                <div class="horizontal-card large">
+    <a href="https://amrkhaled.net/Story/1066226/حتى-لا-تقع-فريسة-لليأس-أفعال-تحتاج-نوايا-صادقة-لتفتح-أمامك-طرق-الخير">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/620188231958925832156.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        <a href="https://amrkhaled.net/Story/1066226/حتى-لا-تقع-فريسة-لليأس-أفعال-تحتاج-نوايا-صادقة-لتفتح-أمامك-طرق-الخير">
+            <p class='card-details'>حتى لا تقع فريسة لليأس.. أفعال تحتاج نوايا صادقة لتفتح أمامك طرق الخير</p>
+        </a>
+            </div>
+</div>
+
+            </div>
+                        <div class="col-lg-6">
+                <div class="horizontal-card large">
+    <a href="https://amrkhaled.net/Story/1055241/هكذا-وصف-النبي-النسبة-بين-نار-الدنيا-ونار-الآخرة-لولا--خففت-ما-انتفع-بها-أحد">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/3201920125612301847873.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        <a href="https://amrkhaled.net/Story/1055241/هكذا-وصف-النبي-النسبة-بين-نار-الدنيا-ونار-الآخرة-لولا--خففت-ما-انتفع-بها-أحد">
+            <p class='card-details'>هكذا وصف النبي النسبة بين نار الدنيا ونار الآخرة.. لولا  خففت ما انتفع بها أحد</p>
+        </a>
+            </div>
+</div>
+
+            </div>
+                        <div class="col-lg-6">
+                <div class="horizontal-card large">
+    <a href="https://amrkhaled.net/Story/1046049/6طاعات-تقوي-صلتك-مع-الله-وتوثق-علاقتك-بربك-الإكثار-من-النوافل-يجعل-مهمتك-أسهل">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/320201144419174699712.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        <a href="https://amrkhaled.net/Story/1046049/6طاعات-تقوي-صلتك-مع-الله-وتوثق-علاقتك-بربك-الإكثار-من-النوافل-يجعل-مهمتك-أسهل">
+            <p class='card-details'>6طاعات تقوي صلتك مع الله وتوثق علاقتك بربك ..الإكثار من النوافل يجعل مهمتك أسهل</p>
+        </a>
+            </div>
+</div>
+
+            </div>
+                        <div class="col-lg-6">
+                <div class="horizontal-card large">
+    <a href="https://amrkhaled.net/Story/1051059/تريد-أن-تكون-من-الصالحين-طبق-هذه-الشروط">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/small/04-2021/4bc95329d740b6c7faead207a266cd011ae62154.png" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        <a href="https://amrkhaled.net/Story/1051059/تريد-أن-تكون-من-الصالحين-طبق-هذه-الشروط">
+            <p class='card-details'>تريد أن تكون من الصالحين؟.. طبق هذه الشروط</p>
+        </a>
+            </div>
+</div>
+
+            </div>
+                        <div class="col-lg-6">
+                <div class="horizontal-card large">
+    <a href="https://amrkhaled.net/Story/1069036/اللؤم-يجعلك-منبوذًا-من-الله-والناس-أجمعين-هذه-مظاهره">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.s3.eu-central-1.amazonaws.com/uploads/small/08-2022/d67197d02a96b1caf1f8fdf7c8ee1dc25cb97039.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        <a href="https://amrkhaled.net/Story/1069036/اللؤم-يجعلك-منبوذًا-من-الله-والناس-أجمعين-هذه-مظاهره">
+            <p class='card-details'>اللؤم يجعلك منبوذًا من الله والناس أجمعين.. هذه مظاهره</p>
+        </a>
+            </div>
+</div>
+
+            </div>
+                        <div class="col-lg-6">
+                <div class="horizontal-card large">
+    <a href="https://amrkhaled.net/Story/1072240/هذه-الأمور-تعينك-على-الصبر-وترفع-درجتك-عند-الله">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/small/04-2021/15ada24ccd145a7289decdf97cedab3a184c7688.jpeg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        <a href="https://amrkhaled.net/Story/1072240/هذه-الأمور-تعينك-على-الصبر-وترفع-درجتك-عند-الله">
+            <p class='card-details'>هذه الأمور تعينك على الصبر.. وترفع درجتك عند الله</p>
+        </a>
+            </div>
+</div>
+
+            </div>
+                    </div>
+    </div>
+</section>
+
+    <section class="" >
+        <div class="container">
+            <div class="d-flex align-items-start justify-content-between">
+                <h2>لايت بوكس </h2>
+                <a class='d-flex align-items-center more-link' href="category/587/لايت-بوكس">
+                    المزيد
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </div>
+            <div class="row">
+                                <div class="col-lg-3">
+                    <div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1036982/مسجد-أسس-على-التقوى-ماذا-تعرف-عن-مسجد-قباء">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/small/07-2020/89c68d4d0a4ff191eae0dac375c2af0c4219f808.png" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1036982/مسجد-أسس-على-التقوى-ماذا-تعرف-عن-مسجد-قباء">
+            <p class='card-details'> مسجد أسس على التقوى.. ماذا تعرف عن مسجد قباء؟</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1146/معلومات-عامة">معلومات عامة</a>
+
+    </div>
+</div>
+
+                </div>
+                                <div class="col-lg-3">
+                    <div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1045343/حكايات-من-زمن-فات-نوادر-معلمي-الكتاتيب-مع-الصبيان">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/small/02-2021/e3714e1e317fa071e6fba8d38cba0428cf7930bd.png" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1045343/حكايات-من-زمن-فات-نوادر-معلمي-الكتاتيب-مع-الصبيان">
+            <p class='card-details'> حكايات من زمن فات.. نوادر معلمي الكتاتيب مع الصبيان</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/20/لايت-بوكس">لايت بوكس</a>
+
+    </div>
+</div>
+
+                </div>
+                                <div class="col-lg-3">
+                    <div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1062763/هل-أنت-زوجة-نكدية-أسئلة-تكشف-لك-كيف-ينظر-إليك-زوجك">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/small/11-2020/fc9320ec6b6ec38cc251b6876be2c1782f2a58ca.png" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1062763/هل-أنت-زوجة-نكدية-أسئلة-تكشف-لك-كيف-ينظر-إليك-زوجك">
+            <p class='card-details'> هل أنت زوجة نكدية؟.. أسئلة تكشف لك كيف ينظر إليك زوجك</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/20/لايت-بوكس">لايت بوكس</a>
+
+    </div>
+</div>
+
+                </div>
+                                <div class="col-lg-3">
+                    <div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1061624/لكي-تعيش-فى-سعادة-احرص-على-هذه-الأشياء">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/3201925204349593357592.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1061624/لكي-تعيش-فى-سعادة-احرص-على-هذه-الأشياء">
+            <p class='card-details'> لكي تعيش فى سعادة.. احرص على هذه الأشياء</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1146/معلومات-عامة">معلومات عامة</a>
+
+    </div>
+</div>
+
+                </div>
+                                <div class="col-lg-3">
+                    <div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1077744/استشاري-العلاقات-الأسرية-والتربوية-تصف-أفضل-طريقة-لاستقبال-عام-دراسي-جديد">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/22020820471271966206.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1077744/استشاري-العلاقات-الأسرية-والتربوية-تصف-أفضل-طريقة-لاستقبال-عام-دراسي-جديد">
+            <p class='card-details'> استشاري العلاقات الأسرية والتربوية تصف أفضل طريقة لاستقبال عام دراسي جديد</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1103/مدارس-وجامعات">مدارس وجامعات</a>
+
+    </div>
+</div>
+
+                </div>
+                                <div class="col-lg-3">
+                    <div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1077731/أفضل-طريقة-لاستقبال-العام-الدراسي-الجديد-خطوات-عملية-لبداية-ناجحة">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/920191494741281312568.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1077731/أفضل-طريقة-لاستقبال-العام-الدراسي-الجديد-خطوات-عملية-لبداية-ناجحة">
+            <p class='card-details'> أفضل طريقة لاستقبال العام الدراسي الجديد.. خطوات عملية لبداية ناجحة</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1103/مدارس-وجامعات">مدارس وجامعات</a>
+
+    </div>
+</div>
+
+                </div>
+                                <div class="col-lg-3">
+                    <div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1055734/مروة-عبدالحميد-تنصح-بخمس-نصائح-مهمة-لعام-دراسي-جديد-وسعيد">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/22020820471271966206.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1055734/مروة-عبدالحميد-تنصح-بخمس-نصائح-مهمة-لعام-دراسي-جديد-وسعيد">
+            <p class='card-details'> مروة عبدالحميد تنصح بخمس نصائح مهمة لعام دراسي جديد وسعيد</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1103/مدارس-وجامعات">مدارس وجامعات</a>
+
+    </div>
+</div>
+
+                </div>
+                                <div class="col-lg-3">
+                    <div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1055947/نابليون-احتفل-معهم-ليستميل-قلوبهمأسرار-وعادات-المصريين-في-الاحتفال-بالمولد-النبوي">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/small/10-2021/e53c407e352ca430b47c3b7c3247120ed19ce18a.png" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1055947/نابليون-احتفل-معهم-ليستميل-قلوبهمأسرار-وعادات-المصريين-في-الاحتفال-بالمولد-النبوي">
+            <p class='card-details'> نابليون احتفل معهم ليستميل قلوبهم..أسرار وعادات المصريين في الاحتفال بالمولد النبوي</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/20/لايت-بوكس">لايت بوكس</a>
+
+    </div>
+</div>
+
+                </div>
+                            </div>
+        </div>
+    </section>
+
+    
+
+	<!--<div class='text-center podo' >
+        if(\App\Http\Controllers\Helpers\Functions::isMobile())
+            <iframe style='border:0' src="https://podu.me/podu-player?size=rect&podcast=624&autoplay=0" height="285"
+                width="100%"></iframe>
+        else
+            <iframe src="https://podu.me/podu-player?size=fullwidth&podcast=624&autoplay=0" height="80"
+                width="900"></iframe>
+        endif
+	</div>
+    <style>
+    .podo iframe{
+        height: 80px;
+        width:900px
+    }
+    media (max-width:540px){
+        .podo iframe{
+            height: 295px;
+            width:100%
+        }
+    }
+    </style>-->
+
+    <section class='bg-light p-lg-0'>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 offset-lg-1">
+				<div class="d-flex align-items-center justify-content-between">
+					<h2>أنت تسأل وعمرو خالد يجيب  </h2>
+					<a class='d-flex align-items-center more-link' href="category/34/أنت-تسأل-وعمرو-خالد-يجيب">
+						المزيد
+						<i class="fas fa-chevron-left"></i>
+					</a>
+				</div>
+                
+                                <div class="horizontal-card large">
+    <a href="https://amrkhaled.net/Story/1073447/زوجي-بيضربني-ويشتمني--اطلق-ولا-اكمل-د-عمرو-خالد-يجيب">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/small/04-2022/2bae00bd5c7be33bd7c3199a19c1e38950a16bf1.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        <a href="https://amrkhaled.net/Story/1073447/زوجي-بيضربني-ويشتمني--اطلق-ولا-اكمل-د-عمرو-خالد-يجيب">
+            <p class='card-details'>زوجي بيضربني ويشتمني .. اطلق ولا اكمل؟!.. د. عمرو خالد يجيب</p>
+        </a>
+            </div>
+</div>
+                                <div class="horizontal-card large">
+    <a href="https://amrkhaled.net/Story/1052234/أشعر-بأن-القرآن-ليس-سهلا-كيف-أستمتع-بقراءته-الدكتور-عمرو-خالد-يجيب">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/10201929111855336312908.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        <a href="https://amrkhaled.net/Story/1052234/أشعر-بأن-القرآن-ليس-سهلا-كيف-أستمتع-بقراءته-الدكتور-عمرو-خالد-يجيب">
+            <p class='card-details'>أشعر بأن القرآن ليس سهلا كيف أستمتع بقراءته؟.. الدكتور عمرو خالد يجيب</p>
+        </a>
+            </div>
+</div>
+                                <div class="horizontal-card large">
+    <a href="https://amrkhaled.net/Story/1061372/أعاني-من-كثرة-التفكير-والأرق-ولا-أستطيع-النوم-ماذا-أفعل-د-عمرو-خالد-يجيب">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/small/12-2021/f27e2868776d7b1c34aaed86fd30e4c941d4430c.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        <a href="https://amrkhaled.net/Story/1061372/أعاني-من-كثرة-التفكير-والأرق-ولا-أستطيع-النوم-ماذا-أفعل-د-عمرو-خالد-يجيب">
+            <p class='card-details'>أعاني من كثرة التفكير والأرق ولا أستطيع النوم.. ماذا أفعل؟.. د. عمرو خالد يجيب</p>
+        </a>
+            </div>
+</div>
+                
+            </div>
+
+            <div class="col-lg-5 ">
+                <div class="question-form">
+    <h3>ارسل سؤالك</h3>
+    <p>
+        هذه مساحة آمنة لكي تسأل ما تريده من عمرو خالد وسوف يرد عليك بالإجابة قريباً
+    </p>
+
+    <form class="user-question" action="">
+        <input type="hidden" name="_token" value="PRUq1Ocd9kjpi8fSsuMM4gJ7T85ZWsSLrkx2TXBG">        <div class="col-12 msg d-none">
+            <div class="alert alert-success">تم استلام سؤالك بنجاح سوف يتم الرد في اقرب فرصة</div>
+        </div>
+        <textarea id="question-title" name="title" class="form-control" rows="6"></textarea>
+        <div class="text-left">
+            <input class='btn' value="إرسال" type="submit">
+        </div>
+    </form>
+</div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+    <section>
+        <div class="container">
+            <div class="row">
+                                
+                <div class="col-md-4 my-1">
+                    <a class='d-block text-center' href="https://amrkhaled.net/Story/1028254" target="_blank">
+                        <img class='img-fluid' data-src="uploads/04ccc31a719dc925cdc992d15bba56d0.png" alt="">
+                    </a>
+                </div>
+
+                                
+                <div class="col-md-4 my-1">
+                    <a class='d-md-block d-none text-center' href="https://amrkhaled.net/Story/1028344" target="_blank">
+                        <img class='img-fluid' data-src="uploads/ec62fc49b2f5bcd9c02168df19a16026.jpg" alt="">
+                    </a>
+                </div>
+
+                                
+                <div class="col-md-4 my-1">
+                    <a class='d-md-block d-none text-center' href="https://amrkhaled.net/Story/1028434" target="_blank">
+                        <img class='img-fluid' data-src="uploads/73db7ab3eaa463bdd0c60caac140a0ac.png" alt="">
+                    </a>
+                </div>
+
+                            </div>
+        </div>
+    </section>
+
+
+    <section>
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between">
+            <h2>الفتاوي</h2>
+            <a class='d-flex align-items-center more-link' href="category/1020/فتاوي">
+                المزيد
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </div>
+        <div class="row">
+                        <div class="col-lg-6">
+                <div class="horizontal-card small">
+    <a href="https://amrkhaled.net/Story/1067521/هل-يجوز-سفر-المرأة-لأداء-العمرة-والحج-بدون-محرم">
+        <div class=" img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/72019251086556203570.jpg" alt="">
+        </div>
+    </a>
+
+    <div class="card-body">
+        <p><a style='color:#2c2c2c' href='https://amrkhaled.net/Story/1067521/هل-يجوز-سفر-المرأة-لأداء-العمرة-والحج-بدون-محرم'>هل يجوز سفر المرأة لأداء العمرة والحج بدون محرم؟</a></p>
+        <a class='card-link' href="https://amrkhaled.net/category/1020/الفتاوى">الفتاوى</a>
+    </div>
+</div>
+
+            </div>
+                        <div class="col-lg-6">
+                <div class="horizontal-card small">
+    <a href="https://amrkhaled.net/Story/1070913/هل-يجوز-للرجل-أن-يغسل-زوجته-بعد-موتها-والعكس-الإفتاء-تجيب">
+        <div class=" img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/small/05-2020/4ebcaa8a34bc50456012d46764de6a204e6f801f.png" alt="">
+        </div>
+    </a>
+
+    <div class="card-body">
+        <p><a style='color:#2c2c2c' href='https://amrkhaled.net/Story/1070913/هل-يجوز-للرجل-أن-يغسل-زوجته-بعد-موتها-والعكس-الإفتاء-تجيب'>هل يجوز للرجل أن يغسل زوجته بعد موتها والعكس؟ (الإفتاء تجيب)</a></p>
+        <a class='card-link' href="https://amrkhaled.net/category/1020/الفتاوى">الفتاوى</a>
+    </div>
+</div>
+
+            </div>
+                        <div class="col-lg-6">
+                <div class="horizontal-card small">
+    <a href="https://amrkhaled.net/Story/1042858/اقرئي-القرآن-ولو-كنت-بغير-حجاب-أو-مضجعة">
+        <div class=" img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/3201928174543123611050.jpg" alt="">
+        </div>
+    </a>
+
+    <div class="card-body">
+        <p><a style='color:#2c2c2c' href='https://amrkhaled.net/Story/1042858/اقرئي-القرآن-ولو-كنت-بغير-حجاب-أو-مضجعة'>اقرئي القرآن.. ولو كنت بغير حجاب.. أو مضجعة</a></p>
+        <a class='card-link' href="https://amrkhaled.net/category/1020/الفتاوى">الفتاوى</a>
+    </div>
+</div>
+
+            </div>
+                        <div class="col-lg-6">
+                <div class="horizontal-card small">
+    <a href="https://amrkhaled.net/Story/1069200/نعرف-ثواب-كفالة-اليتيم-فهل-هناك-ثواب-لكفالة-اللقيط-أو-مجهول-النسب">
+        <div class=" img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/620192792948638802725.jpg" alt="">
+        </div>
+    </a>
+
+    <div class="card-body">
+        <p><a style='color:#2c2c2c' href='https://amrkhaled.net/Story/1069200/نعرف-ثواب-كفالة-اليتيم-فهل-هناك-ثواب-لكفالة-اللقيط-أو-مجهول-النسب'>نعرف ثواب كفالة اليتيم.. فهل هناك ثواب لكفالة اللقيط أو مجهول النسب؟</a></p>
+        <a class='card-link' href="https://amrkhaled.net/category/1020/الفتاوى">الفتاوى</a>
+    </div>
+</div>
+
+            </div>
+            
+
+
+
+        </div>
+    </div>
+</section>
+
+    <!-- <div class="container">
+    <div class='d-block text-center px-lg-5 px-3'>
+        <ins data-revive-zoneid="1" data-revive-id="fdbfa0ce206fb3b709ed2d729e01d508"></ins>
+        <script async src="//mediasci.net/ad-server/www/delivery/asyncjs.php"></script>
+    </div>
+</div> -->
+
+<!-- <div class='sticky-top bg-white pt-2 d-lg-block d-none'> -->
+<div class="container">
+    <a class='d-lg-block d-none text-center px-md-5 px-3' href=" javascript:void(0)" target="_blank">
+        <img class='img-fluid d-none' src="front/images/ad/demo-6.jpg" style='width: 970px; height: 90px;' alt="">
+    </a>
+</div>
+<!-- </div> -->
+
+    <section>
+    <div class="container">
+        <div class="d-flex align-items-start justify-content-between">
+            <h2>قصص القرآن والأنبياء</h2>
+            <a class='d-flex align-items-center more-link' href="category/1033/قصص-القرآن-و-الأنبياء">
+                المزيد
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </div>
+		        <div class="row align-items-center shadow rounded">
+            <div class="col-lg-6 p-0 my-2">
+                <div class='position-relative  video-icon'>
+                    <a href="https://amrkhaled.net/Story/1055309/كيف-رأت-امرأة-نور-النبوة-في-وجه-والد-النبي-وماذا-قالت-عنه-بعد-أن-تزوجت-آمنة-بنت-وهب-الشعراوي-يجيب">
+                        <div class='img-wrapper'>
+                            <img class='w-100' data-src="https://amrkhaled.net/uploads/10-2020/aa74fb548a9809cc9e04468791195f1a4b548dec.jpeg" alt="">
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 p-0 my-2">
+                <div class='p-lg-5 px-3'>
+                    <!--<small>٢٣ فبراير، ٢٠١٩</small>-->
+                    <a href="https://amrkhaled.net/Story/1055309/كيف-رأت-امرأة-نور-النبوة-في-وجه-والد-النبي-وماذا-قالت-عنه-بعد-أن-تزوجت-آمنة-بنت-وهب-الشعراوي-يجيب">
+                        <h3>كيف رأت امرأة نور النبوة في وجه والد النبي؟ وماذا قالت عنه بعد أن تزوجت آمنة بنت وهب؟ (الشعراوي يجيب)</h3>
+                    </a>
+                    <p>{مُحَمَّدٌ رَسُولُ اللَّهِ ۚ وَالَّذِينَ مَعَهُ أَشِدَّاءُ عَلَى الْكُفَّارِ رُحَمَاءُ بَيْنَهُمْ ۖ تَرَاهُمْ رُكَّعًا سُجَّدًا يَبْتَغُونَ فَضْلًا مِ</p>
+                </div>
+            </div>
+        </div>
+		        <div class="row">
+                        <div class="col-lg-3 col-md-4 col-sm-6 px-2">
+                <div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1073867/كيف-تعرف-أن-المعصية-من-نفسك-أم-من-وسوسة-الشيطان-الشعراوي-يجيب">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/52019116302421801332.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1073867/كيف-تعرف-أن-المعصية-من-نفسك-أم-من-وسوسة-الشيطان-الشعراوي-يجيب">
+            <p class='card-details'> كيف تعرف أن المعصية من نفسك أم من وسوسة الشيطان؟ (الشعراوي يجيب)</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1033/قصص-القرآن-و-الأنبياء">قصص القرآن و الأنبياء</a>
+
+    </div>
+</div>
+            </div>
+                        <div class="col-lg-3 col-md-4 col-sm-6 px-2">
+                <div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1051644/ماذا-تقول-عند-قراءة-آيات-الوعد-والوعيد-في-القرآن-آداب-لا-تفوتك">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/10201814212129836779467.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1051644/ماذا-تقول-عند-قراءة-آيات-الوعد-والوعيد-في-القرآن-آداب-لا-تفوتك">
+            <p class='card-details'> ماذا تقول عند قراءة آيات الوعد والوعيد في القرآن؟.. آداب لا تفوتك</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1033/قصص-القرآن-و-الأنبياء">قصص القرآن و الأنبياء</a>
+
+    </div>
+</div>
+            </div>
+                        <div class="col-lg-3 col-md-4 col-sm-6 px-2">
+                <div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1062983/سورة-الإنسان-ميزان-إلهي-اعرف-به-وزنك-الحقيقي-يوم-القيامة">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/small/04-2020/6497c5a7e1c5f80179385d192757a4b334a8b74a.jpeg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1062983/سورة-الإنسان-ميزان-إلهي-اعرف-به-وزنك-الحقيقي-يوم-القيامة">
+            <p class='card-details'> سورة &quot;الإنسان&quot;.. ميزان إلهي اعرف به وزنك الحقيقي يوم القيامة</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1033/قصص-القرآن-و-الأنبياء">قصص القرآن و الأنبياء</a>
+
+    </div>
+</div>
+            </div>
+                        <div class="col-lg-3 col-md-4 col-sm-6 px-2">
+                <div class="card normal  horizontal-card-sm ">
+    <a href="https://amrkhaled.net/Story/1067609/ولنسكننكم-الأرض-من-بعدهم-من-هؤلاء-وما-الذي-فعلوه-ليكافئهم-الله-على-صنيعهم-الشعراوي-يجيب">
+        <div class="img-wrapper">
+            <img data-src="https://amrkhaled.net/uploads/old/Large/3202010105111628894610.jpg" alt="">
+        </div>
+    </a>
+    <div class="card-body">
+        
+        
+        <a href="https://amrkhaled.net/Story/1067609/ولنسكننكم-الأرض-من-بعدهم-من-هؤلاء-وما-الذي-فعلوه-ليكافئهم-الله-على-صنيعهم-الشعراوي-يجيب">
+            <p class='card-details'> &quot;ولنسكننكم الأرض من بعدهم&quot;.. من هؤلاء؟ وما الذي فعلوه ليكافئهم الله على صنيعهم؟ (الشعراوي يجيب)</p>
+        </a>
+
+        <a class='card-link' href="https://amrkhaled.net/category/1033/قصص-القرآن-و-الأنبياء">قصص القرآن و الأنبياء</a>
+
+    </div>
+</div>
+            </div>
+                    </div>
+    </div>
+</section>
+
+
+    <section class='electronic-library bg-light'>
+    <div class="container">
+        <h2 class='text-center'>المكتبة الإلكترونية</h2>
+        <p class='subtitle'>اقرأ أحدث وأشهر الكتب لـعمرو خالد</p>
+
+                    <div class="row">
+
+                                <div class="col-lg-2">
+                    <div class="book-card">
+    <a href="https://amrkhaled.net/books/21">
+        <div class="img-wrapper">
+            <img class='w-100 lazy'  data-src="https://amrkhaled.net/uploads/small/08-2021/3c14860d23610669d37855f12110dd99883ae25e.jpg" alt="">
+        </div>
+
+        <div class="card-body">
+            <small>منازل الروح</small>
+            
+        </div>
+    </a>
+</div>
+                </div>
+                                <div class="col-lg-2">
+                    <div class="book-card">
+    <a href="https://amrkhaled.net/books/20">
+        <div class="img-wrapper">
+            <img class='w-100 lazy'  data-src="https://amrkhaled.net/uploads/small/12-2020/f432427f14bc21270438d63dd4300ca7853b8f76.jpeg" alt="">
+        </div>
+
+        <div class="card-body">
+            <small>حياة الذاكرين: دليلك لتصفية الذهن والروح</small>
+            
+        </div>
+    </a>
+</div>
+                </div>
+                                <div class="col-lg-2">
+                    <div class="book-card">
+    <a href="https://amrkhaled.net/books/17">
+        <div class="img-wrapper">
+            <img class='w-100 lazy'  data-src="https://amrkhaled.net/uploads/small/06-2020/904155b6f87e186fb4387b4afb053a07ee31b7bc.jpeg" alt="">
+        </div>
+
+        <div class="card-body">
+            <small>قبلة حياة للعقل المسلم</small>
+            
+        </div>
+    </a>
+</div>
+                </div>
+                                <div class="col-lg-2">
+                    <div class="book-card">
+    <a href="https://amrkhaled.net/books/19">
+        <div class="img-wrapper">
+            <img class='w-100 lazy'  data-src="https://amrkhaled.net/uploads/small/06-2020/46864dded9e8d14661d6542d88d2266c63cea2bb.jpeg" alt="">
+        </div>
+
+        <div class="card-body">
+            <small>خواطر قرآنية: نظرات في أهداف سور القرآن</small>
+            
+        </div>
+    </a>
+</div>
+                </div>
+                                <div class="col-lg-2">
+                    <div class="book-card">
+    <a href="https://amrkhaled.net/books/18">
+        <div class="img-wrapper">
+            <img class='w-100 lazy'  data-src="https://amrkhaled.net/uploads/small/06-2020/56b4f06c1ab0a99c535101e5682021987d97f47e.jpeg" alt="">
+        </div>
+
+        <div class="card-body">
+            <small>عبادات المؤمن</small>
+            
+        </div>
+    </a>
+</div>
+                </div>
+                                <div class="col-lg-2">
+                    <div class="book-card">
+    <a href="https://amrkhaled.net/books/7">
+        <div class="img-wrapper">
+            <img class='w-100 lazy'  data-src="https://amrkhaled.net/uploads/small/02-2020/058f80297f58643c6531883ee28f7c48851e6d2d.jpeg" alt="">
+        </div>
+
+        <div class="card-body">
+            <small>الايمان والعصر</small>
+            
+        </div>
+    </a>
+</div>
+                </div>
+                            </div>
+        
+
+
+
+
+        <a class='btn  ' href="books">تصفح المزيد</a>
+    </div>
+</section>
+
+    
+    <section class='d-none d-lg-block'>
+        <div class="container">
+            <div class="row align-items-start ">
+                <div class="col-lg-12 d-flex flex-column">
+                    <h2 class=''>أقسام أخري
+                    </h2>
+                    <div class="row m-auto">
+                                                <div class="col-md-3 mb-2 col-sm-6">
+                            <div class="position-relative">
+                                <a href="https://amrkhaled.net/programs">
+                                    <img class='mw-100' data-src="uploads/3660cab3888c60be70cdf568fe8b3200.jpg" alt="">
+                                    <div class="title">
+                                        <span style='padding: 0 20px;' class=''></span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                                                <div class="col-md-3 mb-2 col-sm-6">
+                            <div class="position-relative">
+                                <a href="https://amrkhaled.net/category/1020/%D8%A7%D9%84%D9%81%D8%AA%D8%A7%D9%88%D9%89">
+                                    <img class='mw-100' data-src="uploads/068a7e8a152532dcbb4bd47336cecc83.jpg" alt="">
+                                    <div class="title">
+                                        <span style='padding: 0 20px;' class=''></span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                                                <div class="col-md-3 mb-2 col-sm-6">
+                            <div class="position-relative">
+                                <a href="https://amrkhaled.net/category/1087/%D8%B1%D9%88%D8%A7%D8%AF-%D9%88%D8%A3%D8%B9%D9%84%D8%A7%D9%85">
+                                    <img class='mw-100' data-src="uploads/4f838b40c15d7b744487b5bd8f624a3b.jpg" alt="">
+                                    <div class="title">
+                                        <span style='padding: 0 20px;' class=''></span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                                                <div class="col-md-3 mb-2 col-sm-6">
+                            <div class="position-relative">
+                                <a href="https://amrkhaled.net/category/26/%D8%A7%D8%B3%D8%AA%D8%B4%D8%A7%D8%B1%D8%A7%D8%AA">
+                                    <img class='mw-100' data-src="uploads/5e342db68d527325b90524ad10b6d393.jpg" alt="">
+                                    <div class="title">
+                                        <span style='padding: 0 20px;' class=''></span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                                            </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="pr-lg-5">
+                                                    <a class='d-lg-block d-none text-center' href=" javascript:void(0)" target="_blank">
+    <img class='mx-auto img-fluid d-none' src="front/images/ad/demo-5.jpg" style='width: 300px; height: 600px' alt="">
+</a>
+                                            </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+        <footer class="">
+    <!-- <div class="opacity"></div> -->
+    <div class="container">
+        <div class="footer-top">
+
+            <div class="row">
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/26/استشارات'>
+                            استشارات
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/33/إنفوجرافيك'>
+                            إنفوجرافيك
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/34/أنت-تسأل-وعمرو-خالد-يجيب'>
+                            أنت تسأل وعمرو خالد يجيب
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/36/تويت-بوك'>
+                            تويت بوك
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/587/لايت-بوكس'>
+                            لايت بوكس
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/1104/مع-الحبيب'>
+                            مع  الحبيب
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/1123/صحتك-تهمنا'>
+                            صحتك تهمنا
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/1150/مسابقات'>
+                            مسابقات
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/1034/أدعية-و-أذكار'>
+                            أدعية و أذكار
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/1033/قصص-القرآن-و-الأنبياء'>
+                            قصص القرآن و الأنبياء
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/1133/تفسير-الأحلام-والرؤى'>
+                            تفسير الأحلام والرؤى
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/35/أسرار-القلوب'>
+                            أسرار القلوب
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/16/الدين-للحياة'>
+                            الدين للحياة
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/1032/السيرة'>
+                            السيرة
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/1124/المرأة'>
+                            المرأة
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/1127/الشباب'>
+                            الشباب
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/29/مع-عمرو-خالد'>
+                            مع عمرو خالد
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/1020/الفتاوى'>
+                            الفتاوى
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/20/لايت-بوكس'>
+                            لايت بوكس
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/programs'>
+                            البرامج
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/1134/اعملها-ازاي'>
+                            اعملها ازاي؟
+                        </a>
+                    </h6>
+                </div>
+                                <div class="col-md-2 mb-2">
+                    <h6 class='mb-3'>
+                        <a class="text-white " href='https://amrkhaled.net/category/1087/رواد-وأعلام'>
+                            رواد وأعلام
+                        </a>
+                    </h6>
+                </div>
+                
+            </div>
+
+        </div>
+
+        <div class="col-md-12 d-flex justify-content-center mb-2">
+            <a class="mx-3" target='_blank' href="https://www.instagram.com/amrkhaled/">
+                <img data-src="front/images\icons\instagram-icon.png" alt="">
+            </a>
+            <a class="mx-3" target='_blank' href="https://twitter.com/amrkhaled">
+                <img data-src="front/images\icons\twitter-icon.png" alt="">
+            </a>
+            <a class="mx-3" target='_blank' href="https://www.youtube.com/AmrKhaled">
+                <img data-src="front/images\icons\youtube-icon.png" alt="">
+            </a>
+            <a class="mx-3" target='_blank' href="https://www.facebook.com/amrkhaled">
+                <img data-src="front/images/icons/facebook-icon.png" alt="">
+            </a>
+        </div>
+
+        <div class="footer-bottom">
+    <div>
+        <p>جميع الحقوق محفوظة لموقع عمرو خالد</p>
+    </div>
+
+    <div>
+        <a href="about">من نحن</a>
+        <a href="contact-us">اتصل بنا</a>
+        <a href="javascript=void(0)">سياسة الخصوصية</a>
+        <a href="javascript=void(0)">خريطة الإعلانات</a>
+    </div>
+
+    <a href='https://media-sci.com/' target='_blank'>
+        <div class='d-flex align-items-center'>
+            <p>تم التصميم و التطوير بواسطة ميديا ساى </p>
+            <img class='mr-3' data-src="front/images/media-sci.png" alt="">
+        </div>
+    </a>
+
+</div>
+
+
+    </div>
+</footer>
+
+
+
+
+        <!-- jquery -->
+        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
+
+        <!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script> -->
+        <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script> -->
+
+        <script src='front/js/jquery-3.2.1.min.js'></script>
+        <script src="front/js/bootstrap.bundle.min.js"></script>
+        <script src="front/js/popper.min.js"></script>
+        <script src="front/js/bootstrap.min.js"></script>
+        <script src="front/js/owl.carousel.min.js"></script>
+        <script src="front/js/skrollr.min.js"></script>
+        <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+        <script src="front/js/main.js?v=1"> </script>
+
+        <script>
+    $(document).ready(function(){
+        $('.user-question').on('submit', function(e){
+            e.preventDefault();
+            var question_title = $('#question-title').val();
+            $('.msg').removeClass('d-none');
+            $.ajax({
+                url: 'users/questions',
+                type: 'POST',
+                data: { '_token':'PRUq1Ocd9kjpi8fSsuMM4gJ7T85ZWsSLrkx2TXBG',
+                        'title': question_title
+                    },
+                dataType: 'JSON',
+                success: function (data) {
+
+                    if(data.success != true) {
+                     alert('يوجد خطأ في ارسال السؤال') ;
+                    }
+                }
+            });
+       });
+});
+</script>
+<script>
+    //     $( ".modal-content" ).find( "input#submit" ).click( function() {
+//     // submit
+//     alert('يوجد خطأ في ارسال السؤال') ;
+// });
+//     $('#searchForm').submit(function(event){
+
+// // prevent default browser behaviour
+// event.preventDefault();
+// alert('يوجد خطأ في ارسال السؤال') ;
+// //do stuff with your form here
+// ...
+
+// });
+//     //     $(document).ready(function(){
+//         $('.user-question').on('submit', function(e){
+//             e.preventDefault();
+//             var question_title = $('#question-title').val();
+//             $('.msg').removeClass('d-none');
+//             $.ajax({
+//                 url: 'users/questions',
+//                 type: 'POST',
+//                 data: { '_token':'PRUq1Ocd9kjpi8fSsuMM4gJ7T85ZWsSLrkx2TXBG',
+//                         'title': question_title
+//                     },
+//                 dataType: 'JSON',
+//                 success: function (data) {
+
+//                     if(data.success != true) {
+//                      alert('يوجد خطأ في ارسال السؤال') ;
+//                     }
+//                 }
+//             });
+//        });
+// });
+</script>
+        <script src="front/js/jQuery.loadScroll.js"></script>
+        <script>
+            $(document).ready(function(){
+                $('img').loadScroll();
+                var scroll = $(window).scrollTop();
+                $(window).scrollTop(scroll-100);
+
+
+
+                $("#close_argent").on('click',function(){
+                    $.ajax({
+                        url:'remove-session',
+                        method:'post',
+                        success: function(){
+                            // console.log(res);
+                        }
+                    });
+                });
+            })
+        </script>
+
+
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-117793333-1"></script>
+		<script>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+
+		  gtag('config', 'UA-117793333-1');
+		</script>
+
+
+
+		<div style='display:none' itemscope itemtype ="http://schema.org/Brand">
+			<h1 itemprop="name">amrkhaled</h1>
+			<img itemprop="logo" src="https://amrkhaled.net/front/images/logo.png" alt="amrkhaled" />
+			<span itemprop="description">موقع عصري ينشغل بالدين والحياة معاً.. ديني.. اجتماعي.. ثقافي، يقدم البرامج والفتاوى والسيرة وقصص القرآن والأنبياء والاستشارات الطبية والنفسية والحلول للمشكلات الزوجية، وكل ما يساعد على تنمية الإنسان، ومهارات الحياة، ومعلومات عامة.. وكل ما يخص الشباب والمرأة والأسرة والتكنولوجيا برؤية عصرية وسطية.</span>
+		</div>
+
+		<p style='display:none' class="h-card">
+			<img class="u-photo" src="https://amrkhaled.net/logo.png" alt="" />
+			<a class="p-name u-url" href="https://amrkhaled.net">amrkhaled</a>
+			<a class="u-email" href="/cdn-cgi/l/email-protection#9bfaffe8dbfaf6e9f0f3faf7feffb5f5feefbb"><span class="__cf_email__" data-cfemail="1372776053727e61787b727f76773d7d7667">[email&#160;protected]</span> </a>,
+			<span class="p-street-address">Cairo</span>
+			<span class="p-locality">Cairo</span>
+			<span class="p-country-name">Egypt</span>
+		</p>
+
+	  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="application/ld+json">
+	  {
+		"@context": "http://schema.org",
+		"@type": "Organization",
+		"name": "amrkhaled",
+		"url": "https://www.amrkhaled.net/",
+		"address": "Cairo, Egypt",
+		"sameAs": [
+		  "https://www.facebook.com/AmrKhaled/",
+		  "https://twitter.com/amrkhaled",
+		  "https://www.instagram.com/amrkhaled/",
+		  "https://www.linkedin.com/amrkhaled/",
+		  "https://www.youtube.com/c/AmrkhaledNetAmrkhaled"
+		]
+	  }
+	</script>
+	
+	<style>
+	  .fuse_sticky {
+		position: fixed;
+		bottom: 0; /* top: 0; for Top sticky */
+		left: 0;
+		width: 100%;
+		text-align: center;
+		-webkit-overflow-scrolling: touch;
+		z-index: 1000;
+	  }
+	  .fuse_sticky .fuse-slot {
+		transform: translate3d(0,0,0);
+	  }
+	</style>
+	<div class="fuse_sticky">
+	
+    </div>
+
+	
+    </body>
+
+</html>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.prayer.domain.model.PrayerAudioDecisionMatrixTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:34" hostname="MOLHAMALNAEB" time="0.002">
+  <properties/>
+  <testcase name="sunrise matrix normalizes only adhan to notice" classname="com.example.feature.prayer.domain.model.PrayerAudioDecisionMatrixTest" time="0.001"/>
+  <testcase name="muting all prayers produces six muted cells" classname="com.example.feature.prayer.domain.model.PrayerAudioDecisionMatrixTest" time="0.0"/>
+  <testcase name="each notifiable prayer accepts every configured mode" classname="com.example.feature.prayer.domain.model.PrayerAudioDecisionMatrixTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

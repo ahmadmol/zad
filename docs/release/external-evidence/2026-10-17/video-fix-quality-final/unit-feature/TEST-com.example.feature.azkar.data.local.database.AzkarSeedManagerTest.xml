@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.azkar.data.local.database.AzkarSeedManagerTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:56:55" hostname="MOLHAMALNAEB" time="0.92">
+  <properties/>
+  <testcase name="empty azkar_table is fully populated" classname="com.example.feature.azkar.data.local.database.AzkarSeedManagerTest" time="0.224"/>
+  <testcase name="partial seed repairs only missing rows" classname="com.example.feature.azkar.data.local.database.AzkarSeedManagerTest" time="0.041"/>
+  <testcase name="ensureSeededIfTableEmpty repairs when the table is empty" classname="com.example.feature.azkar.data.local.database.AzkarSeedManagerTest" time="0.017"/>
+  <testcase name="ensureSeededIfTableEmpty is a no-op when the table is not empty" classname="com.example.feature.azkar.data.local.database.AzkarSeedManagerTest" time="0.039"/>
+  <testcase name="current seed version is at least one" classname="com.example.feature.azkar.data.local.database.AzkarSeedManagerTest" time="0.002"/>
+  <testcase name="user-added row with same content key as seed is not duplicated" classname="com.example.feature.azkar.data.local.database.AzkarSeedManagerTest" time="0.061"/>
+  <testcase name="concurrent callers are serialized" classname="com.example.feature.azkar.data.local.database.AzkarSeedManagerTest" time="0.457"/>
+  <testcase name="stored version matching current skips re-insert unless a row is missing" classname="com.example.feature.azkar.data.local.database.AzkarSeedManagerTest" time="0.053"/>
+  <testcase name="seed run twice is idempotent" classname="com.example.feature.azkar.data.local.database.AzkarSeedManagerTest" time="0.013"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

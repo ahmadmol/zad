@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.fahmanallah.FahmRepositoryTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:01" hostname="MOLHAMALNAEB" time="0.118">
+  <properties/>
+  <testcase name="resetFeatureData_resetsDataToInitialState" classname="com.example.feature.fahmanallah.FahmRepositoryTest" time="0.053"/>
+  <testcase name="repository_hasNoEpisode30AndNoDuplicateVideoIds" classname="com.example.feature.fahmanallah.FahmRepositoryTest" time="0.005"/>
+  <testcase name="markCompleted_updatesProgressAndCalculatesPercentage" classname="com.example.feature.fahmanallah.FahmRepositoryTest" time="0.005"/>
+  <testcase name="repository_contains7SpiritualStationsWithEmptyEpisodeMappings" classname="com.example.feature.fahmanallah.FahmRepositoryTest" time="0.011"/>
+  <testcase name="searchEpisodes_returnsMatchingEpisodes" classname="com.example.feature.fahmanallah.FahmRepositoryTest" time="0.02"/>
+  <testcase name="toggleFavorite_updatesEpisodeFavoriteStatus" classname="com.example.feature.fahmanallah.FahmRepositoryTest" time="0.006"/>
+  <testcase name="repository_initialJourneyProgress_defaultsToZeroAndNoCurrentEpisode" classname="com.example.feature.fahmanallah.FahmRepositoryTest" time="0.005"/>
+  <testcase name="repository_containsExactly29CatalogEpisodes" classname="com.example.feature.fahmanallah.FahmRepositoryTest" time="0.01"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

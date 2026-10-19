@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.ehsan.presentation.AddEhsanViewModelTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:33" hostname="MOLHAMALNAEB" time="0.091">
+  <properties/>
+  <testcase name="submitRequest when no user blocks submission" classname="com.example.feature.ehsan.presentation.AddEhsanViewModelTest" time="0.015"/>
+  <testcase name="whatsapp requires an international number instead of guessing its country" classname="com.example.feature.ehsan.presentation.AddEhsanViewModelTest" time="0.009"/>
+  <testcase name="initial state reflects user profile" classname="com.example.feature.ehsan.presentation.AddEhsanViewModelTest" time="0.005"/>
+  <testcase name="submitRequest with valid data calls use case" classname="com.example.feature.ehsan.presentation.AddEhsanViewModelTest" time="0.022"/>
+  <testcase name="submitRequest with invalid phone blocks submission" classname="com.example.feature.ehsan.presentation.AddEhsanViewModelTest" time="0.012"/>
+  <testcase name="submitRequest when already submitting does nothing" classname="com.example.feature.ehsan.presentation.AddEhsanViewModelTest" time="0.027"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,55 @@
+{
+  "modules": {
+    "app": {
+      "tests": 33,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    "feature": {
+      "tests": 415,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    "designsystem": {
+      "tests": 29,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    }
+  },
+  "total": {
+    "tests": 477,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "suiteCount": 105,
+  "missingBaselineSuites": [],
+  "changedCounts": [],
+  "lint": {
+    "app:debug": {
+      "severities": {
+        "Warning": 118
+      },
+      "path": "app\\build\\reports\\lint-results-debug.xml",
+      "modifiedEpoch": 1792223119.2853081
+    },
+    "feature:debug": {
+      "severities": {
+        "Warning": 22,
+        "Information": 1
+      },
+      "path": "feature\\build\\reports\\lint-results-debug.xml",
+      "modifiedEpoch": 1792223119.4776642
+    },
+    "designsystem:debug": {
+      "severities": {
+        "Warning": 9
+      },
+      "path": "designsystem\\build\\reports\\lint-results-debug.xml",
+      "modifiedEpoch": 1792223104.1411388
+    }
+  }
+}

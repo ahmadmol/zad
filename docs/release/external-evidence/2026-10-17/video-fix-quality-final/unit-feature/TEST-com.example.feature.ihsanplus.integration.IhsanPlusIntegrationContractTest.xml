@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.ihsanplus.integration.IhsanPlusIntegrationContractTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:02" hostname="MOLHAMALNAEB" time="0.014">
+  <properties/>
+  <testcase name="readiness evaluator blocks fake modules and unapproved routes" classname="com.example.feature.ihsanplus.integration.IhsanPlusIntegrationContractTest" time="0.009"/>
+  <testcase name="data trust policy rejects demo and backend verified for production" classname="com.example.feature.ihsanplus.integration.IhsanPlusIntegrationContractTest" time="0.002"/>
+  <testcase name="readiness ready when adapters exist local board and no production wiring" classname="com.example.feature.ihsanplus.integration.IhsanPlusIntegrationContractTest" time="0.0"/>
+  <testcase name="demo fake modules are forbidden in release DI spec" classname="com.example.feature.ihsanplus.integration.IhsanPlusIntegrationContractTest" time="0.0"/>
+  <testcase name="demo charity capability blocks trust shipping" classname="com.example.feature.ihsanplus.integration.IhsanPlusIntegrationContractTest" time="0.001"/>
+  <testcase name="charity trust route requires backend verified capability" classname="com.example.feature.ihsanplus.integration.IhsanPlusIntegrationContractTest" time="0.001"/>
+  <testcase name="daily route is approved for flag gated integration while charity trust is not" classname="com.example.feature.ihsanplus.integration.IhsanPlusIntegrationContractTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

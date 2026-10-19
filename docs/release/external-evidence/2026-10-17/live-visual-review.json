@@ -1,0 +1,15 @@
+{
+  "reviewed_at": "2026-10-17",
+  "method": "Direct visual inspection of the retrieved physical-phone PNGs",
+  "scope": "phone-verified/physical-media-1792220765354; debug probe, not final release acceptance",
+  "haram": {
+    "file": "live_haram.png",
+    "observation": "YouTube This video is unavailable message. External YouTube action and official Haramain portal action visible below the player.",
+    "visible_video_frame": false
+  },
+  "nabawi": {
+    "file": "live_nabawi.png",
+    "observation": "Visible Nabawi courtyard video picture and official YouTube player controls, consistent with advancing player time.",
+    "visible_video_frame": true
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "url": "https://quranenc.com/api/v1/translation/sura/arabic_moyassar/1",
+  "checked_at": "2026-10-17T06:45:31.755372+00:00",
+  "method": "GET",
+  "http": 200,
+  "final_url": "https://quranenc.com/api/v1/translation/sura/arabic_moyassar/1",
+  "content_type": "application/json; charset=utf-8",
+  "truncated": false,
+  "sha256": "7b130c75c96b578780159b53534ee76569897cdf787730a9a3b3784a24689725"
+}

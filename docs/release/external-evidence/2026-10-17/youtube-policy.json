@@ -1,0 +1,10 @@
+{
+  "url": "https://developers.google.com/youtube/terms/required-minimum-functionality",
+  "checked_at": "2026-10-17T06:38:34.351840+00:00",
+  "method": "GET",
+  "http": 200,
+  "final_url": "https://developers.google.com/youtube/terms/required-minimum-functionality",
+  "content_type": "text/html; charset=utf-8",
+  "truncated": false,
+  "sha256": "9207267eb55284680712d25f1b3cae41670e456b748c91998e9fecdf5e5b0185"
+}

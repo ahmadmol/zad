@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.qibla.presentation.QiblaBearingPresentationBoundaryTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:05" hostname="MOLHAMALNAEB" time="0.02">
+  <properties/>
+  <testcase name="default state uses zero sentinel while location is loading" classname="com.example.feature.qibla.presentation.QiblaBearingPresentationBoundaryTest" time="0.005"/>
+  <testcase name="canonical source labels cover device saved and manual" classname="com.example.feature.qibla.presentation.QiblaBearingPresentationBoundaryTest" time="0.003"/>
+  <testcase name="viewmodel consumes canonical prayer location repository" classname="com.example.feature.qibla.presentation.QiblaBearingPresentationBoundaryTest" time="0.003"/>
+  <testcase name="unavailable update preserves an existing bearing" classname="com.example.feature.qibla.presentation.QiblaBearingPresentationBoundaryTest" time="0.003"/>
+  <testcase name="screen does not render compass for unresolved error state" classname="com.example.feature.qibla.presentation.QiblaBearingPresentationBoundaryTest" time="0.003"/>
+  <testcase name="screen delegates location work to viewmodel" classname="com.example.feature.qibla.presentation.QiblaBearingPresentationBoundaryTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

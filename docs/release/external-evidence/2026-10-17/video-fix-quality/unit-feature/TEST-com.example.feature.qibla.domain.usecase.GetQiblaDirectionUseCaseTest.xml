@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.qibla.domain.usecase.GetQiblaDirectionUseCaseTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:36" hostname="MOLHAMALNAEB" time="0.001">
+  <properties/>
+  <testcase name="invoke should return correct qibla angle for Aleppo" classname="com.example.feature.qibla.domain.usecase.GetQiblaDirectionUseCaseTest" time="0.0"/>
+  <testcase name="invoke should return correct qibla angle for London" classname="com.example.feature.qibla.domain.usecase.GetQiblaDirectionUseCaseTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,16 @@
+{
+  "inventory": 86,
+  "recorded": 86,
+  "progress": 86,
+  "nonzeroIframe": 86,
+  "reviewedImages": 86,
+  "rawStatuses": {
+    "Blocked": 86
+  },
+  "overallStatuses": {
+    "Pass (sample scope)": 1,
+    "Partial": 85
+  },
+  "audioScope": "Owner confirmation is limited to the lifecycle sample; 85 individual videos Not Tested for audible audio.",
+  "durationScope": "Short playback excerpts only; no end-to-end full-length or sustained performance certification."
+}

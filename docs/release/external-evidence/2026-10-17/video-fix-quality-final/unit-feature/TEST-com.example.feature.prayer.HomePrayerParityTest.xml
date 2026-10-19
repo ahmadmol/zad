@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.prayer.HomePrayerParityTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:02" hostname="MOLHAMALNAEB" time="0.245">
+  <properties/>
+  <testcase name="home and prayer screen agree on the ordered prayer instants" classname="com.example.feature.prayer.HomePrayerParityTest" time="0.205"/>
+  <testcase name="home and prayer screen agree on the next prayer name" classname="com.example.feature.prayer.HomePrayerParityTest" time="0.013"/>
+  <testcase name="both surfaces report location unavailable from the same state" classname="com.example.feature.prayer.HomePrayerParityTest" time="0.012"/>
+  <testcase name="parity holds after isha when the next prayer rolls to tomorrow" classname="com.example.feature.prayer.HomePrayerParityTest" time="0.013"/>
+  <testcase name="neither surface constructs its own calculator" classname="com.example.feature.prayer.HomePrayerParityTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

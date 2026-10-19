@@ -1,3 +1,5 @@
+> سجل تاريخي لمرحلة سابقة. تقرير القبول الحالي وصور المحاكي ونتائج التحقق: [Dark Mode النهائي — 14 أكتوبر 2026](DARK_MODE_FINAL_QA_2026_10_14.md).
+
 # Project Dark Mode Implementation Report
 
 **Classification:** Project Dark Mode Polish Complete · Light Mode Preserved · Business Logic Unchanged · Architecture Unchanged · Navigation Unchanged

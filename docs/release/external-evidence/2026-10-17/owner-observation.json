@@ -1,0 +1,9 @@
+{
+  "observer": "Project owner, direct reply in this chat",
+  "reported_during": "phone-verified physical-device batch, 2026-10-17 Asia/Damascus",
+  "verbatim_observation": "الصوت يعمل والصورة والفيديو لايظهر ابدا",
+  "audio": "Audible in the owner's observed samples",
+  "picture": "Owner reports video picture never appears in the observed batch",
+  "scope": "Human observation of the running batch, not a separate per-video full-length certification",
+  "release_effect": "BLOCK_VIDEO_VISUAL_ACCEPTANCE; player state and advancing time are insufficient"
+}

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.qibla.QiblaSensorAccuracyTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:35" hostname="MOLHAMALNAEB" time="0.967">
+  <properties/>
+  <testcase name="accelerometer accuracy cannot hide an unreliable compass" classname="com.example.feature.qibla.QiblaSensorAccuracyTest" time="0.967"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

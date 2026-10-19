@@ -1,0 +1,10 @@
+{
+  "url": "https://hadeethenc.com/browse/download/ar",
+  "checked_at": "2026-10-17T06:50:27.828053+00:00",
+  "method": "GET",
+  "http": 200,
+  "final_url": "https://hadeethenc.com//downloads/excel/HadeethEnc.com_ar-v1.8.0.xlsx",
+  "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "truncated": true,
+  "sha256": "6b6b5a9e6e67d318e0bc298187f18102c361ebe51822c8081d74860b678214ce"
+}

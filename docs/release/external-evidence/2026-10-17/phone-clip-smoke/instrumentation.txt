@@ -1,0 +1,31 @@
+INSTRUMENTATION_STATUS: class=com.example.mol.ui.PhysicalDeviceMediaAuditTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+com.example.mol.ui.PhysicalDeviceMediaAuditTest:
+INSTRUMENTATION_STATUS: test=all86VideosProduceIndividualPlaybackEvidence
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: physicalMediaOutput=/storage/emulated/0/Android/data/com.example.mol.referenceqa/files/physical-media-1792221541138
+INSTRUMENTATION_STATUS: physicalMediaStatus=Blocked
+INSTRUMENTATION_STATUS: physicalMediaVideoId=Kx9Wj4vP69A
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: physicalMediaOutput=/storage/emulated/0/Android/data/com.example.mol.referenceqa/files/physical-media-1792221541138
+INSTRUMENTATION_STATUS: physicalMediaStatus=Blocked
+INSTRUMENTATION_STATUS: physicalMediaVideoId=Ugh3nGLgZXY
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.example.mol.ui.PhysicalDeviceMediaAuditTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=all86VideosProduceIndividualPlaybackEvidence
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_RESULT: stream=
+
+Time: 14.26
+
+OK (1 test)
+
+
+INSTRUMENTATION_CODE: -1

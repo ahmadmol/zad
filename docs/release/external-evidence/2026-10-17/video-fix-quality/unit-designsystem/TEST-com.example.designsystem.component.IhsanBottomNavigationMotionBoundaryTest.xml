@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.designsystem.component.IhsanBottomNavigationMotionBoundaryTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-16T11:22:31" hostname="MOLHAMALNAEB" time="0.003">
+  <properties/>
+  <testcase name="bottom navigation source exists" classname="com.example.designsystem.component.IhsanBottomNavigationMotionBoundaryTest" time="0.001"/>
+  <testcase name="compact selection preserves tab semantics and presentation animation" classname="com.example.designsystem.component.IhsanBottomNavigationMotionBoundaryTest" time="0.001"/>
+  <testcase name="does not introduce navigation or data-layer dependencies" classname="com.example.designsystem.component.IhsanBottomNavigationMotionBoundaryTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

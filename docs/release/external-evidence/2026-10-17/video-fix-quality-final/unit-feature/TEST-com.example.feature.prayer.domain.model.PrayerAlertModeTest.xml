@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.prayer.domain.model.PrayerAlertModeTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:03" hostname="MOLHAMALNAEB" time="0.004">
+  <properties/>
+  <testcase name="requesting adhan for sunrise is downgraded to notice" classname="com.example.feature.prayer.domain.model.PrayerAlertModeTest" time="0.001"/>
+  <testcase name="asMap covers every prayer with normalized values" classname="com.example.feature.prayer.domain.model.PrayerAlertModeTest" time="0.0"/>
+  <testcase name="sunrise can be muted" classname="com.example.feature.prayer.domain.model.PrayerAlertModeTest" time="0.0"/>
+  <testcase name="modes round trip through storage" classname="com.example.feature.prayer.domain.model.PrayerAlertModeTest" time="0.0"/>
+  <testcase name="changing one prayer does not affect another" classname="com.example.feature.prayer.domain.model.PrayerAlertModeTest" time="0.0"/>
+  <testcase name="corrupt stored entries are ignored or degrade to default" classname="com.example.feature.prayer.domain.model.PrayerAlertModeTest" time="0.0"/>
+  <testcase name="defaults use adhan for prayers and notice for sunrise" classname="com.example.feature.prayer.domain.model.PrayerAlertModeTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

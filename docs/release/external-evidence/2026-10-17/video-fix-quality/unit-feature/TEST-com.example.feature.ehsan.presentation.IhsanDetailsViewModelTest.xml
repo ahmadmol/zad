@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.ehsan.presentation.IhsanDetailsViewModelTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:33" hostname="MOLHAMALNAEB" time="0.128">
+  <properties/>
+  <testcase name="missing id produces error state" classname="com.example.feature.ehsan.presentation.IhsanDetailsViewModelTest" time="0.089"/>
+  <testcase name="request type is preserved for rendering" classname="com.example.feature.ehsan.presentation.IhsanDetailsViewModelTest" time="0.012"/>
+  <testcase name="ui model does not invent verification badges" classname="com.example.feature.ehsan.presentation.IhsanDetailsViewModelTest" time="0.018"/>
+  <testcase name="canonical route loads donation by id" classname="com.example.feature.ehsan.presentation.IhsanDetailsViewModelTest" time="0.009"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

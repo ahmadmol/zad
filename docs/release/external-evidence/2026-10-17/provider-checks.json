@@ -1,0 +1,233 @@
+{
+  "tanzil-license": {
+    "url": "https://tanzil.net/docs/Text_License",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://tanzil.net/docs/Text_License",
+    "content_type": "text/html; charset=utf-8",
+    "truncated": false,
+    "sha256": "7d63664bcfa3f844cdf6fef682c41e009c5aef93fa368df851a895ea9250456c"
+  },
+  "hadeethenc-policy": {
+    "url": "https://hadeethenc.com/ar/",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://hadeethenc.com/ar/",
+    "content_type": "text/html; charset=UTF-8",
+    "truncated": false,
+    "sha256": "7d5787a04c3061be503fbb95596091d498f13a0199f1277c25c9f8b18796c746"
+  },
+  "hadeethenc-update": {
+    "url": "https://hadeethenc.com/en/check/ar/v1.7.0",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://hadeethenc.com/en/check/ar/v1.7.0",
+    "content_type": "text/html; charset=UTF-8",
+    "truncated": false,
+    "sha256": "5add9bb53c78bcf60734eed6db2b0b7034e45013449676c4899338adcf75d4c3"
+  },
+  "mp3quran-api": {
+    "url": "https://www.mp3quran.net/ar/api",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://www.mp3quran.net/ar/api",
+    "content_type": "text/html; charset=utf-8",
+    "truncated": false,
+    "sha256": "7f88d1bdd17fb2634a2092c142c7159084926431f1fdc9bcbb9bc59e67b48bd4"
+  },
+  "mp3quran-contact": {
+    "url": "https://www.mp3quran.net/ar/contact-us",
+    "checked_at": "2026-10-17T07:08:02.194170+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://www.mp3quran.net/ar/contact-us",
+    "content_type": "text/html; charset=utf-8",
+    "truncated": false,
+    "sha256": "1d438a24e76f88637b1b60a1a4879581a702bed4035a1315a211df7834c5a108"
+  },
+  "everyayah": {
+    "url": "https://everyayah.com/",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://everyayah.com/",
+    "content_type": "text/html",
+    "truncated": false,
+    "sha256": "01aac4855b891fcff017f6de38738941e1e97a2323a57f2d272bb5c046e7c195"
+  },
+  "haramain-official": {
+    "url": "https://haramain.prh.gov.sa/ar/live",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://haramain.prh.gov.sa/ar/live",
+    "content_type": "text/html; charset=utf-8",
+    "truncated": false,
+    "sha256": "21f2bfeaa099535125ba7133584a3931fa91b07218acca91a03236b8decea69c"
+  },
+  "sba-official": {
+    "url": "https://saudiatv.sba.sa/",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": null,
+    "error": "<urlopen error [WinError 10054] An existing connection was forcibly closed by the remote host>"
+  },
+  "amrkhaled-official": {
+    "url": "https://amrkhaled.net/",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://amrkhaled.net/",
+    "content_type": "text/html; charset=UTF-8",
+    "truncated": false,
+    "sha256": "983669b09be00234303e80b665140ef9fe7477a7edb8cf299e118521b989dc97"
+  },
+  "qf-terms": {
+    "url": "https://api-docs.quran.com/legal/developer-terms/",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://api-docs.quran.com/legal/developer-terms/",
+    "content_type": "text/html; charset=utf-8",
+    "truncated": false,
+    "sha256": "9bfd4fbae2de6ac368d25c53ef8d4f1cca68910e29e47a4ab3830ec63ce1a13d"
+  },
+  "qf-audio": {
+    "url": "https://api-docs.quran.com/docs/sdk/javascript/audio/",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://api-docs.quran.com/docs/sdk/javascript/audio/",
+    "content_type": "text/html; charset=utf-8",
+    "truncated": false,
+    "sha256": "6519e7476c05c618bf39da39985d7f87d109afd1070bc7ba880db96bb54c5e9d"
+  },
+  "youtube-policy": {
+    "url": "https://developers.google.com/youtube/terms/required-minimum-functionality",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://developers.google.com/youtube/terms/required-minimum-functionality",
+    "content_type": "text/html; charset=utf-8",
+    "truncated": false,
+    "sha256": "9207267eb55284680712d25f1b3cae41670e456b748c91998e9fecdf5e5b0185"
+  },
+  "youtube-video-api": {
+    "url": "https://developers.google.com/youtube/v3/docs/videos/list",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://developers.google.com/youtube/data/reference/rest/v3/videos/list",
+    "content_type": "text/html; charset=utf-8",
+    "truncated": false,
+    "sha256": "aa6e49ab532a894df6963fa39dee324165d6240f6e16bf6040ba614a409e5e9b"
+  },
+  "unsplash-license": {
+    "url": "https://unsplash.com/license",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 401,
+    "error": "HTTP Error 401: Unauthorized"
+  },
+  "pexels-license": {
+    "url": "https://www.pexels.com/legal-pages/license/",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 403,
+    "error": "HTTP Error 403: Forbidden"
+  },
+  "commons-reuse": {
+    "url": "https://commons.wikimedia.org/wiki/Commons:Reusing_content_outside_Wikimedia/en",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://commons.wikimedia.org/wiki/Commons:Reusing_content_outside_Wikimedia/en",
+    "content_type": "text/html; charset=UTF-8",
+    "truncated": false,
+    "sha256": "a8478eb79119b5a80eaa8e205955339fce37e99333d3004ae0c02c75384ca060"
+  },
+  "lucide-license": {
+    "url": "https://lucide.dev/license",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://lucide.dev/license",
+    "content_type": "text/html; charset=utf-8",
+    "truncated": false,
+    "sha256": "cd066458715cadf5b8606b578b82be7d168815cc2d89f4967c60f6bd8897d647"
+  },
+  "amiri-license": {
+    "url": "https://raw.githubusercontent.com/aliftype/amiri/main/OFL.txt",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://raw.githubusercontent.com/aliftype/amiri/main/OFL.txt",
+    "content_type": "text/plain; charset=utf-8",
+    "truncated": false,
+    "sha256": "72de68e5954f4fdd24702292ef5a32f003ca960ec9330dc86e5eefb5dffb9b22"
+  },
+  "adhan-license": {
+    "url": "https://raw.githubusercontent.com/batoulapps/adhan-kotlin/master/LICENSE",
+    "checked_at": "2026-10-17T06:38:34.351840+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://raw.githubusercontent.com/batoulapps/adhan-kotlin/master/LICENSE",
+    "content_type": "text/plain; charset=utf-8",
+    "truncated": false,
+    "sha256": "60ff1bbadcc093e0d224364b6ed1a439e9b8f8f05a4dd59c45c91d340b728136"
+  },
+  "quranenc-moyassar": {
+    "url": "https://quranenc.com/ar/browse/arabic_moyassar",
+    "checked_at": "2026-10-17T06:45:31.755372+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://quranenc.com/ar/browse/arabic_moyassar",
+    "content_type": "text/html; charset=UTF-8",
+    "truncated": false,
+    "sha256": "5ca75ec59b89c749df559937ea54b520dfe099365c591df3d0609894e6842b6d"
+  },
+  "quranenc-home": {
+    "url": "https://quranenc.com/ar/home",
+    "checked_at": "2026-10-17T07:07:22.877229+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://quranenc.com/ar/home",
+    "content_type": "text/html; charset=UTF-8",
+    "truncated": false,
+    "sha256": "80547b89b5657b4836ca35b5e831a9d916aa033d3cb7237275168488c406f7dc"
+  },
+  "quranenc-contact": {
+    "url": "https://quranenc.com/ar/home/contact_us",
+    "checked_at": "2026-10-17T07:07:22.877229+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://quranenc.com/ar/home/contact_us",
+    "content_type": "text/html; charset=UTF-8",
+    "truncated": false,
+    "sha256": "cd85e23d5d2d77c84a6e6cb2d9ae2269f0223fe7278e9b61b4d1b96dc2b5d1b0"
+  },
+  "quranenc-list": {
+    "url": "https://quranenc.com/api/v1/translations/list/ar",
+    "checked_at": "2026-10-17T06:45:31.755372+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://quranenc.com/api/v1/translations/list/ar",
+    "content_type": "application/json; charset=utf-8",
+    "truncated": false,
+    "sha256": "d0305b6cafd7c4b172fdeac50e7db7b8f0a6d229659eafd8fa4582cfc4a6b919"
+  },
+  "quranenc-sample": {
+    "url": "https://quranenc.com/api/v1/translation/sura/arabic_moyassar/1",
+    "checked_at": "2026-10-17T06:45:31.755372+00:00",
+    "method": "GET",
+    "http": 200,
+    "final_url": "https://quranenc.com/api/v1/translation/sura/arabic_moyassar/1",
+    "content_type": "application/json; charset=utf-8",
+    "truncated": false,
+    "sha256": "7b130c75c96b578780159b53534ee76569897cdf787730a9a3b3784a24689725"
+  }
+}

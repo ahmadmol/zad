@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.quran.data.download.QuranDownloadInterruptionTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:36" hostname="MOLHAMALNAEB" time="0.071">
+  <properties/>
+  <testcase name="finalization with a null target does not crash" classname="com.example.feature.quran.data.download.QuranDownloadInterruptionTest" time="0.013"/>
+  <testcase name="cancelled download deletes the part file and rethrows" classname="com.example.feature.quran.data.download.QuranDownloadInterruptionTest" time="0.007"/>
+  <testcase name="finalization with a missing source file fails safely without leaving the target" classname="com.example.feature.quran.data.download.QuranDownloadInterruptionTest" time="0.004"/>
+  <testcase name="a stale part file does not block a subsequent download attempt" classname="com.example.feature.quran.data.download.QuranDownloadInterruptionTest" time="0.029"/>
+  <testcase name="a permanent failure also deletes the part file" classname="com.example.feature.quran.data.download.QuranDownloadInterruptionTest" time="0.006"/>
+  <testcase name="a transient IO failure deletes the part file and rethrows" classname="com.example.feature.quran.data.download.QuranDownloadInterruptionTest" time="0.005"/>
+  <testcase name="an empty target is recognised as not yet downloaded" classname="com.example.feature.quran.data.download.QuranDownloadInterruptionTest" time="0.007"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

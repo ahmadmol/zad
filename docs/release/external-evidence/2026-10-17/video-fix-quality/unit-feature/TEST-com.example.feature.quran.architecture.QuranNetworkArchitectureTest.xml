@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.quran.architecture.QuranNetworkArchitectureTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:36" hostname="MOLHAMALNAEB" time="0.004">
+  <properties/>
+  <testcase name="scheduler encodes connected and unmetered policies" classname="com.example.feature.quran.architecture.QuranNetworkArchitectureTest" time="0.002"/>
+  <testcase name="worker uses injected downloader and explicit retry outcomes" classname="com.example.feature.quran.architecture.QuranNetworkArchitectureTest" time="0.001"/>
+  <testcase name="viewmodel does not own android context or workmanager" classname="com.example.feature.quran.architecture.QuranNetworkArchitectureTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

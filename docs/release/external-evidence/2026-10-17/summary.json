@@ -1,0 +1,30 @@
+{
+  "checked_at": "2026-10-17T07:21:17.478383+00:00",
+  "asset_rows": 4193,
+  "media_rows": 94,
+  "videos": 86,
+  "metadata_http200": 86,
+  "exact_title_matches": 86,
+  "expected_channel_handle_matches": 86,
+  "content": {
+    "surahs": 114,
+    "verses": 6236,
+    "verbatim_tanzil": true,
+    "hadith_records": 3582,
+    "hadith_unique_ids": 3582,
+    "duas": 39,
+    "asma": 99,
+    "sleep_azkar": 2
+  },
+  "literal_url_occurrences": 3838,
+  "status_counts": {
+    "DEFERRED_BACKEND": 2,
+    "EXTERNAL_LINK_ONLY": 44,
+    "NEEDS_SOURCE": 4,
+    "PENDING_EDITORIAL_REVIEW": 120,
+    "PENDING_LICENSE": 125,
+    "PENDING_PHONE_TEST": 88,
+    "READY_WITH_CONDITIONS": 3724,
+    "REJECTED": 86
+  }
+}

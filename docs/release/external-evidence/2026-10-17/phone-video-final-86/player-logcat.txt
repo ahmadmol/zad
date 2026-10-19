@@ -1,0 +1,15 @@
+--------- beginning of main
+         1792223712.875 30080 30114 I IhsanPhysicalQa: VIDEO_START id=Kx9Wj4vP69A
+         1792223719.800 30080 30114 I IhsanPhysicalQa: VIDEO_END id=Kx9Wj4vP69A status=Blocked
+         1792223719.878 30080 30114 I IhsanPhysicalQa: VIDEO_START id=Ugh3nGLgZXY
+         1792223726.502 30080 30114 I IhsanPhysicalQa: VIDEO_END id=Ugh3nGLgZXY status=Blocked
+         1792223726.540 30080 30114 I IhsanPhysicalQa: VIDEO_START id=ALiJwsKl-Tg
+         1792223732.220 30080 30114 I IhsanPhysicalQa: VIDEO_END id=ALiJwsKl-Tg status=Blocked
+         1792223732.260 30080 30114 I IhsanPhysicalQa: VIDEO_START id=Er0EPYkCKu0
+         1792223737.742 30080 30114 I IhsanPhysicalQa: VIDEO_END id=Er0EPYkCKu0 status=Blocked
+         1792223737.781 30080 30114 I IhsanPhysicalQa: VIDEO_START id=35trZgpKGoo
+         1792223743.294 30080 30114 I IhsanPhysicalQa: VIDEO_END id=35trZgpKGoo status=Blocked
+         1792223743.328 30080 30114 I IhsanPhysicalQa: VIDEO_START id=WZnSTPuqhXg
+         1792223749.339 30080 30114 I IhsanPhysicalQa: VIDEO_END id=WZnSTPuqhXg status=Blocked
+         1792223749.380 30080 30114 I IhsanPhysicalQa: VIDEO_START id=adr8HqnAwRU
+         1792223756.548 30080 30114 I IhsanPhysicalQa: VIDEO_END id=adr8HqnAwRU status=Fail

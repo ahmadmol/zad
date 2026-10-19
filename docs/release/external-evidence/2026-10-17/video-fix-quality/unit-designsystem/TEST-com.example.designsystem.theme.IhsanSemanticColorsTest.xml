@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.designsystem.theme.IhsanSemanticColorsTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-16T11:22:31" hostname="MOLHAMALNAEB" time="0.005">
+  <properties/>
+  <testcase name="charity offer and request remain distinct" classname="com.example.designsystem.theme.IhsanSemanticColorsTest" time="0.0"/>
+  <testcase name="minimum touch target is material 48dp" classname="com.example.designsystem.theme.IhsanSemanticColorsTest" time="0.002"/>
+  <testcase name="whatsapp remains intentional third party green" classname="com.example.designsystem.theme.IhsanSemanticColorsTest" time="0.0"/>
+  <testcase name="dark surface hierarchy is distinct" classname="com.example.designsystem.theme.IhsanSemanticColorsTest" time="0.001"/>
+  <testcase name="brand fills follow the theme primary" classname="com.example.designsystem.theme.IhsanSemanticColorsTest" time="0.0"/>
+  <testcase name="semantic tokens have distinct light and dark mappings where required" classname="com.example.designsystem.theme.IhsanSemanticColorsTest" time="0.0"/>
+  <testcase name="dark interactive primary differs from dark background" classname="com.example.designsystem.theme.IhsanSemanticColorsTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

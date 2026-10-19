@@ -1,0 +1,15 @@
+--------- beginning of crash
+         1792220086.209  8846  8887 E AndroidRuntime: FATAL EXCEPTION: Instr: androidx.test.runner.AndroidJUnitRunner
+         1792220086.209  8846  8887 E AndroidRuntime: Process: com.example.mol.referenceqa, PID: 8846
+         1792220086.209  8846  8887 E AndroidRuntime: java.lang.RuntimeException: Error while disconnecting UiAutomation@8449424[id=-1, displayId=0, flags=0]
+         1792220086.209  8846  8887 E AndroidRuntime: 	at android.app.UiAutomation.disconnect(UiAutomation.java:455)
+         1792220086.209  8846  8887 E AndroidRuntime: 	at android.app.Instrumentation.finish(Instrumentation.java:288)
+         1792220086.209  8846  8887 E AndroidRuntime: 	at androidx.test.runner.MonitoringInstrumentation.finish(MonitoringInstrumentation.java:409)
+         1792220086.209  8846  8887 E AndroidRuntime: 	at androidx.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:474)
+         1792220086.209  8846  8887 E AndroidRuntime: 	at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:2634)
+         1792220086.209  8846  8887 E AndroidRuntime: Caused by: android.os.DeadObjectException
+         1792220086.209  8846  8887 E AndroidRuntime: 	at android.os.BinderProxy.transactNative(Native Method)
+         1792220086.209  8846  8887 E AndroidRuntime: 	at android.os.BinderProxy.transact(BinderProxy.java:678)
+         1792220086.209  8846  8887 E AndroidRuntime: 	at android.app.IUiAutomationConnection$Stub$Proxy.disconnect(IUiAutomationConnection.java:540)
+         1792220086.209  8846  8887 E AndroidRuntime: 	at android.app.UiAutomation.disconnect(UiAutomation.java:453)
+         1792220086.209  8846  8887 E AndroidRuntime: 	... 4 more

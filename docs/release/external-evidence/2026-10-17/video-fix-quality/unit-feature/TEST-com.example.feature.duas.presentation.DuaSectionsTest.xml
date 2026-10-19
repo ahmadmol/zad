@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.duas.presentation.DuaSectionsTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:32" hostname="MOLHAMALNAEB" time="0.0">
+  <properties/>
+  <testcase name="prophetic section includes both existing sunnah categories" classname="com.example.feature.duas.presentation.DuaSectionsTest" time="0.0"/>
+  <testcase name="missing sections stay empty and legacy category selections remain valid" classname="com.example.feature.duas.presentation.DuaSectionsTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

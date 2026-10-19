@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.prayer.domain.calculator.PrayerTimezoneDayBoundaryTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:34" hostname="MOLHAMALNAEB" time="0.024">
+  <properties/>
+  <testcase name="after isha selects tomorrow fajr" classname="com.example.feature.prayer.domain.calculator.PrayerTimezoneDayBoundaryTest" time="0.001"/>
+  <testcase name="one minute before fajr the next prayer is still today fajr" classname="com.example.feature.prayer.domain.calculator.PrayerTimezoneDayBoundaryTest" time="0.002"/>
+  <testcase name="dst shift moves the wall clock time of fajr by roughly one hour" classname="com.example.feature.prayer.domain.calculator.PrayerTimezoneDayBoundaryTest" time="0.002"/>
+  <testcase name="absolute instants depend on date and coordinates not on the zone label" classname="com.example.feature.prayer.domain.calculator.PrayerTimezoneDayBoundaryTest" time="0.002"/>
+  <testcase name="progress fraction stays within zero and one across the day" classname="com.example.feature.prayer.domain.calculator.PrayerTimezoneDayBoundaryTest" time="0.008"/>
+  <testcase name="london spring forward day still produces six ordered prayers" classname="com.example.feature.prayer.domain.calculator.PrayerTimezoneDayBoundaryTest" time="0.001"/>
+  <testcase name="exactly at a prayer instant the selector advances to the following prayer" classname="com.example.feature.prayer.domain.calculator.PrayerTimezoneDayBoundaryTest" time="0.001"/>
+  <testcase name="calculation is deterministic for a fixed date location and zone" classname="com.example.feature.prayer.domain.calculator.PrayerTimezoneDayBoundaryTest" time="0.0"/>
+  <testcase name="a different location does change the absolute instants" classname="com.example.feature.prayer.domain.calculator.PrayerTimezoneDayBoundaryTest" time="0.001"/>
+  <testcase name="all instants fall inside the local civil day they were requested for" classname="com.example.feature.prayer.domain.calculator.PrayerTimezoneDayBoundaryTest" time="0.001"/>
+  <testcase name="london autumn back day still produces six ordered prayers" classname="com.example.feature.prayer.domain.calculator.PrayerTimezoneDayBoundaryTest" time="0.0"/>
+  <testcase name="exactly at local midnight the next prayer is tomorrow fajr" classname="com.example.feature.prayer.domain.calculator.PrayerTimezoneDayBoundaryTest" time="0.0"/>
+  <testcase name="remaining millis is never negative across the rollover" classname="com.example.feature.prayer.domain.calculator.PrayerTimezoneDayBoundaryTest" time="0.001"/>
+  <testcase name="manual clock change backwards re-selects an earlier prayer" classname="com.example.feature.prayer.domain.calculator.PrayerTimezoneDayBoundaryTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

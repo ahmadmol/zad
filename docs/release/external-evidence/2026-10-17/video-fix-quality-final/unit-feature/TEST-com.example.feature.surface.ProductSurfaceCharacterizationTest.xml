@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.surface.ProductSurfaceCharacterizationTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:07" hostname="MOLHAMALNAEB" time="0.005">
+  <properties/>
+  <testcase name="empty statistics chart uses safe max of at least 1" classname="com.example.feature.surface.ProductSurfaceCharacterizationTest" time="0.0"/>
+  <testcase name="canonical details phone is preserved on domain model" classname="com.example.feature.surface.ProductSurfaceCharacterizationTest" time="0.0"/>
+  <testcase name="statistics total daily is sum of daily items" classname="com.example.feature.surface.ProductSurfaceCharacterizationTest" time="0.0"/>
+  <testcase name="azkar actions no longer include settings mutations" classname="com.example.feature.surface.ProductSurfaceCharacterizationTest" time="0.002"/>
+  <testcase name="tasbih category filter matches production تسبيح items only" classname="com.example.feature.surface.ProductSurfaceCharacterizationTest" time="0.0"/>
+  <testcase name="azkar ui state no longer carries settings or statistics fields" classname="com.example.feature.surface.ProductSurfaceCharacterizationTest" time="0.001"/>
+  <testcase name="donation offer and request type labels are distinct" classname="com.example.feature.surface.ProductSurfaceCharacterizationTest" time="0.0"/>
+  <testcase name="legacy sebha category filter matched سبح substring and is no longer production" classname="com.example.feature.surface.ProductSurfaceCharacterizationTest" time="0.0"/>
+  <testcase name="daily activity tasbih destination is production tasbih_screen" classname="com.example.feature.surface.ProductSurfaceCharacterizationTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

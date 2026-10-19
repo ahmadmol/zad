@@ -1,0 +1,7 @@
+{
+  "url": "https://unsplash.com/license",
+  "checked_at": "2026-10-17T06:38:34.351840+00:00",
+  "method": "GET",
+  "http": 401,
+  "error": "HTTP Error 401: Unauthorized"
+}

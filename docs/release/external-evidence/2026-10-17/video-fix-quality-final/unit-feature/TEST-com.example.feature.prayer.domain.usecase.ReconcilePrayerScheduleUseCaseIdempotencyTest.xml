@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.prayer.domain.usecase.ReconcilePrayerScheduleUseCaseIdempotencyTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:03" hostname="MOLHAMALNAEB" time="0.041">
+  <properties/>
+  <testcase name="reconciliation cancels all when notifications are disabled" classname="com.example.feature.prayer.domain.usecase.ReconcilePrayerScheduleUseCaseIdempotencyTest" time="0.017"/>
+  <testcase name="repeated reconciliation with identical inputs produces identical schedule" classname="com.example.feature.prayer.domain.usecase.ReconcilePrayerScheduleUseCaseIdempotencyTest" time="0.012"/>
+  <testcase name="reconciliation with changed fingerprint replaces the schedule" classname="com.example.feature.prayer.domain.usecase.ReconcilePrayerScheduleUseCaseIdempotencyTest" time="0.008"/>
+  <testcase name="reconciliation cancels all when location is unavailable" classname="com.example.feature.prayer.domain.usecase.ReconcilePrayerScheduleUseCaseIdempotencyTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

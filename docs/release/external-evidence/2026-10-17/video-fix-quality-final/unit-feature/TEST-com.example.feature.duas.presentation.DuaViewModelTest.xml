@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.duas.presentation.DuaViewModelTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:56:58" hostname="MOLHAMALNAEB" time="0.731">
+  <properties/>
+  <testcase name="initial state loads duas successfully" classname="com.example.feature.duas.presentation.DuaViewModelTest" time="0.587"/>
+  <testcase name="showing favorites only filters list correctly" classname="com.example.feature.duas.presentation.DuaViewModelTest" time="0.044"/>
+  <testcase name="filtering by category updates duas list" classname="com.example.feature.duas.presentation.DuaViewModelTest" time="0.018"/>
+  <testcase name="toggling favorite calls repository" classname="com.example.feature.duas.presentation.DuaViewModelTest" time="0.053"/>
+  <testcase name="filtering by search query updates duas list" classname="com.example.feature.duas.presentation.DuaViewModelTest" time="0.029"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

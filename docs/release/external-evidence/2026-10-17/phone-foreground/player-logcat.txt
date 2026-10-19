@@ -1,0 +1,8 @@
+--------- beginning of main
+         1792219536.298  8846  8887 I IhsanPhysicalQa: VIDEO_START id=Kx9Wj4vP69A
+         1792219543.461  8846  8887 I IhsanPhysicalQa: VIDEO_END id=Kx9Wj4vP69A status=Blocked
+         1792219543.462  8846  8887 I IhsanPhysicalQa: VIDEO_START id=Ugh3nGLgZXY
+         1792219549.745  8846  8887 I IhsanPhysicalQa: VIDEO_END id=Ugh3nGLgZXY status=Blocked
+         1792219549.746  8846  8887 I IhsanPhysicalQa: VIDEO_START id=ALiJwsKl-Tg
+         1792219555.317  8846  8887 I IhsanPhysicalQa: VIDEO_END id=ALiJwsKl-Tg status=Fail
+         1792219555.319  8846  8887 I IhsanPhysicalQa: VIDEO_START id=Er0EPYkCKu0

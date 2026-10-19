@@ -1,0 +1,16 @@
+{
+  "nativeWidth": 1080,
+  "nativeHeight": 608,
+  "x": 0,
+  "y": 0,
+  "shown": true,
+  "visibility": 0,
+  "alpha": 1,
+  "hardwareAccelerated": true,
+  "layerType": 0,
+  "layoutWidth": -1,
+  "layoutHeight": -1,
+  "windowVisibility": 0,
+  "windowFocus": true,
+  "dom": "{\"body\":[393,221],\"display\":\"inline\",\"documentVisible\":\"visible\",\"opacity\":\"1\",\"rect\":[0,0,392.727294921875,221.09091186523438],\"state\":1,\"time\":6.134686897003174,\"video\":{\"allowLiveDvr\":false,\"author\":\"Amr Khaled | عمرو خالد\",\"backgroundable\":false,\"cpn\":\"JVcArlxDnJVOmvmF\",\"errorCode\":null,\"eventId\":\"8yPTav6HEo-X6LUPisv-oAE\",\"hasProgressBarBoundaries\":false,\"isListed\":true,\"isLive\":false,\"isManifestless\":false,\"isMultiChannelAudio\":false,\"isPlayable\":true,\"isPremiere\":false,\"isSeekable\":null,\"isWindowedLive\":false,\"itct\":\"CAAQu2kiEwi-zbz6w8CXAxWPC7oAHYqlHxTKAQRkbJft\",\"paidContentOverlayDurationMs\":0,\"playerResponseCpn\":\"\",\"progressBarEndPositionUtcTimeMillis\":null,\"progressBarStartPositionUtcTimeMillis\":null,\"title\":\"برنامج  قصص القرآن الجزء الاول | الحلقة الاولى(1) سنحيا بالقرآن | Stories from Qur'an EP 1\",\"video_id\":\"Kx9Wj4vP69A\",\"video_quality\":\"small\",\"video_quality_features\":[]},\"viewport\":[392,221],\"visibility\":\"visible\"}"
+}

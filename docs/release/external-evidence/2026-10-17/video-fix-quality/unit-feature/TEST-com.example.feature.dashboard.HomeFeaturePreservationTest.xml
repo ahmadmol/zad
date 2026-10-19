@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.dashboard.HomeFeaturePreservationTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:32" hostname="MOLHAMALNAEB" time="0.017">
+  <properties/>
+  <testcase name="home previews services and preserves the complete services panel" classname="com.example.feature.dashboard.HomeFeaturePreservationTest" time="0.005"/>
+  <testcase name="nearby charity empty state is Arabic" classname="com.example.feature.dashboard.HomeFeaturePreservationTest" time="0.002"/>
+  <testcase name="splash crops its full screen background and fits its logo" classname="com.example.feature.dashboard.HomeFeaturePreservationTest" time="0.003"/>
+  <testcase name="shortcut card uses row layout without overlapping box icon" classname="com.example.feature.dashboard.HomeFeaturePreservationTest" time="0.002"/>
+  <testcase name="live chooser and both streams remain reachable" classname="com.example.feature.dashboard.HomeFeaturePreservationTest" time="0.002"/>
+  <testcase name="home keeps all legacy service routes and callbacks" classname="com.example.feature.dashboard.HomeFeaturePreservationTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

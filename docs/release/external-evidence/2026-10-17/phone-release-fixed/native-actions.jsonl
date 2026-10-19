@@ -1,0 +1,15 @@
+{"time": 1792223363.3179708, "action": "capture", "value": "release-home"}
+{"time": 1792223375.1692502, "action": "scroll", "value": "current"}
+{"time": 1792223390.402661, "action": "scroll", "value": "current"}
+{"time": 1792223400.8649616, "action": "capture", "value": "release-services"}
+{"time": 1792223412.2196639, "action": "tap", "value": "فهم القرآن"}
+{"time": 1792223422.4567027, "action": "tap", "value": "عرض جميع الدروس"}
+{"time": 1792223435.396811, "action": "tap", "value": "الدرس 01"}
+{"time": 1792223447.9766726, "action": "tap", "value": "تشغيل الفيديو"}
+{"time": 1792223453.0536518, "action": "capture", "value": "release-fahm-playing"}
+{"time": 1792223459.7570078, "action": "capture", "value": "release-fahm-progress"}
+{"time": 1792223483.9303548, "action": "capture", "value": "release-fahm-fullscreen"}
+{"time": 1792223496.013892, "action": "back", "value": "current"}
+{"time": 1792223499.5132005, "action": "back", "value": "current"}
+{"time": 1792223502.9635634, "action": "back", "value": "current"}
+{"time": 1792223507.843212, "action": "back", "value": "current"}

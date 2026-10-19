@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.quran.data.download.QuranDownloadReliabilityTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:06" hostname="MOLHAMALNAEB" time="0.075">
+  <properties/>
+  <testcase name="finalization preserves the exact bytes" classname="com.example.feature.quran.data.download.QuranDownloadReliabilityTest" time="0.01"/>
+  <testcase name="finalization moves the temp file onto the target and leaves no partial" classname="com.example.feature.quran.data.download.QuranDownloadReliabilityTest" time="0.007"/>
+  <testcase name="an already complete file short circuits without touching the network" classname="com.example.feature.quran.data.download.QuranDownloadReliabilityTest" time="0.009"/>
+  <testcase name="finalization replaces a previously corrupt target" classname="com.example.feature.quran.data.download.QuranDownloadReliabilityTest" time="0.01"/>
+  <testcase name="a failed download leaves no partial file behind" classname="com.example.feature.quran.data.download.QuranDownloadReliabilityTest" time="0.009"/>
+  <testcase name="a zero length target is not treated as complete" classname="com.example.feature.quran.data.download.QuranDownloadReliabilityTest" time="0.01"/>
+  <testcase name="transient and permanent failures are distinct types" classname="com.example.feature.quran.data.download.QuranDownloadReliabilityTest" time="0.001"/>
+  <testcase name="a missing ayah recording is permanent so the worker stops retrying" classname="com.example.feature.quran.data.download.QuranDownloadReliabilityTest" time="0.002"/>
+  <testcase name="2xx responses are accepted" classname="com.example.feature.quran.data.download.QuranDownloadReliabilityTest" time="0.002"/>
+  <testcase name="retryable server and throttling responses are transient" classname="com.example.feature.quran.data.download.QuranDownloadReliabilityTest" time="0.002"/>
+  <testcase name="a leftover part file is never itself a playable target" classname="com.example.feature.quran.data.download.QuranDownloadReliabilityTest" time="0.008"/>
+  <testcase name="client errors are permanent and must not be retried" classname="com.example.feature.quran.data.download.QuranDownloadReliabilityTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

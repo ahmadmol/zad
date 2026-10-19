@@ -1,0 +1,13 @@
+{
+  "verifiedAtUtc": "2026-10-17T08:01:18.928189+00:00",
+  "package": "com.example.mol.referenceqa",
+  "serial": "ac190123",
+  "apk": "docs\\release\\apk\\Ihsan-video-fixed-20261017-referenceqa-dba6df9f.apk",
+  "sha256": "dba6df9f1d969206edca1eb901f6b93341134d4960a76c1fda4c3cd88db3ca83",
+  "installedApkByteIdentical": true,
+  "appIdAndDataDirectoryUnchanged": true,
+  "installMode": "adb install -r; no uninstall or data clear",
+  "foregroundLaunch": false,
+  "releaseRuntimeAcceptance": "Not Tested; owner confirmed phone currently unavailable and requested completion of build and report only",
+  "privateDataBackup": ".artifacts/video-render-fix-20261017/private-backup/before-final-release-private.tar (766 files; local only)"
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:03" hostname="MOLHAMALNAEB" time="0.019">
+  <properties/>
+  <testcase name="the widget lists all six of today's entries" classname="com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest" time="0.004"/>
+  <testcase name="exactly one entry is marked next when the next prayer is today" classname="com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest" time="0.001"/>
+  <testcase name="past prayers are marked past" classname="com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest" time="0.0"/>
+  <testcase name="location label is surfaced" classname="com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest" time="0.001"/>
+  <testcase name="midday shows the next upcoming prayer" classname="com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest" time="0.001"/>
+  <testcase name="settings changes flow through to the widget" classname="com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest" time="0.001"/>
+  <testcase name="no prayer data reports unavailable rather than showing a wrong time" classname="com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest" time="0.001"/>
+  <testcase name="no refresh is scheduled without prayer data" classname="com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest" time="0.0"/>
+  <testcase name="next refresh is the upcoming prayer instant" classname="com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest" time="0.0"/>
+  <testcase name="after isha the next prayer rolls to tomorrow fajr" classname="com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest" time="0.001"/>
+  <testcase name="countdown is never negative across the rollover" classname="com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest" time="0.005"/>
+  <testcase name="countdown is whole minutes until the next prayer" classname="com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest" time="0.001"/>
+  <testcase name="widget times match the canonical calculator exactly" classname="com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest" time="0.001"/>
+  <testcase name="missing tomorrow is reported as not ready" classname="com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest" time="0.0"/>
+  <testcase name="refresh time is always in the future" classname="com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

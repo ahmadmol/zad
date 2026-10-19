@@ -1,0 +1,12 @@
+{
+  "register_rows": 4193,
+  "media_rows": 94,
+  "unique_videos": 86,
+  "register_schema_status_ids_paths": "PASS",
+  "duas_verbatim": 39,
+  "sleep_azkar_verbatim": 2,
+  "original_xlsx_sha256_matches": true,
+  "original_xlsx_rows": 3584,
+  "hadith_original_cell_exact_matches": 3582,
+  "hadith_original_mismatches": []
+}

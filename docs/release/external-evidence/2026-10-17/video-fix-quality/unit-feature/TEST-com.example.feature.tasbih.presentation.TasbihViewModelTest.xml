@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.tasbih.presentation.TasbihViewModelTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:37" hostname="MOLHAMALNAEB" time="0.171">
+  <properties/>
+  <testcase name="only تسبيح category items are production counter items" classname="com.example.feature.tasbih.presentation.TasbihViewModelTest" time="0.136"/>
+  <testcase name="increment writes through increment use case and daily activity" classname="com.example.feature.tasbih.presentation.TasbihViewModelTest" time="0.014"/>
+  <testcase name="reset writes through reset use case" classname="com.example.feature.tasbih.presentation.TasbihViewModelTest" time="0.009"/>
+  <testcase name="stored progress remains visible after recreation" classname="com.example.feature.tasbih.presentation.TasbihViewModelTest" time="0.012"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

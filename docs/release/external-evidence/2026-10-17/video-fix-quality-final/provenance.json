@@ -1,0 +1,43 @@
+{
+  "apk": "docs\\release\\apk\\Ihsan-video-fixed-20261017-referenceqa-dba6df9f.apk",
+  "sha256": "dba6df9f1d969206edca1eb901f6b93341134d4960a76c1fda4c3cd88db3ca83",
+  "package": "com.example.mol.referenceqa",
+  "variant": "release",
+  "minified": true,
+  "certificate": "870a93498b597d9d32abd030b433f924184d1c384f0e940f6f9da85c20700f63",
+  "signingScope": "Android Debug certificate for internal QA, not store signing",
+  "sourceFiles": [
+    {
+      "path": "feature/src/main/java/com/example/feature/learning/presentation/components/IhsanYouTubePlayer.kt",
+      "sha256": "7701fc66a326fc8340820395f8e9ca641bea343e6c97918a10581e5a9d3018a5"
+    },
+    {
+      "path": "feature/src/main/java/com/example/feature/learning/presentation/components/VideoWebChromeClient.kt",
+      "sha256": "df52a33a2f9fbcdcc10b95860475ff40b6ed3604296b3cf0407231adf939908e"
+    },
+    {
+      "path": "feature/src/main/java/com/example/feature/live/LiveStreamScreen.kt",
+      "sha256": "246cb17d211cc3a757149bbedfae732346c5d0ba41e43e03791b9684f6301a7f"
+    },
+    {
+      "path": "app/src/androidTest/java/com/example/mol/ui/PhysicalDeviceMediaAuditTest.kt",
+      "sha256": "166548c25de6bee8bc36fff9a7cf7d4688b6d70c327ea279eb8dd53c4b047241"
+    },
+    {
+      "path": "app/src/androidTest/java/com/example/mol/ui/VideoRenderingRootCauseTest.kt",
+      "sha256": "5c29f7e9a0a336bdf6268665ccb49e47036d2104e7969476ab4454e217755de0"
+    },
+    {
+      "path": "app/src/androidTest/java/com/example/mol/ui/VideoLifecyclePhoneTest.kt",
+      "sha256": "68c72f806c872ab3b5d898b3842b16d0aa6dc715cf5e50a3b23122d27da177e8"
+    },
+    {
+      "path": "scripts/run_external_media_phone.ps1",
+      "sha256": "9a7d492cae36b477f776928b3df9fbeacc715fb5ee4a98e0929118fded545538"
+    },
+    {
+      "path": "scripts/summarize_video_render_fix.py",
+      "sha256": "a7115fdcb69be274c1e918a9d55eea1729def0b95cdc0d7b387564cc16146223"
+    }
+  ]
+}

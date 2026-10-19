@@ -1,0 +1,43 @@
+INSTRUMENTATION_STATUS: class=com.example.mol.ui.VideoLifecyclePhoneTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+com.example.mol.ui.VideoLifecyclePhoneTest:
+INSTRUMENTATION_STATUS: test=fullscreenAndBackground
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: physicalMediaOutput=/storage/emulated/0/Android/data/com.example.mol.referenceqa/files/physical-media-1792222447071
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.example.mol.ui.VideoLifecyclePhoneTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stack=java.lang.IllegalStateException: Check failed.
+	at com.example.mol.ui.VideoLifecyclePhoneTest.js(VideoLifecyclePhoneTest.kt:41)
+	at com.example.mol.ui.VideoLifecyclePhoneTest.fullscreenAndBackground$capture(VideoLifecyclePhoneTest.kt:72)
+	at com.example.mol.ui.VideoLifecyclePhoneTest.fullscreenAndBackground(VideoLifecyclePhoneTest.kt:89)
+
+INSTRUMENTATION_STATUS: stream=
+Error in fullscreenAndBackground(com.example.mol.ui.VideoLifecyclePhoneTest):
+java.lang.IllegalStateException: Check failed.
+	at com.example.mol.ui.VideoLifecyclePhoneTest.js(VideoLifecyclePhoneTest.kt:41)
+	at com.example.mol.ui.VideoLifecyclePhoneTest.fullscreenAndBackground$capture(VideoLifecyclePhoneTest.kt:72)
+	at com.example.mol.ui.VideoLifecyclePhoneTest.fullscreenAndBackground(VideoLifecyclePhoneTest.kt:89)
+
+INSTRUMENTATION_STATUS: test=fullscreenAndBackground
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_RESULT: stream=
+
+Time: 19.553
+There was 1 failure:
+1) fullscreenAndBackground(com.example.mol.ui.VideoLifecyclePhoneTest)
+java.lang.IllegalStateException: Check failed.
+	at com.example.mol.ui.VideoLifecyclePhoneTest.js(VideoLifecyclePhoneTest.kt:41)
+	at com.example.mol.ui.VideoLifecyclePhoneTest.fullscreenAndBackground$capture(VideoLifecyclePhoneTest.kt:72)
+	at com.example.mol.ui.VideoLifecyclePhoneTest.fullscreenAndBackground(VideoLifecyclePhoneTest.kt:89)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+INSTRUMENTATION_CODE: -1

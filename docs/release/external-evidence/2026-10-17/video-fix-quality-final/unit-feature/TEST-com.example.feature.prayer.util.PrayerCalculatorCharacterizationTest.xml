@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.prayer.util.PrayerCalculatorCharacterizationTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:03" hostname="MOLHAMALNAEB" time="0.022">
+  <properties/>
+  <testcase name="next prayer selection before Fajr returns Fajr" classname="com.example.feature.prayer.util.PrayerCalculatorCharacterizationTest" time="0.002"/>
+  <testcase name="Jerusalem Cairo London high-latitude produce six times" classname="com.example.feature.prayer.util.PrayerCalculatorCharacterizationTest" time="0.005"/>
+  <testcase name="method string mapping falls back to MWL" classname="com.example.feature.prayer.util.PrayerCalculatorCharacterizationTest" time="0.0"/>
+  <testcase name="madhab string mapping falls back to SHAFI" classname="com.example.feature.prayer.util.PrayerCalculatorCharacterizationTest" time="0.0"/>
+  <testcase name="timestamps are strictly increasing for Mecca" classname="com.example.feature.prayer.util.PrayerCalculatorCharacterizationTest" time="0.001"/>
+  <testcase name="Egyptian method Fajr differs from MWL for Cairo" classname="com.example.feature.prayer.util.PrayerCalculatorCharacterizationTest" time="0.002"/>
+  <testcase name="prayer list order is Fajr Sunrise Dhuhr Asr Maghrib Isha" classname="com.example.feature.prayer.util.PrayerCalculatorCharacterizationTest" time="0.001"/>
+  <testcase name="next prayer selection between Dhuhr and Asr returns Asr" classname="com.example.feature.prayer.util.PrayerCalculatorCharacterizationTest" time="0.001"/>
+  <testcase name="next prayer after Isha uses tomorrow Fajr" classname="com.example.feature.prayer.util.PrayerCalculatorCharacterizationTest" time="0.002"/>
+  <testcase name="Hanafi Asr is at or after Shafi Asr for Cairo" classname="com.example.feature.prayer.util.PrayerCalculatorCharacterizationTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.dashboard.DailyActivitiesRedesignTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:32" hostname="MOLHAMALNAEB" time="0.011">
+  <properties/>
+  <testcase name="all six activity routes resolve to valid non-empty destinations" classname="com.example.feature.dashboard.DailyActivitiesRedesignTest" time="0.006"/>
+  <testcase name="date key is formatted with US locale to ensure ASCII digits in all default locales" classname="com.example.feature.dashboard.DailyActivitiesRedesignTest" time="0.001"/>
+  <testcase name="exactly six daily activities remain present and IDs are unchanged" classname="com.example.feature.dashboard.DailyActivitiesRedesignTest" time="0.0"/>
+  <testcase name="tasbih target is 100 and all other activity targets are 1" classname="com.example.feature.dashboard.DailyActivitiesRedesignTest" time="0.0"/>
+  <testcase name="overall summary ratio is completed items over total items" classname="com.example.feature.dashboard.DailyActivitiesRedesignTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

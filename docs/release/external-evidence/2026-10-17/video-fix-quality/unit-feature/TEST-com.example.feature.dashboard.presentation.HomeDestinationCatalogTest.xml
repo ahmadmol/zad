@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.dashboard.presentation.HomeDestinationCatalogTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:32" hostname="MOLHAMALNAEB" time="0.006">
+  <properties/>
+  <testcase name="no destination appears twice on home" classname="com.example.feature.dashboard.presentation.HomeDestinationCatalogTest" time="0.004"/>
+  <testcase name="both groups are non empty" classname="com.example.feature.dashboard.presentation.HomeDestinationCatalogTest" time="0.0"/>
+  <testcase name="reminders is not a home destination in any group" classname="com.example.feature.dashboard.presentation.HomeDestinationCatalogTest" time="0.0"/>
+  <testcase name="quick actions and services do not overlap" classname="com.example.feature.dashboard.presentation.HomeDestinationCatalogTest" time="0.0"/>
+  <testcase name="no route is blank" classname="com.example.feature.dashboard.presentation.HomeDestinationCatalogTest" time="0.0"/>
+  <testcase name="home exposes exactly one live entry and it is the chooser" classname="com.example.feature.dashboard.presentation.HomeDestinationCatalogTest" time="0.0"/>
+  <testcase name="direct stream routes are not reachable as home tiles" classname="com.example.feature.dashboard.presentation.HomeDestinationCatalogTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

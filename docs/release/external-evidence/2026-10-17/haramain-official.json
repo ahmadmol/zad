@@ -1,0 +1,10 @@
+{
+  "url": "https://haramain.prh.gov.sa/ar/live",
+  "checked_at": "2026-10-17T06:38:34.351840+00:00",
+  "method": "GET",
+  "http": 200,
+  "final_url": "https://haramain.prh.gov.sa/ar/live",
+  "content_type": "text/html; charset=utf-8",
+  "truncated": false,
+  "sha256": "21f2bfeaa099535125ba7133584a3931fa91b07218acca91a03236b8decea69c"
+}

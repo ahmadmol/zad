@@ -1,0 +1,897 @@
+{
+  "verifiedAtUtc": "2026-10-17T08:03:44.881477+00:00",
+  "summary": {
+    "tests": 477,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "modules": {
+    "app": {
+      "tests": 33,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "feature": {
+      "tests": 415,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "designsystem": {
+      "tests": 29,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "suiteCount": 105,
+  "missingBaselineSuites": [],
+  "changedSuiteCounts": [],
+  "unchangedUnitSourceFiles": 104,
+  "lint": {
+    "app:debug": {
+      "Warning": 118
+    },
+    "app:release": {
+      "Warning": 93
+    },
+    "feature:debug": {
+      "Warning": 22,
+      "Information": 1
+    },
+    "feature:release": {
+      "Warning": 22,
+      "Information": 1
+    },
+    "designsystem:debug": {
+      "Warning": 9
+    },
+    "designsystem:release": {
+      "Warning": 9
+    }
+  },
+  "suites": [
+    {
+      "module": "app",
+      "file": "TEST-com.example.mol.architecture.AppProductionBoundaryArchitectureTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "app",
+      "file": "TEST-com.example.mol.architecture.IhsanPlusReleaseGraphTest.xml",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "app",
+      "file": "TEST-com.example.mol.architecture.ReleaseMinifyConfigurationTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "app",
+      "file": "TEST-com.example.mol.ExampleUnitTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "app",
+      "file": "TEST-com.example.mol.navigation.BottomBarDestinationTest.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "app",
+      "file": "TEST-com.example.mol.navigation.ProductSurfaceNavigationCharacterizationTest.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "app",
+      "file": "TEST-com.example.mol.Part4AppLocalizationResourcesTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "app",
+      "file": "TEST-com.example.mol.ui.BottomNavigationMotionBoundaryTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.architecture.ProductionBoundaryArchitectureTest.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.asma.domain.util.AsmaTodayResolverTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.azkar.AzkarDailyRolloverTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.azkar.data.local.database.AzkarSeedManagerTest.xml",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.azkar.VerifiedSleepAzkarIntegrityTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.core.data.local.database.IhsanDatabaseMigrationMatrixUnitTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.core.network.ConnectivityMonitorTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.core.observability.ObservabilitySanitizerTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.core.release.ReleaseReadinessEvaluatorTest.xml",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.core.search.ArabicSearchTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.dashboard.ArabicClockFormatterTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.dashboard.AsmaTodayResolverCharacterizationTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.dashboard.DailyActivitiesRedesignTest.xml",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.dashboard.DailyActivityMapperTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.dashboard.DashboardDatePolicyTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.dashboard.HomeFeaturePreservationTest.xml",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.dashboard.HomeReferenceUiBoundaryTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.dashboard.HomeSectionIsolationTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.dashboard.presentation.HomeDestinationCatalogTest.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.dashboard.RefreshHomeDashboardFailureTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.duas.presentation.DuaSearchRegressionTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.duas.presentation.DuaSectionsTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.duas.presentation.DuaViewModelTest.xml",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.duas.VerifiedDuaIntegrityTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.ehsan.data.image.EhsanImageReferenceTest.xml",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.ehsan.domain.model.DonationStatusTest.xml",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.ehsan.domain.usecase.DeleteLocalProfileDataUseCaseTest.xml",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.ehsan.domain.usecase.DonationContactDestinationTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.ehsan.domain.usecase.UpdateDonationStatusUseCaseTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.ehsan.domain.usecase.ValidatePhoneNumberUseCaseTest.xml",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.ehsan.EhsanReferenceUiBoundaryTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.ehsan.presentation.AddEhsanAlbumFailureTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.ehsan.presentation.AddEhsanViewModelTest.xml",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.ehsan.presentation.IhsanDetailsViewModelTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.ExampleUnitTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.fahmanallah.FahmRepositoryTest.xml",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.ihsanplus.integration.adapter.ProductionSourceAdapterTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.ihsanplus.integration.IhsanPlusIntegrationContractTest.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.ihsanplus.integration.presentation.ControlledIntegrationMappingTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.nabiihsan.NabiBookmarkPersistenceTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.nabiihsan.NabiIhsanRepositoryTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.domain.calculator.AdhanPrayerCalculatorTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.domain.calculator.NextPrayerSelectorTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.domain.calculator.PrayerActivityWindowTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.domain.calculator.PrayerIndependentReferenceTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.domain.calculator.PrayerTimezoneDayBoundaryTest.xml",
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.domain.model.PrayerAlertAudioPolicyNoAdhanTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.domain.model.PrayerAlertAudioPolicyTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.domain.model.PrayerAlertModeTest.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.domain.model.PrayerAudioDecisionMatrixTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.domain.scheduler.PrayerScheduleBuilderAudioPolicyTest.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.domain.scheduler.PrayerScheduleModeTest.xml",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.domain.usecase.ReconcilePrayerScheduleUseCaseIdempotencyTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.domain.usecase.ReconcilePrayerScheduleUseCaseTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.HomePrayerParityTest.xml",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.ManualPrayerLogRepositoryTest.xml",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.PrayerAccessibilitySemanticsTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.PrayerTimeFormatterTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.TimezoneChangeRegressionTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.util.AdhanNotificationChannelFactoryTest.xml",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.util.PrayerCalculatorCharacterizationTest.xml",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.prayer.widget.PrayerWidgetStateFactoryTest.xml",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.profile.presentation.EditProfileViewModelTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.profile.presentation.ListingOwnershipBoundaryTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.profile.ProfileReferenceUiBoundaryTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.qibla.domain.usecase.GetQiblaDirectionUseCaseTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.qibla.presentation.QiblaBearingPresentationBoundaryTest.xml",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.qibla.presentation.QiblaOfflineFirstStateTest.xml",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.qibla.QiblaSensorAccuracyTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.quran.architecture.QuranNetworkArchitectureTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.quran.data.download.QuranAudioDownloaderTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.quran.data.download.QuranDownloadInterruptionTest.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.quran.data.download.QuranDownloadProgressMappingTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.quran.data.download.QuranDownloadReliabilityTest.xml",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.quran.domain.model.QuranGoalCalculatorTest.xml",
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.quran.domain.model.QuranRepeatPlannerTest.xml",
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.quran.domain.model.QuranSearchTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.quran.domain.usecase.GetSurahUseCaseTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.quran.presentation.QuranAudioPhaseTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.quran.QuranContentIntegrityTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.quran.util.QuranAudioSourceResolverTest.xml",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.quran.util.QuranLocalFirstPlaybackTest.xml",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.sanhya.SanhyaBookmarkPersistenceTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.sanhya.SanhyaRepositoryTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.settings.presentation.SettingsViewModelTest.xml",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.statistics.presentation.StatisticsViewModelTest.xml",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.surface.ProductSurfaceCharacterizationTest.xml",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.tasbih.presentation.TasbihViewModelTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.ui.DarkModePresentationBoundaryTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "feature",
+      "file": "TEST-com.example.feature.ui.Part4LocalizationResourcesTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "designsystem",
+      "file": "TEST-com.example.designsystem.component.DailyProgressSummaryTest.xml",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "designsystem",
+      "file": "TEST-com.example.designsystem.component.HomeVisualCorrectionBoundaryTest.xml",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "designsystem",
+      "file": "TEST-com.example.designsystem.component.IhsanBottomNavigationMotionBoundaryTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "designsystem",
+      "file": "TEST-com.example.designsystem.ExampleUnitTest.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "designsystem",
+      "file": "TEST-com.example.designsystem.theme.DarkModeFoundationBoundaryTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "designsystem",
+      "file": "TEST-com.example.designsystem.theme.IhsanContrastTest.xml",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "designsystem",
+      "file": "TEST-com.example.designsystem.theme.IhsanSemanticColorsTest.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.prayer.domain.calculator.NextPrayerSelectorTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:03" hostname="MOLHAMALNAEB" time="0.005">
+  <properties/>
+  <testcase name="after isha selects tomorrow fajr" classname="com.example.feature.prayer.domain.calculator.NextPrayerSelectorTest" time="0.002"/>
+  <testcase name="between dhuhr and asr selects asr" classname="com.example.feature.prayer.domain.calculator.NextPrayerSelectorTest" time="0.001"/>
+  <testcase name="missing location path yields null day selection when empty" classname="com.example.feature.prayer.domain.calculator.NextPrayerSelectorTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

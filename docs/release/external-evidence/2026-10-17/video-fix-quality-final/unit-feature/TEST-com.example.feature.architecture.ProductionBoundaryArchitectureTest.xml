@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.architecture.ProductionBoundaryArchitectureTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:56:50" hostname="MOLHAMALNAEB" time="0.151">
+  <properties/>
+  <testcase name="demo data sources are clearly named Demo" classname="com.example.feature.architecture.ProductionBoundaryArchitectureTest" time="0.017"/>
+  <testcase name="settings and statistics viewmodels do not import azkar viewmodel" classname="com.example.feature.architecture.ProductionBoundaryArchitectureTest" time="0.035"/>
+  <testcase name="production prayer adapters do not import demo data sources" classname="com.example.feature.architecture.ProductionBoundaryArchitectureTest" time="0.014"/>
+  <testcase name="no ihsan plus route appears in Screen or AppNavHost" classname="com.example.feature.architecture.ProductionBoundaryArchitectureTest" time="0.02"/>
+  <testcase name="database module does not enable destructive migration fallback" classname="com.example.feature.architecture.ProductionBoundaryArchitectureTest" time="0.003"/>
+  <testcase name="home viewmodel does not import location or scheduler classes" classname="com.example.feature.architecture.ProductionBoundaryArchitectureTest" time="0.005"/>
+  <testcase name="production appModule does not include ihsan plus fake modules" classname="com.example.feature.architecture.ProductionBoundaryArchitectureTest" time="0.052"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

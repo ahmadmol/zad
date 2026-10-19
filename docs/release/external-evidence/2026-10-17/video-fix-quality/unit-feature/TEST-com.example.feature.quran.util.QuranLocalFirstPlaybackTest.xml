@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.quran.util.QuranLocalFirstPlaybackTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:37" hostname="MOLHAMALNAEB" time="0.03">
+  <properties/>
+  <testcase name="blank and null paths are rejected" classname="com.example.feature.quran.util.QuranLocalFirstPlaybackTest" time="0.002"/>
+  <testcase name="remote url zero pads surah and ayah to three digits" classname="com.example.feature.quran.util.QuranLocalFirstPlaybackTest" time="0.002"/>
+  <testcase name="a usable local file wins over the remote url even when online" classname="com.example.feature.quran.util.QuranLocalFirstPlaybackTest" time="0.003"/>
+  <testcase name="offline with a local file still plays" classname="com.example.feature.quran.util.QuranLocalFirstPlaybackTest" time="0.004"/>
+  <testcase name="a zero byte local file is rejected as corrupt" classname="com.example.feature.quran.util.QuranLocalFirstPlaybackTest" time="0.002"/>
+  <testcase name="a deleted local file falls back to remote when online" classname="com.example.feature.quran.util.QuranLocalFirstPlaybackTest" time="0.002"/>
+  <testcase name="offline without a local file yields no source instead of a remote request" classname="com.example.feature.quran.util.QuranLocalFirstPlaybackTest" time="0.001"/>
+  <testcase name="a local path is never mistaken for a remote url" classname="com.example.feature.quran.util.QuranLocalFirstPlaybackTest" time="0.003"/>
+  <testcase name="an unfinalized part file is not a usable source for its target" classname="com.example.feature.quran.util.QuranLocalFirstPlaybackTest" time="0.004"/>
+  <testcase name="a directory is never a usable audio source" classname="com.example.feature.quran.util.QuranLocalFirstPlaybackTest" time="0.002"/>
+  <testcase name="a corrupt local file offline yields no source rather than a broken play" classname="com.example.feature.quran.util.QuranLocalFirstPlaybackTest" time="0.003"/>
+  <testcase name="online without a local file falls back to remote" classname="com.example.feature.quran.util.QuranLocalFirstPlaybackTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

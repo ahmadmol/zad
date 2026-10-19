@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.designsystem.component.DailyProgressSummaryTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-16T11:22:31" hostname="MOLHAMALNAEB" time="0.057">
+  <properties/>
+  <testcase name="the screen reader label string is non empty for any state" classname="com.example.designsystem.component.DailyProgressSummaryTest" time="0.012"/>
+  <testcase name="visual and semantic percentages always agree for any state" classname="com.example.designsystem.component.DailyProgressSummaryTest" time="0.041"/>
+  <testcase name="0 of N yields zero progress" classname="com.example.designsystem.component.DailyProgressSummaryTest" time="0.0"/>
+  <testcase name="1 of 3 yields 33 percent" classname="com.example.designsystem.component.DailyProgressSummaryTest" time="0.0"/>
+  <testcase name="empty list yields zero progress without crashing" classname="com.example.designsystem.component.DailyProgressSummaryTest" time="0.0"/>
+  <testcase name="3 of 8 yields 37 percent" classname="com.example.designsystem.component.DailyProgressSummaryTest" time="0.0"/>
+  <testcase name="all completed yields 100 percent" classname="com.example.designsystem.component.DailyProgressSummaryTest" time="0.0"/>
+  <testcase name="partial progress inside a single item is treated as not done" classname="com.example.designsystem.component.DailyProgressSummaryTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

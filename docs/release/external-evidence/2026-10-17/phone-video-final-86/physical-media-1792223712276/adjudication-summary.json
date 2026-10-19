@@ -1,0 +1,18 @@
+{
+  "inventory": 86,
+  "recorded": 7,
+  "progress": 6,
+  "nonzeroIframe": 7,
+  "reviewedImages": 5,
+  "rawStatuses": {
+    "Blocked": 6,
+    "Fail": 1,
+    "Not Tested": 79
+  },
+  "overallStatuses": {
+    "Partial": 5,
+    "Not Tested": 81
+  },
+  "audioScope": "Owner-observed samples for 0 IDs only; other IDs Not Tested for audible audio.",
+  "durationScope": "Short playback excerpts only; no end-to-end full-length or sustained performance certification."
+}

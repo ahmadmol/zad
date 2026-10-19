@@ -1,0 +1,7 @@
+{
+  "url": "https://saudiatv.sba.sa/",
+  "checked_at": "2026-10-17T06:38:34.351840+00:00",
+  "method": "GET",
+  "http": null,
+  "error": "<urlopen error [WinError 10054] An existing connection was forcibly closed by the remote host>"
+}

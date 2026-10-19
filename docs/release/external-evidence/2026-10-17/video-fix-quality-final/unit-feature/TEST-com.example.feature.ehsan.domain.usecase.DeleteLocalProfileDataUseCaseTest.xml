@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.ehsan.domain.usecase.DeleteLocalProfileDataUseCaseTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:56:59" hostname="MOLHAMALNAEB" time="0.748">
+  <properties/>
+  <testcase name="the profile row is always cleared" classname="com.example.feature.ehsan.domain.usecase.DeleteLocalProfileDataUseCaseTest" time="0.389"/>
+  <testcase name="the private prayer log is always cleared" classname="com.example.feature.ehsan.domain.usecase.DeleteLocalProfileDataUseCaseTest" time="0.055"/>
+  <testcase name="mine only never deletes another persons listing" classname="com.example.feature.ehsan.domain.usecase.DeleteLocalProfileDataUseCaseTest" time="0.015"/>
+  <testcase name="mine only deletes profile but preserves even same name listings" classname="com.example.feature.ehsan.domain.usecase.DeleteLocalProfileDataUseCaseTest" time="0.015"/>
+  <testcase name="orphan images are cleaned up afterwards" classname="com.example.feature.ehsan.domain.usecase.DeleteLocalProfileDataUseCaseTest" time="0.173"/>
+  <testcase name="attached images are deleted with their listing" classname="com.example.feature.ehsan.domain.usecase.DeleteLocalProfileDataUseCaseTest" time="0.052"/>
+  <testcase name="deleting with no profile present is a safe no-op for listings" classname="com.example.feature.ehsan.domain.usecase.DeleteLocalProfileDataUseCaseTest" time="0.034"/>
+  <testcase name="everything on device deletes all listings" classname="com.example.feature.ehsan.domain.usecase.DeleteLocalProfileDataUseCaseTest" time="0.014"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

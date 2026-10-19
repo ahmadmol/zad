@@ -1,0 +1,10 @@
+{
+  "url": "https://quranenc.com/ar/home",
+  "checked_at": "2026-10-17T07:07:22.877229+00:00",
+  "method": "GET",
+  "http": 200,
+  "final_url": "https://quranenc.com/ar/home",
+  "content_type": "text/html; charset=UTF-8",
+  "truncated": false,
+  "sha256": "80547b89b5657b4836ca35b5e831a9d916aa033d3cb7237275168488c406f7dc"
+}

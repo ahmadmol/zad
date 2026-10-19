@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.designsystem.theme.DarkModeFoundationBoundaryTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-16T11:22:31" hostname="MOLHAMALNAEB" time="0.046">
+  <properties/>
+  <testcase name="semantic navigation tokens exist for both themes" classname="com.example.designsystem.theme.DarkModeFoundationBoundaryTest" time="0.044"/>
+  <testcase name="theme defines explicit dark surface hierarchy roles" classname="com.example.designsystem.theme.DarkModeFoundationBoundaryTest" time="0.001"/>
+  <testcase name="dark interactive primary is not the charcoal background" classname="com.example.designsystem.theme.DarkModeFoundationBoundaryTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

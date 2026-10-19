@@ -1,0 +1,10 @@
+{
+  "url": "https://www.youtube.com/oembed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DJU0lg47NeKs&format=json",
+  "checked_at": "2026-10-17T06:38:34.351840+00:00",
+  "method": "GET",
+  "http": 200,
+  "final_url": "https://www.youtube.com/oembed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DJU0lg47NeKs&format=json",
+  "content_type": "application/json",
+  "truncated": false,
+  "sha256": "a169ff37d16525651ab5053acced7ee1ac7df5c0567b3795321b2acce0d34730"
+}

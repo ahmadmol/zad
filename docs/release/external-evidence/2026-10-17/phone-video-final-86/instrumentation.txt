@@ -1,0 +1,63 @@
+INSTRUMENTATION_STATUS: class=com.example.mol.ui.PhysicalDeviceMediaAuditTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+com.example.mol.ui.PhysicalDeviceMediaAuditTest:
+INSTRUMENTATION_STATUS: test=all86VideosProduceIndividualPlaybackEvidence
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: physicalMediaOutput=/storage/emulated/0/Android/data/com.example.mol.referenceqa/files/physical-media-1792223712276
+INSTRUMENTATION_STATUS: physicalMediaStatus=Blocked
+INSTRUMENTATION_STATUS: physicalMediaVideoId=Kx9Wj4vP69A
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: physicalMediaOutput=/storage/emulated/0/Android/data/com.example.mol.referenceqa/files/physical-media-1792223712276
+INSTRUMENTATION_STATUS: physicalMediaStatus=Blocked
+INSTRUMENTATION_STATUS: physicalMediaVideoId=Ugh3nGLgZXY
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: physicalMediaOutput=/storage/emulated/0/Android/data/com.example.mol.referenceqa/files/physical-media-1792223712276
+INSTRUMENTATION_STATUS: physicalMediaStatus=Blocked
+INSTRUMENTATION_STATUS: physicalMediaVideoId=ALiJwsKl-Tg
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: physicalMediaOutput=/storage/emulated/0/Android/data/com.example.mol.referenceqa/files/physical-media-1792223712276
+INSTRUMENTATION_STATUS: physicalMediaStatus=Blocked
+INSTRUMENTATION_STATUS: physicalMediaVideoId=Er0EPYkCKu0
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: physicalMediaOutput=/storage/emulated/0/Android/data/com.example.mol.referenceqa/files/physical-media-1792223712276
+INSTRUMENTATION_STATUS: physicalMediaStatus=Blocked
+INSTRUMENTATION_STATUS: physicalMediaVideoId=35trZgpKGoo
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: physicalMediaOutput=/storage/emulated/0/Android/data/com.example.mol.referenceqa/files/physical-media-1792223712276
+INSTRUMENTATION_STATUS: physicalMediaStatus=Blocked
+INSTRUMENTATION_STATUS: physicalMediaVideoId=WZnSTPuqhXg
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: physicalMediaOutput=/storage/emulated/0/Android/data/com.example.mol.referenceqa/files/physical-media-1792223712276
+INSTRUMENTATION_STATUS: physicalMediaStatus=Fail
+INSTRUMENTATION_STATUS: physicalMediaVideoId=adr8HqnAwRU
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.example.mol.ui.PhysicalDeviceMediaAuditTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stack=java.lang.IllegalStateException: Phone test interrupted by another window; remaining videos are NOT TESTED
+	at com.example.mol.ui.PhysicalDeviceMediaAuditTest.all86VideosProduceIndividualPlaybackEvidence(PhysicalDeviceMediaAuditTest.kt:138)
+
+INSTRUMENTATION_STATUS: stream=
+Error in all86VideosProduceIndividualPlaybackEvidence(com.example.mol.ui.PhysicalDeviceMediaAuditTest):
+java.lang.IllegalStateException: Phone test interrupted by another window; remaining videos are NOT TESTED
+	at com.example.mol.ui.PhysicalDeviceMediaAuditTest.all86VideosProduceIndividualPlaybackEvidence(PhysicalDeviceMediaAuditTest.kt:138)
+
+INSTRUMENTATION_STATUS: test=all86VideosProduceIndividualPlaybackEvidence
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_RESULT: stream=
+
+Time: 57.027
+There was 1 failure:
+1) all86VideosProduceIndividualPlaybackEvidence(com.example.mol.ui.PhysicalDeviceMediaAuditTest)
+java.lang.IllegalStateException: Phone test interrupted by another window; remaining videos are NOT TESTED
+	at com.example.mol.ui.PhysicalDeviceMediaAuditTest.all86VideosProduceIndividualPlaybackEvidence(PhysicalDeviceMediaAuditTest.kt:138)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+INSTRUMENTATION_CODE: -1

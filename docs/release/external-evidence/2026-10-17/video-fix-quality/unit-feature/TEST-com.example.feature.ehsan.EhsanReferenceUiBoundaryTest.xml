@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.ehsan.EhsanReferenceUiBoundaryTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:32" hostname="MOLHAMALNAEB" time="0.01">
+  <properties/>
+  <testcase name="ehsan screen keeps viewmodel callbacks and local-board honesty symbol" classname="com.example.feature.ehsan.EhsanReferenceUiBoundaryTest" time="0.004"/>
+  <testcase name="ehsan root renders no back affordance while keeping the callback wired" classname="com.example.feature.ehsan.EhsanReferenceUiBoundaryTest" time="0.001"/>
+  <testcase name="ehsan ui components stay free of repositories and viewmodels" classname="com.example.feature.ehsan.EhsanReferenceUiBoundaryTest" time="0.002"/>
+  <testcase name="bottom navigation file unchanged by ehsan redesign" classname="com.example.feature.ehsan.EhsanReferenceUiBoundaryTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

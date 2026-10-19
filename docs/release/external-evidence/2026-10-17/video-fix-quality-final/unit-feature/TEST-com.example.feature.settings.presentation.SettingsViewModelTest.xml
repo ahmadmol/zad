@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.settings.presentation.SettingsViewModelTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:06" hostname="MOLHAMALNAEB" time="0.476">
+  <properties/>
+  <testcase name="adhan sound update writes user preferences only" classname="com.example.feature.settings.presentation.SettingsViewModelTest" time="0.234"/>
+  <testcase name="font size update writes settings manager" classname="com.example.feature.settings.presentation.SettingsViewModelTest" time="0.067"/>
+  <testcase name="vibration update writes settings manager" classname="com.example.feature.settings.presentation.SettingsViewModelTest" time="0.074"/>
+  <testcase name="dark mode update writes settings manager" classname="com.example.feature.settings.presentation.SettingsViewModelTest" time="0.059"/>
+  <testcase name="initial settings load from persistence flows" classname="com.example.feature.settings.presentation.SettingsViewModelTest" time="0.042"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

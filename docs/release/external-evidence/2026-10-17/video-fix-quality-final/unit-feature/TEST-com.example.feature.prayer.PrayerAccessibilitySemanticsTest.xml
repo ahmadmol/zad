@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.prayer.PrayerAccessibilitySemanticsTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:02" hostname="MOLHAMALNAEB" time="0.011">
+  <properties/>
+  <testcase name="visible active prayer details remain rendered inside merged semantics" classname="com.example.feature.prayer.PrayerAccessibilitySemanticsTest" time="0.005"/>
+  <testcase name="active prayer description includes countdown and location" classname="com.example.feature.prayer.PrayerAccessibilitySemanticsTest" time="0.003"/>
+  <testcase name="active prayer card merges semantics to prevent double read" classname="com.example.feature.prayer.PrayerAccessibilitySemanticsTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

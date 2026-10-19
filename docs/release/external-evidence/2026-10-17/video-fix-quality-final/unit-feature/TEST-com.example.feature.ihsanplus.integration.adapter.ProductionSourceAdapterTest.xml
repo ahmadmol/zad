@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.ihsanplus.integration.adapter.ProductionSourceAdapterTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:02" hostname="MOLHAMALNAEB" time="0.356">
+  <properties/>
+  <testcase name="charity adapter is local board only without trust metrics" classname="com.example.feature.ihsanplus.integration.adapter.ProductionSourceAdapterTest" time="0.083"/>
+  <testcase name="prayer adapter mirrors facade without fabricating data" classname="com.example.feature.ihsanplus.integration.adapter.ProductionSourceAdapterTest" time="0.272"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,10 @@
+{
+  "url": "https://quranenc.com/api/v1/translations/list/ar",
+  "checked_at": "2026-10-17T06:45:31.755372+00:00",
+  "method": "GET",
+  "http": 200,
+  "final_url": "https://quranenc.com/api/v1/translations/list/ar",
+  "content_type": "application/json; charset=utf-8",
+  "truncated": false,
+  "sha256": "d0305b6cafd7c4b172fdeac50e7db7b8f0a6d229659eafd8fa4582cfc4a6b919"
+}

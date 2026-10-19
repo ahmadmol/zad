@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.mol.navigation.ProductSurfaceNavigationCharacterizationTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:19" hostname="MOLHAMALNAEB" time="0.011">
+  <properties/>
+  <testcase name="settings and statistics routes exist" classname="com.example.mol.navigation.ProductSurfaceNavigationCharacterizationTest" time="0.0"/>
+  <testcase name="canonical screens exclude charity trust and inbox" classname="com.example.mol.navigation.ProductSurfaceNavigationCharacterizationTest" time="0.004"/>
+  <testcase name="ihsan details is the canonical donation details route" classname="com.example.mol.navigation.ProductSurfaceNavigationCharacterizationTest" time="0.004"/>
+  <testcase name="legacy donation detail route redirects to canonical path pattern" classname="com.example.mol.navigation.ProductSurfaceNavigationCharacterizationTest" time="0.001"/>
+  <testcase name="bottom nav remains home donations profile" classname="com.example.mol.navigation.ProductSurfaceNavigationCharacterizationTest" time="0.001"/>
+  <testcase name="production counter route is tasbih_screen" classname="com.example.mol.navigation.ProductSurfaceNavigationCharacterizationTest" time="0.0"/>
+  <testcase name="inbox route is removed from Screen definitions" classname="com.example.mol.navigation.ProductSurfaceNavigationCharacterizationTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

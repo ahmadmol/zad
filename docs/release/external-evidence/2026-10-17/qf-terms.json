@@ -1,0 +1,10 @@
+{
+  "url": "https://api-docs.quran.com/legal/developer-terms/",
+  "checked_at": "2026-10-17T06:38:34.351840+00:00",
+  "method": "GET",
+  "http": 200,
+  "final_url": "https://api-docs.quran.com/legal/developer-terms/",
+  "content_type": "text/html; charset=utf-8",
+  "truncated": false,
+  "sha256": "9bfd4fbae2de6ac368d25c53ef8d4f1cca68910e29e47a4ab3830ec63ce1a13d"
+}

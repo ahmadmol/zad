@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 8.7.3">
+
+    <issue
+        id="ModifierParameter"
+        severity="Warning"
+        message="Modifier parameter should be the first optional parameter"
+        category="Correctness"
+        priority="3"
+        summary="Guidelines for Modifier parameters in a Composable function"
+        explanation="The first (or only) Modifier parameter in a Composable function should follow the following rules:&#xA;- Be named `modifier`&#xA;- Have a type of `Modifier`&#xA;- Either have no default value, or have a default value of `Modifier`&#xA;- If optional, be the first optional parameter in the parameter list"
+        errorLine1="    onSettingsClick: (() -> Unit)? = null, modifier: Modifier = Modifier) {"
+        errorLine2="                                           ~~~~~~~~">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\java\com\example\feature\nabiihsan\presentation\components\NabiHeroHeader.kt"
+            line="14"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="ModifierParameter"
+        severity="Warning"
+        message="Modifier parameter should be the first optional parameter"
+        category="Correctness"
+        priority="3"
+        summary="Guidelines for Modifier parameters in a Composable function"
+        explanation="The first (or only) Modifier parameter in a Composable function should follow the following rules:&#xA;- Be named `modifier`&#xA;- Have a type of `Modifier`&#xA;- Either have no default value, or have a default value of `Modifier`&#xA;- If optional, be the first optional parameter in the parameter list"
+        errorLine1="    modifier: Modifier = Modifier,"
+        errorLine2="    ~~~~~~~~">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\java\com\example\feature\prayer\presentation\PrayerDetailsBottomSheet.kt"
+            line="41"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ModifierParameter"
+        severity="Warning"
+        message="Modifier parameter should be the first optional parameter"
+        category="Correctness"
+        priority="3"
+        summary="Guidelines for Modifier parameters in a Composable function"
+        explanation="The first (or only) Modifier parameter in a Composable function should follow the following rules:&#xA;- Be named `modifier`&#xA;- Have a type of `Modifier`&#xA;- Either have no default value, or have a default value of `Modifier`&#xA;- If optional, be the first optional parameter in the parameter list"
+        errorLine1="    modifier: Modifier = Modifier,"
+        errorLine2="    ~~~~~~~~">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\java\com\example\feature\prayer\presentation\PrayerSettingsBottomSheet.kt"
+            line="37"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ModifierParameter"
+        severity="Warning"
+        message="Modifier parameter should be the first optional parameter"
+        category="Correctness"
+        priority="3"
+        summary="Guidelines for Modifier parameters in a Composable function"
+        explanation="The first (or only) Modifier parameter in a Composable function should follow the following rules:&#xA;- Be named `modifier`&#xA;- Have a type of `Modifier`&#xA;- Either have no default value, or have a default value of `Modifier`&#xA;- If optional, be the first optional parameter in the parameter list"
+        errorLine1="    placeholderText: String = &quot;ابحث عن قصة، سورة، شخصية أو معنى...&quot;, modifier: Modifier = Modifier) {"
+        errorLine2="                                                                     ~~~~~~~~">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\java\com\example\feature\sanhya\presentation\components\StorySearchBar.kt"
+            line="14"
+            column="70"/>
+    </issue>
+
+    <issue
+        id="MutableCollectionMutableState"
+        severity="Warning"
+        message="Creating a MutableState object with a mutable collection type"
+        category="Correctness"
+        priority="3"
+        summary="Creating a MutableState object with a mutable collection type"
+        explanation="Writes to mutable collections inside a MutableState will not cause a recomposition - only writes to the MutableState itself will. In most cases you should either use a read-only collection (such as List or Map) and assign a new instance to the MutableState when your data changes, or you can use an snapshot-backed collection such as SnapshotStateList or SnapshotStateMap which will correctly cause a recomposition when their contents are modified."
+        errorLine1="    var imageUris by rememberSaveable { mutableStateOf(arrayListOf&lt;String>()) }"
+        errorLine2="                                        ~~~~~~~~~~~~~~">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\java\com\example\feature\ehsan\presentation\AddEhsanScreen.kt"
+            line="99"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="MutableCollectionMutableState"
+        severity="Warning"
+        message="Creating a MutableState object with a mutable collection type"
+        category="Correctness"
+        priority="3"
+        summary="Creating a MutableState object with a mutable collection type"
+        explanation="Writes to mutable collections inside a MutableState will not cause a recomposition - only writes to the MutableState itself will. In most cases you should either use a read-only collection (such as List or Map) and assign a new instance to the MutableState when your data changes, or you can use an snapshot-backed collection such as SnapshotStateList or SnapshotStateMap which will correctly cause a recomposition when their contents are modified."
+        errorLine1="    var selectedImages by rememberSaveable(row.id) { mutableStateOf&lt;ArrayList&lt;String>?>(null) }"
+        errorLine2="                                                     ~~~~~~~~~~~~~~">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\java\com\example\feature\profile\DonationHistoryScreen.kt"
+            line="91"
+            column="54"/>
+    </issue>
+
+    <issue
+        id="SwitchIntDef"
+        severity="Warning"
+        message="Switch statement on an `int` with known associated constant missing case `Player.STATE_BUFFERING`, `Player.STATE_IDLE`"
+        category="Correctness"
+        priority="3"
+        summary="Missing @IntDef in Switch"
+        explanation="This check warns if a `switch` statement does not explicitly include all the values declared by the typedef `@IntDef` declaration."
+        errorLine1="                when (playbackState) {"
+        errorLine2="                ~~~~">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\java\com\example\feature\quran\util\AudioPlayerHandler.kt"
+            line="89"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="SetJavaScriptEnabled"
+        severity="Warning"
+        message="Using `setJavaScriptEnabled` can introduce XSS vulnerabilities into your application, review carefully"
+        category="Security"
+        priority="6"
+        summary="Using `setJavaScriptEnabled`"
+        explanation="Your code should not invoke `setJavaScriptEnabled` if you are not sure that your app really requires JavaScript support."
+        url="https://goo.gle/SetJavaScriptEnabled"
+        urls="https://goo.gle/SetJavaScriptEnabled,https://developer.android.com/training/articles/security-tips"
+        errorLine1="                    settings.javaScriptEnabled = true"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\java\com\example\feature\learning\presentation\components\IhsanYouTubePlayer.kt"
+            line="310"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        severity="Warning"
+        message="Unnecessary; SDK_INT is always >= 25"
+        category="Performance"
+        priority="6"
+        summary="Obsolete SDK_INT Version Check"
+        explanation="This check flags version checks that are not necessary, because the `minSdkVersion` (or surrounding known API level) is already at least as high as the version checked for.&#xA;&#xA;Similarly, it also looks for resources in `-vNN` folders, such as `values-v14` where the version qualifier is less than or equal to the `minSdkVersion`, where the contents should be merged into the best folder."
+        errorLine1="                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\java\com\example\feature\prayer\data\scheduler\AndroidPrayerAlarmGateway.kt"
+            line="152"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        severity="Warning"
+        message="Unnecessary; SDK_INT is always >= 25"
+        category="Performance"
+        priority="6"
+        summary="Obsolete SDK_INT Version Check"
+        explanation="This check flags version checks that are not necessary, because the `minSdkVersion` (or surrounding known API level) is already at least as high as the version checked for.&#xA;&#xA;Similarly, it also looks for resources in `-vNN` folders, such as `values-v14` where the version qualifier is less than or equal to the `minSdkVersion`, where the contents should be merged into the best folder."
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\java\com\example\feature\prayer\util\BatteryOptimizationHelper.kt"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        severity="Warning"
+        message="Unnecessary; SDK_INT is always >= 25"
+        category="Performance"
+        priority="6"
+        summary="Obsolete SDK_INT Version Check"
+        explanation="This check flags version checks that are not necessary, because the `minSdkVersion` (or surrounding known API level) is already at least as high as the version checked for.&#xA;&#xA;Similarly, it also looks for resources in `-vNN` folders, such as `values-v14` where the version qualifier is less than or equal to the `minSdkVersion`, where the contents should be merged into the best folder."
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\java\com\example\feature\prayer\util\BatteryOptimizationHelper.kt"
+            line="21"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        severity="Warning"
+        message="Unnecessary; SDK_INT is always >= 25"
+        category="Performance"
+        priority="6"
+        summary="Obsolete SDK_INT Version Check"
+        explanation="This check flags version checks that are not necessary, because the `minSdkVersion` (or surrounding known API level) is already at least as high as the version checked for.&#xA;&#xA;Similarly, it also looks for resources in `-vNN` folders, such as `values-v14` where the version qualifier is less than or equal to the `minSdkVersion`, where the contents should be merged into the best folder."
+        errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\java\com\example\feature\prayer\util\PrayerNotificationScheduler.kt"
+            line="109"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="AutoboxingStateCreation"
+        severity="Information"
+        message="Prefer `mutableIntStateOf` instead of `mutableStateOf`"
+        category="Performance"
+        priority="3"
+        summary="`State&lt;T>` will autobox values assigned to this state. Use a specialized state type instead."
+        explanation="Calling `mutableStateOf&lt;T>()` when `T` is either backed by a primitive type on the JVM or is a value class results in a state implementation that requires all state values to be boxed. This usually causes an additional allocation for each state write, and adds some additional work to auto-unbox values when reading the value of the state. Instead, prefer to use a specialized primitive state implementation for `Int`, `Long`, `Float`, and `Double` when the state does not need to track null values and does not override the default `SnapshotMutationPolicy`. See `mutableIntStateOf()`, `mutableLongStateOf()`, `mutableFloatStateOf()`, and `mutableDoubleStateOf()` for more information."
+        errorLine1="    var playbackAttempt by remember(activeSource) { mutableStateOf(0) }"
+        errorLine2="                                                    ~~~~~~~~~~~~~~">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\java\com\example\feature\live\LiveStreamScreen.kt"
+            line="125"
+            column="53"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        severity="Warning"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        category="Usability:Typography"
+        priority="5"
+        summary="Ellipsis string can be replaced with ellipsis character"
+        explanation="You can replace the string &quot;...&quot; with a dedicated ellipsis character, ellipsis character (\u2026, &amp;#8230;). This can help make the text more readable."
+        url="https://en.wikipedia.org/wiki/Ellipsis"
+        urls="https://en.wikipedia.org/wiki/Ellipsis"
+        errorLine1="    &lt;string name=&quot;search_placeholder&quot;>بحث...&lt;/string>"
+        errorLine2="                                      ~~~~~~">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\values\strings.xml"
+            line="8"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        severity="Warning"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        category="Usability:Typography"
+        priority="5"
+        summary="Ellipsis string can be replaced with ellipsis character"
+        explanation="You can replace the string &quot;...&quot; with a dedicated ellipsis character, ellipsis character (\u2026, &amp;#8230;). This can help make the text more readable."
+        url="https://en.wikipedia.org/wiki/Ellipsis"
+        urls="https://en.wikipedia.org/wiki/Ellipsis"
+        errorLine1="    &lt;string name=&quot;polish_charity_search&quot;>ابحث عن فرصة خيرية...&lt;/string>"
+        errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\values-ar\ui_polish_strings.xml"
+            line="46"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        severity="Warning"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        category="Usability:Typography"
+        priority="5"
+        summary="Ellipsis string can be replaced with ellipsis character"
+        explanation="You can replace the string &quot;...&quot; with a dedicated ellipsis character, ellipsis character (\u2026, &amp;#8230;). This can help make the text more readable."
+        url="https://en.wikipedia.org/wiki/Ellipsis"
+        urls="https://en.wikipedia.org/wiki/Ellipsis"
+        errorLine1="    &lt;string name=&quot;polish_charity_search&quot;>ابحث عن فرصة خيرية...&lt;/string>"
+        errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\values\ui_polish_strings.xml"
+            line="46"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="IconXmlAndPng"
+        severity="Warning"
+        message="The following images appear both as density independent `.xml` files and as bitmap files: src\main\res\drawable\ic_launcher_background.xml, src\main\res\mipmap-hdpi\ic_launcher_background.webp"
+        category="Usability:Icons"
+        priority="7"
+        summary="Icon is specified both as `.xml` file and as a bitmap"
+        explanation="If a drawable resource appears as an `.xml` file in the `drawable/` folder, it&apos;s usually not intentional for it to also appear as a bitmap using the same name; generally you expect the drawable XML file to define states and each state has a corresponding drawable bitmap.">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\mipmap-xxxhdpi\ic_launcher_background.webp"/>
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\mipmap-xxhdpi\ic_launcher_background.webp"/>
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\mipmap-xhdpi\ic_launcher_background.webp"/>
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\mipmap-mdpi\ic_launcher_background.webp"/>
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\mipmap-hdpi\ic_launcher_background.webp"/>
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\drawable\ic_launcher_background.xml"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        severity="Warning"
+        message="Found bitmap drawable `res/drawable/bg_ehsan.jpg` in densityless folder"
+        category="Usability:Icons"
+        priority="5"
+        summary="Image defined in density-independent drawable folder"
+        explanation="The res/drawable folder is intended for density-independent graphics such as shapes defined in XML. For bitmaps, move it to `drawable-mdpi` and consider providing higher and lower resolution versions in `drawable-ldpi`, `drawable-hdpi` and `drawable-xhdpi`. If the icon **really** is density independent (for example a solid color) you can place it in `drawable-nodpi`."
+        url="https://developer.android.com/guide/practices/screens_support.html"
+        urls="https://developer.android.com/guide/practices/screens_support.html">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\drawable\bg_ehsan.jpg"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        severity="Warning"
+        message="Found bitmap drawable `res/drawable/image_app.png` in densityless folder"
+        category="Usability:Icons"
+        priority="5"
+        summary="Image defined in density-independent drawable folder"
+        explanation="The res/drawable folder is intended for density-independent graphics such as shapes defined in XML. For bitmaps, move it to `drawable-mdpi` and consider providing higher and lower resolution versions in `drawable-ldpi`, `drawable-hdpi` and `drawable-xhdpi`. If the icon **really** is density independent (for example a solid color) you can place it in `drawable-nodpi`."
+        url="https://developer.android.com/guide/practices/screens_support.html"
+        urls="https://developer.android.com/guide/practices/screens_support.html">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\drawable\image_app.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        severity="Warning"
+        message="Found bitmap drawable `res/drawable/splash_ihsan_logo.png` in densityless folder"
+        category="Usability:Icons"
+        priority="5"
+        summary="Image defined in density-independent drawable folder"
+        explanation="The res/drawable folder is intended for density-independent graphics such as shapes defined in XML. For bitmaps, move it to `drawable-mdpi` and consider providing higher and lower resolution versions in `drawable-ldpi`, `drawable-hdpi` and `drawable-xhdpi`. If the icon **really** is density independent (for example a solid color) you can place it in `drawable-nodpi`."
+        url="https://developer.android.com/guide/practices/screens_support.html"
+        urls="https://developer.android.com/guide/practices/screens_support.html">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\drawable\splash_ihsan_logo.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        severity="Warning"
+        message="Found bitmap drawable `res/drawable/splash_ihsan_logo_transparent.png` in densityless folder"
+        category="Usability:Icons"
+        priority="5"
+        summary="Image defined in density-independent drawable folder"
+        explanation="The res/drawable folder is intended for density-independent graphics such as shapes defined in XML. For bitmaps, move it to `drawable-mdpi` and consider providing higher and lower resolution versions in `drawable-ldpi`, `drawable-hdpi` and `drawable-xhdpi`. If the icon **really** is density independent (for example a solid color) you can place it in `drawable-nodpi`."
+        url="https://developer.android.com/guide/practices/screens_support.html"
+        urls="https://developer.android.com/guide/practices/screens_support.html">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\drawable\splash_ihsan_logo_transparent.png"/>
+    </issue>
+
+    <issue
+        id="IconDuplicates"
+        severity="Warning"
+        message="The following unrelated icon files have identical contents: ic_search_ehsan.png, ic_search_hadith.png"
+        category="Usability:Icons"
+        priority="3"
+        summary="Duplicated icons under different names"
+        explanation="If an icon is repeated under different names, you can consolidate and just use one of the icons and delete the others to make your application smaller. However, duplicated icons usually are not intentional and can sometimes point to icons that were accidentally overwritten or accidentally not updated.">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\drawable-nodpi\ic_search_hadith.png"/>
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\drawable-nodpi\ic_search_ehsan.png"/>
+    </issue>
+
+    <issue
+        id="IconDuplicates"
+        severity="Warning"
+        message="The following unrelated icon files have identical contents: image_app.png, splash_ihsan_logo.png"
+        category="Usability:Icons"
+        priority="3"
+        summary="Duplicated icons under different names"
+        explanation="If an icon is repeated under different names, you can consolidate and just use one of the icons and delete the others to make your application smaller. However, duplicated icons usually are not intentional and can sometimes point to icons that were accidentally overwritten or accidentally not updated.">
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\drawable\splash_ihsan_logo.png"/>
+        <location
+            file="C:\Users\molha\OneDrive\Desktop\New folder (2)\Sdk\Sdk\mol\feature\src\main\res\drawable\image_app.png"/>
+    </issue>
+
+</issues>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.ehsan.domain.model.DonationStatusTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:56:59" hostname="MOLHAMALNAEB" time="0.012">
+  <properties/>
+  <testcase name="active can move to coordinating" classname="com.example.feature.ehsan.domain.model.DonationStatusTest" time="0.005"/>
+  <testcase name="active is not terminal" classname="com.example.feature.ehsan.domain.model.DonationStatusTest" time="0.001"/>
+  <testcase name="terminal states reject every transition" classname="com.example.feature.ehsan.domain.model.DonationStatusTest" time="0.001"/>
+  <testcase name="storage values are unique and non blank" classname="com.example.feature.ehsan.domain.model.DonationStatusTest" time="0.001"/>
+  <testcase name="legacy vocabulary maps onto the typed lifecycle" classname="com.example.feature.ehsan.domain.model.DonationStatusTest" time="0.0"/>
+  <testcase name="coordinating cannot expire directly" classname="com.example.feature.ehsan.domain.model.DonationStatusTest" time="0.001"/>
+  <testcase name="round trip through storage is stable for every status" classname="com.example.feature.ehsan.domain.model.DonationStatusTest" time="0.0"/>
+  <testcase name="next options match the transition rules" classname="com.example.feature.ehsan.domain.model.DonationStatusTest" time="0.0"/>
+  <testcase name="coordinating can be fulfilled or cancelled or reopened" classname="com.example.feature.ehsan.domain.model.DonationStatusTest" time="0.0"/>
+  <testcase name="no status can transition to itself" classname="com.example.feature.ehsan.domain.model.DonationStatusTest" time="0.0"/>
+  <testcase name="mapping is case and whitespace insensitive" classname="com.example.feature.ehsan.domain.model.DonationStatusTest" time="0.001"/>
+  <testcase name="unknown null and blank values degrade to active rather than dropping the row" classname="com.example.feature.ehsan.domain.model.DonationStatusTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

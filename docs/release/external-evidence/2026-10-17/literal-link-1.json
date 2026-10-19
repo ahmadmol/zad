@@ -1,0 +1,10 @@
+{
+  "url": "http://tanzil.net/updates/",
+  "checked_at": "2026-10-17T06:50:27.828053+00:00",
+  "method": "GET",
+  "http": 200,
+  "final_url": "https://tanzil.net/updates/",
+  "content_type": "text/html; charset=utf-8",
+  "truncated": false,
+  "sha256": "017853b3e5a0be7f1921ab979138d20aa505600bb7588f5ce1e32a7b76b8f892"
+}

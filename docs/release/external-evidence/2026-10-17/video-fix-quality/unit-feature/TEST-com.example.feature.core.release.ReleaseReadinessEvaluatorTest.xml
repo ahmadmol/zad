@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.core.release.ReleaseReadinessEvaluatorTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:38:32" hostname="MOLHAMALNAEB" time="0.005">
+  <properties/>
+  <testcase name="ready when all gates pass" classname="com.example.feature.core.release.ReleaseReadinessEvaluatorTest" time="0.002"/>
+  <testcase name="each blocker is reported" classname="com.example.feature.core.release.ReleaseReadinessEvaluatorTest" time="0.002"/>
+  <testcase name="multiple blockers accumulate" classname="com.example.feature.core.release.ReleaseReadinessEvaluatorTest" time="0.0"/>
+  <testcase name="warning only state remains ready" classname="com.example.feature.core.release.ReleaseReadinessEvaluatorTest" time="0.0"/>
+  <testcase name="fake ihsanplus wiring is a hard blocker" classname="com.example.feature.core.release.ReleaseReadinessEvaluatorTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

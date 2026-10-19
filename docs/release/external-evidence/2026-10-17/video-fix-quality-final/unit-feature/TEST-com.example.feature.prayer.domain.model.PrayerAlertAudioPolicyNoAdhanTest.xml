@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.prayer.domain.model.PrayerAlertAudioPolicyNoAdhanTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:03" hostname="MOLHAMALNAEB" time="0.007">
+  <properties/>
+  <testcase name="only sunrise is non-notifiable" classname="com.example.feature.prayer.domain.model.PrayerAlertAudioPolicyNoAdhanTest" time="0.001"/>
+  <testcase name="alarm kinds retain distinct reminder and exact identities" classname="com.example.feature.prayer.domain.model.PrayerAlertAudioPolicyNoAdhanTest" time="0.003"/>
+  <testcase name="unknown stored mode degrades to adhan default" classname="com.example.feature.prayer.domain.model.PrayerAlertAudioPolicyNoAdhanTest" time="0.001"/>
+  <testcase name="sunrise defaults to notice and cannot be promoted to adhan" classname="com.example.feature.prayer.domain.model.PrayerAlertAudioPolicyNoAdhanTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

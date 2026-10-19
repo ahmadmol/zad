@@ -1,0 +1,10 @@
+{
+  "url": "https://hadeethenc.com/en/check/ar/v1.7.0",
+  "checked_at": "2026-10-17T06:38:34.351840+00:00",
+  "method": "GET",
+  "http": 200,
+  "final_url": "https://hadeethenc.com/en/check/ar/v1.7.0",
+  "content_type": "text/html; charset=UTF-8",
+  "truncated": false,
+  "sha256": "5add9bb53c78bcf60734eed6db2b0b7034e45013449676c4899338adcf75d4c3"
+}

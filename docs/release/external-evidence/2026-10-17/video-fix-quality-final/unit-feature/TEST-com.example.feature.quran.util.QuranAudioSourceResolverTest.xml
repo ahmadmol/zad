@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.feature.quran.util.QuranAudioSourceResolverTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-17T07:57:06" hostname="MOLHAMALNAEB" time="0.016">
+  <properties/>
+  <testcase name="isRemoteUrl detects http sources" classname="com.example.feature.quran.util.QuranAudioSourceResolverTest" time="0.002"/>
+  <testcase name="remote url pads surah and ayah" classname="com.example.feature.quran.util.QuranAudioSourceResolverTest" time="0.0"/>
+  <testcase name="offline playback uses local audio but refuses remote fallback" classname="com.example.feature.quran.util.QuranAudioSourceResolverTest" time="0.004"/>
+  <testcase name="selectInitialSource prefers valid local then remote" classname="com.example.feature.quran.util.QuranAudioSourceResolverTest" time="0.004"/>
+  <testcase name="usable local requires non empty readable file" classname="com.example.feature.quran.util.QuranAudioSourceResolverTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
