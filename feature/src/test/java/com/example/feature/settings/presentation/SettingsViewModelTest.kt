@@ -31,6 +31,7 @@ class SettingsViewModelTest {
     private val userPreferences: UserPreferences = mockk(relaxed = true)
     private val fontSize = MutableStateFlow(24f)
     private val darkMode = MutableStateFlow(false)
+    private val themeMode = MutableStateFlow(SettingsManager.ThemeMode.LIGHT)
     private val vibration = MutableStateFlow(true)
     private val adhanSound = MutableStateFlow<String?>(null)
     private val dispatcher = UnconfinedTestDispatcher()
@@ -43,13 +44,21 @@ class SettingsViewModelTest {
         Dispatchers.setMain(dispatcher)
         every { settingsManager.fontSizeFlow } returns fontSize
         every { settingsManager.darkModeFlow } returns darkMode
+        every { settingsManager.themeModeFlow } returns themeMode
         every { settingsManager.vibrationEnabledFlow } returns vibration
         every { userPreferences.adhanSoundUri } returns adhanSound
         coEvery { settingsManager.setFontSize(any()) } coAnswers {
             fontSize.value = firstArg()
         }
         coEvery { settingsManager.setDarkMode(any()) } coAnswers {
-            darkMode.value = firstArg()
+            val enabled = firstArg<Boolean>()
+            darkMode.value = enabled
+            themeMode.value = if (enabled) SettingsManager.ThemeMode.DARK else SettingsManager.ThemeMode.LIGHT
+        }
+        coEvery { settingsManager.setThemeMode(any()) } coAnswers {
+            val mode = firstArg<SettingsManager.ThemeMode>()
+            themeMode.value = mode
+            darkMode.value = (mode == SettingsManager.ThemeMode.DARK)
         }
         coEvery { settingsManager.setVibrationEnabled(any()) } coAnswers {
             vibration.value = firstArg()

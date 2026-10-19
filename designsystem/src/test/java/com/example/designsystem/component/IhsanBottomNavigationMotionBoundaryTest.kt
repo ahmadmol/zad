@@ -20,15 +20,14 @@ class IhsanBottomNavigationMotionBoundaryTest {
     }
 
     @Test
-    fun `uses per-item pill indicator and compose animation apis`() {
+    fun `compact selection preserves tab semantics and presentation animation`() {
         val source = navFile.readText()
         assertFalse(source.contains("SelectedIconCircle"))
         assertFalse(source.contains("absoluteOffset"))
         assertTrue(source.contains("BottomNavigationLabel"))
-        assertTrue(source.contains("Animatable"))
-        assertTrue(source.contains("FastOutSlowInEasing"))
+        assertTrue(source.contains("animateFloatAsState"))
         assertTrue(source.contains("BottomNavBarHeight"))
-        assertTrue(source.contains("navigationIndicator"))
+        assertTrue(source.contains("role = Role.Tab"))
         assertTrue(source.contains("ihsan_bottom_nav_indicator"))
     }
 
@@ -45,11 +44,4 @@ class IhsanBottomNavigationMotionBoundaryTest {
         assertFalse(source.contains("org.koin"))
     }
 
-    @Test
-    fun `keeps three destination labels in previews`() {
-        val source = navFile.readText()
-        assertTrue(source.contains("\"الرئيسية\""))
-        assertTrue(source.contains("\"إحسان\""))
-        assertTrue(source.contains("\"حسابي\""))
-    }
 }

@@ -47,6 +47,13 @@ class AddEhsanViewModelTest {
         assertEquals("0912345678", viewModel.uiState.value.currentUserPhone)
     }
 
+    @Test fun `whatsapp requires an international number instead of guessing its country`() = runTest {
+        viewModel.submitRequest("عنوان", "وصف", "كتب", "حلب", "OFFER", null, contactMethod = "WHATSAPP")
+        coVerify(exactly = 0) { addDonationUseCase(any()) }
+        assertTrue(viewModel.uiState.value.phoneError!!.contains("رمز الدولة"))
+        assertFalse(viewModel.uiState.value.isSubmitting)
+    }
+
     @Test
     fun `submitRequest with valid data calls use case`() = runTest {
         // Given
@@ -93,7 +100,7 @@ class AddEhsanViewModelTest {
 
         // Then
         coVerify(exactly = 0) { addDonationUseCase(any()) }
-        assertNotNull(viewModel.uiState.value.phoneError)
+        assertTrue(viewModel.uiState.value.submissionError.orEmpty().contains("ملف"))
     }
 
     @Test

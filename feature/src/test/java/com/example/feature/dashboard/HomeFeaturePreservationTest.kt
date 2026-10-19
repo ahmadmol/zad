@@ -90,13 +90,15 @@ class HomeFeaturePreservationTest {
     }
 
     @Test
-    fun `home does not hide services with take 5`() {
+    fun `home previews services and preserves the complete services panel`() {
         assertFalse(homeScreen.contains("actions.take(5)"))
         assertTrue(homeScreen.contains("HomeDiscoverServicesGrid"))
-        assertTrue(discoverServices.contains("services.chunked(3)"))
-        assertFalse(discoverServices.contains("services.take("))
+        assertTrue(discoverServices.contains("services.chunked(columns)"))
+        assertTrue(discoverServices.contains("ServiceGrid(services, 3)"))
+        assertTrue(discoverServices.contains("correction_view_all"))
+        assertTrue(discoverServices.contains("Dialog("))
         assertTrue(
-            discoverServices.contains("home_services_title") || quickActions.contains("home_services_title")
+            discoverServices.contains("correction_services_title") || quickActions.contains("home_services_title")
         )
     }
 
@@ -138,9 +140,11 @@ class HomeFeaturePreservationTest {
     @Test
     fun `splash crops its full screen background and fits its logo`() {
         assertTrue(splash.contains("ihsan_splash_background"))
-        assertTrue(splash.contains("splash_ihsan_logo_transparent"))
+        assertTrue(splash.contains("IhsanTextWithKaabaIcon"))
+        val brand = read("designsystem/src/main/java/com/example/designsystem/component/IhsanHeaderTitle.kt")
+        assertTrue(brand.contains("ihsanWordmarkPainter(color)"))
         assertTrue(splash.contains("ContentScale.Crop"))
-        assertTrue(splash.contains("ContentScale.Fit"))
+        assertTrue(brand.contains("ContentScale.Fit"))
     }
 }
 

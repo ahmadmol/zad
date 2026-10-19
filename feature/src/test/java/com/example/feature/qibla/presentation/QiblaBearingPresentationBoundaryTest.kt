@@ -6,7 +6,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** Presentation boundary checks for the current zero-sentinel Qibla state. */
+/** Presentation boundary checks: unresolved location is distinct from a valid north bearing. */
 class QiblaBearingPresentationBoundaryTest {
     private val root = File(".").canonicalFile.let { dir ->
         generateSequence(dir) { it.parentFile }
@@ -24,7 +24,7 @@ class QiblaBearingPresentationBoundaryTest {
 
     @Test
     fun `screen does not render compass for unresolved error state`() {
-        assertTrue(screen.contains("uiState.error != null && uiState.qiblaAngle == 0f"))
+        assertTrue(screen.contains("uiState.error != null && !uiState.hasCalculatedBearing"))
         assertTrue(screen.contains("qiblaDirection = uiState.qiblaAngle"))
     }
 
@@ -43,7 +43,7 @@ class QiblaBearingPresentationBoundaryTest {
 
     @Test
     fun `unavailable update preserves an existing bearing`() {
-        assertTrue(viewModel.contains("if (_uiState.value.qiblaAngle == 0f)"))
+        assertTrue(viewModel.contains("if (!_uiState.value.hasCalculatedBearing)"))
     }
 
     @Test

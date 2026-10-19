@@ -33,6 +33,9 @@ class DeleteLocalProfileDataUseCaseTest {
         ) = Unit
         override suspend fun login(phoneNumber: String): UserEntity? = null
         override suspend fun clearUser() { user.value = null }
+        override suspend fun clearCurrentUser() { user.value = null }
+        override suspend fun deactivateAll() { user.value = null }
+        override suspend fun activate(id: Long) = Unit
     }
 
     private class FakeDonationDao(initial: List<DonationEntity>) : DonationDao {
@@ -41,6 +44,14 @@ class DeleteLocalProfileDataUseCaseTest {
         override suspend fun insertDonation(donation: DonationEntity) {
             donations.value = donations.value + donation
         }
+        override suspend fun insertDemoDonations(donations: List<DonationEntity>) {
+            this.donations.value += donations.filter { row -> this.donations.value.none { it.id == row.id } }
+        }
+        override suspend fun updateDonation(donation: DonationEntity) {
+            donations.value = donations.value.map { if (it.id == donation.id) donation else it }
+        }
+        override suspend fun deleteDemoDonations() { donations.value = donations.value.filterNot { it.origin == "DEMO" } }
+        override fun getDonationsByOwner(ownerId: String): Flow<List<DonationEntity>> = MutableStateFlow(donations.value.filter { it.ownerId == ownerId && it.origin == "USER" })
         override suspend fun deleteDonation(donation: DonationEntity) {
             donations.value = donations.value.filterNot { it.id == donation.id }
         }
@@ -85,7 +96,7 @@ class DeleteLocalProfileDataUseCaseTest {
     ) = DeleteLocalProfileDataUseCase(userDao, donationDao, imageStore, prayerLog)
 
     @Test
-    fun `mine only deletes the profile and the users own listings`() = runTest {
+    fun `mine only deletes profile but preserves even same name listings`() = runTest {
         val userDao = FakeUserDao(me)
         val donationDao = FakeDonationDao(
             listOf(
@@ -98,8 +109,8 @@ class DeleteLocalProfileDataUseCaseTest {
         val result = useCase(userDao, donationDao).invoke()
 
         assertTrue(result.profileDeleted)
-        assertEquals(2, result.listingsDeleted)
-        assertEquals(listOf(2L), donationDao.donations.value.map { it.id })
+        assertEquals(0, result.listingsDeleted)
+        assertEquals(listOf(1L, 2L, 3L), donationDao.donations.value.map { it.id })
     }
 
     @Test
@@ -139,9 +150,9 @@ class DeleteLocalProfileDataUseCaseTest {
             listOf(donation(1, ownerName, image = "ihsan-image:a.jpg"))
         )
 
-        useCase(FakeUserDao(me), donationDao, imageStore).invoke()
+        useCase(FakeUserDao(me), donationDao, imageStore).invoke(DeleteLocalProfileDataUseCase.DeleteScope.EVERYTHING_ON_DEVICE)
 
-        coVerify(exactly = 1) { imageStore.delete("ihsan-image:a.jpg") }
+        coVerify(exactly = 1) { imageStore.deleteUnreferenced("ihsan-image:a.jpg", emptyList()) }
     }
 
     @Test
@@ -153,7 +164,7 @@ class DeleteLocalProfileDataUseCaseTest {
         val result = useCase(FakeUserDao(me), donationDao, imageStore).invoke()
 
         coVerify { imageStore.cleanupOrphans(any()) }
-        assertEquals(4, result.imagesDeleted)
+        assertEquals(3, result.imagesDeleted)
     }
 
     @Test

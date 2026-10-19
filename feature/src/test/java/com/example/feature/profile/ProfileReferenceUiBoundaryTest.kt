@@ -38,7 +38,7 @@ class ProfileReferenceUiBoundaryTest {
         assertTrue(screen.contains("ProfileViewModel"))
         assertTrue(screen.contains("viewModel.logout()"))
         assertFalse(screen.contains("محسن متميز"))
-        assertTrue(screen.contains("نشاطك المحلي"))
+        assertTrue(File(repoRoot, "feature/src/main/res/values/ui_polish_strings.xml").readText().contains("نشاطك المحلي"))
     }
 
     @Test
@@ -54,7 +54,7 @@ class ProfileReferenceUiBoundaryTest {
         assertTrue(main.contains("Screen.Home"))
         assertTrue(main.contains("Screen.Donations"))
         assertTrue(main.contains("Screen.Profile"))
-        assertTrue(main.contains("\"حسابي\""))
+        assertTrue(main.contains("polish_nav_profile"))
         assertTrue(main.contains("resolveBottomBarDestination"))
         assertTrue(main.contains("selectedIndex >= 0"))
         assertTrue(resolver.contains("BottomBarDestination.PROFILE"))

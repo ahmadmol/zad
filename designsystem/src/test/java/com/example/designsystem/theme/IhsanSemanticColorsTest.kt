@@ -8,9 +8,9 @@ import org.junit.Test
 class IhsanSemanticColorsTest {
 
     @Test
-    fun `brand fill stays PrimaryTeal in light and dark`() {
+    fun `brand fills follow the theme primary`() {
         assertEquals(PrimaryTeal, LightIhsanSemanticColors.brand)
-        assertEquals(PrimaryTeal, DarkIhsanSemanticColors.brand)
+        assertEquals(DarkInteractivePrimary, DarkIhsanSemanticColors.brand)
     }
 
     @Test

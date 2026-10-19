@@ -54,6 +54,17 @@ class QiblaOfflineFirstStateTest {
     }
 
     @Test
+    fun `refreshing a manual location must not relabel it as a device fix`() = qiblaTest(
+        PrayerLocationState.Available(ALEPPO, PrayerLocationSource.Manual)
+    ) { harness ->
+        harness.repository.refreshResult = Result.success(ALEPPO)
+        harness.viewModel.updateLocationAndCalculateQibla()
+        runCurrent()
+        assertEquals("موقع يدوي", harness.viewModel.uiState.value.cityAndCountry)
+        assertEquals("حلب", harness.viewModel.uiState.value.locationName)
+    }
+
+    @Test
     fun `initial unavailable location produces a location-specific error`() = qiblaTest(
         PrayerLocationState.Unavailable(PrayerLocationUnavailableReason.NO_SAVED_LOCATION)
     ) { harness ->
@@ -70,6 +81,8 @@ class QiblaOfflineFirstStateTest {
         PrayerLocationState.Available(ALEPPO, PrayerLocationSource.Saved)
     ) { harness ->
         val bearing = harness.viewModel.uiState.value.qiblaAngle
+        harness.viewModel.setCompassActive(true)
+        runCurrent()
 
         harness.repository.locations.value =
             PrayerLocationState.Unavailable(PrayerLocationUnavailableReason.TIMEOUT)
@@ -117,12 +130,18 @@ class QiblaOfflineFirstStateTest {
         PrayerLocationState.Available(ALEPPO, PrayerLocationSource.Saved)
     ) { harness ->
         val bearing = harness.viewModel.uiState.value.qiblaAngle
+        harness.viewModel.setCompassActive(true)
+        runCurrent()
 
         harness.rotations.emit(bearing + 2f)
         runCurrent()
         assertTrue(harness.viewModel.uiState.value.isAligned)
 
         harness.rotations.emit(bearing + 6f)
+        runCurrent()
+        assertFalse(harness.viewModel.uiState.value.isAligned)
+        harness.viewModel.setCompassActive(false)
+        harness.rotations.emit(bearing)
         runCurrent()
         assertFalse(harness.viewModel.uiState.value.isAligned)
     }

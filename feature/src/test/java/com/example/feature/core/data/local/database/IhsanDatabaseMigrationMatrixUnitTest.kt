@@ -14,9 +14,13 @@ class IhsanDatabaseMigrationMatrixUnitTest {
     }
 
     @Test
-    fun `supported migrations cover 2_3 and 3_5 and 5_6`() {
+    fun `supported migrations provide a continuous path from 2 to 8`() {
         val migrations = IhsanDatabaseMigrations.ALL
-        assertEquals(3, migrations.size)
+        assertEquals(5, migrations.size)
+        assertEquals(7, migrations[4].startVersion)
+        assertEquals(8, migrations[4].endVersion)
+        assertEquals(6, migrations[3].startVersion)
+        assertEquals(7, migrations[3].endVersion)
         assertEquals(2, migrations[0].startVersion)
         assertEquals(3, migrations[0].endVersion)
         assertEquals(3, migrations[1].startVersion)

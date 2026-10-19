@@ -203,6 +203,7 @@ private class FakeSeedStore(initialVersion: Int) : AzkarSeedVersionStore {
  * Daily-stat methods are no-ops because the manager does not touch them.
  */
 private class FakeAzkarDao(initial: List<ZikrEntity>) : AzkarDao {
+    override fun getAllDailyStats(): Flow<List<com.example.feature.azkar.data.local.entity.DailyStatEntity>> = MutableStateFlow(emptyList())
     private val rows = MutableStateFlow<List<ZikrEntity>>(initial)
     private val nextId = MutableStateFlow(
         (initial.maxOfOrNull { it.id } ?: 0L) + 1L
@@ -267,6 +268,11 @@ private class FakeAzkarDao(initial: List<ZikrEntity>) : AzkarDao {
 
     override suspend fun getZikrById(zikrId: Long): ZikrEntity? =
         rows.value.firstOrNull { it.id == zikrId }
+
+    override suspend fun repairCanonicalText(title: String, category: String, oldText: String, newText: String, source: String) {
+        val matched = rows().filter { it.title == title && it.category == category && it.text == oldText && it.source.isEmpty() }
+        matched.forEach { insertZikr(it.copy(text = newText, source = source)) }
+    }
 
     override suspend fun countZikr(): Int = rows.value.size
 

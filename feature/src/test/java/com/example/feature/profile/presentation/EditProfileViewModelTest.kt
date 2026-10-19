@@ -36,6 +36,7 @@ class EditProfileViewModelTest {
             UserEntity(1, "أحمد", "علي", "0912345678", "حلب", "شارع 1")
         )
         coEvery { userPreferences.userAvatarUri } returns flowOf("ihsan-image:test.jpg")
+        coEvery { userPreferences.userBio } returns flowOf("نبذة محفوظة")
     }
 
     @After
@@ -90,6 +91,7 @@ class EditProfileViewModelTest {
 
         coVerify { userRepository.updateProfile("أحمد", "علي", "حلب", "شارع 1") }
         coVerify { userPreferences.setUserAvatarUri("ihsan-image:test.jpg") }
+        coVerify { userPreferences.setUserBio("نبذة محفوظة") }
         assertEquals("تم حفظ التغييرات بنجاح", viewModel.uiState.value.successMessage)
     }
 }

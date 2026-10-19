@@ -50,7 +50,7 @@ class EhsanImageStoreInstrumentedTest {
     }
 
     @Test
-    fun `persisted image is readable across a fresh store instance`() = runBlocking {
+    fun persistedImageIsReadableAcrossAFreshStoreInstance() = runBlocking {
         val source = writeStaged(ByteArray(256) { (it % 251).toByte() })
         val reference = store.persist(source)
         assertNotNull("persist must produce a stable reference", reference)
@@ -58,11 +58,11 @@ class EhsanImageStoreInstrumentedTest {
 
         val resolved = EhsanImageStore(context).resolve(reference)
         assertNotNull("resolve must return a Uri for an app-owned reference", resolved)
-        assertEquals(256, File(resolved!!.path!!).length())
+        assertEquals(256L, File((resolved as Uri).path!!).length())
     }
 
     @Test
-    fun `resolve returns null for an owned reference whose file is missing`() {
+    fun resolveReturnsNullForAnOwnedReferenceWhoseFileIsMissing() {
         // No persistence; reference shaped to a non-existent file in the store's
         // directory. resolve() must surface the missing state, not crash.
         val reference = EhsanImageStore.REFERENCE_PREFIX + "does-not-exist.jpg"
@@ -70,7 +70,7 @@ class EhsanImageStoreInstrumentedTest {
     }
 
     @Test
-    fun `resolve returns the legacy uri for non-owned references`() {
+    fun resolveReturnsTheLegacyUriForNonOwnedReferences() {
         val legacy = "content://media/external/images/media/42"
         val resolved = store.resolve(legacy)
         assertNotNull(resolved)
@@ -78,7 +78,7 @@ class EhsanImageStoreInstrumentedTest {
     }
 
     @Test
-    fun `a non-existent legacy uri is still handed back as-is`() {
+    fun aNonExistentLegacyUriIsStillHandedBackAsIs() {
         // Backward compatibility: the previous app stored raw content:// / file://
         // values. Even when those no longer resolve on this device, the legacy
         // string is returned unchanged so a listing still *shows* something.
@@ -89,30 +89,30 @@ class EhsanImageStoreInstrumentedTest {
     }
 
     @Test
-    fun `null and blank references resolve to null`() {
+    fun nullAndBlankReferencesResolveToNull() {
         assertNull(store.resolve(null))
         assertNull(store.resolve(""))
         assertNull(store.resolve("   "))
     }
 
     @Test
-    fun `path traversal attempts are rejected`() {
+    fun pathTraversalAttemptsAreRejected() {
         val reference = EhsanImageStore.REFERENCE_PREFIX + "../escape.jpg"
         assertNull(store.resolve(reference))
     }
 
     @Test
-    fun `path separators in a reference are rejected`() {
+    fun pathSeparatorsInAReferenceAreRejected() {
         val reference = EhsanImageStore.REFERENCE_PREFIX + "sub/inner.jpg"
         assertNull(store.resolve(reference))
     }
 
     @Test
-    fun `delete removes the app-owned file`() = runBlocking {
+    fun deleteRemovesTheAppOwnedFile() = runBlocking {
         val source = writeStaged(ByteArray(64) { 7 })
         val reference = store.persist(source)!!
         val resolved = EhsanImageStore(context).resolve(reference)!!
-        assertTrue(File(resolved.path!!).exists())
+        assertTrue(File((resolved as Uri).path!!).exists())
 
         val deleted = store.delete(reference)
         assertTrue("delete must report success for an owned reference", deleted)
@@ -120,13 +120,13 @@ class EhsanImageStoreInstrumentedTest {
     }
 
     @Test
-    fun `delete is a no-op for legacy references`() = runBlocking {
+    fun deleteIsANoOpForLegacyReferences() = runBlocking {
         val result = store.delete("content://media/external/images/media/42")
         assertFalse("a legacy uri is not an app-owned file", result)
     }
 
     @Test
-    fun `cleanupOrphans removes only files not referenced`() = runBlocking {
+    fun cleanupOrphansRemovesOnlyFilesNotReferenced() = runBlocking {
         val live = store.persist(writeStaged(ByteArray(128) { 1 }))!!
         val orphan = store.persist(writeStaged(ByteArray(128) { 2 }))!!
 
@@ -137,7 +137,7 @@ class EhsanImageStoreInstrumentedTest {
     }
 
     @Test
-    fun `cleanupOrphans keeps every live reference and removes nothing else`() = runBlocking {
+    fun cleanupOrphansKeepsEveryLiveReferenceAndRemovesNothingElse() = runBlocking {
         val a = store.persist(writeStaged(ByteArray(64) { 3 }))!!
         val b = store.persist(writeStaged(ByteArray(64) { 4 }))!!
 
@@ -148,13 +148,13 @@ class EhsanImageStoreInstrumentedTest {
     }
 
     @Test
-    fun `a persisted image survives a relaunch of the store`() = runBlocking {
+    fun aPersistedImageSurvivesARelaunchOfTheStore() = runBlocking {
         val source = writeStaged(ByteArray(64) { 5 })
         val reference = store.persist(source)!!
         val newStore = EhsanImageStore(context)
         val resolved = newStore.resolve(reference)
         assertNotNull("the reference must be valid after restart", resolved)
-        assertEquals(64, File(resolved!!.path!!).length())
+        assertEquals(64L, File((resolved as Uri).path!!).length())
     }
 
     private fun runBlocking(block: suspend () -> Unit) {

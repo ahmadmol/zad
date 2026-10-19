@@ -46,6 +46,22 @@ class IhsanDatabaseMigrationTest {
     }
 
     @Test
+    fun migrate7To8RetainsOwnedListingAndAddsExplicitLegacyPhoneDefault() {
+        migrationTestHelper.createDatabase(helperDbName, 7).apply {
+            execSQL("INSERT INTO donations (id,title,description,category,location,type,status,donorName,phoneNumber,imageUrl,createdAt,ownerId,origin) VALUES (77,'عنوان محفوظ','وصف محفوظ','كتب','حلب','OFFER','AVAILABLE','اسم','+12025550123','content://old/image',1234,'local-profile:42','USER')")
+            close()
+        }
+        migrationTestHelper.runMigrationsAndValidate(helperDbName, 8, true, IhsanDatabaseMigrations.MIGRATION_7_8).use { db ->
+            db.query("SELECT title,description,imageUrl,ownerId,origin,contactMethod,createdAt FROM donations WHERE id=77").use { c ->
+                assertTrue(c.moveToFirst())
+                assertEquals("عنوان محفوظ", c.getString(0)); assertEquals("وصف محفوظ", c.getString(1))
+                assertEquals("content://old/image", c.getString(2)); assertEquals("local-profile:42", c.getString(3))
+                assertEquals("USER", c.getString(4)); assertEquals("PHONE", c.getString(5)); assertEquals(1234L, c.getLong(6))
+            }
+        }
+    }
+
+    @Test
     fun migrate5To6_withMigrationTestHelper_preservesUserRowsAndAddsRole() {
         migrationTestHelper.createDatabase(helperDbName, 5).apply {
             execSQL(
@@ -86,7 +102,7 @@ class IhsanDatabaseMigrationTest {
         val roomDb = openMigratedDatabase()
         try {
             assertPreservedV3Data(roomDb)
-            assertEquals(6, roomDb.openHelper.readableDatabase.version)
+            assertEquals(8, roomDb.openHelper.readableDatabase.version)
             assertUserRoleIsUser(roomDb)
         } finally {
             roomDb.close()
@@ -100,7 +116,7 @@ class IhsanDatabaseMigrationTest {
         val roomDb = openMigratedDatabase()
         try {
             val sqlite = roomDb.openHelper.readableDatabase
-            assertEquals(6, sqlite.version)
+            assertEquals(8, sqlite.version)
             assertTrue(hasColumn(sqlite, "hadiths", "explanation"))
 
             sqlite.query("SELECT text, explanation FROM hadiths WHERE id = 201").use { c ->

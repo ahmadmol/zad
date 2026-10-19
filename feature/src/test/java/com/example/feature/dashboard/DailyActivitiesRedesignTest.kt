@@ -79,4 +79,14 @@ class DailyActivitiesRedesignTest {
         assertEquals("2026-07-22", formattedUs)
         assertFalse("Date key must not contain Arabic numerals", formattedUs.contains("٢"))
     }
+
+    @Test
+    fun `weekly activity card has no misleading unlinked details button`() {
+        // Reads source of DailyActivitiesScreen.kt to ensure no unlinked "عرض التفاصيل" exists
+        val screenFile = java.io.File("src/main/java/com/example/feature/dashboard/DailyActivitiesScreen.kt").takeIf { it.exists() }
+            ?: java.io.File("feature/src/main/java/com/example/feature/dashboard/DailyActivitiesScreen.kt")
+        assertTrue("DailyActivitiesScreen.kt must exist", screenFile.exists())
+        val source = screenFile.readText()
+        assertFalse("WeeklyActivityCard must not contain unlinked 'عرض التفاصيل'", source.contains("عرض التفاصيل"))
+    }
 }
