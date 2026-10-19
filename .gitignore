@@ -13,19 +13,18 @@
 .externalNativeBuild
 .cxx
 local.properties
- 
-# Additional ignores
-# Android Studio
+
+# Android Studio & IDE
 .idea/
 
-# Kotlin
+# Kotlin & Gradle
 .kotlin/
-
-# Gradle
 .gradle/
 
-# Local configuration
+# Local configuration & environment
 local.properties
+.env
+.env.*
 
 # Signing secrets / keystores (never commit)
 *.jks
@@ -34,11 +33,20 @@ local.properties
 signing.properties
 keystore.properties
 
-# Build
+# Build outputs
 **/build/
+*.apk
+*.aab
 
-# Logs
+# Logs & temporary UI dumps
 *.log
+/lock.xml
+/ui_*.xml
 
-# Local phase backups / working-tree snapshots (do not commit)
+# Local artifacts, caches, & QA test dumps
+.artifacts/
+__pycache__/
+*.pyc
+
+# Local phase backups / working-tree snapshots
 .project-preservation/
