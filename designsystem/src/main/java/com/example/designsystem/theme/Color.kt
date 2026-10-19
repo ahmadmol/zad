@@ -48,8 +48,8 @@ val ErrorRed = Color(0xFFBA1A1A)
 val OnErrorWhite = Color(0xFFFFFFFF)
 val ErrorContainerLight = Color(0xFFFFDAD6)
 val OnErrorContainerLight = Color(0xFF410002)
-val ErrorContainerDark = Color(0xFF93000A)
-val OnErrorContainerDark = Color(0xFFFFDAD6)
+val ErrorContainerDark = Color(0xFF302023)
+val OnErrorContainerDark = Color(0xFFF2F5F2)
 
 val BackgroundCream = Neutral50
 val OnBackgroundDark = Neutral900
@@ -62,27 +62,39 @@ val OnSurfaceVariantGrey = Neutral500
 val OutlineGrey = Neutral300
 val OutlineVariantLight = Neutral200
 
-// Dark Mode — neutral charcoal / near-black foundation.
-// The brand green is used as an *Accent* (interactive / decorative) only;
-// surfaces, backgrounds and dividers are intentionally desaturated so the
-// dark theme does not look like a "darkened green theme".
-val DarkBackground = Color(0xFF101012)        // near-black canvas
-val DarkSurface = Color(0xFF161618)           // raised sheet on canvas
-val DarkSurfaceElevated = Color(0xFF1C1C1F)   // higher card (settings, support)
-val DarkSurfaceMuted = Color(0xFF202123)      // tonal fill, icon halos, inputs
-val DarkSurfaceWarm = Color(0xFF2A2722)       // soft warm accent surface
-val DarkOnSurface = Color(0xFFE9EAEC)         // primary text
-val DarkOnSurfaceVariant = Color(0xFFA8ABB1)  // secondary text
-val DarkInteractivePrimary = Color(0xFF7DD3B0) // brand mint accent on dark
-val DarkInteractivePrimaryContainer = Color(0xFF1F3A30)
-val OnDarkInteractivePrimary = Color(0xFF06251F)
-val DarkOutline = Color(0xFF414449)
-val DarkOutlineVariant = Color(0xFF2A2B2F)    // very subtle dividers
-val DarkScrim = Color(0x99000000)             // black 50-60%
-val DarkBrandElevated = Color(0xFF1F3A30)     // used for tonal brand fills, not chrome
-val DarkGoldAccent = Color(0xFFC5A66A)          // muted gold accent (5-10% visual budget)
+// Dark Emerald / Charcoal: opaque surfaces separate canvas, cards and inputs.
+// Mint is reserved for active indicators; primary remains an emerald button fill.
+val DarkBackground = Color(0xFF07110E)
+val DarkSurface = Color(0xFF0E1C17)
+val DarkSurfaceElevated = Color(0xFF14271F)
+val DarkSurfaceMuted = Color(0xFF1A3028)
+val DarkSurfaceWarm = Color(0xFF241F16)
+val DarkOnSurface = Color(0xFFD7E0DC)
+val DarkOnSurfaceVariant = Color(0xFFA7B8B1)
+val DarkInteractivePrimary = Color(0xFF0D7564)
+val DarkInteractivePrimaryContainer = Color(0xFF174D43)
+val OnDarkInteractivePrimary = Color(0xFFF2F5F2)
+val DarkOutline = Color(0xFF294239)
+val DarkOutlineVariant = Color(0xFF294239)
+val DarkScrim = Color(0xCC07110E)
+val DarkBrandElevated = Color(0xFF174D43)
+val DarkGoldAccent = Color(0xFFC7A35C)
 
 // Legacy / Utility Colors
 val White = Color(0xFFFFFFFF)
 val Dark = Neutral900
 val Grey = Neutral300
+
+val DarkHeading = Color(0xFFF2F5F2)
+val DarkDisabled = Color(0xFF6F817A)
+val DarkAccentMint = Color(0xFF33C6AE)
+val DarkNavigation = Color(0xFF0D1916)
+val DarkNavigationInactive = Color(0xFF879992)
+val DarkWarning = Color(0xFFD89A45)
+val DarkError = Color(0xFFD9676E)
+
+// Intentional reading palette: the page stays warm and light in both app themes.
+val QuranPaper = Color(0xFFF8F3E7)
+val QuranInk = Color(0xFF123A32)
+val QuranDecorativeGreen = Color(0xFF537D70)
+val QuranDecorativeGold = Color(0xFFB99350)

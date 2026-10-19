@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 data class IhsanDimens(
     val minTouchTarget: Dp = 48.dp,
     val controlHeight: Dp = 56.dp,
-    val controlHeightCompact: Dp = 48.dp,
+    val controlHeightCompact: Dp = 40.dp,
     val iconSmall: Dp = 16.dp,
     val iconMedium: Dp = 24.dp,
     val iconLarge: Dp = 48.dp,
@@ -22,7 +22,9 @@ data class IhsanDimens(
     val radiusPill: Dp = 24.dp,
     val radiusSheet: Dp = 32.dp,
     val screenHorizontal: Dp = 16.dp,
-    val sectionSpacing: Dp = 24.dp
+    val sectionSpacing: Dp = 16.dp,
+    val contentBottomSpacing: Dp = 16.dp,
+    val bottomNavigationMinHeight: Dp = 60.dp
 )
 
 val LocalIhsanDimens = staticCompositionLocalOf { IhsanDimens() }

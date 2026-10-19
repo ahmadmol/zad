@@ -70,8 +70,8 @@ fun Modifier.liquidGlass(
 
     val sheen = Brush.verticalGradient(
         colors = listOf(
-            Color.White.copy(alpha = topAlpha),
-            Color.White.copy(alpha = bottomAlpha)
+            IhsanTheme.colors.onBrand.copy(alpha = topAlpha),
+            IhsanTheme.colors.onBrand.copy(alpha = bottomAlpha)
         )
     )
     val effectiveShape = if (cornerRadius > 0.dp) RoundedCornerShape(cornerRadius) else shape
@@ -92,7 +92,7 @@ fun Modifier.liquidGlass(
             BorderStroke(
                 width = 1.dp,
                 color = if (style == LiquidGlassStyle.Tinted) {
-                    Color.White.copy(alpha = borderAlpha)
+                    IhsanTheme.colors.onBrand.copy(alpha = borderAlpha)
                 } else {
                     IhsanTheme.colors.borderSubtle.copy(alpha = borderAlpha)
                 }

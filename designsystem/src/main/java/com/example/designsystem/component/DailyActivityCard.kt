@@ -94,7 +94,7 @@ fun DailyActivityCard(
     val percentage = summary.percentage
 
     val semanticColors = IhsanTheme.colors
-    val primaryColor = MaterialTheme.colorScheme.primary
+    val primaryColor = if (IhsanTheme.isDark) semanticColors.accentContent else MaterialTheme.colorScheme.primary
     val hasProgress = overallProgress > 0.001f
 
     val cardSemanticLabel = if (progressAccessibilityLabel.isNullOrBlank()) {

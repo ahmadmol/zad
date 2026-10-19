@@ -54,7 +54,7 @@ fun IhsanCapabilityState(
             imageVector = icon,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.75f)
+            tint = IhsanTheme.colors.accentContent.copy(alpha = 0.75f)
         )
         Spacer(modifier = Modifier.height(IhsanTheme.spacing.medium))
         Text(
@@ -81,7 +81,7 @@ fun IhsanCapabilityState(
             }
             if (onSecondaryAction != null && !secondaryActionLabel.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(IhsanTheme.spacing.small))
-                TextButton(onClick = onSecondaryAction) {
+                TextButton(onClick = onSecondaryAction, colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
                     Text(secondaryActionLabel)
                 }
             }

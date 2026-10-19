@@ -3,4 +3,8 @@
     <string name="welcome_user">أهلاً بك، %1$s</string>
     <string name="menu_desc">القائمة</string>
     <string name="notifications_desc">الإشعارات</string>
+    <string name="back_desc">رجوع</string>
+    <string name="search_desc">بحث</string>
+    <string name="ihsan_brand_tagline">خير دائم</string>
+    <string name="ihsan_brand_name">إحسان</string>
 </resources>

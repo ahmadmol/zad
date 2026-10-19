@@ -1,7 +1,7 @@
 package com.example.designsystem.component
 
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -23,7 +23,7 @@ fun IhsanButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.height(IhsanTheme.dimens.controlHeightCompact),
+        modifier = modifier.heightIn(min = IhsanTheme.dimens.controlHeightCompact),
         enabled = enabled,
         shape = RoundedCornerShape(IhsanTheme.dimens.radiusMedium),
         colors = ButtonDefaults.buttonColors(
@@ -44,8 +44,8 @@ fun IhsanSecondaryButton(
     IhsanButton(
         onClick = onClick,
         modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.secondary,
-        contentColor = MaterialTheme.colorScheme.onSecondary,
+        containerColor = if (IhsanTheme.isDark) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.secondary,
+        contentColor = if (IhsanTheme.isDark) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSecondary,
         enabled = enabled,
         content = content
     )

@@ -87,7 +87,7 @@ fun IhsanEmptyState(
                 }
                 if (onSecondaryAction != null && !secondaryActionLabel.isNullOrBlank()) {
                     Spacer(modifier = Modifier.width(IhsanTheme.spacing.small))
-                    TextButton(onClick = onSecondaryAction) {
+                    TextButton(onClick = onSecondaryAction, colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
                         Text(secondaryActionLabel)
                     }
                 }

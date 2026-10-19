@@ -36,7 +36,7 @@ fun IhsanLoadingState(
         verticalArrangement = Arrangement.Center
     ) {
         CircularProgressIndicator(
-            color = MaterialTheme.colorScheme.primary,
+            color = IhsanTheme.colors.accentContent,
             modifier = Modifier.size(40.dp)
         )
         if (!message.isNullOrBlank()) {
@@ -60,7 +60,7 @@ fun IhsanInlineLoading(
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
-            color = MaterialTheme.colorScheme.primary,
+            color = IhsanTheme.colors.accentContent,
             modifier = Modifier.size(32.dp)
         )
     }

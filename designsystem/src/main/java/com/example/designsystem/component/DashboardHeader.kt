@@ -80,6 +80,21 @@ fun DashboardHeader(
             modifier = Modifier.matchParentSize()
         )
 
+        if (IhsanTheme.isDark) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                IhsanTheme.colors.surfaceBase.copy(alpha = .20f),
+                                IhsanTheme.colors.surfaceBase.copy(alpha = .82f)
+                            )
+                        )
+                    )
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -315,7 +330,7 @@ fun PrayerTimeCard(
             Icon(
                 imageVector = prayerIconForNameFixed(name),
                 contentDescription = null,
-                tint = if (isActive) Color(0xFFFFC400) else Color(0xFFFFC400).copy(alpha = 0.7f),
+                tint = if (isActive) (if (IhsanTheme.isDark) IhsanTheme.colors.goldAccent else Color(0xFFFFC400)) else (if (IhsanTheme.isDark) IhsanTheme.colors.goldAccent else Color(0xFFFFC400)).copy(alpha = 0.7f),
                 modifier = Modifier.size(22.dp)
             )
             Text(

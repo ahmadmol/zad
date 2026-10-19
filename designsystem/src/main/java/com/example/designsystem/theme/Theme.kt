@@ -13,6 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,25 +31,31 @@ private val DarkColorScheme = darkColorScheme(
     primary = DarkInteractivePrimary,
     onPrimary = OnDarkInteractivePrimary,
     primaryContainer = DarkInteractivePrimaryContainer,
-    onPrimaryContainer = DarkInteractivePrimary,
-    secondary = DarkInteractivePrimary.copy(alpha = 0.85f),
-    onSecondary = OnDarkInteractivePrimary,
-    secondaryContainer = DarkSurfaceMuted,
+    onPrimaryContainer = DarkHeading,
+    secondary = DarkAccentMint,
+    onSecondary = DarkBackground,
+    secondaryContainer = DarkInteractivePrimaryContainer,
     onSecondaryContainer = DarkOnSurface,
     tertiary = DarkSurfaceWarm,
     onTertiary = DarkOnSurface,
     tertiaryContainer = DarkSurfaceElevated,
     onTertiaryContainer = DarkOnSurface,
     background = DarkBackground,
-    onBackground = DarkOnSurface,
+    onBackground = DarkHeading,
     surface = DarkSurface,
+    surfaceDim = DarkBackground,
+    surfaceBright = DarkSurfaceMuted,
+    surfaceTint = Color.Transparent,
+    inverseSurface = DarkOnSurface,
+    inverseOnSurface = DarkBackground,
+    inversePrimary = PrimaryTeal,
     onSurface = DarkOnSurface,
     surfaceVariant = DarkSurfaceMuted,
     onSurfaceVariant = DarkOnSurfaceVariant,
     outline = DarkOutline,
     outlineVariant = DarkOutlineVariant,
-    error = ErrorRed,
-    onError = OnErrorWhite,
+    error = DarkError,
+    onError = DarkBackground,
     errorContainer = ErrorContainerDark,
     onErrorContainer = OnErrorContainerDark,
     scrim = DarkScrim,
@@ -54,7 +63,7 @@ private val DarkColorScheme = darkColorScheme(
     surfaceContainerLow = DarkSurface,
     surfaceContainer = DarkSurfaceElevated,
     surfaceContainerHigh = DarkSurfaceMuted,
-    surfaceContainerHighest = DarkOutlineVariant
+    surfaceContainerHighest = DarkSurfaceMuted
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -118,6 +127,22 @@ object IhsanTheme {
 
 private val LocalIhsanDarkTheme = compositionLocalOf { false }
 
+/** Ghost actions need readable foregrounds independently of the emerald filled-button role. */
+@Composable
+fun ihsanOutlinedButtonColors() = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
+    contentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary,
+    disabledContentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textDisabled else MaterialTheme.colorScheme.onSurface.copy(alpha = .38f)
+)
+
+@Composable
+fun ihsanTextButtonColors() = androidx.compose.material3.ButtonDefaults.textButtonColors(
+    contentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary,
+    disabledContentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textDisabled else MaterialTheme.colorScheme.onSurface.copy(alpha = .38f)
+)
+
+// One window owner prevents the global theme and image headers from competing.
+internal val LocalIhsanHeroCoverage = compositionLocalOf<MutableState<Boolean>?> { null }
+
 private val IhsanShapes = Shapes(
     extraSmall = RoundedCornerShape(6.dp),
     small = RoundedCornerShape(10.dp),
@@ -133,7 +158,7 @@ fun IhsanTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        dynamicColor && !darkTheme && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
@@ -143,6 +168,8 @@ fun IhsanTheme(
     val semanticColors = if (darkTheme) DarkIhsanSemanticColors else LightIhsanSemanticColors
 
     val view = LocalView.current
+    val heroCoverage = remember { mutableStateOf(false) }
+    val lightStatusBarIcons = !darkTheme // Light skyline headers use dark foreground; dark headers use light foreground.
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as? Activity)?.window ?: return@SideEffect
@@ -152,7 +179,7 @@ fun IhsanTheme(
             window.navigationBarColor = systemSurface.toArgb()
             WindowCompat.setDecorFitsSystemWindows(window, false)
             val controller = WindowCompat.getInsetsController(window, view)
-            controller.isAppearanceLightStatusBars = !darkTheme
+            controller.isAppearanceLightStatusBars = lightStatusBarIcons
             controller.isAppearanceLightNavigationBars = !darkTheme
         }
     }
@@ -162,7 +189,8 @@ fun IhsanTheme(
         LocalIhsanColors provides semanticColors,
         LocalIhsanDimens provides IhsanDimens(),
         LocalReadingTypography provides ReadingTypography(),
-        LocalIhsanDarkTheme provides darkTheme
+        LocalIhsanDarkTheme provides darkTheme,
+        LocalIhsanHeroCoverage provides heroCoverage
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

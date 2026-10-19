@@ -6,6 +6,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -36,17 +38,21 @@ fun QiblaCompass(
     modifier: Modifier = Modifier,
     isAligned: Boolean = false
 ) {
-    val isDark = isSystemInDarkTheme()
-    val activeTeal = if (isAligned) Color(0xFF10B981) else (if (isDark) IhsanTheme.colors.selectedContent else Color(0xFF0F766E))
-    val alignGlow = if (isAligned) Color(0x3310B981) else (if (isDark) Color(0x267DD3B0) else Color(0x1A0F766E))
+    val isDark = IhsanTheme.isDark
+    val mandalaColor = if (isDark) IhsanTheme.colors.textBody.copy(alpha = .14f) else Color(0x22003B46)
+    val activeTeal = if (isDark) IhsanTheme.colors.accentContent else if (isAligned) Color(0xFF10B981) else Color(0xFF0F766E)
+    val alignGlow = if (isDark) IhsanTheme.colors.selectedContainer.copy(alpha = .20f) else if (isAligned) Color(0x3310B981) else Color(0x1A0F766E)
     val dialBg = if (isDark) IhsanTheme.colors.surfaceElevated else Color.White
     val dialBorder = if (isDark) IhsanTheme.colors.borderSubtle else Color(0xFFE2E8F0)
-    val rosetteColor = if (isDark) Color(0xFF2A2B2F) else Color(0xFFF1F5F9)
+    val rosetteColor = if (isDark) IhsanTheme.colors.surfaceMuted else Color(0xFFF1F5F9)
     val cardinalTextColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF0F172A)
-    val goldAccent = IhsanTheme.colors.goldAccent
+
+    val majorTick = if (isDark) IhsanTheme.colors.textSecondary else Color(0xFF64748B)
+    val minorTick = if (isDark) IhsanTheme.colors.textDisabled else Color(0xFFCBD5E1)
+    val kiswaGold = if (isDark) IhsanTheme.colors.goldAccent else Color(0xFFD4AF37)
 
     Box(
-        modifier = modifier.size(290.dp),
+        modifier = modifier.aspectRatio(1f),
         contentAlignment = Alignment.Center
     ) {
         // Outer glowing ring
@@ -62,7 +68,7 @@ fun QiblaCompass(
         Box(
             modifier = Modifier
                 .fillMaxSize(0.92f)
-                .shadow(12.dp, CircleShape, spotColor = Color(0x20000000))
+                .shadow(2.dp, CircleShape, spotColor = Color(0x20000000))
                 .clip(CircleShape)
                 .background(dialBg)
                 .border(2.dp, dialBorder, CircleShape)
@@ -100,7 +106,7 @@ fun QiblaCompass(
                     val tickLength = if (isCardinal) 12.dp.toPx() else if (isMajor) 8.dp.toPx() else 4.dp.toPx()
                     val tickWidth = if (isCardinal) 2.dp.toPx() else if (isMajor) 1.5.dp.toPx() else 1.dp.toPx()
                     val tickColor = if (isDark) {
-                        if (isCardinal) Color(0xFFE9EAEC) else if (isMajor) Color(0xFFA8ABB1) else Color(0xFF414449)
+                        if (isCardinal) cardinalTextColor else if (isMajor) majorTick else minorTick
                     } else {
                         if (isCardinal) Color(0xFF334155) else if (isMajor) Color(0xFF64748B) else Color(0xFFCBD5E1)
                     }
@@ -148,7 +154,20 @@ fun QiblaCompass(
                 }
             }
 
-            // 2. Center 3D Isometric Kaaba Graphic
+            // 2. Background Geometric Rosette Mandala
+            val mandalaRadius = radius * 0.45f
+            for (step in 0 until 12) {
+                rotate(degrees = step * 30f, pivot = center) {
+                    drawOval(
+                        color = mandalaColor,
+                        topLeft = Offset(cx - mandalaRadius * 0.35f, cy - mandalaRadius),
+                        size = Size(mandalaRadius * 0.7f, mandalaRadius * 2f),
+                        style = Stroke(width = 1.dp.toPx())
+                    )
+                }
+            }
+
+            // 3. Center 3D Isometric Kaaba Graphic
             val kSize = 18.dp.toPx()
             // Top face (Diamond)
             val topPath = Path().apply {
@@ -181,7 +200,7 @@ fun QiblaCompass(
             drawPath(rightPath, Color(0xFF0F1012))
 
             // Gold Kiswa Band across front faces
-            val goldColor = Color(0xFFD4AF37)
+            val goldColor = kiswaGold
             val bandLeft = Path().apply {
                 moveTo(cx - kSize * 0.7f, cy - kSize * 0.2f)
                 lineTo(cx, cy + kSize * 0.2f)

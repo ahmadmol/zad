@@ -63,7 +63,7 @@ fun LastReadCard(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.MenuBook,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = IhsanTheme.colors.accentContent,
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
@@ -83,7 +83,7 @@ fun LastReadCard(
                         Text(
                             text = "الآية $ayahNumber",
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.primary
+                            color = IhsanTheme.colors.accentContent
                         )
                     }
                 }

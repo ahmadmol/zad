@@ -1,6 +1,7 @@
 package com.example.designsystem.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -44,6 +45,10 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,6 +59,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -88,8 +94,8 @@ import com.example.designsystem.theme.IhsanTheme
 private val FormCornerLarge: Dp = 20.dp
 private val FormCornerMedium: Dp = 16.dp
 private val FormCornerSmall: Dp = 12.dp
-private val FormFieldMinHeight: Dp = 56.dp
-private val FormCardPadding: Dp = 20.dp
+private val FormFieldMinHeight: Dp = 44.dp
+private val FormCardPadding: Dp = 12.dp
 
 /**
  * Section card — the calm "container" that groups related fields.
@@ -181,19 +187,19 @@ fun EhsanFieldLabel(
         Text(
             text = text,
             style = LocalTextStyle.current.copy(
-                fontSize = 12.sp,
+                fontSize = 13.sp,
                 lineHeight = 16.sp,
                 letterSpacing = 0.5.sp,
                 fontWeight = FontWeight.Medium
             ),
-            color = IhsanTheme.colors.textSecondary
+            color = IhsanTheme.colors.textPrimary
         )
         if (required) {
             Spacer(Modifier.width(4.dp))
             Text(
                 text = "•",
-                color = IhsanTheme.colors.brand,
-                style = LocalTextStyle.current.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                color = IhsanTheme.colors.accentContent,
+                style = LocalTextStyle.current.copy(fontSize = 13.sp, fontWeight = FontWeight.Bold)
             )
         }
     }
@@ -228,61 +234,33 @@ fun EhsanTextField(
 ) {
     val colors = IhsanTheme.colors
     val isError = errorText != null
+    val focused = remember { mutableStateOf(false) }
 
     Column(modifier = modifier.fillMaxWidth()) {
         EhsanFieldLabel(text = label)
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(4.dp))
 
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .defaultMinSize(minHeight = FormFieldMinHeight),
-            placeholder = {
-                if (!placeholder.isNullOrBlank()) {
-                    Text(
-                        text = placeholder,
-                        color = colors.textSecondary,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+        BasicTextField(value = value, onValueChange = onValueChange,
+            modifier = Modifier.fillMaxWidth().onFocusChanged { focused.value = it.isFocused }, singleLine = singleLine, minLines = minLines, maxLines = maxLines,
+            readOnly = readOnly, enabled = enabled,
+            cursorBrush = SolidColor(if (IhsanTheme.isDark) colors.accentContent else colors.fieldFocusedBorder),
+            textStyle = MaterialTheme.typography.bodyMedium.copy(color = colors.textBody),
+            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
+            decorationBox = { field ->
+                Row(Modifier.fillMaxWidth().heightIn(min = if (singleLine) 40.dp else 70.dp)
+                    .background(if (IhsanTheme.isDark) colors.fieldContainer else colors.surfaceElevated, RoundedCornerShape(10.dp))
+                    .border(1.dp, if (isError) MaterialTheme.colorScheme.error else if (IhsanTheme.isDark && focused.value) colors.fieldFocusedBorder else colors.fieldBorder, RoundedCornerShape(10.dp))
+                    .padding(horizontal = 12.dp, vertical = 9.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Box(Modifier.weight(1f)) {
+                        if (value.isEmpty() && !placeholder.isNullOrBlank()) Text(placeholder,
+                            color = colors.textSecondary, style = MaterialTheme.typography.bodySmall)
+                        field()
+                    }
+                    if (leadingIcon != null) Icon(leadingIcon, null, tint = colors.textSecondary,
+                        modifier = Modifier.padding(start = 8.dp).size(18.dp))
                 }
-            },
-            leadingIcon = if (leadingIcon != null) {
-                {
-                    Icon(
-                        imageVector = leadingIcon,
-                        contentDescription = null,
-                        tint = colors.textSecondary,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            } else null,
-            shape = RoundedCornerShape(FormCornerMedium),
-            singleLine = singleLine,
-            minLines = minLines,
-            maxLines = maxLines,
-            readOnly = readOnly,
-            enabled = enabled,
-            isError = isError,
-            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                keyboardType = keyboardType,
-                imeAction = imeAction
-            ),
-            textStyle = MaterialTheme.typography.bodyLarge,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = if (isError) MaterialTheme.colorScheme.error else colors.fieldFocusedBorder,
-                unfocusedBorderColor = if (isError) MaterialTheme.colorScheme.error else colors.fieldBorder,
-                disabledBorderColor = colors.borderSubtle,
-                focusedContainerColor = colors.fieldContainer,
-                unfocusedContainerColor = colors.fieldContainer,
-                disabledContainerColor = colors.surfaceMuted,
-                focusedTextColor = colors.textPrimary,
-                unfocusedTextColor = colors.textPrimary,
-                disabledTextColor = colors.textDisabled
-            )
-        )
+            })
 
         if (isError) {
             Spacer(Modifier.height(6.dp))
@@ -360,7 +338,7 @@ fun EhsanSelectorField(
                     text = display,
                     modifier = Modifier.weight(1f),
                     color = if (value.isBlank()) colors.textSecondary else colors.textPrimary,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -413,7 +391,7 @@ fun EhsanSegmentedToggle(
             Surface(
                 onClick = { onSelect(option.key) },
                 shape = RoundedCornerShape(10.dp),
-                color = if (isSelected) colors.surfaceElevated else Color.Transparent,
+                color = if (isSelected) colors.selectedContainer else Color.Transparent,
                 border = if (isSelected) BorderStroke(1.dp, colors.borderSubtle) else null,
                 modifier = Modifier.weight(1f)
             ) {
@@ -429,7 +407,7 @@ fun EhsanSegmentedToggle(
                         Icon(
                             imageVector = option.icon,
                             contentDescription = null,
-                            tint = if (isSelected) colors.brand else colors.textSecondary,
+                            tint = if (isSelected) colors.accentContent else colors.textSecondary,
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(Modifier.width(8.dp))
@@ -492,14 +470,14 @@ fun EhsanChoiceChipRow(
                         Icon(
                             imageVector = option.icon,
                             contentDescription = null,
-                            tint = if (isSelected) colors.brand else colors.textSecondary,
+                            tint = if (isSelected) colors.accentContent else colors.textSecondary,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(Modifier.width(6.dp))
                     }
                     Text(
                         text = option.label,
-                        color = if (isSelected) colors.brand else colors.textPrimary,
+                        color = if (isSelected && !IhsanTheme.isDark) colors.brand else colors.textPrimary,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
                         maxLines = 1,
@@ -571,7 +549,7 @@ fun EhsanImagePicker(
                         Icon(
                             imageVector = Icons.Default.AddAPhoto,
                             contentDescription = null,
-                            tint = colors.brand,
+                            tint = if (IhsanTheme.isDark) colors.textSecondary else colors.brand,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -652,7 +630,7 @@ fun EhsanPrimaryAction(
         color = if (enabled) colors.brand else colors.surfaceMuted,
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(44.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
@@ -757,150 +735,13 @@ fun EhsanHeroHeader(
     logoPainter: Painter? = null,
     onSearchClick: (() -> Unit)? = null
 ) {
-    val isDark = IhsanTheme.isDark
-    val colors = IhsanTheme.colors
-    val heroContent = colors.onBrand
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(bottomStart = 36.dp, bottomEnd = 36.dp))
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.bg_home),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            alignment = Alignment.Center,
-            modifier = Modifier.matchParentSize()
-        )
-
-        if (isDark) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(Color.Black.copy(alpha = 0.55f))
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(horizontal = 16.dp)
-                .padding(top = 4.dp, bottom = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Top Navigation Row (RTL: First child = Right, Third child = Left)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Right: Location & Islamic Date Info (First child in RTL = Visual Right)
-                Column(horizontalAlignment = Alignment.Start) {
-                    if (!cityName.isNullOrBlank()) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(2.dp)
-                        ) {
-                            Text(
-                                text = cityName,
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = heroContent
-                            )
-                            Icon(
-                                imageVector = Icons.Default.LocationOn,
-                                contentDescription = null,
-                                tint = heroContent,
-                                modifier = Modifier.size(15.dp)
-                            )
-                        }
-                    }
-                    if (!islamicDate.isNullOrBlank()) {
-                        Text(
-                            text = islamicDate,
-                            fontSize = 10.sp,
-                            color = heroContent.copy(alpha = 0.85f)
-                        )
-                    }
-                }
-
-                // Center: Logo / Title badge
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    if (logoPainter != null) {
-                        Image(
-                            painter = logoPainter,
-                            contentDescription = "إحسان",
-                            modifier = Modifier.height(34.dp),
-                            contentScale = ContentScale.Fit,
-                            colorFilter = ColorFilter.tint(heroContent)
-                        )
-                    } else {
-                        Text(
-                            text = "إحسان",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = heroContent
-                        )
-                    }
-                    Text(
-                        text = "خير دائم",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = heroContent.copy(alpha = 0.9f)
-                    )
-                }
-
-                // Left: Back button & optional Search (Third child in RTL = Visual Left)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(
-                        onClick = onBackClick,
-                        modifier = Modifier.size(40.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "رجوع",
-                            tint = heroContent
-                        )
-                    }
-                    if (onSearchClick != null) {
-                        IconButton(
-                            onClick = onSearchClick,
-                            modifier = Modifier.size(40.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "بحث",
-                                tint = heroContent
-                            )
-                        }
-                    }
-                }
+    IhsanSkylineHeader(title = title, subtitle = subtitle, location = cityName,
+        hijriDate = islamicDate, showBrand = true, onBack = onBackClick, modifier = modifier,
+        actions = {
+            if (onSearchClick != null) IconButton(onSearchClick, Modifier.size(40.dp)) {
+                Icon(Icons.Default.Search, "بحث", modifier = Modifier.size(20.dp))
             }
-
-            Spacer(Modifier.height(14.dp))
-
-            // Main Hero Title
-            Text(
-                text = title,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = heroContent,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(Modifier.height(4.dp))
-
-            // Subtitle
-            Text(
-                text = subtitle,
-                fontSize = 13.sp,
-                color = heroContent.copy(alpha = 0.88f),
-                textAlign = TextAlign.Center
-            )
-        }
-    }
+        })
 }
 
 /**
@@ -919,90 +760,18 @@ fun EhsanStepIndicator(
     modifier: Modifier = Modifier
 ) {
     val colors = IhsanTheme.colors
-
-    Surface(
-        shape = RoundedCornerShape(FormCornerLarge),
-        color = colors.surfaceElevated,
-        border = BorderStroke(1.dp, colors.borderSubtle),
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            steps.forEachIndexed { index, step ->
-                val isActive = currentStep == step.stepNumber
-                val isCompleted = currentStep > step.stepNumber
-                val isAccessible = step.stepNumber <= currentStep
-
-                // Step Circle + Title Item
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clickable(enabled = isAccessible) {
-                        onStepClick(step.stepNumber)
-                    }
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(
-                                when {
-                                    isActive || isCompleted -> colors.brand
-                                    else -> colors.surfaceMuted
-                                }
-                            )
-                            .border(
-                                width = 1.dp,
-                                color = when {
-                                    isActive || isCompleted -> colors.brand
-                                    else -> colors.borderSubtle
-                                },
-                                shape = CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (isCompleted) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null,
-                                tint = colors.onBrand,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        } else {
-                            Text(
-                                text = "${step.stepNumber}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isActive) colors.onBrand else colors.textSecondary
-                            )
+    androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr) {
+        Box(modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+            Box(Modifier.fillMaxWidth().padding(horizontal = 48.dp).padding(top = 17.dp).height(2.dp).background(colors.borderSubtle))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+                steps.forEach { step ->
+                    val active = step.stepNumber <= currentStep
+                    Column(Modifier.weight(1f).clickable(enabled = active) { onStepClick(step.stepNumber) }, horizontalAlignment = Alignment.CenterHorizontally) {
+                        Box(Modifier.size(36.dp).background(if (active) colors.brand else colors.surfaceMuted, CircleShape), contentAlignment = Alignment.Center) {
+                            Text(step.stepNumber.toString(), color = if (active) colors.onBrand else colors.textSecondary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                         }
+                        Text(step.title, fontSize = 12.sp, lineHeight = 18.sp, color = if (active) colors.textPrimary else colors.textSecondary, modifier = Modifier.padding(top = 4.dp))
                     }
-
-                    Spacer(Modifier.height(6.dp))
-
-                    Text(
-                        text = step.title,
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = if (isActive || isCompleted) FontWeight.Bold else FontWeight.Medium,
-                        color = if (isActive || isCompleted) colors.brand else colors.textSecondary
-                    )
-                }
-
-                // Connecting Line between steps
-                if (index < steps.size - 1) {
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(2.dp)
-                            .padding(horizontal = 8.dp)
-                            .background(
-                                if (currentStep > step.stepNumber) colors.brand else colors.borderSubtle
-                            )
-                    )
                 }
             }
         }
@@ -1038,7 +807,7 @@ fun EhsanCategoryGrid(
             Surface(
                 onClick = { onSelect(category.key) },
                 shape = RoundedCornerShape(FormCornerMedium),
-                color = if (isSelected) colors.brand else colors.fieldContainer,
+                color = if (isSelected) colors.selectedContainer else colors.fieldContainer,
                 border = BorderStroke(
                     width = 1.dp,
                     color = if (isSelected) colors.brand else colors.fieldBorder
@@ -1078,7 +847,7 @@ fun EhsanCategoryGrid(
                         Icon(
                             imageVector = category.icon,
                             contentDescription = null,
-                            tint = if (isSelected) colors.onBrand else colors.brand,
+                            tint = if (isSelected) colors.onBrand else if (IhsanTheme.isDark) colors.textSecondary else colors.brand,
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(Modifier.height(6.dp))
@@ -1123,7 +892,7 @@ fun EhsanContactMethodSelector(
             Surface(
                 onClick = { onSelect(key) },
                 shape = RoundedCornerShape(FormCornerMedium),
-                color = if (isSelected) colors.charityOfferContainer else colors.fieldContainer,
+                color = if (isSelected && IhsanTheme.isDark) colors.selectedContainer else if (isSelected) colors.charityOfferContainer else colors.fieldContainer,
                 border = BorderStroke(
                     width = 1.dp,
                     color = if (isSelected) colors.brand else colors.fieldBorder
@@ -1142,7 +911,7 @@ fun EhsanContactMethodSelector(
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
-                        tint = if (isSelected) colors.brand else colors.textSecondary,
+                        tint = if (isSelected) colors.accentContent else colors.textSecondary,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(Modifier.width(8.dp))
@@ -1150,7 +919,7 @@ fun EhsanContactMethodSelector(
                         text = label,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                        color = if (isSelected) colors.brand else colors.textPrimary
+                        color = if (isSelected && !IhsanTheme.isDark) colors.brand else colors.textPrimary
                     )
                     Spacer(Modifier.width(8.dp))
                     // Radio Circle
@@ -1160,7 +929,7 @@ fun EhsanContactMethodSelector(
                             .clip(CircleShape)
                             .border(
                                 1.5.dp,
-                                if (isSelected) colors.brand else colors.textSecondary.copy(alpha = 0.5f),
+                                if (isSelected) colors.accentContent else colors.textSecondary.copy(alpha = 0.5f),
                                 CircleShape
                             ),
                         contentAlignment = Alignment.Center
@@ -1213,9 +982,9 @@ fun EhsanReviewSummaryCard(
 /* Re-export commonly-used spacer values so screens can keep
  * their gap rhythm consistent without re-declaring them. */
 object EhsanFormSpacing {
-    val SectionGap: Dp = 24.dp
+    val SectionGap: Dp = 12.dp
     val CardGap: Dp = 16.dp
-    val FieldGap: Dp = 16.dp
+    val FieldGap: Dp = 10.dp
     val InlineGap: Dp = 8.dp
 }
 
