@@ -52,22 +52,11 @@ class HomeDestinationCatalogTest {
         assertTrue(HomeDestinationCatalog.serviceRoutes.isNotEmpty())
     }
 
-    /**
-     * Phase 8 — Notifications Ownership.
-     *
-     * The general "reminders" surface duplicates prayer/azkar controls and
-     * must not be exposed on Home. The route itself still exists in the nav
-     * graph as implementation debt, but the Home surface must not link to it.
-     */
     @Test
-    fun `reminders is not a home destination in any group`() {
-        assertFalse(
-            "reminders must not appear in primaryRoutes",
-            HomeDestinationCatalog.primaryRoutes.contains("reminders")
-        )
-        assertFalse(
-            "reminders must not appear in serviceRoutes",
-            HomeDestinationCatalog.serviceRoutes.contains("reminders")
-        )
+    fun `home previews exactly six and the full catalog preserves reminder access`() {
+        assertEquals(listOf("quran", "azkar", "qibla", "dua", "calendar", "asma"), HomeDestinationCatalog.primaryRoutes)
+        assertFalse(HomeDestinationCatalog.primaryRoutes.contains("reminders"))
+        assertTrue(HomeDestinationCatalog.serviceRoutes.contains("reminders"))
+        assertTrue(HomeDestinationCatalog.serviceRoutes.containsAll(listOf("goals", "support", "visit")))
     }
 }

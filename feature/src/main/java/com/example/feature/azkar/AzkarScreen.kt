@@ -160,7 +160,7 @@ fun AzkarScreen(
                                 contentDescription = stringResource(
                                     if (uiState.showFavoritesOnly) R.string.azkar_show_all else R.string.azkar_show_favorites
                                 ),
-                                tint = if (uiState.showFavoritesOnly) IhsanTheme.colors.favorite else IhsanTheme.colors.onBrand
+                                tint = if (uiState.showFavoritesOnly) IhsanTheme.colors.favorite else IhsanTheme.colors.accentContent
                             )
                         }
                     }
@@ -249,7 +249,7 @@ private fun AzkarHero(
 ) {
     val colors = IhsanTheme.colors
     val isDark = colors.surfaceBase.luminance() < 0.18f
-    val heroText = if (isDark) colors.textPrimary else Color(0xFF073E46)
+    val heroText = if (isDark) colors.textPrimary else com.example.designsystem.theme.IhsanTheme.colors.accentContent
 
     Box(
         modifier = Modifier

@@ -55,6 +55,8 @@ fun EditProfileScreen(
     val context = LocalContext.current
     val imageStore: EhsanImageStore = koinInject()
     var isCityDropdownExpanded by remember { mutableStateOf(false) }
+    var showAvatarPreview by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
+    var confirmRemoveAvatar by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -77,7 +79,7 @@ fun EditProfileScreen(
 
     val colors = IhsanTheme.colors
     val isDark = IhsanTheme.isDark
-    val darkTealColor = if (isDark) colors.textPrimary else Color(0xFF003B46)
+    val darkTealColor = if (isDark) colors.textPrimary else colors.accentContent
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
@@ -176,7 +178,13 @@ fun EditProfileScreen(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Field 1: الاسم الكامل
+                    if (!uiState.avatarUrl.isNullOrBlank()) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        TextButton({ showAvatarPreview = true }, enabled = !uiState.isLoading) { Text("معاينة الصورة") }
+                        TextButton({ confirmRemoveAvatar = true }, enabled = !uiState.isLoading && uiState.dataReady) { Text("حذف الصورة") }
+                    }
+                }
+                // Field 1: الاسم الكامل
                     OutlinedTextField(
                         value = uiState.name,
                         onValueChange = viewModel::onNameChange,
@@ -358,4 +366,13 @@ fun EditProfileScreen(
             }
         }
     }
+    if (showAvatarPreview) AlertDialog(onDismissRequest = { showAvatarPreview = false },
+        title = { Text("صورة ملفك المحلي") }, text = {
+            AsyncImage(resolvedAvatarModel, "معاينة الصورة", Modifier.fillMaxWidth().aspectRatio(1f), contentScale = ContentScale.Fit)
+        }, confirmButton = { TextButton({ showAvatarPreview = false }) { Text("إغلاق") } })
+    if (confirmRemoveAvatar) AlertDialog(onDismissRequest = { confirmRemoveAvatar = false },
+        title = { Text("حذف صورة الملف؟") }, text = { Text("تُزال الصورة من ملفك عند حفظ التغييرات. لا تتأثر بقية بياناتك.") },
+        confirmButton = { TextButton({ viewModel.removeAvatar(); confirmRemoveAvatar = false }) { Text("حذف الصورة") } },
+        dismissButton = { TextButton({ confirmRemoveAvatar = false }) { Text("إلغاء") } })
+
 }

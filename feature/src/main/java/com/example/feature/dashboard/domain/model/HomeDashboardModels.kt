@@ -24,7 +24,9 @@ data class HomePrayerSummary(
     val progress: Float,
     val locationLabel: String,
     val prayers: List<HomePrayerItem>,
-    val isLocationUnavailable: Boolean
+    val isLocationUnavailable: Boolean,
+    val nextPrayerTimeLabel: String = "",
+    val nextPrayerEpochMillis: Long? = null
 )
 
 data class HomePrayerItem(

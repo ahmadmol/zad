@@ -95,7 +95,7 @@ private val FormCornerLarge: Dp = 20.dp
 private val FormCornerMedium: Dp = 16.dp
 private val FormCornerSmall: Dp = 12.dp
 private val FormFieldMinHeight: Dp = 48.dp
-private val FormCardPadding: Dp = 12.dp
+private val FormCardPadding: Dp = 20.dp
 
 /**
  * Section card — the calm "container" that groups related fields.
@@ -189,7 +189,7 @@ fun EhsanFieldLabel(
             style = LocalTextStyle.current.copy(
                 fontSize = 13.sp,
                 lineHeight = 16.sp,
-                letterSpacing = 0.5.sp,
+                letterSpacing = 0.sp,
                 fontWeight = FontWeight.Medium
             ),
             color = IhsanTheme.colors.textPrimary
@@ -248,7 +248,7 @@ fun EhsanTextField(
             textStyle = MaterialTheme.typography.bodyMedium.copy(color = colors.textBody),
             keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
             decorationBox = { field ->
-                Row(Modifier.fillMaxWidth().heightIn(min = if (singleLine) 40.dp else 70.dp)
+                Row(Modifier.fillMaxWidth().heightIn(min = if (singleLine) 56.dp else 96.dp)
                     .background(if (IhsanTheme.isDark) colors.fieldContainer else colors.surfaceElevated, RoundedCornerShape(10.dp))
                     .border(1.dp, if (isError) MaterialTheme.colorScheme.error else if (IhsanTheme.isDark && focused.value) colors.fieldFocusedBorder else colors.fieldBorder, RoundedCornerShape(10.dp))
                     .padding(horizontal = 12.dp, vertical = 9.dp), verticalAlignment = Alignment.CenterVertically) {

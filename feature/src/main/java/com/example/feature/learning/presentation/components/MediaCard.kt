@@ -32,16 +32,16 @@ fun MediaCard(title: String, subtitle: String, image: String?, badge: String?,
     showFavorite: Boolean = true, trailing: (@Composable () -> Unit)? = null) {
     var imageReady by remember(image) { mutableStateOf(false) }
     Card(modifier.fillMaxWidth().clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = if (selected) IhsanTheme.colors.selectedContainer else MaterialTheme.colorScheme.surface),
         border = BorderStroke(0.8.dp, IhsanTheme.colors.borderSubtle),
-        elevation = CardDefaults.cardElevation(1.dp)) {
-        Row(Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(88.dp, 72.dp).clip(RoundedCornerShape(12.dp))
+        elevation = CardDefaults.cardElevation(0.dp)) {
+        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(100.dp, 84.dp).clip(RoundedCornerShape(12.dp))
                 .background(if (selected) IhsanTheme.colors.selectedContainer else IhsanTheme.colors.surfaceMuted)) {
                 if (!imageReady) Icon(Icons.AutoMirrored.Filled.MenuBook, null,
                     Modifier.align(Alignment.Center).size(28.dp), tint = if (selected) IhsanTheme.colors.selectedContent else IhsanTheme.colors.accentContent)
-                AsyncImage(image, null, Modifier.fillMaxSize(), contentScale = ContentScale.Fit,
+                AsyncImage(image, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop,
                     onSuccess = { imageReady = true }, onError = { imageReady = false })
                 badge?.takeIf { it.isNotBlank() }?.let {
                     Surface(Modifier.align(Alignment.BottomStart).padding(3.dp),
@@ -55,7 +55,7 @@ fun MediaCard(title: String, subtitle: String, image: String?, badge: String?,
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
                 Text(title, fontSize = 14.sp, lineHeight = 20.sp, fontWeight = FontWeight.Bold,
                     maxLines = 3, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                    color = if (selected) IhsanTheme.colors.selectedContent else IhsanTheme.colors.accentContent)
+                    color = if (selected) IhsanTheme.colors.selectedContent else IhsanTheme.colors.textPrimary)
                 if (subtitle.isNotBlank()) Text(subtitle, fontSize = 12.sp, lineHeight = 17.sp,
                     maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                     color = if (selected) IhsanTheme.colors.selectedContent else IhsanTheme.colors.textSecondary)

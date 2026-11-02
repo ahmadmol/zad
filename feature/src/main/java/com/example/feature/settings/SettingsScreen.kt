@@ -63,7 +63,9 @@ import com.example.feature.settings.presentation.SettingsUiState
 fun SettingsScreen(
     uiState: SettingsUiState,
     onAction: (SettingsAction) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onSupport: () -> Unit = {},
+    onPrayerSettings: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val backCd = stringResource(R.string.cd_back)
@@ -92,8 +94,8 @@ fun SettingsScreen(
         }
     }
 
-    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
-    val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else Color(0xFF1B535D)
+    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else IhsanTheme.colors.accentContent
+    val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else IhsanTheme.colors.textSecondary
 
     Column(
         modifier = Modifier
@@ -137,6 +139,7 @@ fun SettingsScreen(
                     // --- SECTION 1: المظهر ---
                     SettingsSection(title = stringResource(R.string.settings_section_appearance)) {
                         CardGroup {
+                            PaletteRow(uiState.palette) { onAction(SettingsAction.SetPalette(it)) }
                             ThemeModeRow(
                                 selected = uiState.themeMode,
                                 onSelected = { onAction(SettingsAction.SetThemeMode(it)) }
@@ -257,6 +260,27 @@ fun SettingsScreen(
                                 }
                             )
                         }
+                    }
+
+                    SettingsSection(title = "اللغة") {
+                        CardGroup { Text("العربية • لغة الواجهة الحالية", Modifier.padding(20.dp), style = MaterialTheme.typography.bodyLarge) }
+                    }
+                    SettingsSection(title = "الصلاة والموقع") {
+                        CardGroup {
+                            SettingsClickableRow(Icons.Default.AccessTime, "إعدادات الصلاة", "طريقة الحساب والتنبيهات والمدينة", onPrayerSettings)
+                        }
+                    }
+                    SettingsSection(title = "الخصوصية والبيانات المحلية") {
+                        CardGroup {
+                            Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Text("سجلاتك وملفك على هذا الجهاز", style = MaterialTheme.typography.titleMedium)
+                                Text("لا توجد مزامنة أو خدمة نشر عام حاليًا. تستعمل الوسائط والخرائط مزوّدات خارجية عند فتحها. يمكن تصدير ملاحظات القراءة التي تختارها من رحلتك مع القرآن.",
+                                    style = MaterialTheme.typography.bodyMedium, color = IhsanTheme.colors.textSecondary)
+                            }
+                        }
+                    }
+                    SettingsSection(title = "الدعم وحول التطبيق") {
+                        CardGroup { SettingsClickableRow(Icons.Default.Share, "الدعم والمساعدة", "دليل الاستخدام والأسئلة الشائعة وحول إحسان", onSupport) }
                     }
 
                     // --- SECTION 3: عام ---
@@ -477,5 +501,27 @@ private fun SettingsSwitchRow(
             checked = checked,
             onCheckedChange = null
         )
+    }
+}
+
+@Composable
+private fun PaletteRow(selected: com.example.designsystem.theme.IhsanPalette,
+    onSelected: (com.example.designsystem.theme.IhsanPalette) -> Unit) {
+    Column(Modifier.fillMaxWidth().selectableGroup().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text("هوية الألوان", style = MaterialTheme.typography.titleMedium)
+        com.example.designsystem.theme.IhsanPalette.entries.forEach { palette ->
+            Surface(Modifier.fillMaxWidth().selectable(selected == palette, role = Role.RadioButton, onClick = { onSelected(palette) }),
+                shape = MaterialTheme.shapes.medium, color = if (selected == palette) IhsanTheme.colors.surfaceMuted else IhsanTheme.colors.surfaceElevated,
+                border = BorderStroke(1.dp, if (selected == palette) IhsanTheme.colors.accentContent else IhsanTheme.colors.borderSubtle)) {
+                Row(Modifier.padding(12.dp).heightIn(min = 48.dp), verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Box(Modifier.size(32.dp).background(palette.accent, CircleShape))
+                    Box(Modifier.size(18.dp).background(palette.gold, CircleShape))
+                    Text(palette.title, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                    RadioButton(selected == palette, onClick = null)
+                }
+            }
+        }
+        Text("كل هوية تدعم الفاتح والداكن ومظهر النظام", style = MaterialTheme.typography.bodySmall, color = IhsanTheme.colors.textSecondary)
     }
 }

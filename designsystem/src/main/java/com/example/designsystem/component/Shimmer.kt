@@ -23,6 +23,7 @@ fun Modifier.shimmerEffect(): Modifier = composed {
         mutableStateOf(IntSize.Zero)
     }
     val baseColor = MaterialTheme.colorScheme.surfaceVariant
+    if (!com.example.designsystem.theme.rememberIhsanMotionEnabled()) return@composed background(baseColor)
     val highlightColor = lerp(
         baseColor,
         MaterialTheme.colorScheme.onSurface,

@@ -6,6 +6,7 @@ data class SettingsUiState(
     val fontSize: Float = 24f,
     val isDarkMode: Boolean = false,
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
+    val palette: com.example.designsystem.theme.IhsanPalette = com.example.designsystem.theme.IhsanPalette.EMERALD,
     val isVibrationEnabled: Boolean = true,
     val adhanSoundUri: String? = null,
     val locationCity: String = "حلب",
@@ -16,6 +17,7 @@ data class SettingsUiState(
 )
 
 sealed interface SettingsAction {
+    data class SetPalette(val palette: com.example.designsystem.theme.IhsanPalette) : SettingsAction
     data object Retry : SettingsAction
     data class SetFontSize(val size: Float) : SettingsAction
     data class SetDarkMode(val enabled: Boolean) : SettingsAction

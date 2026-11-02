@@ -12,6 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.example.designsystem.theme.IhsanTheme
 
+/** Semantic name for the existing canonical filled button. */
+@Composable
+fun IhsanPrimaryButton(onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true,
+    content: @Composable RowScope.() -> Unit) = IhsanButton(onClick, modifier, enabled = enabled, content = content)
+
 @Composable
 fun IhsanButton(
     onClick: () -> Unit,

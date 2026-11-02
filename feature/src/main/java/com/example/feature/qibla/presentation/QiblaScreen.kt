@@ -33,6 +33,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Sensors
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.CircularProgressIndicator
@@ -111,8 +112,8 @@ fun QiblaScreen(
     }
 
     val isDark = IhsanTheme.isDark
-    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
-    val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else Color(0xFF1B535D)
+    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else IhsanTheme.colors.accentContent
+    val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else IhsanTheme.colors.textSecondary
     val cardBg = if (isDark) IhsanTheme.colors.surfaceElevated else Color(0xFFEDF6F7)
     val cardBorder = if (isDark) IhsanTheme.colors.borderSubtle else Color(0xFFD4EBE9)
 
@@ -125,146 +126,20 @@ fun QiblaScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            // 1. Hero Mosque Header with Title "القبلة" & Pills
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 150.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ihsan_home_hero_background),
-                    contentDescription = null,
-                    modifier = Modifier.matchParentSize(),
-                    contentScale = ContentScale.Crop
-                )
-                com.example.designsystem.component.IhsanHeroScrim(Modifier.matchParentSize())
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .statusBarsPadding()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Header Bar (Back button on start, "القبلة" Title centered)
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.CenterStart)
-                                .size(48.dp)
-                                .clip(CircleShape)
-                                .background(IhsanTheme.colors.surfaceElevated.copy(alpha = .9f))
-                                .clickable(onClick = onNavigateBack),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.cd_back),
-                                tint = darkTealColor,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-
-                        Text(
-                            text = "القبلة",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = darkTealColor
-                        )
+            com.example.designsystem.component.IhsanTopBar("اتجاه القبلة", onNavigateBack = onNavigateBack,
+                subtitle = "تحقق من الموقع ثم حرّك الهاتف بهدوء", actions = {
+                    IconButton(onClick = {
+                        val allowed = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        if (allowed) viewModel.updateLocationAndCalculateQibla()
+                        else locationPermissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION))
+                    }, enabled = !uiState.isLoading) {
+                        Icon(Icons.Default.Refresh, "تحديث الموقع والقبلة", tint = IhsanTheme.colors.accentContent)
                     }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    // Location Pill
-                    Surface(
-                        shape = CircleShape,
-                        color = IhsanTheme.colors.surfaceElevated.copy(alpha = .92f),
-                        shadowElevation = 2.dp,
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .clickable {
-                                val coarseAllowed = ContextCompat.checkSelfPermission(
-                                    context,
-                                    Manifest.permission.ACCESS_COARSE_LOCATION
-                                ) == PackageManager.PERMISSION_GRANTED
-                                val fineAllowed = ContextCompat.checkSelfPermission(
-                                    context,
-                                    Manifest.permission.ACCESS_FINE_LOCATION
-                                ) == PackageManager.PERMISSION_GRANTED
-                                if (coarseAllowed || fineAllowed) {
-                                    viewModel.updateLocationAndCalculateQibla()
-                                } else {
-                                    locationPermissionLauncher.launch(
-                                        arrayOf(
-                                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                                            Manifest.permission.ACCESS_FINE_LOCATION
-                                        )
-                                    )
-                                }
-                            }
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ihsan_icon_location),
-                                contentDescription = null,
-                                modifier = Modifier.size(14.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = uiState.locationName.ifBlank { stringResource(R.string.default_city) },
-                                fontSize = 13.5.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = darkTealColor
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = null,
-                                tint = darkTealSubtext,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    // Refresh Status Pill
-                    Surface(
-                        shape = CircleShape,
-                        color = IhsanTheme.colors.surfaceElevated.copy(alpha = .85f),
-                        shadowElevation = 1.dp
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(7.dp)
-                                    .clip(CircleShape)
-                                    .background(if (uiState.error != null) MaterialTheme.colorScheme.error else IhsanTheme.colors.success)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = if (uiState.isLoading) "جاري التحديث..."
-                                else if (uiState.error != null) "خطأ في التحديث"
-                                else uiState.cityAndCountry.ifBlank { "تم التحديث الآن" },
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = darkTealSubtext
-                            )
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
+                })
+            Text(uiState.cityAndCountry.ifBlank { "الموقع غير متاح" },
+                Modifier.padding(horizontal = 24.dp, vertical = 12.dp), style = MaterialTheme.typography.bodyMedium,
+                color = IhsanTheme.colors.textSecondary)
 
             // 2. Large Compass Dial
             Box(
@@ -276,7 +151,7 @@ fun QiblaScreen(
                         modifier = Modifier.fillMaxWidth(.86f).aspectRatio(1f),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator(color = IhsanTheme.colors.selectedContent)
+                        CircularProgressIndicator(color = IhsanTheme.colors.accentContent)
                     }
                 } else if (uiState.error != null && !uiState.hasCalculatedBearing) {
                     Box(

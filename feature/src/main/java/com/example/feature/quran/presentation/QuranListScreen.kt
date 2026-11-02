@@ -148,7 +148,7 @@ fun QuranListScreen(
                             contentPadding = PaddingValues(16.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            items(state.searchResults) { verse ->
+                            items(state.searchResults, key = { "${it.surahId}:${it.verseNumber}" }) { verse ->
                                 val surahName = state.surahs.find { it.id == verse.surahId }?.name ?: ""
                                 IhsanActionCard(
                                     title = "$surahName - آية ${verse.verseNumber}",
@@ -167,6 +167,15 @@ fun QuranListScreen(
                             contentPadding = PaddingValues(16.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
+                            item(key = "reading_introduction") {
+                                com.example.designsystem.component.IhsanGlassCard(Modifier.fillMaxWidth()) {
+                                    com.example.designsystem.component.IhsanIllustration(com.example.designsystem.component.IhsanScene.QURAN,
+                                        Modifier.fillMaxWidth().height(120.dp))
+                                    Text("رحلتك مع القرآن", style = MaterialTheme.typography.headlineSmall)
+                                    Text("موضعك محفوظ، وخطوتك القادمة باختيارك", style = MaterialTheme.typography.bodyMedium,
+                                        color = IhsanTheme.colors.textSecondary)
+                                }
+                            }
                             item {
                                 IhsanActionCard(title = "خطة القراءة وملاحظاتي الخاصة",
                                     subtitle = "تأكيد يدوي لإتمام الصفحات • ملاحظات وتصدير اختياري",
@@ -192,7 +201,7 @@ fun QuranListScreen(
                                 }
                             }
 
-                            items(state.surahs) { surah ->
+                            items(state.surahs, key = { it.id }) { surah ->
                                 val readingProgress = state.surahReadingProgress[surah.id]
                                 val lastAyah = state.lastRead
                                     ?.takeIf { it.first.id == surah.id }

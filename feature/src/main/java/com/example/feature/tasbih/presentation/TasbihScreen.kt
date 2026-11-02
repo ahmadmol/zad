@@ -106,8 +106,10 @@ import kotlin.math.cos
 import kotlin.math.sin
 import org.koin.androidx.compose.koinViewModel
 
-private val DarkTeal = Color(0xFF073E46)
-private val AccentMint = Color(0xFF388E8E)
+private val DarkTeal: Color
+    @Composable get() = IhsanTheme.colors.accentContent
+private val AccentMint: Color
+    @Composable get() = IhsanTheme.colors.accentContent
 private val OffWhiteSurface = Color(0xFFFAFAF7)
 
 @Composable
@@ -132,35 +134,6 @@ fun TasbihScreen(
             color = bgSurface
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                // Background Scenic Mosque Header Image
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ihsan_home_hero_background),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        alignment = Alignment.TopCenter,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    // Gradient overlay to smoothly blend background
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(
-                                        (if (isDark) IhsanTheme.colors.surfaceBase else Color.Black).copy(alpha = if (isDark) 0.20f else 0.12f),
-                                        bgSurface.copy(alpha = 0.70f),
-                                        bgSurface
-                                    )
-                                )
-                            )
-                    )
-                }
-
                 // Main Scrollable Screen Column
                 Column(
                     modifier = Modifier

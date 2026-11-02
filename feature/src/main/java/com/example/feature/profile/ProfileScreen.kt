@@ -84,6 +84,7 @@ fun ProfileScreen(
     onEditProfileClick: () -> Unit = {},
     onNavigateToDonationHistory: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
+    onNavigateToSupport: () -> Unit = {},
     onNavigateToPrayer: () -> Unit = {},
     onNavigateToReminders: () -> Unit = {},
     onNavigateToQuran: () -> Unit = {},
@@ -333,6 +334,8 @@ fun ProfileScreen(
                                 thickness = 0.5.dp,
                                 color = IhsanTheme.colors.divider
                             )
+                            ProfileSettingRow(title = "الدعم والمساعدة", subtitle = "دليل الاستخدام والتواصل وحول التطبيق",
+                                icon = Icons.Default.Info, onClick = onNavigateToSupport)
                             ProfileSettingRow(
                                 title = aboutAppText,
                                 subtitle = aboutAppSubtitleText,

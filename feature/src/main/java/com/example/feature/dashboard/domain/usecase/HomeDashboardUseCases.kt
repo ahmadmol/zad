@@ -100,7 +100,9 @@ class ObserveHomePrayerSummaryUseCase(
                     progress = next?.let { NextPrayerSelector.progressFraction(it, now) } ?: 0f,
                     locationLabel = locationLabel,
                     prayers = prayers,
-                    isLocationUnavailable = location is PrayerLocationState.Unavailable
+                    isLocationUnavailable = location is PrayerLocationState.Unavailable,
+                    nextPrayerEpochMillis = next?.epochMillis,
+                    nextPrayerTimeLabel = next?.let { com.example.feature.dashboard.presentation.ArabicClockFormatter.format(Date(it.epochMillis)) }.orEmpty()
                 )
             )
         }.catch { emit(HomeSectionState.Error(canRetry = true)) }

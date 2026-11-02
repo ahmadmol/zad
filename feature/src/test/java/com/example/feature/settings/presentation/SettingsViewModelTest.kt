@@ -32,6 +32,7 @@ class SettingsViewModelTest {
     private val fontSize = MutableStateFlow(24f)
     private val darkMode = MutableStateFlow(false)
     private val themeMode = MutableStateFlow(SettingsManager.ThemeMode.LIGHT)
+    private val palette = MutableStateFlow(com.example.designsystem.theme.IhsanPalette.EMERALD)
     private val vibration = MutableStateFlow(true)
     private val adhanSound = MutableStateFlow<String?>(null)
     private val dispatcher = UnconfinedTestDispatcher()
@@ -48,6 +49,8 @@ class SettingsViewModelTest {
         every { settingsManager.fontSizeFlow } returns fontSize
         every { settingsManager.darkModeFlow } returns darkMode
         every { settingsManager.themeModeFlow } returns themeMode
+        every { settingsManager.paletteFlow } returns palette
+        coEvery { settingsManager.setPalette(any()) } coAnswers { palette.value = firstArg() }
         every { settingsManager.vibrationEnabledFlow } returns vibration
         every { userPreferences.adhanSoundUri } returns adhanSound
         coEvery { settingsManager.setFontSize(any()) } coAnswers {
@@ -89,6 +92,14 @@ class SettingsViewModelTest {
         assertEquals(24f, state.fontSize, 0.01f)
         assertFalse(state.isDarkMode)
         assertTrue(state.isVibrationEnabled)
+    }
+
+    @Test fun `palette changes independently of persisted appearance mode`() = runTest {
+        viewModel.onAction(SettingsAction.SetPalette(com.example.designsystem.theme.IhsanPalette.SAND))
+        advanceUntilIdle()
+        assertEquals(com.example.designsystem.theme.IhsanPalette.SAND, viewModel.uiState.value.palette)
+        assertEquals(SettingsManager.ThemeMode.LIGHT, viewModel.uiState.value.themeMode)
+        coVerify(exactly = 0) { settingsManager.setThemeMode(any()) }
     }
 
     @Test

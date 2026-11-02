@@ -4,6 +4,10 @@ import kotlinx.coroutines.flow.first
 import androidx.compose.ui.platform.LocalDensity
 import com.example.designsystem.theme.IhsanTheme
 import androidx.compose.ui.res.stringResource
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.WindowInsets
@@ -20,6 +24,7 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -38,16 +43,20 @@ import com.example.mol.navigation.Screen
 import com.example.mol.navigation.resolveBottomBarDestination
 
 @Composable
-fun MainScreen(widgetRequest: com.example.mol.widget.WidgetOpenRequest? = null, onWidgetConsumed: () -> Unit = {}) {
+fun MainScreen(widgetRequest: com.example.mol.widget.WidgetOpenRequest? = null, onWidgetConsumed: () -> Unit = {}, onStartupResolved: () -> Unit = {}) {
     val preferences: com.example.feature.core.preferences.UserPreferences = org.koin.compose.koinInject()
     val quran: com.example.feature.quran.domain.repository.QuranRepository = org.koin.compose.koinInject()
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    androidx.compose.runtime.LaunchedEffect(currentRoute) {
+        if (com.example.mol.navigation.isStartupResolvedRoute(currentRoute)) onStartupResolved()
+    }
+
     androidx.compose.runtime.LaunchedEffect(widgetRequest?.sequence, currentRoute) {
         val request = widgetRequest ?: return@LaunchedEffect
-        if (currentRoute == null || currentRoute == Screen.Splash.route || currentRoute == Screen.Onboarding.route) return@LaunchedEffect
+        if (currentRoute == null || currentRoute == Screen.Splash.route || currentRoute == Screen.Onboarding.route || currentRoute == Screen.LocationPermission.route) return@LaunchedEffect
         val route = if (request.action == com.example.mol.widget.WIDGET_OPEN_PRAYER) Screen.Prayer.route else {
             try {
                 val position = preferences.lastReadPosition.first()
@@ -78,16 +87,8 @@ fun MainScreen(widgetRequest: com.example.mol.widget.WidgetOpenRequest? = null, 
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
             bottomBar = {
                 if (showBottomBar) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .navigationBarsPadding()
-                            .padding(
-                                start = 8.dp,
-                                end = 8.dp,
-                                bottom = if (WindowInsets.navigationBars.getBottom(LocalDensity.current) == 0) 16.dp else 4.dp
-                            )
-                    ) {
+                    Surface(color = IhsanTheme.colors.navigationSurface) {
+                        Box(Modifier.fillMaxWidth().navigationBarsPadding()) {
                         IhsanBottomNavigation(
                             destinations = mainItems.map {
                                 IhsanBottomNavDestination(
@@ -100,7 +101,7 @@ fun MainScreen(widgetRequest: com.example.mol.widget.WidgetOpenRequest? = null, 
                             onDestinationSelected = { index ->
                                 val item = mainItems.getOrNull(index) ?: return@IhsanBottomNavigation
                                 navController.navigate(item.screen.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
+                                    popUpTo(Screen.Home.route) {
                                         saveState = true
                                     }
                                     launchSingleTop = true
@@ -111,15 +112,20 @@ fun MainScreen(widgetRequest: com.example.mol.widget.WidgetOpenRequest? = null, 
                                 .fillMaxWidth()
                                 .heightIn(min = IhsanTheme.dimens.bottomNavigationMinHeight * LocalDensity.current.fontScale.coerceAtLeast(1f))
                         )
+                        }
                     }
                 }
             },
             containerColor = MaterialTheme.colorScheme.background
         ) { innerPadding ->
+            Box {
             AppNavHost(
                 navController = navController,
+                onStartupResolved = onStartupResolved,
                 modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
             )
+            Spacer(Modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(IhsanTheme.colors.surfaceBase))
+            }
         }
     }
 }

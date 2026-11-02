@@ -38,10 +38,11 @@ class SettingsViewModel(
     private val writeFailure = MutableStateFlow<String?>(null)
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<SettingsUiState> = reload.flatMapLatest { combine(
-        primaryFlow, secondaryFlow, writeFailure
-    ) { primary, secondary, error ->
+        primaryFlow, secondaryFlow, writeFailure, settingsManager.paletteFlow
+    ) { primary, secondary, error, palette ->
         SettingsUiState(
             fontSize = primary.fontSize,
+            palette = palette,
             isDarkMode = primary.themeMode == com.example.feature.azkar.data.local.SettingsManager.ThemeMode.DARK,
             themeMode = primary.themeMode,
             isVibrationEnabled = primary.isVibrationEnabled,
@@ -70,6 +71,7 @@ class SettingsViewModel(
     }
     fun onAction(action: SettingsAction) {
         when (action) {
+            is SettingsAction.SetPalette -> change { settingsManager.setPalette(action.palette) }
             SettingsAction.Retry -> { writeFailure.value = null; reload.value++ }
             is SettingsAction.SetFontSize -> change {
                 settingsManager.setFontSize(action.size)

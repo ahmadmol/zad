@@ -19,6 +19,7 @@ import com.example.feature.dashboard.presentation.GlobalLearningSearchViewModel
 import com.example.feature.quran.presentation.ReadingJourneyViewModel
 
 val viewModelModule = module {
+    viewModel { com.example.feature.goals.DailyGoalsViewModel(get()) }
     viewModel { com.example.feature.splashScreen.StartupViewModel(get()) }
     viewModel { com.example.feature.fasting.presentation.FastingViewModel(get(), get()) }
     viewModel { com.example.feature.ramadan.RamadanViewModel(get(), get(), get(), get()) }

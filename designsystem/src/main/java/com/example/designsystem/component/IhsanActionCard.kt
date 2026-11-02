@@ -1,5 +1,6 @@
 package com.example.designsystem.component
 
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -70,18 +71,10 @@ fun IhsanActionCard(
             }
 
             Spacer(Modifier.width(12.dp))
-            Surface(
-                modifier = Modifier.size(40.dp),
-                shape = RoundedCornerShape(12.dp),
-                color = IhsanTheme.colors.selectedContainer
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = IhsanTheme.colors.selectedContent,
-                    modifier = Modifier.padding(10.dp)
-                )
-            }
+            IhsanIconContainer(icon)
+            Spacer(Modifier.width(8.dp))
+            Icon(androidx.compose.material.icons.Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
+                null, tint = IhsanTheme.colors.accentContent, modifier = Modifier.size(20.dp))
         }
     }
 }

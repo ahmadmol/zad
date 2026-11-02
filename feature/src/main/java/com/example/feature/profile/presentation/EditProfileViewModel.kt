@@ -94,6 +94,13 @@ class EditProfileViewModel(
         }
     }
 
+    fun removeAvatar() {
+        if (_uiState.value.isLoading || !_uiState.value.dataReady) return
+        // An empty saved draft distinguishes removal from an untouched/null draft after recreation.
+        savedStateHandle[KEY_AVATAR] = ""
+        _uiState.value = _uiState.value.copy(avatarUrl = null, errorMessage = null)
+    }
+
     fun onAvatarSelected(uri: Uri) {
         if (_uiState.value.isLoading || !_uiState.value.dataReady) return
         _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)

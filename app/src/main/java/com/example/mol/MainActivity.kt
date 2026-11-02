@@ -19,6 +19,8 @@ import com.example.mol.ui.MainScreen
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
+    private var startupResolved = false
+    private var routeResolved by androidx.compose.runtime.mutableStateOf(false)
     private var widgetRequest by androidx.compose.runtime.mutableStateOf<com.example.mol.widget.WidgetOpenRequest?>(null)
     private fun readWidgetIntent(intent: Intent?) {
         val action = intent?.action
@@ -29,23 +31,41 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        if (android.os.Build.VERSION.SDK_INT >= 31) {
+            val content = findViewById<android.view.View>(android.R.id.content)
+            content.viewTreeObserver.addOnPreDrawListener(object : android.view.ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    if (!startupResolved) return false
+                    content.viewTreeObserver.removeOnPreDrawListener(this)
+                    return true
+                }
+            })
+            splashScreen.setOnExitAnimationListener { splash ->
+                if (android.animation.ValueAnimator.areAnimatorsEnabled()) {
+                    splash.animate().alpha(0f).setDuration(160L).withEndAction { splash.remove() }.start()
+                } else splash.remove()
+            }
+        }
         maybeTriggerDebugAdhanTest(intent)
         readWidgetIntent(intent)
         setContent {
             val settingsViewModel: SettingsViewModel = koinViewModel()
             val settingsState by settingsViewModel.uiState.collectAsStateWithLifecycle()
+            androidx.compose.runtime.LaunchedEffect(routeResolved, settingsState.isLoading) {
+                if (routeResolved && !settingsState.isLoading) startupResolved = true
+            }
 
             val useDarkTheme = when (settingsState.themeMode) {
                 com.example.feature.azkar.data.local.SettingsManager.ThemeMode.SYSTEM -> isSystemInDarkTheme()
                 com.example.feature.azkar.data.local.SettingsManager.ThemeMode.LIGHT -> false
                 com.example.feature.azkar.data.local.SettingsManager.ThemeMode.DARK -> true
             }
-            IhsanTheme(darkTheme = useDarkTheme) {
+            IhsanTheme(darkTheme = useDarkTheme, palette = settingsState.palette) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(widgetRequest = widgetRequest, onWidgetConsumed = { widgetRequest = null; intent.action = Intent.ACTION_MAIN })
+                    MainScreen(onStartupResolved = { routeResolved = true }, widgetRequest = widgetRequest, onWidgetConsumed = { widgetRequest = null; intent.action = Intent.ACTION_MAIN })
                 }
             }
         }

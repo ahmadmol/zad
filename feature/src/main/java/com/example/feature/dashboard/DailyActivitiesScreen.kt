@@ -425,7 +425,7 @@ private fun EducationalJourneyCard(onNavigateToCourse: (String) -> Unit) {
     val colors = IhsanTheme.colors
     val isDark = IhsanTheme.isDark
     val primaryTeal = if (isDark) colors.selectedContent else Color(0xFF007A6E)
-    val darkButtonTeal = if (isDark) colors.selectedContainer else Color(0xFF073E46)
+    val darkButtonTeal = if (isDark) colors.selectedContainer else com.example.designsystem.theme.IhsanTheme.colors.accentContent
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -644,7 +644,7 @@ private fun HadithQuoteCard() {
                     text = "” وَمَا تَقَرَّبَ إِلَيَّ عَبْدِي بِشَيْءٍ أَحَبَّ إِلَيَّ مِمَّا افْتَرَضْتُ عَلَيْهِ “",
                     style = MaterialTheme.typography.titleMedium.copy(fontSize = 15.sp),
                     fontWeight = FontWeight.Bold,
-                    color = if (isDark) colors.textPrimary else Color(0xFF073E46),
+                    color = if (isDark) colors.textPrimary else com.example.designsystem.theme.IhsanTheme.colors.accentContent,
                     textAlign = TextAlign.Center,
                     lineHeight = 22.sp
                 )

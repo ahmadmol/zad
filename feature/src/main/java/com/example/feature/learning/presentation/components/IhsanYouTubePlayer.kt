@@ -78,6 +78,7 @@ fun IhsanYouTubePlayer(
 ) {
     var isPlayerActive by remember(videoId) { mutableStateOf(false) }
     var playerLoadFailed by remember(videoId) { mutableStateOf(false) }
+    var failureReason by remember(videoId) { mutableStateOf<String?>(null) }
 
     Box(
         modifier = modifier
@@ -118,10 +119,10 @@ fun IhsanYouTubePlayer(
             ) {
                 PlayerMessage(
                     icon = { Icon(Icons.Default.SmartDisplay, null, tint = Color.White, modifier = Modifier.size(38.dp)) },
-                    message = "تعذر تشغيل الفيديو داخل التطبيق",
+                    message = failureReason ?: "تعذر تشغيل الفيديو داخل التطبيق",
                     actionLabel = "المشاهدة على YouTube",
                     onAction = onOpenExternal,
-                    onRetry = { playerLoadFailed = false; isPlayerActive = true }
+                    onRetry = { failureReason = null; playerLoadFailed = false; isPlayerActive = true }
                 )
             }
 
@@ -147,10 +148,11 @@ fun IhsanYouTubePlayer(
                 }
             }
 
-            else -> EmbeddedYouTubeWebView(
+            else -> IhsanEmbeddedYouTubePlayer(
                 videoId = videoId,
                 startSeconds = startSeconds,
-                onPlayerLoadError = { playerLoadFailed = true }
+                onPlayerLoadError = { playerLoadFailed = true },
+                onFailureReason = { failureReason = it }
             )
         }
     }
@@ -234,26 +236,35 @@ private fun PlayerMessage(
 }
 
 @Composable
-private fun EmbeddedYouTubeWebView(
+internal fun IhsanEmbeddedYouTubePlayer(
     videoId: String,
     startSeconds: Int,
-    onPlayerLoadError: () -> Unit
+    onPlayerLoadError: () -> Unit,
+    embedHtmlOverride: String? = null,
+    onLoadingChanged: (Boolean) -> Unit = {},
+    onIsPlayingChanged: (Boolean) -> Unit = {},
+    onFailureReason: (String) -> Unit = {}
 ) {
     var webView by remember(videoId) { mutableStateOf<WebView?>(null) }
     var isVideoLoading by remember(videoId) { mutableStateOf(true) }
     var isActuallyPlaying by remember(videoId) { mutableStateOf(false) }
     var hasPlaybackStarted by remember(videoId) { mutableStateOf(false) }
     val currentOnPlayerLoadError by rememberUpdatedState(onPlayerLoadError)
+    val currentLoadingChanged by rememberUpdatedState(onLoadingChanged)
+    val currentPlayingChanged by rememberUpdatedState(onIsPlayingChanged)
+    val currentFailureReason by rememberUpdatedState(onFailureReason)
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = androidx.compose.ui.platform.LocalContext.current
     val fullscreenClient = remember(videoId, context) { VideoWebChromeClient(context) }
     val appReferrer = remember(context.packageName) { "https://${context.packageName.lowercase(java.util.Locale.ROOT)}/" }
     val bridge: YouTubePlaybackBridge = remember(videoId) { YouTubePlaybackBridge(
         onReady = { isVideoLoading = false },
-        onPlaying = { hasPlaybackStarted = true; isActuallyPlaying = true; isVideoLoading = false },
-        onError = { currentOnPlayerLoadError() }, onStopped = { isActuallyPlaying = false }) }
-    val embedHtml = remember(videoId, startSeconds, appReferrer) {
-        buildEmbedHtml(videoId, startSeconds.coerceAtLeast(0), appReferrer.removeSuffix("/"))
+        onPlaying = { hasPlaybackStarted = true; isActuallyPlaying = true; isVideoLoading = false; currentLoadingChanged(false); currentPlayingChanged(true) },
+        onError = { currentPlayingChanged(false); currentOnPlayerLoadError() },
+        onStopped = { isActuallyPlaying = false; currentPlayingChanged(false) },
+        onErrorCode = { currentFailureReason(youtubeFailureMessage(it)) }) }
+    val embedHtml = remember(videoId, startSeconds, appReferrer, embedHtmlOverride) {
+        embedHtmlOverride ?: buildEmbedHtml(videoId, startSeconds.coerceAtLeast(0), appReferrer.removeSuffix("/"))
     }
 
     DisposableEffect(lifecycleOwner, webView) {

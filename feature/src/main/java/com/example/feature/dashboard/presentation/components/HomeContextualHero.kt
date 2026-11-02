@@ -1,87 +1,77 @@
 package com.example.feature.dashboard.presentation.components
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Explore
-import androidx.compose.material.icons.outlined.WbSunny
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDirection
-import com.example.designsystem.component.IhsanHeroScrim
-import com.example.designsystem.component.IhsanHeroTopRow
+import androidx.compose.ui.unit.dp
+import com.example.designsystem.component.*
 import com.example.designsystem.theme.IhsanTheme
-import com.example.feature.R
 
 @Composable
 fun HomeContextualHero(location: String, hijriDate: String, currentPrayerName: String,
     countdownText: String, nextPrayerName: String, nextPrayerTime: String,
-    dailyVerseText: String, dailyVerseSource: String, onNotificationClick: () -> Unit,
-    onSearchClick: () -> Unit, onQiblaClick: () -> Unit, modifier: Modifier = Modifier) {
-    val foreground = IhsanTheme.colors.onBrand
-    Box(modifier.fillMaxWidth().clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))) {
-        Image(painterResource(R.drawable.ihsan_home_hero_background), null,
-            contentScale = ContentScale.Crop, modifier = Modifier.matchParentSize())
-        IhsanHeroScrim(Modifier.matchParentSize())
-        Column(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 16.dp)
-            // The following dashboard surface overlaps the hero by 16dp.
-            .padding(top = 2.dp, bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            IhsanHeroTopRow(location.ifBlank { stringResource(R.string.default_city) }, hijriDate, onSearchClick, onNotificationClick)
-            Box(Modifier.fillMaxWidth()) {
-                Canvas(Modifier.align(Alignment.TopCenter).fillMaxWidth(.60f).height(126.dp)) {
-                    drawArc(foreground.copy(alpha = .8f), 180f, 180f, false,
-                        Offset(0f, 12.dp.toPx()), Size(size.width, (size.height - 12.dp.toPx()) * 2),
-                        style = Stroke(1.dp.toPx()))
-                }
-                Column(Modifier.fillMaxWidth().padding(top = 10.dp), horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Icon(Icons.Outlined.WbSunny, null, tint = IhsanTheme.colors.accentWarm, modifier = Modifier.size(20.dp))
-                        Text(stringResource(R.string.home_hero_next_prayer), style = MaterialTheme.typography.bodySmall, color = foreground)
-                        Text(nextPrayerName.ifBlank { "—" }, fontSize = 30.sp, lineHeight = 38.sp,
-                            fontWeight = FontWeight.Bold, color = foreground, textAlign = TextAlign.Center,
-                            modifier = Modifier.semantics { heading() })
-                        Text(nextPrayerTime.ifBlank { "—" },
-                            style = MaterialTheme.typography.titleLarge.copy(textDirection = TextDirection.Content),
-                            color = foreground, textAlign = TextAlign.Center)
-                        Text(stringResource(R.string.correction_countdown, countdownText.ifBlank { "—" }),
-                            style = MaterialTheme.typography.titleMedium, color = foreground, textAlign = TextAlign.Center)
-                        TextButton(onQiblaClick, contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
-                            colors = ButtonDefaults.textButtonColors(contentColor = foreground),
-                            modifier = Modifier.heightIn(min = 48.dp)) {
-                            Icon(Icons.Outlined.Explore, null, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(4.dp))
-                            Text(stringResource(R.string.home_hero_qibla_btn), style = MaterialTheme.typography.labelMedium)
-                        }
+    @Suppress("UNUSED_PARAMETER") dailyVerseText: String, @Suppress("UNUSED_PARAMETER") dailyVerseSource: String,
+    onNotificationClick: () -> Unit, onSearchClick: () -> Unit,
+    @Suppress("UNUSED_PARAMETER") onQiblaClick: () -> Unit, modifier: Modifier = Modifier,
+    onPrayerClick: () -> Unit = {}, onLocationClick: () -> Unit = {}, userName: String = "") {
+    val colors = IhsanTheme.colors
+    Column(modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 20.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                IhsanTextWithKaabaIcon("إحسان", colors.accentContent, logoHeight = 40.dp)
+                Text(if (userName.isBlank() || userName == "مستخدم إحسان") "أهلًا بك، طاب يومك" else "أهلًا ${userName.substringBefore(' ').take(24)}",
+                    Modifier.padding(top = 6.dp), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
+            }
+            FilledTonalIconButton(onSearchClick, Modifier.size(48.dp), colors = IconButtonDefaults.filledTonalIconButtonColors(
+                containerColor = colors.surfaceElevated, contentColor = colors.textPrimary)) { Icon(Icons.Outlined.Search, "بحث") }
+            Spacer(Modifier.width(8.dp))
+            FilledTonalIconButton(onNotificationClick, Modifier.size(48.dp), colors = IconButtonDefaults.filledTonalIconButtonColors(
+                containerColor = colors.surfaceElevated, contentColor = colors.textPrimary)) { Icon(Icons.Outlined.Notifications, "التذكيرات") }
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(hijriDate, style = MaterialTheme.typography.bodyMedium, color = colors.textPrimary)
+            TextButton(onLocationClick, contentPadding = PaddingValues(0.dp)) {
+                Icon(Icons.Outlined.LocationOn, null, Modifier.size(18.dp), tint = colors.accentContent)
+                Spacer(Modifier.width(4.dp))
+                Text(location.ifBlank { "اختر موقعك" }, style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
+                Icon(Icons.AutoMirrored.Outlined.KeyboardArrowLeft, null, Modifier.size(18.dp), tint = colors.accentContent)
+            }
+        }
+        Surface(onPrayerClick, Modifier.fillMaxWidth(), shape = RoundedCornerShape(28.dp), color = colors.brandElevated) {
+            Box {
+                IhsanIllustration(IhsanScene.AQSA, Modifier.align(Alignment.TopEnd).fillMaxWidth(.68f).height(220.dp))
+                Box(Modifier.matchParentSize().background(Brush.verticalGradient(listOf(Color.Transparent, colors.brandElevated.copy(alpha = .96f)))))
+                Column(Modifier.fillMaxWidth().padding(24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("مساحة للصلاة", style = MaterialTheme.typography.labelLarge, color = Color(0xFFE4C78E))
+                    Text(if (currentPrayerName.isBlank() || currentPrayerName == "—") "في يومك خير" else "وقت $currentPrayerName",
+                        style = MaterialTheme.typography.headlineMedium, color = Color.White)
+                    Spacer(Modifier.height(90.dp))
+                    Text(if (nextPrayerName.isBlank() || nextPrayerName == "—") "جهّز مواقيت يومك" else "الصلاة القادمة • $nextPrayerName",
+                        Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium, color = Color.White)
+                    if (countdownText.isNotBlank()) Text("الوقت المتبقي للصلاة", style = MaterialTheme.typography.labelMedium, color = Color(0xFFE2EBE5))
+                    Text(countdownText.ifBlank { "اختر الموقع لعرض المواقيت" },
+                        style = if (countdownText.isBlank()) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.displaySmall.copy(textDirection = TextDirection.Ltr),
+                        color = Color.White)
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        Text(if (nextPrayerTime.isBlank() || nextPrayerTime == "—") "مواقيت الصلاة والإعدادات" else "موعدها $nextPrayerTime",
+                            Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = Color(0xFFE2EBE5))
+                        Icon(Icons.AutoMirrored.Outlined.KeyboardArrowLeft, null, tint = Color(0xFFE4C78E))
                     }
-                    if (currentPrayerName.isNotBlank() && currentPrayerName != "—")
-                        Text(stringResource(R.string.home_current_prayer_format, currentPrayerName),
-                            style = MaterialTheme.typography.labelMedium, color = foreground, textAlign = TextAlign.Center)
-                    Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(dailyVerseText.ifBlank { stringResource(R.string.daily_verse_default) },
-                            style = MaterialTheme.typography.labelSmall, color = foreground, textAlign = TextAlign.Center)
-                        Text(dailyVerseSource.ifBlank { stringResource(R.string.daily_verse_source_default) },
-                            style = MaterialTheme.typography.labelSmall, color = foreground, textAlign = TextAlign.Center)
-                    }
+                    Text("رسم مستوحى من قبة الصخرة • القدس", style = MaterialTheme.typography.labelSmall, color = Color(0xFFE2EBE5))
                 }
             }
         }

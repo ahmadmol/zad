@@ -7,6 +7,10 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
+    object Services : Screen("services", "كل خدمات إحسان", Icons.Default.GridView)
+    object DailyGoals : Screen("daily_goals", "أهدافي اليومية", Icons.Default.TaskAlt)
+    object Support : Screen("support", "الدعم والمساعدة", Icons.Default.HelpOutline)
+    object HaramainVisit : Screen("haramain_visit", "زيارة الحرمين", Icons.Default.TravelExplore)
     object Splash : Screen(
         route = "splash_screen",
         title = "بداية",

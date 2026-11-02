@@ -94,9 +94,20 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AppNavHost(
     navController: NavHostController = rememberNavController(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onStartupResolved: () -> Unit = {}
 ) {
+    val motion = com.example.designsystem.theme.rememberIhsanMotionEnabled()
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val rtl = androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl
+    val duration = if (motion) com.example.designsystem.theme.IhsanMotion.Standard else 0
     NavHost(
+        enterTransition = { androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(duration)) +
+            androidx.compose.animation.slideInHorizontally(androidx.compose.animation.core.tween(duration)) { if (rtl) -it / 24 else it / 24 } },
+        exitTransition = { androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(duration)) },
+        popEnterTransition = { androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(duration)) },
+        popExitTransition = { androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(duration)) +
+            androidx.compose.animation.slideOutHorizontally(androidx.compose.animation.core.tween(duration)) { if (rtl) -it / 24 else it / 24 } },
         navController = navController,
         startDestination = Screen.Splash.route,
         modifier = modifier
@@ -109,6 +120,7 @@ fun AppNavHost(
             popExitTransition = { androidx.compose.animation.ExitTransition.None }
         ) {
             SplashScreen(
+                onStartupResolved = onStartupResolved,
                 onNavigateToOnboarding = {
                     navController.navigate(Screen.Onboarding.route) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
@@ -125,7 +137,7 @@ fun AppNavHost(
         composable(route = Screen.Onboarding.route) {
             OnboardingScreen(
                 onFinish = {
-                    navController.navigate(Screen.Home.route) {
+                    navController.navigate(Screen.LocationPermission.route) {
                         popUpTo(Screen.Onboarding.route) { inclusive = true }
                     }
                 }
@@ -142,8 +154,30 @@ fun AppNavHost(
             )
         }
 
+        composable(route = Screen.DailyGoals.route) {
+            com.example.feature.goals.DailyGoalsScreen(onBack = { navController.popBackStack() })
+        }
+        composable(route = Screen.Support.route) {
+            com.example.feature.support.SupportScreen(onBack = { navController.popBackStack() })
+        }
+        composable(route = Screen.HaramainVisit.route) {
+            com.example.feature.visit.HaramainVisitScreen(onBack = { navController.popBackStack() })
+        }
+        composable(route = Screen.Services.route) {
+            com.example.feature.dashboard.presentation.components.AllServicesScreen(
+                onBack = { navController.popBackStack() },
+                onServiceClick = { key ->
+                    if (key == "mosques") com.example.feature.core.util.openNearbyMosques(context)
+                    else serviceDestinationRoute(key)?.let { destination ->
+                        navController.navigate(destination) { launchSingleTop = true }
+                    }
+                })
+        }
         composable(route = Screen.Home.route) {
             HomeDashboardScreen(
+                onNavigateToServices = { navController.navigate(Screen.Services.route) { launchSingleTop = true } },
+                onNavigateToGoals = { navController.navigate(Screen.DailyGoals.route) { launchSingleTop = true } },
+                onNavigateToVisit = { navController.navigate(Screen.HaramainVisit.route) { launchSingleTop = true } },
                 onNavigateToQuran = { navController.navigate(Screen.Quran.route) },
                 onNavigateToAzkar = { navController.navigate(Screen.Azkar.route) },
                 onNavigateToHadith = { navController.navigate(Screen.Hadith.route) },
@@ -473,6 +507,8 @@ fun AppNavHost(
             val viewModel: SettingsViewModel = koinViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             SettingsScreen(
+                onSupport = { navController.navigate(Screen.Support.route) },
+                onPrayerSettings = { navController.navigate(Screen.Prayer.route) },
                 uiState = uiState,
                 onAction = viewModel::onAction,
                 onBack = { navController.popBackStack() }
@@ -551,6 +587,7 @@ fun AppNavHost(
 
         composable(route = Screen.Profile.route) {
             ProfileScreen(
+                onNavigateToSupport = { navController.navigate(Screen.Support.route) },
                 onBackClick = { navController.popBackStack() },
                 onEditProfileClick = { navController.navigate(Screen.EditProfile.route) },
                 onNavigateToDonationHistory = { navController.navigate(Screen.DonationHistory.route) },

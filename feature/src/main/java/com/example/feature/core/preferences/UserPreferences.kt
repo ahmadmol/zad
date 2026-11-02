@@ -16,6 +16,21 @@ private val Context.dataStore by preferencesDataStore(name = "user_preferences")
 class UserPreferences internal constructor(private val store: androidx.datastore.core.DataStore<androidx.datastore.preferences.core.Preferences>, private val clock: java.time.Clock?) {
     internal constructor(store: androidx.datastore.core.DataStore<androidx.datastore.preferences.core.Preferences>) : this(store, null)
     constructor(context: Context) : this(context.dataStore, null)
+
+    // Additive versioned key in the existing store. All historical keys and Room 11 stay intact.
+    private val goalLedgerKey = stringPreferencesKey("personal_daily_goals_v1")
+    private val goalJson = kotlinx.serialization.json.Json { ignoreUnknownKeys = true; encodeDefaults = true }
+    val dailyGoalLedger: Flow<com.example.feature.goals.DailyGoalLedger> = store.data.map {
+        it[goalLedgerKey]?.let { raw -> goalJson.decodeFromString<com.example.feature.goals.DailyGoalLedger>(raw) }
+            ?.validated() ?: com.example.feature.goals.DailyGoalLedger()
+    }
+    internal suspend fun updateDailyGoalLedger(transform: (com.example.feature.goals.DailyGoalLedger) -> com.example.feature.goals.DailyGoalLedger) {
+        store.edit { prefs ->
+            val before = prefs[goalLedgerKey]?.let { goalJson.decodeFromString<com.example.feature.goals.DailyGoalLedger>(it) }
+                ?.validated() ?: com.example.feature.goals.DailyGoalLedger()
+            prefs[goalLedgerKey] = goalJson.encodeToString(com.example.feature.goals.DailyGoalLedger.serializer(), transform(before).validated())
+        }
+    }
     val ramadanHighlightEnabled: Flow<Boolean> = store.data.map { it[booleanPreferencesKey("ramadan_highlight_enabled")] ?: false }
     suspend fun setRamadanHighlightEnabled(enabled: Boolean) {
         store.edit { it[booleanPreferencesKey("ramadan_highlight_enabled")] = enabled }

@@ -25,6 +25,7 @@ class Batch05RootRecoveryTest {
  @Test fun `corrupt settings stays an error without reset then explicit retry reopens`()=runTest {
   val settings=mockk<SettingsManager>();val prefs=mockk<UserPreferences>();var failed=true
   every { settings.fontSizeFlow } returns flow { if(failed) throw androidx.datastore.core.CorruptionException("private");emit(26f) }
+  every { settings.paletteFlow } returns flowOf(com.example.designsystem.theme.IhsanPalette.EMERALD)
   every { settings.themeModeFlow } returns flowOf(SettingsManager.ThemeMode.DARK);every { settings.vibrationEnabledFlow } returns flowOf(false)
   every { settings.manualLocationCityFlow } returns flowOf("QA");every { settings.useAutoLocationFlow } returns flowOf(false);every { settings.morningReminderEnabledFlow } returns flowOf(false)
   every { prefs.adhanSoundUri } returns flowOf(null)

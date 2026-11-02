@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Chat
@@ -84,24 +85,16 @@ fun ProfileHeroHeader(
     onNotificationClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val foreground = IhsanTheme.colors.onBrand
-    Box(modifier.fillMaxWidth()) {
-        Image(painterResource(R.drawable.ihsan_home_hero_background), null,
-            contentScale = ContentScale.Crop, alignment = Alignment.TopCenter, modifier = Modifier.matchParentSize())
-        IhsanHeroScrim(Modifier.matchParentSize())
-        Column(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 16.dp).padding(top = 2.dp, bottom = 70.dp),
-            horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            IhsanHeroTopRow(location, hijriDate.orEmpty(), onSearchClick, onNotificationClick)
+    Column(modifier.fillMaxWidth().background(IhsanTheme.colors.surfaceMint).statusBarsPadding()
+        .padding(horizontal = 20.dp).padding(top = 12.dp, bottom = 70.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            com.example.designsystem.component.IhsanTextWithKaabaIcon("إحسان", IhsanTheme.colors.accentContent, logoHeight = 40.dp)
+            Spacer(Modifier.weight(1f))
+            IconButton(onSearchClick, Modifier.size(48.dp)) { Icon(Icons.Default.Search, "بحث", tint = IhsanTheme.colors.textPrimary) }
+            IconButton(onNotificationClick, Modifier.size(48.dp)) { Icon(Icons.Default.Notifications, "التذكيرات", tint = IhsanTheme.colors.textPrimary) }
         }
-        val surfaceColor = IhsanTheme.colors.surfaceBase
-        Canvas(Modifier.fillMaxWidth().height(32.dp).align(Alignment.BottomCenter)) {
-            val path = Path().apply {
-                moveTo(0f, size.height)
-                quadraticTo(size.width / 2, -size.height * 0.35f, size.width, size.height)
-                lineTo(size.width, size.height); lineTo(0f, size.height); close()
-            }
-            drawPath(path, surfaceColor)
-        }
+        Text("مساحتك في إحسان", style = MaterialTheme.typography.headlineLarge, color = IhsanTheme.colors.textPrimary)
+        Text("ملفك وتفضيلاتك على هذا الجهاز", style = MaterialTheme.typography.bodyMedium, color = IhsanTheme.colors.textSecondary)
     }
 }
 

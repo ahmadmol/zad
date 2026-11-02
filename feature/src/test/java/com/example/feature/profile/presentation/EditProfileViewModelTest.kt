@@ -94,4 +94,19 @@ class EditProfileViewModelTest {
         coVerify { userPreferences.setUserBio("نبذة محفوظة") }
         assertEquals("تم حفظ التغييرات بنجاح", viewModel.uiState.value.successMessage)
     }
+    @Test fun `avatar removal is an explicit draft that survives recreation and only persists on save`() = runTest {
+        val saved = SavedStateHandle()
+        val vm = EditProfileViewModel(userRepository, userPreferences, imageStore, saved)
+        testDispatcher.scheduler.advanceUntilIdle()
+        vm.removeAvatar()
+        assertEquals(null, vm.uiState.value.avatarUrl)
+        coVerify(exactly = 0) { userPreferences.setUserAvatarUri(any()) }
+        val reopened = EditProfileViewModel(userRepository, userPreferences, imageStore, saved)
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertEquals("", reopened.uiState.value.avatarUrl)
+        reopened.saveChanges()
+        testDispatcher.scheduler.advanceUntilIdle()
+        coVerify { userPreferences.setUserAvatarUri("") }
+    }
+
 }

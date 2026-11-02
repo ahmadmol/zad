@@ -26,7 +26,8 @@ class BottomNavigationMotionBoundaryTest {
         assertTrue(mainScreen.contains("launchSingleTop = true"))
         assertTrue(mainScreen.contains("saveState = true"))
         assertTrue(mainScreen.contains("restoreState = true"))
-        assertTrue(mainScreen.contains("findStartDestination()"))
+        assertTrue(mainScreen.contains("popUpTo(Screen.Home.route)"))
+        assertFalse(mainScreen.contains("graph.findStartDestination().id"))
     }
 
     @Test

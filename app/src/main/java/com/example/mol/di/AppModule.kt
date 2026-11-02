@@ -19,6 +19,7 @@ import org.koin.dsl.module
 
 val coreModule = module {
     single { UserPreferences(androidContext()) }
+    single { com.example.feature.goals.DailyGoalRepository(get()) }
     single { SettingsManager(androidContext()) }
     single { PrayerNotificationScheduler(androidContext()) }
     single { AzkarReminderCoordinator(androidContext(), get()) }

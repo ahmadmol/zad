@@ -27,7 +27,7 @@ import androidx.core.view.WindowCompat
 
 private val ColorScrimLight = androidx.compose.ui.graphics.Color(0x52000000)
 
-private val DarkColorScheme = darkColorScheme(
+internal val DarkColorScheme = darkColorScheme(
     primary = DarkInteractivePrimary,
     onPrimary = OnDarkInteractivePrimary,
     primaryContainer = DarkInteractivePrimaryContainer,
@@ -66,7 +66,7 @@ private val DarkColorScheme = darkColorScheme(
     surfaceContainerHighest = DarkSurfaceMuted
 )
 
-private val LightColorScheme = lightColorScheme(
+internal val LightColorScheme = lightColorScheme(
     primary = PrimaryTeal,
     onPrimary = OnPrimaryWhite,
     primaryContainer = PrimaryContainerTeal,
@@ -155,6 +155,7 @@ private val IhsanShapes = Shapes(
 fun IhsanTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
+    palette: IhsanPalette = IhsanPalette.EMERALD,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -164,8 +165,8 @@ fun IhsanTheme(
         }
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
-    }
-    val semanticColors = if (darkTheme) DarkIhsanSemanticColors else LightIhsanSemanticColors
+    }.withPalette(palette, darkTheme)
+    val semanticColors = ihsanSemanticColors(palette, darkTheme)
 
     val view = LocalView.current
     val heroCoverage = remember { mutableStateOf(false) }

@@ -182,6 +182,10 @@ class HomePrayerParityTest {
         val summary = (home as HomeSectionState.Content).value
         assertEquals("الفجر", summary.nextPrayerNameAr)
         assertEquals(summary.nextPrayerNameAr, vm.uiState.value.nextPrayerName)
+        val next = facade.nextPrayer.value!!
+        assertEquals(next.epochMillis, summary.nextPrayerEpochMillis)
+        assertEquals(com.example.feature.dashboard.presentation.ArabicClockFormatter.format(java.util.Date(next.epochMillis)), summary.nextPrayerTimeLabel)
+        assertTrue(summary.prayers.none { it.timestamp == summary.nextPrayerEpochMillis })
     }
 
     @Test

@@ -125,8 +125,8 @@ fun LiveStreamScreen(
     var playbackAttempt by remember(activeSource) { mutableStateOf(0) }
     var isFullscreen by remember { mutableStateOf(false) }
 
-    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
-    val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else Color(0xFF1B535D)
+    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else IhsanTheme.colors.accentContent
+    val darkTealSubtext = if (isDark) IhsanTheme.colors.textSecondary else IhsanTheme.colors.textSecondary
     val headerTextColor = if (isDark) MaterialTheme.colorScheme.onBackground else darkTealColor
     val headerSubtextColor = if (isDark) MaterialTheme.colorScheme.onSurfaceVariant else darkTealSubtext
 
@@ -135,7 +135,7 @@ fun LiveStreamScreen(
             Intent.ACTION_VIEW,
             Uri.parse(LiveStreamSources.youtubeChannelLiveUrl(activeSource.youtubeChannelId))
         )
-        runCatching { context.startActivity(intent) }
+        com.example.feature.core.util.openExternalActivity(context, intent)
     }
 
     fun shareLiveStream() {
@@ -185,8 +185,8 @@ fun LiveStreamScreen(
                     isLoading = true
                     playbackMode = LivePlaybackMode.Youtube
                 },
-                onWebError = {
-                    errorMessage = "تعذر تشغيل البث داخل التطبيق. تحقق من الاتصال أو افتح المصدر الرسمي."
+                onWebError = { reason ->
+                    errorMessage = reason ?: "تعذر تشغيل البث داخل التطبيق. تحقق من الاتصال أو افتح المصدر الرسمي."
                     isLoading = false
                     isLivePlaying = false
                 },
@@ -471,7 +471,7 @@ private fun PlayerSurfaceContent(
     onLoadingChanged: (Boolean) -> Unit,
     onIsPlayingChanged: (Boolean) -> Unit,
     onError: () -> Unit,
-    onWebError: () -> Unit,
+    onWebError: (String?) -> Unit,
     onRefresh: () -> Unit,
     onOpenYoutubeApp: () -> Unit
 ) {
@@ -503,7 +503,7 @@ private fun PlayerSurfaceContent(
                         Button(
                             onClick = onRefresh,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (IhsanTheme.isDark) MaterialTheme.colorScheme.primary else Color(0xFF00695C)
+                                containerColor = MaterialTheme.colorScheme.primary
                             ),
                             modifier = Modifier.weight(1f).defaultMinSize(minHeight = 48.dp)
                         ) {
@@ -576,7 +576,7 @@ private fun LiveSourceSegmentedControl(
     modifier: Modifier = Modifier
 ) {
     val isDark = IhsanTheme.isDark
-    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
+    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else IhsanTheme.colors.accentContent
 
     Box(
         modifier = modifier
@@ -670,7 +670,7 @@ private fun ActionCard(
     modifier: Modifier = Modifier
 ) {
     val isDark = com.example.designsystem.theme.IhsanTheme.isDark
-    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else Color(0xFF003B46)
+    val darkTealColor = if (isDark) IhsanTheme.colors.textPrimary else IhsanTheme.colors.accentContent
 
     Card(
         modifier = modifier
@@ -865,131 +865,18 @@ private fun HlsLivePlayer(
     )
 }
 
-@SuppressLint("SetJavaScriptEnabled")
 @Composable
-private fun YoutubeLiveWebView(
-    channelId: String,
-    onLoadingChanged: (Boolean) -> Unit,
-    onIsPlayingChanged: (Boolean) -> Unit,
-    onError: () -> Unit
-) {
-    val embedUrl = remember(channelId) { LiveStreamSources.youtubeEmbedUrl(channelId) }
-    val latestOnLoadingChanged by rememberUpdatedState(onLoadingChanged)
-    val latestOnError by rememberUpdatedState(onError)
-    val latestOnIsPlayingChanged by rememberUpdatedState(onIsPlayingChanged)
-    var hasPlayed by remember(channelId) { mutableStateOf(false) }
-    var isPlaying by remember(channelId) { mutableStateOf(false) }
-    var webViewRef by remember { mutableStateOf<WebView?>(null) }
-    val playerContext = androidx.compose.ui.platform.LocalContext.current
-    val fullscreenClient = remember(playerContext) { VideoWebChromeClient(playerContext) }
-    val bridge: com.example.feature.learning.presentation.components.YouTubePlaybackBridge = remember(channelId) { com.example.feature.learning.presentation.components.YouTubePlaybackBridge(
-        onReady = { /* Readiness is not proof of playback. */ },
-        onPlaying = { hasPlayed = true; isPlaying = true; latestOnLoadingChanged(false); latestOnIsPlayingChanged(true) },
-        onStopped = { isPlaying = false; latestOnIsPlayingChanged(false) },
-        onError = { latestOnIsPlayingChanged(false); latestOnError() }
-    ) }
-
-    androidx.compose.runtime.LaunchedEffect(channelId) {
-        kotlinx.coroutines.delay(25_000)
-        if (!hasPlayed) {
-            android.util.Log.w("IhsanYouTube", "Playback timeout channel=$channelId")
-            latestOnError()
-        }
+private fun YoutubeLiveWebView(channelId: String, onLoadingChanged: (Boolean) -> Unit,
+    onIsPlayingChanged: (Boolean) -> Unit, onError: (String?) -> Unit) {
+    var failureReason by remember(channelId) { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
+    val html = remember(channelId, context.packageName) {
+        val origin = "https://${context.packageName.lowercase(java.util.Locale.ROOT)}"
+        val embed = LiveStreamSources.youtubeEmbedUrl(channelId)
+        """<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><style>html,body{margin:0;width:100%;height:100%;background:black}iframe{width:100%;height:100%;border:0}</style></head><body><iframe id="player" src="$embed&enablejsapi=1&origin=$origin" allow="autoplay; encrypted-media; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><script>var player; function onYouTubeIframeAPIReady(){player=new YT.Player('player',{events:{onReady:function(){IhsanPlayback.ready();},onStateChange:function(e){if(e.data===1)IhsanPlayback.playing();else IhsanPlayback.stopped();},onError:function(e){IhsanPlayback.failed(e.data);}}});}</script><script src="https://www.youtube.com/iframe_api"></script></body></html>"""
     }
-
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner, webViewRef) {
-        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
-            when (event) {
-                androidx.lifecycle.Lifecycle.Event.ON_RESUME -> webViewRef?.onResume()
-                androidx.lifecycle.Lifecycle.Event.ON_PAUSE -> webViewRef?.apply {
-                    fullscreenClient.onHideCustomView()
-                    evaluateJavascript("if(window.player && player.pauseVideo){player.pauseVideo();}", null)
-                    onPause()
-                }
-                else -> Unit
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            bridge.close()
-            webViewRef?.apply {
-                fullscreenClient.onHideCustomView()
-                stopLoading()
-                removeJavascriptInterface("IhsanPlayback")
-                loadUrl("about:blank")
-                clearHistory()
-                removeAllViews()
-                destroy()
-            }
-            webViewRef = null
-        }
-    }
-
-    AndroidView(
-        factory = { ctx ->
-            WebView(ctx).apply {
-                webViewRef = this
-                layoutParams = FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-                setBackgroundColor(AndroidColor.BLACK)
-                settings.javaScriptEnabled = true
-                settings.domStorageEnabled = true
-                settings.allowFileAccess = false
-                settings.allowContentAccess = false
-                settings.mediaPlaybackRequiresUserGesture = false
-                settings.loadsImagesAutomatically = true
-                settings.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
-                settings.cacheMode = WebSettings.LOAD_DEFAULT
-                bridge.installIn(this)
-                webChromeClient = fullscreenClient
-                webViewClient = object : WebViewClient() {
-                    override fun shouldOverrideUrlLoading(view: WebView?,request: WebResourceRequest?): Boolean {
-                        val uri=request?.url ?: return true
-                        if (!request.isForMainFrame) return false
-                        val policy=com.example.feature.learning.presentation.components.YouTubeNavigationPolicy
-                        if (policy.allowsMainFrame(uri.toString())) return false
-                        if (request.hasGesture() && policy.allowsExternal(uri.toString())) {
-                            com.example.feature.core.util.openExternalActivity(playerContext,Intent(Intent.ACTION_VIEW,uri))
-                        }
-                        return true
-                    }
-                    override fun onRenderProcessGone(view: WebView?,detail: android.webkit.RenderProcessGoneDetail?): Boolean {
-                        bridge.close()
-                        fullscreenClient.onHideCustomView()
-                        latestOnIsPlayingChanged(false)
-                        latestOnError()
-                        view?.destroy()
-                        webViewRef=null
-                        return true
-                    }
-                    override fun onPageFinished(view: WebView?, url: String?) {
-                        // The iframe can finish loading while displaying an unavailable video.
-                    }
-
-                    override fun onReceivedError(
-                        view: WebView?,
-                        request: WebResourceRequest?,
-                        error: WebResourceError?
-                    ) {
-                        if (request?.isForMainFrame == true) {
-                            latestOnError()
-                        }
-                    }
-                }
-                val origin = "https://${ctx.packageName.lowercase(java.util.Locale.ROOT)}/"
-                val html = """<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><style>html,body{margin:0;width:100%;height:100%;background:black}iframe{width:100%;height:100%;border:0}</style></head><body><iframe id="player" src="$embedUrl&enablejsapi=1&origin=${origin.removeSuffix("/")}" allow="autoplay; encrypted-media; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><script>var player; function onYouTubeIframeAPIReady(){player=new YT.Player('player',{events:{onReady:function(){IhsanPlayback.ready();},onStateChange:function(e){if(e.data===1)IhsanPlayback.playing();else IhsanPlayback.stopped();},onError:function(e){IhsanPlayback.failed(e.data);}}});}</script><script src="https://www.youtube.com/iframe_api"></script></body></html>"""
-                loadDataWithBaseURL(origin, html, "text/html", "UTF-8", null)
-            }
-        },
-        modifier = Modifier.fillMaxSize().semantics {
-            stateDescription = if (isPlaying) "تشغيل البث مؤكد" else "جارٍ تحميل البث"
-        }
-    )
+    com.example.feature.learning.presentation.components.IhsanEmbeddedYouTubePlayer(
+        videoId = channelId, startSeconds = 0, onPlayerLoadError = { onError(failureReason) },
+        embedHtmlOverride = html, onLoadingChanged = onLoadingChanged, onIsPlayingChanged = onIsPlayingChanged,
+        onFailureReason = { failureReason = it })
 }

@@ -46,6 +46,8 @@ data class HomeDashboardUiState(
                 hijriDate = hijriDate,
                 nextPrayerName = prayerContent?.nextPrayerNameAr.orEmpty(),
                 nextPrayerTimeLeft = prayerContent?.remainingLabel.orEmpty(),
+                nextPrayerTimeLabel = prayerContent?.nextPrayerTimeLabel.orEmpty(),
+                nextPrayerEpochMillis = prayerContent?.nextPrayerEpochMillis,
                 prayerProgress = prayerContent?.progress ?: 0f,
                 allPrayers = prayerContent?.prayers?.map {
                     PrayerTime(
@@ -111,6 +113,8 @@ data class HomeDashboardData(
     val hijriDate: String = "",
     val nextPrayerName: String = "",
     val nextPrayerTimeLeft: String = "",
+    val nextPrayerTimeLabel: String = "",
+    val nextPrayerEpochMillis: Long? = null,
     val prayerProgress: Float = 0f,
     val allPrayers: List<PrayerTime> = emptyList(),
     val dailyVerse: String = "إِنَّمَا الْمُؤْمِنُونَ إِخْوَةٌ فَأَصْلِحُوا بَيْنَ أَخَوَيْكُمْ",

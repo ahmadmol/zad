@@ -145,14 +145,18 @@ private fun buildAnnotatedHeaderString(text: String): Pair<AnnotatedString, Bool
     return Pair(annotated, true)
 }
 
+private val wordmarkCache = mutableMapOf<Boolean, ImageBitmap>()
+
 @Composable
-private fun ihsanWordmarkPainter(color: Color): BitmapPainter {
+private fun ihsanWordmarkPainter(@Suppress("UNUSED_PARAMETER") color: Color): BitmapPainter {
     val context = LocalContext.current
-    val wordmarkColor = color
-    val goldColor = com.example.designsystem.theme.IhsanTheme.colors.goldAccent
+    val wordmarkColor = if (com.example.designsystem.theme.IhsanTheme.isDark) Color(0xFFE9F5EF) else Color(0xFF086B56)
+    val goldColor = Color(0xFFC7A35C)
     val dark = com.example.designsystem.theme.IhsanTheme.isDark
-    val bitmap = remember(context, wordmarkColor, goldColor, dark) {
-        val source = BitmapFactory.decodeResource(context.resources, R.drawable.splash_ihsan_logo_transparent)
+    val bitmap = remember(context, dark) {
+        wordmarkCache[dark] ?: run {
+        val source = BitmapFactory.decodeResource(context.resources, R.drawable.splash_ihsan_logo_transparent,
+            BitmapFactory.Options().apply { inScaled = false })
         val output = source.copy(android.graphics.Bitmap.Config.ARGB_8888, true)
         val pixels = IntArray(output.width * output.height)
         output.getPixels(pixels, 0, output.width, 0, 0, output.width, output.height)
@@ -164,7 +168,14 @@ private fun ihsanWordmarkPainter(color: Color): BitmapPainter {
             val b = android.graphics.Color.blue(pixel)
             // Neutral wordmark pixels follow the theme; the original gold symbol stays gold.
             val isGold = r > g && g > b && r - b > 45
-            if (!isGold && android.graphics.Color.alpha(pixel) > 0)
+            val x = i % output.width
+            val y = i / output.width
+            val isKaaba = x in (output.width * 733 / 1254)..(output.width * 949 / 1254) &&
+                y in (output.height * 574 / 1254)..(output.height * 745 / 1254) && r < 145 && g < 155 && b < 145
+            if (isKaaba && !isGold && android.graphics.Color.alpha(pixel) > 0) {
+                val shade = ((r + g + b) / 3 + if (dark) 24 else 0).coerceIn(0, 110)
+                pixels[i] = (pixel and 0xff000000.toInt()) or android.graphics.Color.rgb(shade, shade, shade)
+            } else if (!isGold && !isKaaba && android.graphics.Color.alpha(pixel) > 0)
                 pixels[i] = (pixel and 0xff000000.toInt()) or (ink and 0x00ffffff)
             else if (dark && isGold && android.graphics.Color.alpha(pixel) > 0)
                 pixels[i] = (pixel and 0xff000000.toInt()) or android.graphics.Color.rgb(
@@ -172,10 +183,11 @@ private fun ihsanWordmarkPainter(color: Color): BitmapPainter {
         }
         output.setPixels(pixels, 0, output.width, 0, 0, output.width, output.height)
         source.recycle()
-        output.asImageBitmap()
+        val cropped = android.graphics.Bitmap.createBitmap(output, output.width * 183 / 1254, output.height * 475 / 1254,
+            output.width * 863 / 1254, output.height * 308 / 1254)
+        output.recycle()
+        cropped.asImageBitmap().also { wordmarkCache[dark] = it }
+        }
     }
-    return remember(bitmap) {
-        BitmapPainter(bitmap, IntOffset((bitmap.width * 183f / 1254).toInt(), (bitmap.height * 475f / 1254).toInt()),
-            IntSize((bitmap.width * 863f / 1254).toInt(), (bitmap.height * 308f / 1254).toInt()))
-    }
+    return remember(bitmap) { BitmapPainter(bitmap) }
 }

@@ -86,17 +86,17 @@ fun PrayerScreen(
         ) {
             LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                item {
-                    Box(Modifier.fillMaxWidth()) {
-                        Image(painterResource(R.drawable.ihsan_home_hero_background), null,
-                            Modifier.matchParentSize(), contentScale = ContentScale.Crop, alignment = Alignment.TopCenter)
-                        com.example.designsystem.component.IhsanHeroScrim(Modifier.matchParentSize())
-                        Column(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 16.dp, vertical = 8.dp)) {
-                            PrayerTopBar(uiState.locationName, com.example.feature.core.util.currentHijriDateText(),
-                                com.example.feature.core.util.currentCivilDate().format(java.time.format.DateTimeFormatter.ofPattern("EEEE، d MMMM yyyy", java.util.Locale("ar"))), onNavigateBack)
-                            Spacer(Modifier.height(8.dp))
-                            PrayerHeroSection(uiState.nextPrayerName, uiState.nextPrayerCountdown, onNavigateToQibla)
-                        }
+                item(key = "prayer_header") {
+                    com.example.designsystem.component.IhsanTopBar("الصلاة", onNavigateBack = onNavigateBack,
+                        subtitle = uiState.locationName, actions = {
+                            IconButton({ viewModel.onAction(PrayerAction.OnToggleSettingsSheet(true)) }) {
+                                Icon(Icons.Default.Settings, "إعدادات الصلاة", tint = colors.accentContent)
+                            }
+                        })
+                    Text(com.example.feature.core.util.currentHijriDateText(), Modifier.padding(horizontal = 20.dp),
+                        style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
+                    Box(Modifier.padding(20.dp)) {
+                        PrayerHeroSection(uiState.nextPrayerName, uiState.nextPrayerCountdown, onNavigateToQibla)
                     }
                 }
                 item { Box(Modifier.padding(horizontal = 16.dp)) { QuranVerseCard() } }
@@ -123,7 +123,7 @@ fun PrayerScreen(
                 item { Box(Modifier.padding(horizontal = 16.dp)) {
                     PrayerTimesHeader(onOpenCalendar)
                 } }
-                items(uiState.prayerTimes) { prayer ->
+                items(uiState.prayerTimes, key = { it.nameEn }) { prayer ->
                     val isNext = prayer.nameAr == uiState.nextPrayerName || prayer.isActive
                     Box(Modifier.padding(horizontal = 16.dp)) {
                         PrayerTimeRow(prayer, isNext, if (isNext) uiState.nextPrayerCountdown else null) {
@@ -220,114 +220,16 @@ fun PrayerHeroSection(
     countdown: String,
     onQiblaClick: () -> Unit
 ) {
-    val isDark = IhsanTheme.isDark
-    val primaryText = if (isDark) IhsanTheme.colors.textPrimary else Color.White
-    val subtext = if (isDark) IhsanTheme.colors.textSecondary else Color.White
-    val countdownText = if (isDark) IhsanTheme.colors.selectedContent else Color.White
-    val qiblaBg = if (isDark) IhsanTheme.colors.selectedContainer else Color.White.copy(alpha = 0.22f)
-    val qiblaBorder = if (isDark) IhsanTheme.colors.selectedContent.copy(alpha = 0.5f) else Color.White.copy(alpha = 0.5f)
-    val qiblaText = if (isDark) IhsanTheme.colors.selectedContent else Color.White
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 170.dp),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        // Responsive White Arc
-        PrayerArcCanvas(
-            modifier = Modifier
-                .fillMaxWidth(.70f)
-                .height(105.dp)
-                .padding(top = 12.dp)
-        )
-
-        // Indicator at Peak Apex
-        Image(
-            painter = painterResource(id = R.drawable.ihsan_icon_prayer_indicator),
-            contentDescription = null,
-            modifier = Modifier
-                .size(24.dp)
-                .align(Alignment.TopCenter)
-        )
-
-        // Content
-        Column(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 28.dp, bottom = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "موعد الصلاة القادمة",
-                style = MaterialTheme.typography.labelMedium.copy(
-                    color = subtext,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal
-                )
-            )
-
-            Text(
-                text = nextPrayerName.ifBlank { "غير متاحة" },
-                style = MaterialTheme.typography.displayMedium.copy(
-                    color = primaryText,
-                    fontSize = 30.sp,
-                    lineHeight = 38.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            )
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "يتبقى ",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        color = countdownText,
-                        fontSize = 15.sp
-                    )
-                )
-                Text(
-                    text = countdown,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        color = countdownText,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Qibla CTA Pill Button
-            Surface(
-                onClick = onQiblaClick,
-                shape = CircleShape,
-                color = qiblaBg,
-                border = BorderStroke(1.dp, qiblaBorder),
-                modifier = Modifier
-                    .heightIn(min = 48.dp)
-                    .defaultMinSize(minWidth = 120.dp)
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ihsan_icon_qibla),
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "اتجاه القبلة",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            color = qiblaText,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp
-                        )
-                    )
-                }
-            }
+    com.example.designsystem.component.IhsanGlassCard(Modifier.fillMaxWidth()) {
+        com.example.designsystem.component.IhsanIllustration(com.example.designsystem.component.IhsanScene.PRAYER,
+            Modifier.fillMaxWidth().height(160.dp))
+        Text("الصلاة القادمة", style = MaterialTheme.typography.labelLarge, color = IhsanTheme.colors.accentContent)
+        Text(nextPrayerName.ifBlank { "حدد موقعك أولًا" }, style = MaterialTheme.typography.headlineLarge)
+        Text(countdown.ifBlank { "المواقيت غير متاحة" }, style = MaterialTheme.typography.headlineMedium,
+            color = IhsanTheme.colors.textPrimary)
+        com.example.designsystem.component.IhsanSecondaryButton(onQiblaClick, Modifier.fillMaxWidth()) {
+            Icon(Icons.Default.Explore, null, Modifier.size(20.dp))
+            Spacer(Modifier.width(8.dp)); Text("اتجاه القبلة")
         }
     }
 }

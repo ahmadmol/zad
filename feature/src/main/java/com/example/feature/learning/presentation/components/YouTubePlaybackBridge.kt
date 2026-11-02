@@ -9,7 +9,8 @@ internal class YouTubePlaybackBridge(
     private val onReady: () -> Unit,
     private val onPlaying: () -> Unit,
     private val onError: () -> Unit,
-    private val onStopped: () -> Unit = {}
+    private val onStopped: () -> Unit = {},
+    private val onErrorCode: (Int) -> Unit = {}
 ) {
     // Keep the installation boundary concrete: Lint resolves Compose remember() results as T.
     internal fun installIn(view: android.webkit.WebView) {
@@ -24,6 +25,6 @@ internal class YouTubePlaybackBridge(
     @JavascriptInterface fun stopped() { dispatch(onStopped) }
     @JavascriptInterface fun failed(code: Int) {
         android.util.Log.w("IhsanYouTube", "Official player error: $code")
-        dispatch(onError)
+        dispatch { onErrorCode(code); onError() }
     }
 }

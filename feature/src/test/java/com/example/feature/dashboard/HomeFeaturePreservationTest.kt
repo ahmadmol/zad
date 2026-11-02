@@ -91,16 +91,17 @@ class HomeFeaturePreservationTest {
 
     @Test
     fun `home previews services and preserves the complete services panel`() {
-        assertFalse(homeScreen.contains("actions.take(5)"))
         assertTrue(homeScreen.contains("HomeDiscoverServicesGrid"))
-        assertTrue(discoverServices.contains("services.chunked(columns)"))
-        assertTrue(discoverServices.contains("ServiceGrid(services, columns)"))
-        assertTrue(discoverServices.contains("serviceGridColumns"))
-        assertTrue(discoverServices.contains("correction_view_all"))
-        assertTrue(discoverServices.contains("Dialog("))
-        assertTrue(
-            discoverServices.contains("correction_services_title") || quickActions.contains("home_services_title")
-        )
+        assertTrue(discoverServices.contains("ihsanServices.take(6)"))
+        assertTrue(discoverServices.contains("fun AllServicesScreen"))
+        assertTrue(discoverServices.contains("onViewAll"))
+        assertTrue(discoverServices.contains("rememberLazyGridState()"))
+        assertFalse(discoverServices.contains("showAll = false; onServiceClick"))
+        val routes = com.example.feature.dashboard.presentation.components.ihsanServices.map { it.route }
+        val original = listOf("quran", "prayer", "qibla", "dua", "tasbih", "azkar", "hadith", "asma",
+            "live_chooser", "donations", "daily", "statistics", "search", "fahm", "nabi_ihsan", "sanhya")
+        assertTrue(routes.containsAll(original))
+        assertEquals(routes.size, routes.distinct().size)
     }
 
     @Test
@@ -139,13 +140,16 @@ class HomeFeaturePreservationTest {
     }
 
     @Test
-    fun `splash crops its full screen background and fits its logo`() {
-        assertTrue(splash.contains("ihsan_splash_background"))
+    fun `splash routes on persisted readiness and keeps the original logo`() {
         assertTrue(splash.contains("IhsanTextWithKaabaIcon"))
+        assertTrue(splash.contains("onStartupResolved"))
+        assertTrue(splash.contains("Build.VERSION.SDK_INT < 31"))
+        assertFalse(splash.contains("delay("))
+        assertFalse(splash.contains("infiniteRepeatable"))
         val brand = read("designsystem/src/main/java/com/example/designsystem/component/IhsanHeaderTitle.kt")
-        assertTrue(brand.contains("ihsanWordmarkPainter(color)"))
-        assertTrue(splash.contains("ContentScale.Crop"))
         assertTrue(brand.contains("ContentScale.Fit"))
+        assertTrue(brand.contains("isKaaba"))
+        assertTrue(read("app/src/main/res/values-v31/themes.xml").contains("windowSplashScreenAnimatedIcon"))
     }
 }
 

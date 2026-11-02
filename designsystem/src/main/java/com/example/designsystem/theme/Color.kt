@@ -29,7 +29,7 @@ val Neutral900 = Color(0xFF111827)
 // Brand fill for large green surfaces (heroes, emphasized cards) — same in Light/Dark.
 val PrimaryTeal = Color(0xFF073028)
 val OnPrimaryWhite = Color(0xFFFFFFFF)
-val PrimaryContainerTeal = Primary100
+val PrimaryContainerTeal = Color(0xFFE2F2EB)
 val OnPrimaryContainerTeal = Primary900
 
 val SecondaryTeal = Primary200
@@ -57,26 +57,26 @@ val OnBackgroundDark = Neutral900
 val SurfaceWhite = Color(0xFFFFFFFF)
 val OnSurfaceDark = Neutral900
 val SurfaceVariantLight = Neutral50
-val OnSurfaceVariantGrey = Neutral500
+val OnSurfaceVariantGrey = Color(0xFF59645F)
 
 val OutlineGrey = Neutral300
 val OutlineVariantLight = Neutral200
 
 // Dark Emerald / Charcoal: opaque surfaces separate canvas, cards and inputs.
 // Mint is reserved for active indicators; primary remains an emerald button fill.
-val DarkBackground = Color(0xFF07110E)
-val DarkSurface = Color(0xFF0E1C17)
-val DarkSurfaceElevated = Color(0xFF14271F)
-val DarkSurfaceMuted = Color(0xFF1A3028)
-val DarkSurfaceWarm = Color(0xFF241F16)
+val DarkBackground = Color(0xFF111315)
+val DarkSurface = Color(0xFF191C1F)
+val DarkSurfaceElevated = Color(0xFF202427)
+val DarkSurfaceMuted = Color(0xFF2A2F32)
+val DarkSurfaceWarm = Color(0xFF302A22)
 val DarkOnSurface = Color(0xFFD7E0DC)
 val DarkOnSurfaceVariant = Color(0xFFA7B8B1)
 val DarkInteractivePrimary = Color(0xFF0D7564)
 val DarkInteractivePrimaryContainer = Color(0xFF174D43)
 val OnDarkInteractivePrimary = Color(0xFFF2F5F2)
-val DarkOutline = Color(0xFF294239)
-val DarkOutlineVariant = Color(0xFF294239)
-val DarkScrim = Color(0xCC07110E)
+val DarkOutline = Color(0xFF7A8780)
+val DarkOutlineVariant = Color(0xFF3B4242)
+val DarkScrim = Color(0xCC111315)
 val DarkBrandElevated = Color(0xFF174D43)
 val DarkGoldAccent = Color(0xFFC7A35C)
 
@@ -88,8 +88,8 @@ val Grey = Neutral300
 val DarkHeading = Color(0xFFF2F5F2)
 val DarkDisabled = Color(0xFF6F817A)
 val DarkAccentMint = Color(0xFF33C6AE)
-val DarkNavigation = Color(0xFF0D1916)
-val DarkNavigationInactive = Color(0xFF879992)
+val DarkNavigation = Color(0xFF191C1F)
+val DarkNavigationInactive = Color(0xFFABB6B0)
 val DarkWarning = Color(0xFFD89A45)
 val DarkError = Color(0xFFD9676E)
 

@@ -22,6 +22,7 @@ import com.example.designsystem.component.DailyActivityItemData
 import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
 
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun HomeDailyJourneyCard(onGoToChecklist: () -> Unit, modifier: Modifier = Modifier,
     activities: List<DailyActivityItemData> = emptyList(), onPrayerClick: () -> Unit = onGoToChecklist,
@@ -40,16 +41,16 @@ fun HomeDailyJourneyCard(onGoToChecklist: () -> Unit, modifier: Modifier = Modif
                     Text(stringResource(R.string.correction_view_all), style = MaterialTheme.typography.labelMedium)
                 }
             }
-            Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            androidx.compose.foundation.layout.FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp), maxItemsInEachRow = 3) {
                 // Home does not expose prayer completion counts: show an honest unavailable value.
                 JourneyProgress(stringResource(R.string.polish_service_prayer), Icons.Outlined.Mosque, null, null,
-                    onPrayerClick, Modifier.weight(1f).fillMaxHeight())
+                    onPrayerClick, Modifier.widthIn(min = (84 * androidx.compose.ui.platform.LocalDensity.current.fontScale).dp).weight(1f))
                 JourneyProgress(stringResource(R.string.correction_quran_portion), Icons.AutoMirrored.Outlined.MenuBook,
                     quran.takeIf { it.isNotEmpty() }?.sumOf { it.currentCount },
-                    quran.takeIf { it.isNotEmpty() }?.sumOf { it.targetCount }, onQuranClick, Modifier.weight(1f).fillMaxHeight())
+                    quran.takeIf { it.isNotEmpty() }?.sumOf { it.targetCount }, onQuranClick, Modifier.widthIn(min = (84 * androidx.compose.ui.platform.LocalDensity.current.fontScale).dp).weight(1f))
                 JourneyProgress(stringResource(R.string.polish_service_azkar), Icons.Outlined.VolunteerActivism,
                     azkar.takeIf { it.isNotEmpty() }?.sumOf { it.currentCount },
-                    azkar.takeIf { it.isNotEmpty() }?.sumOf { it.targetCount }, onAzkarClick, Modifier.weight(1f).fillMaxHeight())
+                    azkar.takeIf { it.isNotEmpty() }?.sumOf { it.targetCount }, onAzkarClick, Modifier.widthIn(min = (84 * androidx.compose.ui.platform.LocalDensity.current.fontScale).dp).weight(1f))
             }
         }
     }
@@ -64,12 +65,10 @@ private fun JourneyProgress(title: String, icon: ImageVector, current: Int?, tar
         border = BorderStroke(.5.dp, IhsanTheme.colors.borderSubtle)) {
         Column(Modifier.padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(3.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                Icon(icon, null, modifier = Modifier.size(20.dp), tint = IhsanTheme.colors.accentContent)
-                if (current != null && target != null && target > 0) CircularProgressIndicator(
-                    progress = { (current.toFloat() / target).coerceIn(0f, 1f) },
-                    modifier = Modifier.size(28.dp), strokeWidth = 3.dp, strokeCap = StrokeCap.Round,
-                    trackColor = IhsanTheme.colors.progressTrack, color = IhsanTheme.colors.progressActive)
+            Box(Modifier.size(64.dp), contentAlignment = Alignment.Center) {
+                if (current != null && target != null && target > 0)
+                    com.example.designsystem.component.IhsanProgressIndicator(current.toFloat() / target, Modifier.fillMaxSize())
+                Icon(icon, null, modifier = Modifier.size(24.dp), tint = IhsanTheme.colors.accentContent)
             }
             Text(title, style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
             Text(if (current == null || target == null) "—" else "$current/$target", style = MaterialTheme.typography.labelMedium)

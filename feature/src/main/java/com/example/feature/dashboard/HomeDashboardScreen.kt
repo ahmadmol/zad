@@ -1,5 +1,11 @@
 package com.example.feature.dashboard
 
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.*
+import com.example.designsystem.component.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -61,6 +67,9 @@ data class HomeIslamicAction(
 @Composable
 fun HomeDashboardScreen(
     viewModel: HomeDashboardViewModel = koinViewModel(),
+    onNavigateToServices: () -> Unit = {},
+    onNavigateToGoals: () -> Unit = {},
+    onNavigateToVisit: () -> Unit = {},
     onNavigateToQuran: () -> Unit = {},
     onNavigateToAzkar: () -> Unit = {},
     onNavigateToHadith: () -> Unit = {},
@@ -95,10 +104,11 @@ fun HomeDashboardScreen(
         onNavigateToTasbih, onNavigateToHaramLive, onNavigateToNabawiLive,
         onNavigateToPrayer, onNavigateToSearch, onNavigateToDailyActivities,
         onNavigateToReminders, onNavigateToStatistics, onNavigateToDonations,
-        onNavigateToSanhya, onNavigateToNabiIhsan, onNavigateToFahm
+        onNavigateToSanhya, onNavigateToNabiIhsan, onNavigateToFahm, onNavigateToCalendar
     ) {
         { route ->
             when (route) {
+                "calendar" -> onNavigateToCalendar()
                 "fahm" -> onNavigateToFahm()
                 "nabi_ihsan" -> onNavigateToNabiIhsan()
                 "sanhya" -> onNavigateToSanhya()
@@ -126,125 +136,73 @@ fun HomeDashboardScreen(
         }
     }
 
-    // 1. Current active prayer comes ONLY from an item in allPrayers where isActive == true
-    val activePrayer = remember(uiState.data.allPrayers) {
-        uiState.data.allPrayers.firstOrNull { it.isActive }
-    }
-    val currentPrayerTitle = activePrayer?.nameAr ?: "—"
-
-    // 2. Next prayer name comes directly from domain result uiState.data.nextPrayerName
-    val nextPrayerTitle = uiState.data.nextPrayerName.ifBlank { "—" }
-
-    // 3. Next prayer time is safely matched against the full allPrayers list (presentation-only)
-    val nextPrayerItem = remember(uiState.data.allPrayers, nextPrayerTitle) {
-        if (nextPrayerTitle != "—") {
-            uiState.data.allPrayers.firstOrNull {
-                it.nameAr == nextPrayerTitle || nextPrayerTitle.contains(it.nameAr) || it.nameAr.contains(nextPrayerTitle)
-            }
-        } else null
-    }
-    val nextPrayerTimeLabel = nextPrayerItem?.time ?: "—"
-
-    val scrollState = rememberScrollState()
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .verticalScroll(scrollState)
-        ) {
-            // 1. Contextual Skyline Hero Banner
-            HomeContextualHero(
-                location = uiState.data.location,
-                hijriDate = com.example.feature.core.util.currentHijriDateText(),
-                currentPrayerName = currentPrayerTitle,
-                countdownText = uiState.data.nextPrayerTimeLeft,
-                nextPrayerName = nextPrayerTitle,
-                nextPrayerTime = nextPrayerTimeLabel,
-                dailyVerseText = uiState.data.dailyVerse,
-                dailyVerseSource = uiState.data.dailyVerseSource,
-                onNotificationClick = onNavigateToReminders,
-                onSearchClick = onNavigateToSearch,
-                onQiblaClick = onNavigateToQibla
-            )
-
-            // 2. Main Content Surface Overlay
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .offset(y = (-16).dp),
-                color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(
-                    topStart = 24.dp,
-                    topEnd = 24.dp
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp, vertical = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    uiState.refreshErrorMessage?.let { message ->
-                        HomeRefreshErrorNotice(
-                            message = message,
-                            onRetry = { viewModel.onAction(HomeDashboardAction.OnRefresh) }
-                        )
-                    }
-
-                    HomeSectionStateNotice(
-                        state = uiState.prayer,
-                        onRetry = { viewModel.onAction(HomeDashboardAction.OnRetryPrayer) }
-                    )
-
-                    // 2.1 Continue / Start Quran Card (Requirement 2)
-                    HomeQuranContinueCard(
-                        surahName = uiState.data.lastReadSurahName,
-                        surahId = uiState.data.lastReadSurahId,
-                        ayahNumber = uiState.data.lastReadAyahNumber,
-                        onContinueClick = onContinueLastRead,
-                        onStartQuranClick = onNavigateToQuran
-                    )
-
-                    com.example.designsystem.component.IhsanSecondaryButton(onClick = onNavigateToCalendar) { Text("التقويم الهجري والميلادي") }
-                    com.example.feature.prayer.presentation.HomePrayerJournalSummary(onOpen = onNavigateToPrayerJournal)
-                    com.example.feature.ramadan.RamadanHomeEntry(onOpen = onNavigateToRamadan)
-                    // 2.2 Journey Card ("رحلتي مع الإحسان") (Requirement 3)
-                    HomeDailyJourneyCard(
-                        onGoToChecklist = onNavigateToDailyActivities,
-                        activities = uiState.data.dailyActivities,
-                        onPrayerClick = onNavigateToPrayer,
-                        onQuranClick = onNavigateToQuran,
-                        onAzkarClick = onNavigateToAzkar
-                    )
-
-                    // 2.4 Ehsan Community Donation Card ("عروض التبرع والمساعدة") (Requirement 5)
-                    HomeEhsanCommunityCard(
-                        onNavigateToDonations = onNavigateToDonations
-                    )
-
-                    HomeLiveStreamCard(onLiveClick = { showLiveChooser = true })
-
-                    // 2.5 Discover Services ("الخدمات") (Requirement 6)
-                    HomeDiscoverServicesGrid(
-                        onServiceClick = onActionClick
-                    )
-
-                    Spacer(modifier = Modifier.height(IhsanTheme.dimens.contentBottomSpacing))
-                }
+    val data = uiState.data
+    val activePrayer = data.allPrayers.firstOrNull { it.isActive }
+    val listState = rememberLazyListState()
+    LazyColumn(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background), state = listState,
+        contentPadding = PaddingValues(bottom = 24.dp)) {
+        item(key = "home_header_prayer") {
+            HomeContextualHero(location = data.location, hijriDate = data.hijriDate,
+                currentPrayerName = activePrayer?.nameAr.orEmpty(), countdownText = data.nextPrayerTimeLeft,
+                nextPrayerName = data.nextPrayerName, nextPrayerTime = data.nextPrayerTimeLabel,
+                dailyVerseText = data.dailyVerse, dailyVerseSource = data.dailyVerseSource,
+                onNotificationClick = onNavigateToReminders, onSearchClick = onNavigateToSearch,
+                onQiblaClick = onNavigateToQibla, onPrayerClick = onNavigateToPrayer,
+                onLocationClick = { viewModel.onAction(HomeDashboardAction.OnShowCitySelection) }, userName = data.userName)
+        }
+        item(key = "home_notices") {
+            Column(Modifier.padding(horizontal = 20.dp)) {
+                uiState.refreshErrorMessage?.let { HomeRefreshErrorNotice(it, onRetry = { viewModel.onAction(HomeDashboardAction.OnRefresh) }) }
+                HomeSectionStateNotice(uiState.prayer, onRetry = { viewModel.onAction(HomeDashboardAction.OnRetryPrayer) })
             }
         }
-
-        // Pinned Status Bar Protection Layer with smooth alpha transition
-        val statusBarAlpha = (scrollState.value / 120f).coerceIn(0f, 1f)
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsTopHeight(WindowInsets.statusBars)
-                .background(MaterialTheme.colorScheme.background.copy(alpha = statusBarAlpha))
-                .align(Alignment.TopCenter)
-        )
+        item(key = "home_services") {
+            HomeDiscoverServicesGrid(onActionClick, Modifier.padding(horizontal = 20.dp, vertical = 12.dp), onNavigateToServices)
+        }
+        item(key = "home_quran") {
+            Column(Modifier.padding(horizontal = 20.dp, vertical = 12.dp)) {
+                HomeQuranContinueCard(data.lastReadSurahName, data.lastReadSurahId, data.lastReadAyahNumber,
+                    onContinueLastRead, onNavigateToQuran)
+            }
+        }
+        item(key = "home_journey") {
+            Column(Modifier.padding(horizontal = 20.dp, vertical = 12.dp)) {
+                HomeDailyJourneyCard(onNavigateToDailyActivities, activities = data.dailyActivities,
+                    onPrayerClick = onNavigateToPrayerJournal, onQuranClick = onNavigateToQuran, onAzkarClick = onNavigateToAzkar)
+            }
+        }
+        item(key = "home_goals") {
+            Column(Modifier.padding(horizontal = 20.dp, vertical = 12.dp)) {
+                com.example.feature.goals.GoalsHomeSummary(onNavigateToGoals)
+            }
+        }
+        item(key = "home_qibla") {
+            Column(Modifier.padding(horizontal = 20.dp, vertical = 12.dp)) {
+                IhsanActionCard("اتجاه القبلة", "افتح البوصلة للتحقق من الموقع والمستشعر", Icons.Outlined.Explore, onNavigateToQibla)
+            }
+        }
+        if (data.allPrayers.isNotEmpty()) item(key = "home_timeline") {
+            IhsanPrayerTimeline(data.allPrayers.filter { it.nameEn != "Sunrise" }.map {
+                IhsanPrayerTimelineItem(it.nameEn, it.nameAr, it.time, it.timestamp == data.nextPrayerEpochMillis, it.isPast)
+            }, onNavigateToPrayer, Modifier.padding(horizontal = 20.dp, vertical = 12.dp))
+        }
+        item(key = "home_journals") {
+            Column(Modifier.padding(horizontal = 20.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                com.example.feature.prayer.presentation.HomePrayerJournalSummary(onOpen = onNavigateToPrayerJournal)
+                com.example.feature.ramadan.RamadanHomeEntry(onOpen = onNavigateToRamadan)
+            }
+        }
+        item(key = "home_community") {
+            Column(Modifier.padding(horizontal = 20.dp, vertical = 12.dp)) { HomeEhsanCommunityCard(onNavigateToDonations = onNavigateToDonations) }
+        }
+        item(key = "home_discover") {
+            Column(Modifier.padding(horizontal = 20.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                HomeLiveStreamCard(onLiveClick = { showLiveChooser = true })
+                IhsanActionCard("المساجد القريبة", "ابحث عبر تطبيق الخرائط • النتائج من مزود الخرائط", Icons.Outlined.Map,
+                    { com.example.feature.core.util.openNearbyMosques(context) })
+                IhsanActionCard("زيارة الحرمين", "دليلك إلى خدمات نسك الرسمية", Icons.Outlined.TravelExplore, onNavigateToVisit)
+            }
+        }
     }
 
     if (showLiveChooser) {

@@ -2,6 +2,7 @@ package com.example.designsystem.component
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.selection.selectable
@@ -36,12 +37,12 @@ fun IhsanBottomNavigation(
 ) {
     require(selectedIndex in destinations.indices)
     Surface(modifier.semantics { testTag = "ihsan_bottom_navigation" },
-        shape = RoundedCornerShape(24.dp), color = IhsanTheme.colors.navigationSurface) {
-        Row(Modifier.fillMaxWidth().selectableGroup().height(BottomNavBarHeight * LocalDensity.current.fontScale.coerceAtLeast(1f)),
+        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp), color = IhsanTheme.colors.navigationSurface) {
+        Row(Modifier.fillMaxWidth().selectableGroup().heightIn(min = BottomNavBarHeight * LocalDensity.current.fontScale.coerceAtLeast(1f)).height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically) {
             destinations.forEachIndexed { index, item ->
                 val fraction by animateFloatAsState(if (index == selectedIndex) 1f else 0f,
-                    animationSpec = tween(180), label = "navigationSelection")
+                    animationSpec = tween(if (com.example.designsystem.theme.rememberIhsanMotionEnabled()) 180 else 0), label = "navigationSelection")
                 IhsanBottomNavigationItem(fraction, index == selectedIndex, { onDestinationSelected(index) },
                     item.icon, item.selectedIcon, item.label, Modifier.weight(1f).fillMaxHeight())
             }
@@ -53,7 +54,7 @@ fun IhsanBottomNavigation(
 fun IhsanBottomNavigationItem(selectionFraction: Float, selected: Boolean, onClick: () -> Unit,
     icon: ImageVector, selectedIcon: ImageVector, label: String, modifier: Modifier = Modifier) {
     val color = lerp(IhsanTheme.colors.unselectedContent, IhsanTheme.colors.navigationIndicator, selectionFraction)
-    Column(modifier.selectable(selected = selected, role = Role.Tab, onClick = onClick)
+    Column(modifier.selectable(selected = selected, role = Role.Tab, interactionSource = remember { MutableInteractionSource() }, indication = null, onClick = onClick)
         .padding(horizontal = 2.dp, vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         Icon(if (selected) selectedIcon else icon, null, tint = color, modifier = Modifier.size(23.dp))

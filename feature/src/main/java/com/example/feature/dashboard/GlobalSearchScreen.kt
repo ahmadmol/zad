@@ -53,9 +53,12 @@ import com.example.feature.quran.presentation.QuranAction
 import com.example.feature.quran.presentation.QuranViewModel
 import org.koin.androidx.compose.koinViewModel
 
-private val DeepTeal = Color(0xFF0F5247)
-private val SoftMint = Color(0xFFEFF7F5)
-private val SoftMintBorder = Color(0xFFE2EFEA)
+private val DeepTeal: Color
+    @Composable get() = IhsanTheme.colors.accentContent
+private val SoftMint: Color
+    @Composable get() = IhsanTheme.colors.surfaceMint
+private val SoftMintBorder: Color
+    @Composable get() = IhsanTheme.colors.borderSubtle
 
 private enum class SearchCategory(val title: String, val iconRes: Int) {
     HADITH("الأحاديث", R.drawable.ic_search_hadith),
@@ -124,77 +127,16 @@ fun GlobalSearchScreen(
         Scaffold(
             containerColor = if (isDark) IhsanTheme.colors.surfaceBase else Color(0xFFF9FBFB),
             topBar = {
-                // Header Area with background image and search input
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
-                        .background(if (isDark) IhsanTheme.colors.surfaceBase else SoftMint)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ihsan_search_header),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.matchParentSize()
-                    )
-
-                    if (isDark) {
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .background(Brush.verticalGradient(listOf(IhsanTheme.colors.surfaceBase.copy(alpha = .20f), IhsanTheme.colors.surfaceBase.copy(alpha = .82f))))
-                        )
-                    }
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .statusBarsPadding()
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        // Header Navigation Row: Back button on left, "البحث" Title centered
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = 48.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            IconButton(
-                                onClick = onBack,
-                                modifier = Modifier
-                                    .align(Alignment.CenterStart)
-                                    .size(48.dp)
-                                    .clip(CircleShape)
-                                    .background(if (isDark) IhsanTheme.colors.surfaceMuted else Color.White.copy(alpha = 0.7f))
-                            ) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "رجوع",
-                                    tint = if (isDark) IhsanTheme.colors.textPrimary else DeepTeal,
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
-
-                            Text(
-                                text = "البحث",
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isDark) IhsanTheme.colors.textPrimary else DeepTeal,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
+                com.example.designsystem.component.IhsanTopBar(
+                    title = "البحث", subtitle = "ابحث في مكتبتك وخدمات إحسان",
+                    style = com.example.designsystem.component.IhsanTopBarStyle.Hero,
+                    onNavigateBack = onBack,
+                    bottomContent = {
                         com.example.designsystem.component.IhsanSearchBar(
                             query = query, onQueryChange = { query = it }, placeholder = "ابحث في كل محتويات إحسان",
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                             keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }))
-
-                        Spacer(modifier = Modifier.height(4.dp))
-                    }
-                }
+                    })
             }
         ) { paddingValues ->
             Column(
