@@ -1,0 +1,58 @@
+name: Android Quality Gates
+
+on:
+  push:
+    branches: [ main, master, 'chore/**', 'refactor/**', 'release/**', 'qa/**', 'codex/**' ]
+  pull_request:
+
+jobs:
+  build-test-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify current source excludes private QA artifacts and secrets
+        run: |
+          python3 scripts/test_source_privacy.py
+          python3 scripts/verify_source_privacy.py --index
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Assemble debug
+        run: ./gradlew :app:assembleDebug --stacktrace
+
+      - name: Assemble internal QA release with R8 (separate QA identity; no secrets)
+        run: ./gradlew :app:assembleRelease -PihsanPhysicalQa=true --stacktrace
+
+      - name: Unit tests (architecture, migration matrix, demo isolation included)
+        run: |
+          ./gradlew :designsystem:testDebugUnitTest \
+            :feature:testDebugUnitTest \
+            :app:testDebugUnitTest \
+            --stacktrace
+
+      - name: Lint
+        run: ./gradlew :app:lintDebug --no-parallel --stacktrace
+
+      - name: Upload reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-quality-reports
+          path: |
+            **/build/reports/tests/
+            **/build/reports/lint-results*.html
+            **/build/reports/lint-results*.xml
+            **/build/outputs/mapping/
+          if-no-files-found: ignore
+
+  # Instrumented / connected tests: run manually when a device is attached.
+  # Do not require Play Console, keystores, or store secrets.

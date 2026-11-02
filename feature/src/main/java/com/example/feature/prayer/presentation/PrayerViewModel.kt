@@ -1,173 +1,244 @@
 package com.example.feature.prayer.presentation
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.location.Geocoder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.batoulapps.adhan2.CalculationMethod
-import com.batoulapps.adhan2.Madhab
-import com.example.feature.azkar.data.local.SettingsManager
 import com.example.feature.core.util.HijriDateFormatter
-import com.example.feature.prayer.util.PrayerCalculator
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import com.example.feature.prayer.PrayerTime
+import com.example.feature.prayer.data.calculator.AdhanPrayerCalculator
+import com.example.feature.prayer.domain.facade.PrayerTimesFacade
+import com.example.feature.prayer.domain.model.PrayerCalculationMethod
+import com.example.feature.prayer.domain.model.PrayerCalculationSettings
+import com.example.feature.prayer.domain.model.PrayerLocationSource
+import com.example.feature.prayer.domain.model.PrayerLocationState
+import com.example.feature.prayer.domain.model.PrayerLocationUnavailableReason
+import com.example.feature.prayer.domain.model.PrayerMadhhab
+import com.example.feature.prayer.domain.model.PrayerReconciliationReason
+import com.example.feature.prayer.domain.repository.PrayerSettingsRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class PrayerViewModel(
-    private val settingsManager: SettingsManager,
-    private val context: Context
+    private val facade: PrayerTimesFacade,
+    private val settingsRepository: PrayerSettingsRepository? = null
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PrayerUiState())
     val uiState: StateFlow<PrayerUiState> = _uiState.asStateFlow()
 
-    private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-    
-    private var lastLat: Double = 36.2021
-    private var lastLng: Double = 37.1343
-    private var currentMethod = CalculationMethod.MUSLIM_WORLD_LEAGUE
-    private var currentMadhab = Madhab.SHAFI
-    private var useAutoLocation = true
+    private val dateFormat = SimpleDateFormat("EEEE، d MMMM yyyy", Locale("ar"))
+    private var observation: kotlinx.coroutines.Job? = null
 
     init {
-        observeSettings()
-        startCountdownTimer()
+        observePrayerState()
+        perform {
+            facade.refreshLocation()
+            facade.reconcileSchedule(PrayerReconciliationReason.ApplicationStart)
+        }
     }
 
-    private fun observeSettings() {
-        viewModelScope.launch {
+    private fun observePrayerState() {
+        observation?.cancel()
+        _uiState.update { it.copy(isLoading = true, error = null) }
+        observation = viewModelScope.launch {
+            val settingsFlow = settingsRepository?.observeSettings()
+                ?: MutableStateFlow(PrayerCalculationSettings())
+
             combine(
-                settingsManager.calculationMethodFlow,
-                settingsManager.madhabFlow,
-                settingsManager.useAutoLocationFlow,
-                settingsManager.manualLocationLatFlow,
-                settingsManager.manualLocationLngFlow
-            ) { method, madhab, auto, lat, lng ->
-                currentMethod = PrayerCalculator.getMethodFromString(method)
-                currentMadhab = PrayerCalculator.getMadhabFromString(madhab)
-                useAutoLocation = auto
-                if (!auto) {
-                    lastLat = lat
-                    lastLng = lng
+                facade.prayerDay,
+                facade.nextPrayer,
+                facade.locationState,
+                settingsFlow,
+                facade.systemStatus
+            ) { day, next, location, settings, system ->
+                UiBundle(day, next, location, settings, system)
+            }.catch { error ->
+                if (error is kotlinx.coroutines.CancellationException) throw error
+                _uiState.update { it.copy(isLoading = false, error = "تعذر قراءة إعدادات الصلاة؛ أعد المحاولة دون مسح البيانات") }
+            }.collect { bundle ->
+                val day = bundle.day
+                val next = bundle.next
+                val location = bundle.location
+                val settings = bundle.settings
+
+                val times = day?.instants?.map { instant ->
+                    val now = System.currentTimeMillis()
+                    val activeWindowEnd = instant.epochMillis + 45 * 60 * 1000
+                    val isActive = now >= instant.epochMillis && now < activeWindowEnd
+                    PrayerTime(
+                        nameAr = instant.name.arabic,
+                        nameEn = instant.name.english,
+                        time = com.example.feature.prayer.presentation.PrayerTimeFormatter.format(
+                            instant.epochMillis, java.time.ZoneId.of(day.timeZoneId), Locale("ar")
+                        ),
+                        timestamp = instant.epochMillis,
+                        isPast = now > instant.epochMillis && !isActive,
+                        isActive = isActive
+                    )
+                }.orEmpty()
+
+                val countdown = next?.let { n ->
+                    val diff = n.remainingMillis
+                    val h = (diff / (1000 * 60 * 60)) % 24
+                    val m = (diff / (1000 * 60)) % 60
+                    val s = (diff / 1000) % 60
+                    String.format(Locale.US, "%02d:%02d:%02d", h, m, s)
+                } ?: "—"
+
+                dateFormat.timeZone = java.util.TimeZone.getTimeZone(
+                    day?.timeZoneId ?: java.time.ZoneId.systemDefault().id
+                )
+                _uiState.update {
+                    it.copy(
+                        prayerTimes = times,
+                        nextPrayerName = next?.name?.arabic.orEmpty(),
+                        nextPrayerCountdown = countdown,
+                        locationName = locationLabel(location),
+                        locationSourceLabel = locationSourceLabel(location),
+                        currentDate = dateFormat.format(Date()),
+                        hijriDate = HijriDateFormatter.nowFormatted(),
+                        isLoading = location is PrayerLocationState.Loading,
+                        locationUnavailable = location is PrayerLocationState.Unavailable,
+                        locationUnavailableMessage = (location as? PrayerLocationState.Unavailable)
+                            ?.let { unavailableMessage(it.reason) },
+                        calculationMethodName = methodLabel(settings.method),
+                        prePrayerReminderMinutes = settings.prePrayerNotificationMinutes,
+                        adhanEnabled = settings.notificationsEnabled,
+                        scheduleWarning = bundle.system.lastFailureSummary
+                    )
                 }
-                loadPrayerTimes()
-            }.collect()
+            }
         }
+
     }
 
-    @SuppressLint("MissingPermission")
-    fun loadPrayerTimes() {
+    private fun perform(action: suspend () -> Unit) {
+        if (_uiState.value.isUpdating) return
+        _uiState.update { it.copy(isUpdating = true, error = null) }
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            
-            try {
-                if (useAutoLocation) {
-                    val lastLocation = fusedLocationClient.lastLocation.await()
-                    lastLocation?.let { 
-                        lastLat = it.latitude
-                        lastLng = it.longitude
-                    }
-
-                    val location = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
-                    location?.let { 
-                        lastLat = it.latitude
-                        lastLng = it.longitude
-                    }
-                }
-                
-                updateTimes(lastLat, lastLng)
-            } catch (e: Exception) {
-                updateTimes(lastLat, lastLng)
-            } finally {
-                _uiState.update { it.copy(isLoading = false) }
-            }
-        }
-    }
-
-    private fun startCountdownTimer() {
-        viewModelScope.launch {
-            while (true) {
-                updateCountdown()
-                delay(1000)
-            }
-        }
-    }
-
-    private fun updateCountdown() {
-        val times = PrayerCalculator.calculate(lastLat, lastLng, method = currentMethod, madhab = currentMadhab)
-        val now = System.currentTimeMillis()
-        
-        var next = times.firstOrNull { it.timestamp > now }
-        var nextTimeMillis: Long
-        
-        if (next != null) {
-            nextTimeMillis = next.timestamp
-        } else {
-            val tomorrow = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.time
-            val tomorrowTimes = PrayerCalculator.calculate(lastLat, lastLng, tomorrow, method = currentMethod, madhab = currentMadhab)
-            next = tomorrowTimes.first()
-            nextTimeMillis = next.timestamp
-        }
-
-        val diff = nextTimeMillis - now
-        val h = (diff / (1000 * 60 * 60)) % 24
-        val m = (diff / (1000 * 60)) % 60
-        val s = (diff / 1000) % 60
-        
-        _uiState.update { it.copy(
-            nextPrayerName = next!!.nameAr,
-            nextPrayerCountdown = String.format(Locale.US, "%02d:%02d:%02d", h, m, s)
-        ) }
-    }
-
-    private fun updateTimes(lat: Double, lng: Double) {
-        val times = PrayerCalculator.calculate(lat, lng, method = currentMethod, madhab = currentMadhab)
-        val dateFormat = SimpleDateFormat("EEEE، d MMMM yyyy", Locale("ar"))
-        
-        // Reverse geocoding for city name
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            try {
-                val geocoder = Geocoder(context, Locale("ar"))
-                geocoder.getFromLocation(lat, lng, 1) { addresses ->
-                    val cityName = addresses.firstOrNull()?.let { 
-                        it.locality ?: it.subAdminArea ?: it.adminArea ?: "موقعك الحالي"
-                    } ?: "موقعك الحالي"
-                    _uiState.update { it.copy(locationName = cityName) }
-                }
-            } catch (e: Exception) { }
-        } else {
-            val cityName = try {
-                val geocoder = Geocoder(context, Locale("ar"))
-                @Suppress("DEPRECATION")
-                val addresses = geocoder.getFromLocation(lat, lng, 1)
-                addresses?.firstOrNull()?.let { 
-                    it.locality ?: it.subAdminArea ?: it.adminArea ?: "موقعك الحالي"
-                } ?: "موقعك الحالي"
-            } catch (e: Exception) {
-                if (lat == 36.2021) "حلب، سوريا" else "موقعك الحالي"
-            }
-            _uiState.update { it.copy(locationName = cityName) }
-        }
-        
-        _uiState.update { 
-            it.copy(
-                prayerTimes = times,
-                currentDate = dateFormat.format(Date()),
-                hijriDate = HijriDateFormatter.nowFormatted()
-            )
+            try { action() }
+            catch (cancelled: kotlinx.coroutines.CancellationException) { throw cancelled }
+            catch (_: Exception) {
+                _uiState.update { it.copy(isLoading = false, error = "تعذر تحديث الصلاة أو حفظ إعدادها؛ أعد المحاولة") }
+            } finally { _uiState.update { it.copy(isUpdating = false) } }
         }
     }
 
     fun onAction(action: PrayerAction) {
         when (action) {
-            PrayerAction.OnRefresh -> loadPrayerTimes()
-            is PrayerAction.OnToggleNotification -> {}
+            PrayerAction.OnRefresh -> {
+                if (_uiState.value.isUpdating) return
+                observePrayerState()
+                perform {
+                    facade.refreshLocation()
+                    facade.reconcileSchedule(PrayerReconciliationReason.ManualRetry)
+                }
+            }
+            is PrayerAction.OnSelectPrayer -> {
+                _uiState.update { it.copy(selectedPrayer = action.prayer) }
+            }
+            is PrayerAction.OnToggleSettingsSheet -> {
+                _uiState.update { it.copy(showSettingsBottomSheet = action.show) }
+            }
+            is PrayerAction.OnToggleCalendarSheet -> {
+                _uiState.update { it.copy(showCalendarBottomSheet = action.show) }
+            }
+            is PrayerAction.OnUpdateCalculationMethod -> {
+                perform {
+                    val methodEnum = AdhanPrayerCalculator.parseMethod(action.methodStr)
+                    settingsRepository?.updateCalculationMethod(methodEnum)
+                    facade.reconcileSchedule(PrayerReconciliationReason.SettingsChanged)
+                }
+            }
+            is PrayerAction.OnUpdateMadhhab -> perform {
+                val madhhab = runCatching { PrayerMadhhab.valueOf(action.madhhab) }
+                    .getOrDefault(PrayerMadhhab.SHAFI)
+                settingsRepository?.updateMadhhab(madhhab)
+                facade.reconcileSchedule(PrayerReconciliationReason.SettingsChanged)
+            }
+            is PrayerAction.OnUpdateLocationMode -> perform {
+                settingsRepository?.updateUseAutoLocation(action.enabled)
+                facade.refreshLocation()
+                facade.reconcileSchedule(PrayerReconciliationReason.LocationChanged)
+            }
+            is PrayerAction.OnUpdateManualLocation -> perform {
+                settingsRepository?.updateManualLocation(action.city, action.latitude, action.longitude)
+                facade.refreshLocation()
+                facade.reconcileSchedule(PrayerReconciliationReason.LocationChanged)
+            }
+            is PrayerAction.OnUpdateSound -> perform {
+                settingsRepository?.updateNotificationSoundType(action.soundType)
+                facade.reconcileSchedule(PrayerReconciliationReason.SettingsChanged)
+            }
+            is PrayerAction.OnUpdatePrePrayerMinutes -> {
+                perform {
+                    settingsRepository?.updatePrePrayerMinutes(action.minutes)
+                    facade.reconcileSchedule(PrayerReconciliationReason.SettingsChanged)
+                }
+            }
+            is PrayerAction.OnUpdateIqamahMinutes -> perform {
+                settingsRepository?.updateIqamahMinutes(action.minutes)
+                facade.reconcileSchedule(PrayerReconciliationReason.SettingsChanged)
+            }
+            is PrayerAction.OnToggleAdhan -> {
+                perform {
+                    settingsRepository?.updateNotificationsEnabled(action.enabled)
+                    facade.reconcileSchedule(PrayerReconciliationReason.SettingsChanged)
+                }
+            }
         }
     }
+
+    private fun methodLabel(method: PrayerCalculationMethod): String = when (method) {
+        PrayerCalculationMethod.MUSLIM_WORLD_LEAGUE -> "رابطة العالم الإسلامي"
+        PrayerCalculationMethod.EGYPTIAN -> "الهيئة المصرية العامة للمساحة"
+        PrayerCalculationMethod.KARACHI -> "جامعة العلوم الإسلامية بكراتشي"
+        PrayerCalculationMethod.UMM_AL_QURA -> "أم القرى (مكة)"
+        PrayerCalculationMethod.DUBAI -> "دبي"
+        PrayerCalculationMethod.MOON_SIGHTING_COMMITTEE -> "لجنة رؤية الهلال"
+        PrayerCalculationMethod.NORTH_AMERICA -> "ISNA (أمريكا الشمالية)"
+        PrayerCalculationMethod.KUWAIT -> "الكويت"
+        PrayerCalculationMethod.QATAR -> "قطر"
+        PrayerCalculationMethod.SINGAPORE -> "سنغافورة"
+        PrayerCalculationMethod.OTHER -> "طريقة أخرى"
+    }
+
+    private fun locationLabel(state: PrayerLocationState): String = when (state) {
+        is PrayerLocationState.Available -> state.location.displayName
+        is PrayerLocationState.Unavailable -> "الموقع غير متاح"
+        PrayerLocationState.Loading -> "جاري تحديد الموقع..."
+    }
+
+    private fun locationSourceLabel(state: PrayerLocationState): String? = when (state) {
+        is PrayerLocationState.Available -> when (state.source) {
+            PrayerLocationSource.Device -> "المصدر: الجهاز"
+            PrayerLocationSource.Saved -> "المصدر: موقع محفوظ"
+            PrayerLocationSource.Manual -> "المصدر: يدوي"
+        }
+        else -> null
+    }
+
+    private fun unavailableMessage(reason: PrayerLocationUnavailableReason): String = when (reason) {
+        PrayerLocationUnavailableReason.PERMISSION_DENIED -> "يلزم إذن الموقع لحساب المواقيت"
+        PrayerLocationUnavailableReason.PROVIDER_DISABLED -> "خدمة الموقع متوقفة"
+        PrayerLocationUnavailableReason.TIMEOUT -> "تعذر الحصول على الموقع، حاول مرة أخرى"
+        PrayerLocationUnavailableReason.NO_SAVED_LOCATION -> "لا يوجد موقع محفوظ. حدّث الموقع أو اختر مدينة يدوياً"
+        PrayerLocationUnavailableReason.UNKNOWN -> "تعذر تحديد الموقع"
+    }
+
+    private data class UiBundle(
+        val day: com.example.feature.prayer.domain.model.PrayerDay?,
+        val next: com.example.feature.prayer.domain.model.NextPrayer?,
+        val location: PrayerLocationState,
+        val settings: PrayerCalculationSettings,
+        val system: com.example.feature.prayer.domain.model.PrayerSystemStatus
+    )
 }
+

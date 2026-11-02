@@ -9,24 +9,49 @@ import com.example.feature.duas.data.repository.DuaRepositoryImpl
 import com.example.feature.duas.domain.repository.DuaRepository
 import com.example.feature.ehsan.data.repository.EhsanRepositoryImpl
 import com.example.feature.ehsan.data.repository.UserRepositoryImpl
+import com.example.feature.ehsan.data.image.EhsanImageStore
 import com.example.feature.ehsan.domain.repository.EhsanRepository
 import com.example.feature.ehsan.domain.repository.UserRepository
 import com.example.feature.hadith.data.repository.HadithRepositoryImpl
 import com.example.feature.hadith.domain.repository.HadithRepository
 import com.example.feature.qibla.util.QiblaManager
+import com.example.feature.statistics.data.StatisticsRepositoryImpl
+import com.example.feature.statistics.domain.StatisticsRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val repositoryModule = module {
+    single { com.example.mol.widget.PrayerWidgetCoordinator(androidContext(), get(), get()) }
+    single { com.example.feature.learning.data.LearningProgressStore(get()) }
+    single { com.example.feature.fasting.data.FastingRepository(get()) }
+    single { com.example.feature.quran.data.repository.MemorizationRepository(get(), get()) }
+    single<com.example.feature.quran.domain.repository.ReadingJourneyRepository> {
+        com.example.feature.quran.data.repository.ReadingJourneyRepositoryImpl(get(), get())
+    }
+    single<com.example.feature.prayer.domain.repository.ManualPrayerLogRepository> {
+        com.example.feature.prayer.data.repository.ManualPrayerLogRepositoryImpl(get())
+    }
+    single {
+        com.example.feature.azkar.data.local.database.AzkarSeedManager(
+            get(), get<com.example.feature.azkar.data.local.SettingsManager>(),
+            com.example.feature.azkar.data.local.database.VerifiedSleepAzkar.load(androidContext())
+        )
+    }
+    single<com.example.feature.learning.data.LearningBookmarkStore> {
+        com.example.feature.learning.data.PreferenceLearningBookmarkStore(get())
+    }
     single { AsmaLocalDataSource(androidContext(), get()) }
     single<AsmaRepository> { AsmaRepositoryImpl(get()) }
 
     single<AzkarRepository> { AzkarRepositoryImpl(get(), get()) }
+    single<StatisticsRepository> { StatisticsRepositoryImpl(get()) }
     single<DuaRepository> { DuaRepositoryImpl(androidContext(), get()) }
 
-    single<EhsanRepository> { EhsanRepositoryImpl(get()) }
+    single { com.example.feature.ehsan.data.demo.CommunityDemoManager(get()) }
+    single<EhsanRepository> { EhsanRepositoryImpl(get(), get(), get(), get(), get()) }
     single<UserRepository> { UserRepositoryImpl(get()) }
-    single<HadithRepository> { HadithRepositoryImpl(get()) }
+    single { EhsanImageStore(androidContext()) }
+    single<HadithRepository> { HadithRepositoryImpl(get(), androidContext()) }
 
     single { QiblaManager(androidContext()) }
 }

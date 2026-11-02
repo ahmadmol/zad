@@ -4,12 +4,25 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.example.feature.azkar.data.local.entity.DailyStatEntity
 import com.example.feature.azkar.data.local.entity.ZikrEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AzkarDao {
+    /** A rejected tap changes neither counter nor statistics; failure rolls both writes back. */
+    @Transaction
+    suspend fun incrementCounterAndStat(zikrId: Long, date: String): Boolean {
+        val zikr = getZikrById(zikrId) ?: return false
+        val current = if (zikr.category != "تسبيح" && zikr.lastUpdatedDate != date) 0 else zikr.currentCount
+        if (zikr.targetCount != 0 && current >= zikr.targetCount) return false
+        incrementZikrCount(zikrId,date)
+        if (getStatByDate(date) == null) insertOrUpdateDailyStat(DailyStatEntity(date=date,totalCount=1))
+        else incrementDailyTotal(date)
+        return true
+    }
+
     @Query("SELECT * FROM azkar_table ORDER BY id ASC")
     fun getAllAzkar(): Flow<List<ZikrEntity>>
 
@@ -27,7 +40,7 @@ interface AzkarDao {
 
     @Query("""
         UPDATE azkar_table 
-        SET currentCount = currentCount + 1, 
+        SET currentCount = CASE WHEN category <> 'تسبيح' AND lastUpdatedDate <> :date THEN 1 ELSE currentCount + 1 END, 
             dailyProgress = CASE WHEN lastUpdatedDate = :date THEN dailyProgress + 1 ELSE 1 END,
             lastUpdatedDate = :date
         WHERE id = :zikrId
@@ -55,6 +68,15 @@ interface AzkarDao {
     @Query("SELECT COUNT(*) FROM azkar_table")
     suspend fun countZikr(): Int
 
+    @Query("""
+        SELECT COUNT(*) FROM azkar_table
+        WHERE title = :title AND category = :category AND text = :text
+    """)
+    suspend fun countByContentKey(title: String, category: String, text: String): Int
+
+    @Query("UPDATE azkar_table SET text = :newText, source = :source WHERE title = :title AND category = :category AND text = :oldText AND source = ''")
+    suspend fun repairCanonicalText(title: String, category: String, oldText: String, newText: String, source: String)
+
     // Daily Stats
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateDailyStat(stat: DailyStatEntity)
@@ -65,6 +87,9 @@ interface AzkarDao {
     @Query("SELECT * FROM daily_stats ORDER BY date DESC LIMIT 7")
     fun getLast7DaysStats(): Flow<List<DailyStatEntity>>
 
-    @Query("UPDATE daily_stats SET totalCount = totalCount + 1 WHERE date = :date")
+    @Query("SELECT * FROM daily_stats ORDER BY date ASC")
+    fun getAllDailyStats(): Flow<List<DailyStatEntity>>
+
+    @Query("UPDATE daily_stats SET totalCount = totalCount + 1 WHERE id = (SELECT MIN(id) FROM daily_stats WHERE date = :date)")
     suspend fun incrementDailyTotal(date: String)
 }

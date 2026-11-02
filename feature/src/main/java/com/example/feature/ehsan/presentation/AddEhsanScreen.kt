@@ -1,249 +1,430 @@
 package com.example.feature.ehsan.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AddAPhoto
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Checkroom
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.Weekend
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.example.designsystem.component.CategoryCardOption
+import com.example.designsystem.component.EhsanCategoryGrid
+import com.example.designsystem.component.EhsanContactCard
+import com.example.designsystem.component.EhsanContactMethodSelector
+import com.example.designsystem.component.EhsanFormCard
+import com.example.designsystem.component.EhsanFormSpacing
+import com.example.designsystem.component.EhsanHeroHeader
+import com.example.designsystem.component.EhsanImagePicker
+import com.example.designsystem.component.EhsanPrimaryAction
+import com.example.designsystem.component.EhsanReviewSummaryCard
+import com.example.designsystem.component.EhsanSectionHeader
+import com.example.designsystem.component.EhsanSelectorField
+import com.example.designsystem.component.EhsanStepIndicator
+import com.example.designsystem.component.EhsanTextField
+import com.example.designsystem.component.StepItem
 import com.example.designsystem.theme.IhsanTheme
+import com.example.feature.R
+import com.example.feature.core.notification.UserMessageNotifier
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * AddEhsanScreen — "إضافة عرض تبرع"
+ * ----------------------------------------------------
+ * 3-stage donation offer creation flow matching reference UI.
+ *
+ * Stage 1: المعلومات (Category, Title, Sub-category, City, Contact method)
+ * Stage 2: التفاصيل (Description, Notes)
+ * Stage 3: الصور والمراجعة (Image upload & Review summary, Publish CTA)
+ */
 @Composable
 fun AddEhsanScreen(
     onNavigateBack: () -> Unit = {},
-    initialType: String = "OFFER",
+    @Suppress("UNUSED_PARAMETER") initialType: String = "OFFER",
     viewModel: AddEhsanViewModel = koinViewModel()
 ) {
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf("طعام") }
-    var location by remember { mutableStateOf("") }
-    var type by remember { mutableStateOf(initialType) }
-    var donorName by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var imageUri by remember { mutableStateOf<String?>(null) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
-    val categories = listOf("طعام", "ملابس", "أثاث", "أجهزة", "أخرى")
-    val cities = listOf("حلب", "دمشق", "حمص", "اللاذقية", "حماة")
+    // Stepper state (1, 2, or 3)
+    var currentStep by rememberSaveable { mutableIntStateOf(1) }
+
+    // Form inputs
+    var title by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+    var categoryKey by rememberSaveable { mutableStateOf(DonationOfferCategories.first().key) }
+    var subCategory by rememberSaveable { mutableStateOf("") }
+    var city by rememberSaveable { mutableStateOf("حلب") }
+    var contactMethod by rememberSaveable { mutableStateOf("WHATSAPP") }
+    var imageUris by rememberSaveable { mutableStateOf(arrayListOf<String>()) }
     var showCityDropdown by remember { mutableStateOf(false) }
+    var showCategoryDropdown by remember { mutableStateOf(false) }
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri ->
-        imageUri = uri?.toString()
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
+        val accepted = uris.filter { uri ->
+            runCatching { context.contentResolver.takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION) }.isSuccess
+        }.map { it.toString() }
+        imageUris = ArrayList((imageUris + accepted).distinct().take(3))
+        if (accepted.size < uris.size) UserMessageNotifier.notify(context, "تعذر الاحتفاظ بإذن قراءة بعض الصور. أعد اختيارها.")
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.userName.collect { name ->
-            if (donorName.isBlank()) donorName = name
+    // Intercept system back button when on step 2 or 3
+    BackHandler(enabled = currentStep > 1) {
+        currentStep--
+    }
+
+    LaunchedEffect(uiState.phoneError) {
+        uiState.phoneError?.let {
+            UserMessageNotifier.notify(context, it)
+            snackbarHostState.showSnackbar(it)
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.event.collect { event ->
-            when (event) {
-                is AddEhsanEvent.Success -> onNavigateBack()
-                is AddEhsanEvent.Error -> {
-                    // Show toast or snackbar
-                }
-            }
+    LaunchedEffect(uiState.submissionError) {
+        uiState.submissionError?.let {
+            UserMessageNotifier.notify(context, it)
+            snackbarHostState.showSnackbar(it)
         }
     }
+
+    LaunchedEffect(uiState.submissionSuccess) {
+        if (uiState.submissionSuccess) {
+            viewModel.consumeSuccess()
+            UserMessageNotifier.notify(context, "حُفظ السجل على هذا الجهاز فقط؛ لم يُنشر للعامة")
+            title = ""
+            description = ""
+            categoryKey = DonationOfferCategories.first().key
+            city = "حلب"
+            imageUris = arrayListOf()
+            onNavigateBack()
+        }
+    }
+
+    val colors = IhsanTheme.colors
+
+    val titleError = if (title.isBlank() && uiState.submitAttempted) "الرجاء إدخال عنوان العرض" else null
+    val cityError = if (city.isBlank() && uiState.submitAttempted) "الرجاء اختيار المدينة" else null
+    val descriptionError = if (description.isBlank() && uiState.submitAttempted) "الرجاء إدخال وصف العرض" else null
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { 
-                    Text(
-                        if (type == "OFFER") "إضافة تبرع جديد" else "إضافة طلب مساعدة", 
-                        fontWeight = FontWeight.Bold 
-                    ) 
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
-                    }
-                }
-            )
-        }
+        containerColor = colors.surfaceBase,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(IhsanTheme.spacing.medium)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(IhsanTheme.spacing.medium)
+                .imePadding().navigationBarsPadding().verticalScroll(rememberScrollState())
         ) {
-            // Image Picker Section
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFFF1F3F4))
-                    .clickable { launcher.launch("image/*") },
-                contentAlignment = Alignment.Center
-            ) {
-                if (imageUri != null) {
-                    AsyncImage(
-                        model = imageUri,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(Icons.Default.AddAPhoto, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(48.dp))
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text("إضافة صورة للغرض", color = Color.Gray)
+            // 1. Hero Banner Header
+            EhsanHeroHeader(
+                title = "إضافة عرض تبرع",
+                subtitle = "مسودة محلية خاصة على هذا الجهاز",
+                cityName = city.ifBlank { "حلب" },
+                islamicDate = com.example.feature.core.util.currentHijriDateText(),
+                logoPainter = painterResource(R.drawable.splash_ihsan_logo_transparent),
+                onBackClick = {
+                    if (currentStep > 1) {
+                        currentStep--
+                    } else {
+                        onNavigateBack()
                     }
                 }
-            }
-
-            // Type Selection
-            Text("نوع الطلب", fontWeight = FontWeight.Bold)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                FilterChip(
-                    selected = type == "OFFER",
-                    onClick = { type = "OFFER" },
-                    label = { Text("عرض تبرع") },
-                    modifier = Modifier.weight(1f)
-                )
-                FilterChip(
-                    selected = type == "REQUEST",
-                    onClick = { type = "REQUEST" },
-                    label = { Text("طلب مساعدة") },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            OutlinedTextField(
-                value = title,
-                onValueChange = { title = it },
-                label = { Text(if (type == "OFFER") "عنوان التبرع" else "عنوان المساعدة المطلوبة") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
             )
 
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("الوصف") },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 3,
-                shape = RoundedCornerShape(12.dp)
-            )
-
-            Text("التصنيف", fontWeight = FontWeight.Bold)
-            ScrollableTabRow(
-                selectedTabIndex = categories.indexOf(category),
-                edgePadding = 0.dp,
-                divider = {},
-                indicator = {}
+            // Form Body Content
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(EhsanFormSpacing.SectionGap)
             ) {
-                categories.forEach { cat ->
-                    FilterChip(
-                        selected = category == cat,
-                        onClick = { category = cat },
-                        label = { Text(cat) },
-                        modifier = Modifier.padding(horizontal = 4.dp)
-                    )
-                }
-            }
+                Text("الحفظ محلي فقط. لا نشر عام ولا تحقق من ملكية الهاتف. الصور اختيارية؛ تجنب إرفاق بيانات حساسة.", color = colors.textSecondary)
 
-            // Location Selection
-            Text("المدينة", fontWeight = FontWeight.Bold)
-            Box {
-                OutlinedTextField(
-                    value = if (location.isBlank()) "اختر المدينة..." else location,
-                    onValueChange = { },
-                    readOnly = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showCityDropdown = true },
-                    enabled = false,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        disabledTextColor = if (location.isBlank()) Color.Gray else MaterialTheme.colorScheme.onSurface,
-                        disabledBorderColor = MaterialTheme.colorScheme.outline,
-                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                // 2. 3-Step Progress Indicator
+                EhsanStepIndicator(
+                    steps = listOf(
+                        StepItem(1, "المعلومات"),
+                        StepItem(2, "التفاصيل"),
+                        StepItem(3, "الصور")
+                    ),
+                    currentStep = currentStep,
+                    onStepClick = { targetStep ->
+                        if (targetStep < currentStep) {
+                            currentStep = targetStep
+                        }
+                    }
                 )
-                Box(modifier = Modifier.matchParentSize().clickable { showCityDropdown = true })
-                
-                DropdownMenu(
-                    expanded = showCityDropdown,
-                    onDismissRequest = { showCityDropdown = false },
-                    modifier = Modifier.fillMaxWidth(0.9f)
-                ) {
-                    cities.forEach { city ->
-                        DropdownMenuItem(
-                            text = { Text(city) },
+
+                // 3. Step Content
+                when (currentStep) {
+                    1 -> {
+                        EhsanFormCard {
+                        /* ---- Stage 1: المعلومات ---- */
+
+                        // Section: نوع التبرع (Category Cards Grid)
+                        Column(Modifier.fillMaxWidth()) {
+                            EhsanSectionHeader(
+                                title = "نوع التبرع"
+                            )
+                            Spacer(Modifier.height(12.dp))
+                            EhsanCategoryGrid(
+                                categories = DonationOfferCategories,
+                                selectedKey = categoryKey,
+                                onSelect = { categoryKey = it }
+                            )
+                        }
+
+                        // Section: المعلومات الأساسية (العنوان، التصنيف، المدينة)
+                        Column(Modifier.fillMaxWidth()) {
+                            Spacer(Modifier.height(EhsanFormSpacing.FieldGap))
+
+                            // العنوان
+                            EhsanTextField(
+                                value = title,
+                                onValueChange = { title = it.take(120) },
+                                label = "العنوان",
+                                placeholder = "أدخل عنوان العرض",
+                                leadingIcon = Icons.Default.LocationOn,
+                                errorText = titleError,
+                                imeAction = ImeAction.Next
+                            )
+
+                            Spacer(Modifier.height(EhsanFormSpacing.FieldGap))
+
+                            // التصنيف الفرعي
+                            Box {
+                                EhsanSelectorField(
+                                    value = subCategory.ifBlank { categoryKey },
+                                    label = "التصنيف",
+                                    placeholder = "اختر التصنيف",
+                                    onClick = { showCategoryDropdown = true }
+                                )
+
+                                DropdownMenu(
+                                    expanded = showCategoryDropdown,
+                                    onDismissRequest = { showCategoryDropdown = false },
+                                    modifier = Modifier.fillMaxWidth(0.85f)
+                                ) {
+                                    DonationOfferCategories.forEach { option ->
+                                        DropdownMenuItem(
+                                            text = { Text(option.label) },
+                                            onClick = {
+                                                categoryKey = option.key
+                                                subCategory = option.label
+                                                showCategoryDropdown = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+
+                            Spacer(Modifier.height(EhsanFormSpacing.FieldGap))
+
+                            EhsanTextField(value = description, onValueChange = { description = it.take(3000) },
+                                label = "الوصف", placeholder = "اكتب وصفًا مختصرًا ومفيدًا…", errorText = descriptionError,
+                                singleLine = false, minLines = 2, maxLines = 4)
+                            Spacer(Modifier.height(EhsanFormSpacing.FieldGap))
+                            // المدينة
+                            Box {
+                                EhsanSelectorField(
+                                    value = city,
+                                    label = "المدينة",
+                                    placeholder = "اختر المدينة",
+                                    onClick = { showCityDropdown = true },
+                                    leadingIcon = Icons.Default.LocationOn,
+                                    errorText = cityError
+                                )
+
+                                DropdownMenu(
+                                    expanded = showCityDropdown,
+                                    onDismissRequest = { showCityDropdown = false },
+                                    modifier = Modifier.fillMaxWidth(0.85f)
+                                ) {
+                                    DonationCities.forEach { cityName ->
+                                        DropdownMenuItem(
+                                            text = { Text(cityName) },
+                                            onClick = {
+                                                city = cityName
+                                                showCityDropdown = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        // Section: وسيلة التواصل
+                        Column(Modifier.fillMaxWidth()) {
+                            EhsanSectionHeader(
+                                title = "وسيلة التواصل"
+                            )
+                            Spacer(Modifier.height(12.dp))
+                            EhsanContactMethodSelector(
+                                selectedMethod = contactMethod,
+                                onSelect = { contactMethod = it }
+                            )
+                        }
+
+                        // Primary Action CTA -> Step 2
+                        EhsanPrimaryAction(
+                            text = "التالي",
                             onClick = {
-                                location = city
-                                showCityDropdown = false
+                                if (title.isNotBlank() && city.isNotBlank()) {
+                                    currentStep = 2
+                                } else {
+                                    UserMessageNotifier.notify(context, "يرجى إكمال الحقول المطلوبة")
+                                }
+                            }
+                        )
+                        }
+                    }
+
+                    2 -> {
+                        /* ---- Stage 2: التفاصيل ---- */
+
+                        EhsanFormCard {
+                            EhsanSectionHeader(
+                                title = "الوصف والتفاصيل",
+                                description = "اكتب وصفاً دقيقاً ومفيداً للعنصر المتبرع به"
+                            )
+
+                            Spacer(Modifier.height(EhsanFormSpacing.FieldGap))
+
+                            EhsanTextField(
+                                value = description,
+                                onValueChange = { description = it.take(3000) },
+                                label = "الوصف",
+                                placeholder = "اكتب وصفاً مختصراً ومفيداً...",
+                                leadingIcon = Icons.Default.Edit,
+                                errorText = descriptionError,
+                                singleLine = false,
+                                minLines = 5,
+                                imeAction = ImeAction.Default
+                            )
+                        }
+
+                        // Primary Action CTA -> Step 3
+                        EhsanPrimaryAction(
+                            text = "التالي",
+                            onClick = {
+                                if (description.isNotBlank()) {
+                                    currentStep = 3
+                                } else {
+                                    UserMessageNotifier.notify(context, "يرجى إدخال وصف العرض")
+                                }
                             }
                         )
                     }
+
+                    3 -> {
+                        /* ---- Stage 3: الصور والمراجعة ---- */
+
+                        // Image Picker Card
+                        EhsanFormCard {
+                            OfferImagesPicker(imageUris,
+                                onAdd = { launcher.launch(arrayOf("image/*")) },
+                                onRemove = { image -> imageUris = ArrayList(imageUris.filterNot { it == image }) })
+                        }
+
+
+                        // Review Summary Card
+                        EhsanReviewSummaryCard(
+                            title = title,
+                            category = categoryKey,
+                            city = city,
+                            description = description,
+                            contactPhone = uiState.currentUserPhone.ifBlank { "غير متوفر" }
+                        )
+
+                        // Contact info reminder
+                        EhsanContactCard(
+                            name = uiState.currentUserName,
+                            phone = uiState.currentUserPhone
+                        )
+
+                        // Final Publish CTA -> create OFFER
+                        EhsanPrimaryAction(
+                            text = "حفظ العرض محليًا",
+                            onClick = {
+                                viewModel.submitRequest(
+                                    title = title,
+                                    description = description,
+                                    category = categoryKey,
+                                    location = city,
+                                    type = "OFFER",
+                                    imageUrl = null,
+                                    imageUrls = imageUris,
+                                    contactMethod = contactMethod
+                                )
+                            },
+                            enabled = !uiState.isSubmitting && title.isNotBlank() && description.isNotBlank() && city.isNotBlank(),
+                            isLoading = uiState.isSubmitting,
+                            icon = Icons.AutoMirrored.Filled.Send
+                        )
+                    }
                 }
-            }
 
-            HorizontalDivider()
-            Text("معلومات التواصل", fontWeight = FontWeight.Bold)
-
-            OutlinedTextField(
-                value = donorName,
-                onValueChange = { donorName = it },
-                label = { Text("اسم المتبرع") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
-            )
-
-            OutlinedTextField(
-                value = phoneNumber,
-                onValueChange = { phoneNumber = it },
-                label = { Text("رقم الجوال") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = {
-                    viewModel.addDonation(
-                        title, description, category, location, type, donorName, phoneNumber, imageUri
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-            ) {
-                Text("تأكيد الإضافة", color = Color.White, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(16.dp))
             }
         }
     }
 }
+
+/* --- Domain Category & City Options --- */
+
+private val DonationOfferCategories = listOf(
+    CategoryCardOption("ملابس", "ملابس", Icons.Default.Checkroom),
+    CategoryCardOption("أثاث", "أثاث", Icons.Default.Weekend),
+    CategoryCardOption("مواد غذائية", "مواد غذائية", Icons.Default.Restaurant),
+    CategoryCardOption("كتب", "كتب", Icons.AutoMirrored.Filled.MenuBook)
+)
+
+private val DonationCities = listOf(
+    "حلب",
+    "دمشق",
+    "حمص",
+    "اللاذقية",
+    "حماة"
+)
+

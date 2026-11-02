@@ -1,0 +1,10 @@
+{
+  "fixtureId": "ihsan-privacy-profile-001",
+  "provenance": "Hand-authored for privacy remediation on 2026-10-21. Not derived from a device, database export, or production record.",
+  "synthetic": true,
+  "userId": "SYNTHETIC_USER_001",
+  "displayName": "مستخدم اختباري 001",
+  "phoneDisplayPlaceholder": "SYNTHETIC_PHONE_001",
+  "address": "SYNTHETIC_ADDRESS_001",
+  "usage": "Documentation and display-only test examples. The phone placeholder is intentionally non-dialable and is not a valid phone-validation fixture. This file is not packaged as application content."
+}

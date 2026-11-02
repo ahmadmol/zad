@@ -2,6 +2,8 @@ package com.example.feature.profile.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.feature.azkar.data.local.SettingsManager
+import com.example.feature.core.preferences.UserPreferences
 import com.example.feature.ehsan.domain.model.Donation
 import com.example.feature.ehsan.domain.repository.UserRepository
 import com.example.feature.ehsan.domain.usecase.DeleteDonationUseCase
@@ -9,6 +11,8 @@ import com.example.feature.ehsan.domain.usecase.GetMyDonationsUseCase
 import com.example.feature.ehsan.domain.usecase.UpdateDonationStatusUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -19,8 +23,16 @@ data class ProfileUiState(
     val myDonations: List<Donation> = emptyList(),
     val userName: String = "زائر",
     val userPhone: String = "",
+    val avatarUrl: String? = null,
     val isLoading: Boolean = false,
-    val isUserLoggedIn: Boolean = false
+    val isUserLoggedIn: Boolean = false,
+    val isDarkMode: Boolean = false,
+    val fontSize: Float = 24f,
+    val hasTrustedListingOwnership: Boolean = false,
+    val localOwnerId: String? = null,
+    val managementError: String? = null,
+    val isManaging: Boolean = false,
+    val city: String = "حلب"
 )
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
@@ -28,59 +40,110 @@ class ProfileViewModel(
     private val getMyDonationsUseCase: GetMyDonationsUseCase,
     private val updateDonationStatusUseCase: UpdateDonationStatusUseCase,
     private val deleteDonationUseCase: DeleteDonationUseCase,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val settingsManager: SettingsManager,
+    private val userPreferences: UserPreferences,
+    private val listings: com.example.feature.ehsan.domain.repository.EhsanRepository? = null
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState(isLoading = true))
     val uiState = _uiState.asStateFlow()
 
+    private var observation: kotlinx.coroutines.Job? = null
     init {
-        observeUserAndDonations()
+        observeUserAndSettings()
     }
 
-    private fun observeUserAndDonations() {
-        userRepository.getUser()
-            .onEach { user -> 
-                _uiState.update { 
-                    it.copy(
-                        userName = if (user != null) "${user.firstName} ${user.lastName}" else "زائر",
-                        userPhone = user?.phoneNumber ?: "",
-                        isUserLoggedIn = user != null
-                    ) 
-                } 
+    fun retry() = observeUserAndSettings()
+    private fun observeUserAndSettings() {
+        observation?.cancel()
+        _uiState.update { it.copy(isLoading = true, managementError = null) }
+        observation = combine(
+            userRepository.getUser(),
+            userPreferences.userAvatarUri,
+            settingsManager.darkModeFlow,
+            settingsManager.fontSizeFlow,
+            settingsManager.manualLocationCityFlow
+        ) { user, avatarUri, darkMode, fontSize, city ->
+            val fullName = if (user != null) "${user.firstName} ${user.lastName}".trim() else "زائر"
+            _uiState.update {
+                it.copy(
+                    userName = if (fullName.isNotBlank()) fullName else "زائر",
+                    userPhone = user?.phoneNumber ?: "",
+                    avatarUrl = if (user != null) avatarUri else null,
+                    isUserLoggedIn = user != null,
+                    localOwnerId = user?.id?.takeIf { id -> id > 0 }?.let { id -> "local-profile:$id" },
+                    myDonations = if (it.localOwnerId == user?.id?.let { id -> "local-profile:$id" }) it.myDonations else emptyList(),
+                    hasTrustedListingOwnership = user != null && user.id > 0,
+                    isDarkMode = darkMode,
+                    fontSize = fontSize,
+                    city = if (!user?.city.isNullOrBlank()) user.city else city.ifBlank { "حلب" }
+                )
             }
-            .flatMapLatest { user -> 
-                val name = if (user != null) "${user.firstName} ${user.lastName}" else ""
-                getMyDonationsUseCase(name) 
-            }
-            .onEach { list ->
-                _uiState.update { it.copy(isLoading = false, myDonations = list) }
-            }
-            .launchIn(viewModelScope)
+            user
+        }
+        .flatMapLatest { user ->
+            if (user != null && user.id > 0) getMyDonationsUseCase("local-profile:${user.id}")
+            else kotlinx.coroutines.flow.flowOf(emptyList<Donation>())
+        }
+        .catch { error -> if (error is kotlinx.coroutines.CancellationException) throw error; _uiState.update { it.copy(isLoading = false, managementError = "تعذر تحميل سجلاتك المحلية") } }
+        .onEach { list ->
+            _uiState.update { it.copy(isLoading = false, myDonations = list) }
+        }
+        .launchIn(viewModelScope)
     }
 
     fun updateUserName(firstName: String, lastName: String) {
-        viewModelScope.launch {
-            userRepository.updateName(firstName, lastName)
-        }
+        manage { userRepository.updateName(firstName, lastName) }
     }
 
-    fun logout() {
+    fun setDarkMode(enabled: Boolean) {
+        manage { settingsManager.setDarkMode(enabled) }
+    }
+
+    fun setFontSize(size: Float) {
+        manage { settingsManager.setFontSize(size) }
+    }
+
+    fun logout() = manage {
+        // Sign-out deactivates only the local profile. Stored presentation and worship records survive.
+        userRepository.logout()
+    }
+
+    private fun manage(action: suspend () -> Unit) {
+        if (_uiState.value.isManaging) return
+        _uiState.update { it.copy(isManaging = true, managementError = null) }
         viewModelScope.launch {
-            userRepository.logout()
+            try { action() }
+            catch (cancelled: kotlinx.coroutines.CancellationException) { throw cancelled }
+            catch (error: Exception) { _uiState.update { it.copy(managementError = "تعذر حفظ التغيير محليًا؛ أعد المحاولة") } }
+            finally { _uiState.update { it.copy(isManaging = false) } }
         }
     }
 
     fun updateStatus(id: Long, isCompleted: Boolean) {
-        viewModelScope.launch {
-            val status = if (isCompleted) "COMPLETED" else "AVAILABLE"
-            updateDonationStatusUseCase(id, status)
-        }
+        if (!owns(id)) return
+        manage { updateDonationStatusUseCase(id, if (isCompleted) "COMPLETED" else "AVAILABLE") }
     }
 
-    fun deleteDonation(donation: Donation) {
-        viewModelScope.launch {
-            deleteDonationUseCase(donation)
+    fun deleteDonation(donation: Donation) = deleteDonation(donation) {}
+
+    fun deleteDonation(donation: Donation, onDeleted: () -> Unit) {
+        if (!owns(donation.id)) return
+        manage { deleteDonationUseCase(donation); onDeleted() }
+    }
+
+    private fun owns(id: Long): Boolean = _uiState.value.myDonations.any {
+        it.id == id && it.origin == "USER" && it.ownerId == _uiState.value.localOwnerId
+    }
+
+    fun editListing(donation: Donation, imageSources: List<String>? = null, onSaved: () -> Unit) {
+        if (!owns(donation.id)) return
+        manage {
+            val repository = requireNotNull(listings) { "تعديل السجل غير متاح" }
+            if (imageSources == null) repository.updateDonation(donation)
+            else repository.updateDonation(donation, imageSources)
+            onSaved()
         }
     }
 }

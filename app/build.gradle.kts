@@ -1,15 +1,23 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
 
+val physicalQa = providers.gradleProperty("ihsanPhysicalQa").orNull == "true"
+
 android {
     namespace = "com.example.mol"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.mol"
+        applicationId = if (physicalQa) {
+            "com.example.mol.referenceqa"
+        } else {
+            "com.example.mol"
+        }
         minSdk = 25
         targetSdk = 35
         versionCode = 1
@@ -19,9 +27,39 @@ android {
         multiDexEnabled = true
     }
 
+    signingConfigs {
+        create("release") {
+            val localProps = Properties().apply {
+                val f = rootProject.file("local.properties")
+                if (f.exists()) f.inputStream().use { load(it) }
+            }
+            fun prop(name: String): String? =
+                System.getenv(name) ?: localProps.getProperty(name)
+
+            val storeFilePath = prop("IHSAN_KEYSTORE_PATH") ?: prop("IHSAN_STORE_FILE")
+            val storePasswordValue = prop("IHSAN_KEYSTORE_PASSWORD") ?: prop("IHSAN_STORE_PASSWORD")
+            val keyAliasValue = prop("IHSAN_KEY_ALIAS")
+            val keyPasswordValue = prop("IHSAN_KEY_PASSWORD")
+
+            if (!storeFilePath.isNullOrBlank() &&
+                !storePasswordValue.isNullOrBlank() &&
+                !keyAliasValue.isNullOrBlank() &&
+                !keyPasswordValue.isNullOrBlank()
+            ) {
+                storeFile = file(storeFilePath)
+                storePassword = storePasswordValue
+                keyAlias = keyAliasValue
+                keyPassword = keyPasswordValue
+            }
+        }
+    }
+
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            // QA has its own package and certificate, even on a machine with production keys.
+            signingConfig = signingConfigs.getByName(if (physicalQa) "debug" else "release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -38,21 +76,30 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+}
+
+// Fail before compiling a production Release when its identity has not been provisioned.
+// Debug and explicit QA builds remain available without production secrets.
+tasks.matching { it.name == "preReleaseBuild" }.configureEach {
+    doFirst {
+        check(physicalQa || android.signingConfigs.getByName("release").storeFile != null) {
+            "Production Release requires locally provisioned IHSAN signing credentials. " +
+                "For internal QA use -PihsanPhysicalQa=true (com.example.mol.referenceqa)."
+        }
     }
 }
 
 dependencies {
     implementation(project(":designsystem"))
     implementation(project(":feature"))
-    
-    // Core library desugaring for java.time on API < 26
+
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
 
-    // Koin
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
 
@@ -74,6 +121,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.datastore.preferences)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

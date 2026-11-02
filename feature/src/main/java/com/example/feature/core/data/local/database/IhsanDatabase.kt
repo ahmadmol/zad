@@ -2,6 +2,12 @@ package com.example.feature.core.data.local.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.example.feature.quran.data.local.entity.ReadingPlanEntity
+import com.example.feature.quran.data.local.entity.ReadingPageCompletionEntity
+import com.example.feature.quran.data.local.entity.PrivateAyahNoteEntity
+import com.example.feature.quran.data.local.dao.ReadingJourneyDao
+import com.example.feature.prayer.data.local.entity.PrayerLogEntity
+import com.example.feature.prayer.data.local.dao.PrayerLogDao
 import com.example.feature.azkar.data.local.dao.AzkarDao
 import com.example.feature.azkar.data.local.entity.DailyStatEntity
 import com.example.feature.azkar.data.local.entity.ZikrEntity
@@ -31,10 +37,17 @@ import com.example.feature.quran.data.local.entity.SurahEntity
         SurahEntity::class, 
         AyahEntity::class,
         BookmarkEntity::class,
-        DownloadedAyahEntity::class
+        DownloadedAyahEntity::class,
+        ReadingPlanEntity::class,
+        ReadingPageCompletionEntity::class,
+        PrivateAyahNoteEntity::class,
+        com.example.feature.quran.data.local.entity.MemorizationPlanEntity::class,
+        com.example.feature.quran.data.local.entity.MemorizationReviewEntity::class,
+        com.example.feature.fasting.data.FastingLogEntity::class,
+        PrayerLogEntity::class
     ],
-    version = 3,
-    exportSchema = false
+    version = 11,
+    exportSchema = true
 )
 abstract class IhsanDatabase : RoomDatabase() {
     abstract fun azkarDao(): AzkarDao
@@ -44,4 +57,8 @@ abstract class IhsanDatabase : RoomDatabase() {
     abstract fun hadithDao(): HadithDao
     abstract fun quranDao(): QuranDao
     abstract fun downloadDao(): DownloadDao
+    abstract fun readingJourneyDao(): ReadingJourneyDao
+    abstract fun memorizationDao(): com.example.feature.quran.data.local.dao.MemorizationDao
+    abstract fun fastingLogDao(): com.example.feature.fasting.data.FastingLogDao
+    abstract fun prayerLogDao(): PrayerLogDao
 }

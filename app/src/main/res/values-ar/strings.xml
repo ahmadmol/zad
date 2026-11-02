@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Explicit Arabic locale mirror of high-risk app shell strings. Default values/ remains Arabic. -->
+<resources>
+    <string name="app_name">إحسان</string>
+    <string name="common_back">رجوع</string>
+    <string name="common_retry">إعادة المحاولة</string>
+    <string name="common_open_settings">فتح الإعدادات</string>
+    <string name="location_permission_title">تفعيل خدمة الموقع</string>
+    <string name="location_permission_rationale">نحتاج للوصول إلى موقعك لتوفير مواقيت صلاة دقيقة وتحديد اتجاه القبلة بناءً على موقعك الحالي.</string>
+    <string name="location_permission_body">يرجى السماح بالوصول إلى الموقع لتفعيل ميزات مواقيت الصلاة والقبلة والتبرعات القريبة منك.</string>
+    <string name="location_permission_grant">منح الإذن الآن</string>
+    <string name="location_permission_open_settings">فتح الإعدادات يدوياً</string>
+    <string name="cd_location_off">خدمة الموقع غير مفعّلة</string>
+</resources>

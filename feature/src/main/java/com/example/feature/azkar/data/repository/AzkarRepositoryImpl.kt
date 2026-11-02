@@ -16,38 +16,37 @@ class AzkarRepositoryImpl(
     private val dateProvider: DateProvider
 ) : AzkarRepository {
 
-    override fun getAllAzkar(): Flow<List<Zikr>> {
-        return dao.getAllAzkar().map { list -> list.map { it.toDomain() } }
+    private val incrementMutex = kotlinx.coroutines.sync.Mutex()
+    private fun dayFlow(): Flow<String> = kotlinx.coroutines.flow.flow {
+        while (true) { emit(dateProvider.getCurrentDate()); kotlinx.coroutines.delay(30_000) }
+    }
+
+    override fun getAllAzkar(): Flow<List<Zikr>> = kotlinx.coroutines.flow.combine(dao.getAllAzkar(), dayFlow()) { list, date ->
+        list.map { row -> row.toDomain().let {
+            if (row.lastUpdatedDate != date) it.copy(
+                currentCount = if (row.category == "تسبيح") it.currentCount else 0, dailyProgress = 0
+            ) else it
+        } }
     }
 
     override fun getAzkarByCategory(category: String): Flow<List<Zikr>> {
-        return dao.getAzkarByCategory(category).map { list -> list.map { it.toDomain() } }
+        return getAllAzkar().map { list -> list.filter { it.category == category } }
     }
 
     override fun getFavoriteAzkar(): Flow<List<Zikr>> {
-        return dao.getFavoriteAzkar().map { list -> list.map { it.toDomain() } }
+        return getAllAzkar().map { list -> list.filter { it.isFavorite } }
     }
 
     override suspend fun updateZikrCount(zikrId: Long, newCount: Int) {
         dao.updateZikrCount(zikrId, newCount, dateProvider.getCurrentDate())
     }
 
-    override suspend fun incrementCounter(zikrId: Long) {
-        val date = dateProvider.getCurrentDate()
-        val zikr = dao.getZikrById(zikrId) ?: return
-        if (zikr.category == "سبحة حرة" || zikr.currentCount < zikr.targetCount) {
-            dao.incrementZikrCount(zikrId, date)
-            updateDailyStat(date)
-        }
-    }
-
-    private suspend fun updateDailyStat(date: String) {
-        val existingStat = dao.getStatByDate(date)
-        if (existingStat == null) {
-            dao.insertOrUpdateDailyStat(DailyStatEntity(date = date, totalCount = 1))
-        } else {
-            dao.incrementDailyTotal(date)
-        }
+    override suspend fun incrementCounter(zikrId: Long): Boolean {
+        incrementMutex.lock()
+        try {
+            val date = dateProvider.getCurrentDate()
+            return dao.incrementCounterAndStat(zikrId,date)
+        } finally { incrementMutex.unlock() }
     }
 
     override suspend fun toggleFavorite(zikrId: Long) {
@@ -71,8 +70,14 @@ class AzkarRepositoryImpl(
     }
 
     override fun getLast7DaysStats(): Flow<List<DailyStat>> {
-        return dao.getLast7DaysStats().map { list ->
-            list.map { DailyStat(it.date, it.totalCount) }
+        return kotlinx.coroutines.flow.combine(getAllDailyStats(), dayFlow()) { rows, date ->
+            val end = java.time.LocalDate.parse(date)
+            rows.filter { row -> runCatching { java.time.LocalDate.parse(row.date) }.getOrNull()?.let { it >= end.minusDays(6) && it <= end } == true }
         }
+    }
+
+    override fun getAllDailyStats(): Flow<List<DailyStat>> = dao.getAllDailyStats().map { rows ->
+        rows.groupBy { row -> row.date.map { char -> Character.digit(char, 10).takeIf { it >= 0 }?.let { ('0'.code + it).toChar() } ?: char }.joinToString("") }
+            .map { (date, entries) -> DailyStat(date, entries.sumOf { it.totalCount }) }.sortedBy { it.date }
     }
 }

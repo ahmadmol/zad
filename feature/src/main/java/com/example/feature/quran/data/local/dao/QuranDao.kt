@@ -4,10 +4,16 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.example.feature.quran.data.local.entity.AyahEntity
 import com.example.feature.quran.data.local.entity.BookmarkEntity
 import com.example.feature.quran.data.local.entity.SurahEntity
 import kotlinx.coroutines.flow.Flow
+
+data class BookmarkProjection(
+    val id: Long, val surahId: Int, val verseNumber: Int,
+    val surahName: String, val verseText: String
+)
 
 @Dao
 interface QuranDao {
@@ -55,10 +61,51 @@ interface QuranDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAyahs(ayahs: List<AyahEntity>)
 
+    @Query("SELECT * FROM ayahs ORDER BY surahId, verseNumber")
+    suspend fun getAllAyahs(): List<AyahEntity>
+
+    @Transaction
+    suspend fun applyCanonicalContent(surahs: List<SurahEntity>, ayahs: List<AyahEntity>) {
+        if (countSurahs() < 114) insertSurahs(surahs)
+        applyCanonicalEdition(ayahs)
+    }
+
+    /** Change the edition's text without replacing stable verse IDs or user bookmarks. */
+    @Transaction
+    suspend fun applyCanonicalEdition(canonical: List<AyahEntity>) {
+        val existing = getAllAyahs().associateBy { it.surahId to it.verseNumber }
+        val changed = canonical.mapNotNull { verse ->
+            val old = existing[verse.surahId to verse.verseNumber]
+            when {
+                old == null -> verse
+                old.text != verse.text -> old.copy(text = verse.text)
+                else -> null
+            }
+        }
+        if (changed.isNotEmpty()) insertAyahs(changed)
+    }
+
     // --- Bookmarks ---
 
     @Query("SELECT * FROM bookmarks ORDER BY timestamp DESC")
     fun observeAllBookmarks(): Flow<List<BookmarkEntity>>
+
+    // LEFT JOIN retains legacy orphan bookmarks without mutating the original rows.
+    @Query("""SELECT b.id, b.surahId, b.verseNumber, COALESCE(s.name, '') AS surahName,
+        COALESCE(a.text, '') AS verseText FROM bookmarks b
+        LEFT JOIN surahs s ON s.id = b.surahId
+        LEFT JOIN ayahs a ON a.surahId = b.surahId AND a.verseNumber = b.verseNumber
+        ORDER BY b.timestamp DESC, b.id DESC""")
+    fun observeBookmarkDetails(): Flow<List<BookmarkProjection>>
+
+    @Query("SELECT EXISTS(SELECT 1 FROM bookmarks WHERE surahId = :surahId AND verseNumber = :verseNumber)")
+    suspend fun isBookmarkedNow(surahId: Int, verseNumber: Int): Boolean
+
+    @Transaction
+    suspend fun toggleBookmarkAtomically(surahId: Int, verseNumber: Int) {
+        if (isBookmarkedNow(surahId, verseNumber)) deleteBookmark(surahId, verseNumber)
+        else insertBookmark(BookmarkEntity(surahId = surahId, verseNumber = verseNumber))
+    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBookmark(bookmark: BookmarkEntity)

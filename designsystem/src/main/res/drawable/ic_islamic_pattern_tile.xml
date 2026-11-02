@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Subtle Islamic geometric tile for light surfaces (not a photo crop). -->
+    <path
+        android:fillColor="#000000"
+        android:fillAlpha="0.05"
+        android:pathData="M60,8 L72,28 L92,28 L76,44 L82,64 L60,52 L38,64 L44,44 L28,28 L48,28 Z" />
+    <path
+        android:fillColor="#000000"
+        android:fillAlpha="0.04"
+        android:pathData="M20,70 L32,82 L20,94 L8,82 Z" />
+    <path
+        android:fillColor="#000000"
+        android:fillAlpha="0.04"
+        android:pathData="M100,70 L112,82 L100,94 L88,82 Z" />
+    <path
+        android:fillColor="#000000"
+        android:fillAlpha="0.035"
+        android:pathData="M60,78 L70,92 L60,106 L50,92 Z" />
+</vector>

@@ -1,6 +1,9 @@
 package com.example.feature.prayer.presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,8 +21,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.designsystem.component.IhsanButton
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.azkar.data.local.SettingsManager
-import com.example.feature.core.util.HijriDateFormatter
 import com.example.feature.prayer.PrayerTime
 import org.koin.compose.koinInject
 import java.text.SimpleDateFormat
@@ -40,22 +43,28 @@ fun PrayerDetailsBottomSheet(
     modifier: Modifier = Modifier,
     settingsManager: SettingsManager = koinInject()
 ) {
-    val prePrayerMins by settingsManager.prePrayerNotificationMinutesFlow.collectAsState(initial = 0)
-    val iqamahMins by settingsManager.iqamahNotificationMinutesFlow.collectAsState(initial = 0)
+    var retry by remember { mutableIntStateOf(0) }
+    val state by remember(settingsManager,retry) { settingsManager.observePrayerSheetState() }
+        .collectAsStateWithLifecycle(initialValue=PrayerSheetState())
+    val prePrayerMins=state.prePrayerMins
+    val iqamahMins=state.iqamahMins
+
+    val colors = IhsanTheme.colors
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         modifier = modifier,
         shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
         dragHandle = {
-            BottomSheetDefaults.DragHandle(color = Color.LightGray.copy(alpha = 0.5f))
+            BottomSheetDefaults.DragHandle(color = colors.borderSubtle)
         },
-        containerColor = Color.White
+        containerColor = colors.surfaceElevated
     ) {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
                     .padding(horizontal = 24.dp)
                     .padding(bottom = 32.dp)
             ) {
@@ -70,19 +79,23 @@ fun PrayerDetailsBottomSheet(
                             text = selectedPrayer.nameAr,
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
+                            color = IhsanTheme.colors.accentContent
                         )
                         Text(
                             text = if (selectedPrayer.isActive) "الصلاة القادمة" else "وقت الصلاة",
                             style = MaterialTheme.typography.bodySmall,
-                            color = if (selectedPrayer.isActive) MaterialTheme.colorScheme.primary else Color.Gray
+                            color = if (selectedPrayer.isActive) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                colors.textSecondary
+                            }
                         )
                     }
                     Text(
                         text = selectedPrayer.time,
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = IhsanTheme.colors.accentContent
                     )
                 }
 
@@ -95,7 +108,7 @@ fun PrayerDetailsBottomSheet(
 
                 // Info Section
                 InfoRow(Icons.Default.LocationOn, location)
-                InfoRow(Icons.Default.CalendarMonth, "${SimpleDateFormat("d MMMM yyyy", Locale("ar")).format(Date())} - ${HijriDateFormatter.nowFormatted()}")
+                InfoRow(Icons.Default.CalendarMonth, "${SimpleDateFormat("d MMMM yyyy", Locale("ar")).format(Date())} - ${com.example.feature.core.util.currentHijriDateText()}")
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -108,7 +121,7 @@ fun PrayerDetailsBottomSheet(
                 )
 
                 Surface(
-                    color = Color(0xFFF8F9FA),
+                    color = colors.surfaceMuted,
                     shape = RoundedCornerShape(20.dp)
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
@@ -117,7 +130,7 @@ fun PrayerDetailsBottomSheet(
                             if (index < allPrayers.size - 1) {
                                 HorizontalDivider(
                                     modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp),
-                                    color = Color.LightGray.copy(alpha = 0.3f)
+                                    color = colors.divider
                                 )
                             }
                         }
@@ -134,12 +147,14 @@ fun PrayerDetailsBottomSheet(
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
                 
-                NotificationSettings(
+                if (state.ready) NotificationSettings(
                     prePrayerMins = prePrayerMins,
                     iqamahMins = iqamahMins,
                     onUpdatePrePrayer = onUpdatePrePrayer,
                     onUpdateIqamah = onUpdateIqamah
-                )
+                ) else if (state.error != null) com.example.designsystem.component.IhsanErrorState(
+                    title="تعذر قراءة التنبيهات",message=state.error,onRetry={retry++})
+                else com.example.designsystem.component.IhsanLoadingState()
 
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -155,8 +170,8 @@ fun PrayerDetailsBottomSheet(
                 TextButton(
                     onClick = onSettingsClick,
                     modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("إعدادات طريقة الحساب", color = Color.Gray)
+                , colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
+                    Text("إعدادات طريقة الحساب", color = colors.textSecondary)
                 }
             }
         }
@@ -165,8 +180,10 @@ fun PrayerDetailsBottomSheet(
 
 @Composable
 fun CountdownSection(countdown: String) {
+    val colors = IhsanTheme.colors
+
     Surface(
-        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
+        color = IhsanTheme.colors.accentContent.copy(alpha = 0.05f),
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -174,12 +191,12 @@ fun CountdownSection(countdown: String) {
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("الوقت المتبقي للأذان", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+            Text("الوقت المتبقي للأذان", style = MaterialTheme.typography.labelSmall, color = colors.textSecondary)
             Text(
                 text = countdown,
                 style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.primary
+                color = IhsanTheme.colors.accentContent
             )
         }
     }
@@ -187,13 +204,15 @@ fun CountdownSection(countdown: String) {
 
 @Composable
 fun InfoRow(icon: androidx.compose.ui.graphics.vector.ImageVector, text: String) {
+    val colors = IhsanTheme.colors
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(vertical = 4.dp)
     ) {
-        Icon(icon, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
+        Icon(icon, contentDescription = null, tint = colors.textSecondary, modifier = Modifier.size(16.dp))
         Spacer(modifier = Modifier.width(8.dp))
-        Text(text, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+        Text(text, style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
     }
 }
 
@@ -214,17 +233,18 @@ fun PrayerItemRow(prayer: PrayerTime, isNext: Boolean) {
             Text(
                 text = prayer.nameAr,
                 fontWeight = if (isNext) FontWeight.Bold else FontWeight.Normal,
-                color = if (isNext) MaterialTheme.colorScheme.primary else Color.Black
+                color = if (isNext) IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.onSurface
             )
         }
         Text(
             text = prayer.time,
             fontWeight = if (isNext) FontWeight.Bold else FontWeight.Normal,
-            color = if (isNext) MaterialTheme.colorScheme.primary else Color.Black
+            color = if (isNext) IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.onSurface
         )
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun NotificationSettings(
     prePrayerMins: Int,
@@ -233,60 +253,20 @@ fun NotificationSettings(
     onUpdateIqamah: (Int) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("تنبيه قبل الصلاة بـ:", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            listOf(0, 5, 10, 15, 30).forEach { mins ->
-                val label = if (mins == 0) "إيقاف" else "$mins د"
-                val isSelected = prePrayerMins == mins
-                
-                Surface(
-                    onClick = { onUpdatePrePrayer(mins) },
-                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.White,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray.copy(alpha = 0.5f)),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = label,
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        textAlign = TextAlign.Center,
-                        fontSize = 12.sp,
-                        color = if (isSelected) Color.White else Color.Gray,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                    )
-                }
+        Text("تنبيه قبل الصلاة بـ:", style = MaterialTheme.typography.labelSmall, color = IhsanTheme.colors.textSecondary)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf(0, 5, 10, 15, 30).forEach { minutes ->
+                com.example.designsystem.component.IhsanFilterChip(
+                    if (minutes == 0) "إيقاف" else "$minutes د", prePrayerMins == minutes,
+                    { onUpdatePrePrayer(minutes) })
             }
         }
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("تنبيه الإقامة بعد:", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            listOf(0, 5, 10, 15, 20).forEach { mins ->
-                val label = if (mins == 0) "إيقاف" else "$mins د"
-                val isSelected = iqamahMins == mins
-                
-                Surface(
-                    onClick = { onUpdateIqamah(mins) },
-                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.White,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray.copy(alpha = 0.5f)),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = label,
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        textAlign = TextAlign.Center,
-                        fontSize = 12.sp,
-                        color = if (isSelected) Color.White else Color.Gray,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                    )
-                }
+        Text("تنبيه الإقامة بعد:", style = MaterialTheme.typography.labelSmall, color = IhsanTheme.colors.textSecondary)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf(0, 5, 10, 15, 20).forEach { minutes ->
+                com.example.designsystem.component.IhsanFilterChip(
+                    if (minutes == 0) "إيقاف" else "$minutes د", iqamahMins == minutes,
+                    { onUpdateIqamah(minutes) })
             }
         }
     }

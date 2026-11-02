@@ -17,7 +17,10 @@ data class DonationEntity(
     val donorName: String,
     val phoneNumber: String,
     val imageUrl: String? = null,
-    val createdAt: Long
+    val createdAt: Long,
+    val ownerId: String? = null,
+    @androidx.room.ColumnInfo(defaultValue = "'LEGACY'") val origin: String = "LEGACY",
+    @androidx.room.ColumnInfo(defaultValue = "'PHONE'") val contactMethod: String = "PHONE"
 )
 
 fun DonationEntity.toDomain() = Donation(
@@ -31,7 +34,7 @@ fun DonationEntity.toDomain() = Donation(
     donorName = donorName,
     phoneNumber = phoneNumber,
     imageUrl = imageUrl,
-    createdAt = createdAt
+    createdAt = createdAt, ownerId = ownerId, origin = origin, contactMethod = contactMethod
 )
 
 fun Donation.toEntity() = DonationEntity(
@@ -45,5 +48,5 @@ fun Donation.toEntity() = DonationEntity(
     donorName = donorName,
     phoneNumber = phoneNumber,
     imageUrl = imageUrl,
-    createdAt = createdAt
+    createdAt = createdAt, ownerId = ownerId, origin = origin, contactMethod = contactMethod
 )

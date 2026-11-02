@@ -20,7 +20,7 @@ coil = "2.6.0"
 playServicesLocation = "21.3.0"
 kotlinxCoroutinesPlayServices = "1.8.1"
 accompanistPermissions = "0.36.0"
-adhan = "0.0.6"
+adhan = "0.0.5"
 mockk = "1.13.12"
 kotlinxCoroutinesTest = "1.8.1"
 media3 = "1.5.0"
@@ -47,6 +47,7 @@ androidx-compose-material-icons-extended = { group = "androidx.compose.material"
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
@@ -62,6 +63,7 @@ adhan = { group = "com.batoulapps.adhan", name = "adhan2", version.ref = "adhan"
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
+androidx-media3-exoplayer-hls = { group = "androidx.media3", name = "media3-exoplayer-hls", version.ref = "media3" }
 androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
 androidx-media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3" }
 

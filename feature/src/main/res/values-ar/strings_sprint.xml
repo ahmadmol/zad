@@ -1,0 +1,10 @@
+<resources>
+    <string name="sprint_appearance">مظهر التطبيق</string>
+    <string name="sprint_theme_system">اتباع مظهر النظام</string>
+    <string name="sprint_theme_light">فاتح</string>
+    <string name="sprint_theme_dark">داكن</string>
+    <string name="sprint_reset_title">إعادة ضبط العداد؟</string>
+    <string name="sprint_reset_message">سيبدأ عداد الذكر المحدد من الصفر. يبقى سجل إحصاءاتك محفوظًا.</string>
+    <string name="sprint_reset_confirm">إعادة الضبط</string>
+    <string name="sprint_cancel">إلغاء</string>
+</resources>

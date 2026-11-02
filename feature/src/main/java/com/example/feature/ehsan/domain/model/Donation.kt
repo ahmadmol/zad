@@ -11,5 +11,8 @@ data class Donation(
     val donorName: String,
     val phoneNumber: String,
     val imageUrl: String? = null,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val ownerId: String? = null,
+    val origin: String = "USER",
+    val contactMethod: String = "PHONE"
 )

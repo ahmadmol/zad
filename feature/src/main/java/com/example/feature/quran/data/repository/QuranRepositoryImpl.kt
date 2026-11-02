@@ -67,42 +67,47 @@ class QuranRepositoryImpl(
     }
 
     override fun observeLastRead(): Flow<Pair<Int, Int>?> {
-        return combine(
-            userPreferences.lastReadSurahId,
-            userPreferences.lastReadAyahNumber
-        ) { surahId, ayahNumber ->
-            if (surahId != null && ayahNumber != null) {
-                surahId to ayahNumber
-            } else null
-        }
+        return userPreferences.lastReadPosition
     }
 
     override fun observeAllBookmarks(): Flow<List<com.example.feature.quran.domain.model.Bookmark>> {
-        return dao.observeAllBookmarks().map { entities ->
-            entities.map { entity ->
-                val surah = dao.getSurahById(entity.surahId)
-                val verse = dao.getAyahBySurahAndVerse(entity.surahId, entity.verseNumber)
-                entity.toDomain(surah?.name ?: "", verse?.text ?: "")
-            }
+        return dao.observeBookmarkDetails().map { rows ->
+            rows.map { com.example.feature.quran.domain.model.Bookmark(it.id, it.surahId, it.verseNumber, it.surahName, it.verseText) }
         }
     }
 
     override suspend fun toggleBookmark(surahId: Int, verseNumber: Int) {
-        val isBookmarked = dao.observeIsBookmarked(surahId, verseNumber).first()
-        if (isBookmarked) {
-            dao.deleteBookmark(surahId, verseNumber)
-        } else {
-            dao.insertBookmark(BookmarkEntity(surahId = surahId, verseNumber = verseNumber))
-        }
+        dao.toggleBookmarkAtomically(surahId, verseNumber)
     }
 
     override fun observeIsBookmarked(surahId: Int, verseNumber: Int): Flow<Boolean> {
         return dao.observeIsBookmarked(surahId, verseNumber)
     }
 
-    override suspend fun searchAyahs(query: String): List<Verse> {
+    private var searchIndex: List<Triple<com.example.feature.quran.data.local.entity.AyahEntity, String, String>>? = null
+    private val searchMutex = kotlinx.coroutines.sync.Mutex()
+
+    override suspend fun searchAyahs(query: String): List<Verse> = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+        if (query.isBlank()) return@withContext emptyList()
         assetLoader.loadIfNeeded()
-        return dao.searchAyahs(query).map { it.toDomain() }
+        searchMutex.lock()
+        try {
+            val index = searchIndex ?: dao.getAllAyahs().map {
+                Triple(it, com.example.feature.core.search.ArabicSearch.key(it.text),
+                    com.example.feature.quran.domain.model.QuranSearch.expandedVerseKey(it.text))
+            }
+                .also { searchIndex = it }
+            val words = com.example.feature.core.search.ArabicSearch.key(query).split(' ').filter(String::isNotBlank)
+            if (words.isEmpty()) return@withContext emptyList()
+            val chapters = dao.getAllSurahs().filter {
+                com.example.feature.quran.domain.model.QuranSearch.matchesSurah(it.name, query)
+            }.map { it.id }.toSet()
+            // A chapter hit opens its first verse; don't flood search with every verse in it.
+            val chapterHits = index.filter { (ayah, _, _) -> ayah.surahId in chapters && ayah.verseNumber == 1 }
+            val verseHits = index.filter { (_, key, expanded) -> words.all { key.contains(it) || expanded.contains(it) } }
+                .sortedBy { (_, key, _) -> if (words.all(key::contains)) 0 else 1 }
+            (chapterHits + verseHits).distinctBy { it.first.id }.map { it.first.toDomain() }
+        } finally { searchMutex.unlock() }
     }
 
     override fun observeDownloadedAyahs(surahId: Int, readerId: String): Flow<List<Int>> {

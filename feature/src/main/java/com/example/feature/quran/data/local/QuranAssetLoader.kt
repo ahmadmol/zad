@@ -6,6 +6,8 @@ import com.example.feature.quran.data.local.entity.AyahEntity
 import com.example.feature.quran.data.local.entity.SurahEntity
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class QuranAssetLoader(
     private val context: Context,
@@ -17,59 +19,32 @@ class QuranAssetLoader(
         coerceInputValues = true
     }
 
-    suspend fun loadIfNeeded() {
-        if (dao.countSurahs() < 114) {
-            loadSurahs()
-        }
-        if (dao.countAyahs() < 6236) { // Ensure full load
-            loadAyahs()
-        }
-        val surahCount = dao.countSurahs()
-        val ayahCount = dao.countAyahs()
-        if (surahCount == 114 && ayahCount == 6236) {
-            android.util.Log.d("QuranAssetLoader", "Data validation successful: 114 Surahs, 6236 Ayahs.")
-        } else {
-            android.util.Log.e("QuranAssetLoader", "Data validation failed: Surahs: $surahCount, Ayahs: $ayahCount")
-        }
-    }
+    private val editionLock = Mutex()
+    private var editionLoaded = false
 
-    private suspend fun loadSurahs() {
-        val raw = try {
-            context.assets.open(FILE_METADATA).bufferedReader().use { it.readText() }
-        } catch (e: Exception) {
-            return
-        }
-        val data = json.decodeFromString<MetadataDto>(raw)
-        dao.insertSurahs(data.surahs.map { it.toEntity() })
-    }
-
-    private suspend fun loadAyahs() {
-        val tafsirMap = try {
-            val rawMeta = context.assets.open(FILE_METADATA).bufferedReader().use { it.readText() }
-            val meta = json.decodeFromString<MetadataDto>(rawMeta)
-            meta.ayahs.associateBy { "${it.surahId}_${it.verseNumber}" }
-        } catch (e: Exception) {
-            emptyMap()
-        }
-
-        val raw = try {
-            context.assets.open(FILE_FULL_QURAN).bufferedReader().use { it.readText() }
-        } catch (e: Exception) {
-            return
-        }
-        val surahs = json.decodeFromString<List<FullSurahDto>>(raw)
-        val allAyahs = surahs.flatMap { surah ->
-            surah.verses.map { verse ->
-                val tafsir = tafsirMap["${surah.id}_${verse.id}"]?.tafsir
-                AyahEntity(
-                    surahId = surah.id,
-                    verseNumber = verse.id,
-                    text = verse.text,
-                    tafsir = tafsir
-                )
+    suspend fun loadIfNeeded() = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+        editionLock.withLock {
+            if (editionLoaded && dao.countSurahs() == 114 && dao.countAyahs() == 6236) return@withLock
+            // Parse/validate both assets before touching any existing rows. Failures propagate to retry UI.
+            val metadata = json.decodeFromString<MetadataDto>(
+                context.assets.open(FILE_METADATA).bufferedReader().use { it.readText() })
+            val surahs = json.decodeFromString<List<FullSurahDto>>(
+                context.assets.open(FILE_FULL_QURAN).bufferedReader().use { it.readText() })
+            require(metadata.surahs.map { it.id } == (1..114).toList()) { "Invalid Quran metadata" }
+            require(surahs.map { it.id } == (1..114).toList()) { "Invalid Quran edition" }
+            val allAyahs = surahs.flatMap { surah ->
+                val expected = metadata.surahs[surah.id - 1].totalVerses
+                require(surah.verses.map { it.id } == (1..expected).toList()) { "Incomplete Quran surah" }
+                surah.verses.map { verse ->
+                    require(verse.text.isNotBlank()) { "Empty Quran verse" }
+                    AyahEntity(surahId = surah.id, verseNumber = verse.id, text = verse.text, tafsir = null)
+                }
             }
+            require(allAyahs.size == 6236) { "Incomplete canonical Quran asset" }
+            dao.applyCanonicalContent(metadata.surahs.map { it.toEntity() }, allAyahs)
+            check(dao.countSurahs() == 114 && dao.countAyahs() == 6236) { "Quran database validation failed" }
+            editionLoaded = true
         }
-        dao.insertAyahs(allAyahs)
     }
 
     @Serializable

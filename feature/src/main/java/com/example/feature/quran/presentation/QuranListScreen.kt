@@ -1,5 +1,9 @@
 package com.example.feature.quran.presentation
 
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+
+import com.example.designsystem.theme.IhsanTheme
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +18,8 @@ import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.activity.compose.BackHandler
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,7 +29,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.designsystem.component.IhsanActionCard
+import com.example.designsystem.component.IhsanEmptyState
+import com.example.designsystem.component.IhsanErrorState
 import com.example.designsystem.component.IhsanSearchBar
+import com.example.designsystem.component.IhsanTopBar
+import com.example.designsystem.component.IhsanTopBarStyle
 import com.example.designsystem.component.LastReadCard
 import com.example.designsystem.component.shimmerEffect
 
@@ -34,11 +44,18 @@ fun QuranListScreen(
     onSurahClick: (Int, Int?) -> Unit,
     onSearch: (String) -> Unit,
     onClearSearch: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onMemorization: () -> Unit = {},
+    onReadingJourney: () -> Unit = {},
+    onRetry: () -> Unit = {}
 ) {
-    var showGoToSheet by remember { mutableStateOf(false) }
-    var selectedTab by remember { mutableIntStateOf(0) }
-    var isSearchActive by remember { mutableStateOf(false) }
+    var showGoToSheet by rememberSaveable { mutableStateOf(false) }
+    var selectedTab by rememberSaveable { mutableIntStateOf(0) }
+    var isSearchActive by rememberSaveable { mutableStateOf(false) }
+    BackHandler(enabled = isSearchActive && !showGoToSheet) {
+        isSearchActive = false
+        onClearSearch()
+    }
 
     Scaffold(
         topBar = {
@@ -57,18 +74,15 @@ fun QuranListScreen(
                             isSearchActive = false
                             onClearSearch()
                         }) {
-                            Icon(Icons.Default.Close, contentDescription = "Close Search")
+                            Icon(Icons.Default.Close, contentDescription = "إغلاق البحث")
                         }
                     }
                 )
             } else {
-                CenterAlignedTopAppBar(
-                    title = { Text("القرآن الكريم", fontWeight = FontWeight.Bold) },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                        }
-                    },
+                IhsanTopBar(
+                    title = "القرآن الكريم",
+                    onNavigateBack = onBack,
+                    style = IhsanTopBarStyle.Surface,
                     actions = {
                         IconButton(onClick = { isSearchActive = true }) {
                             Icon(Icons.Default.Search, contentDescription = "بحث")
@@ -83,17 +97,28 @@ fun QuranListScreen(
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
             if (!isSearchActive) {
-                TabRow(selectedTabIndex = selectedTab) {
+                TabRow(selectedTabIndex = selectedTab, indicator = { positions ->
+                    TabRowDefaults.SecondaryIndicator(Modifier.tabIndicatorOffset(positions[selectedTab]),
+                        color = IhsanTheme.colors.accentContent)
+                }) {
                     Tab(
+                    selectedContentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else LocalContentColor.current,
+                    unselectedContentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textSecondary else LocalContentColor.current.copy(alpha = .7f),
                         selected = selectedTab == 0,
                         onClick = { selectedTab = 0 },
                         text = { Text("السور") }
                     )
                     Tab(
+                    selectedContentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else LocalContentColor.current,
+                    unselectedContentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textSecondary else LocalContentColor.current.copy(alpha = .7f),
                         selected = selectedTab == 1,
                         onClick = { selectedTab = 1 },
                         text = { Text("المحفوظات") }
                     )
+                    Tab(selected = selectedTab == 2, onClick = { selectedTab = 2 },
+                        selectedContentColor = IhsanTheme.colors.textPrimary,
+                        unselectedContentColor = IhsanTheme.colors.textSecondary,
+                        text = { Text("الأجزاء") })
                 }
             }
 
@@ -101,21 +126,22 @@ fun QuranListScreen(
                 if (state.isLoading && state.surahs.isEmpty() && !isSearchActive) {
                     QuranShimmerList()
                 } else if (state.errorMessage != null && state.surahs.isEmpty() && !isSearchActive) {
-                    Text(
-                        text = state.errorMessage,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.align(Alignment.Center).padding(16.dp),
-                        textAlign = TextAlign.Center
-                    )
+                    IhsanErrorState(title = "تعذر تحميل القرآن", message = state.errorMessage,
+                        modifier = Modifier.align(Alignment.Center), onRetry = onRetry)
                 } else if (isSearchActive) {
                     if (state.isLoading) {
                         QuranShimmerList()
+                    } else if (state.errorMessage != null) {
+                        IhsanErrorState(title = "تعذر البحث", message = state.errorMessage,
+                            modifier = Modifier.align(Alignment.Center), retryLabel = "إعادة المحاولة",
+                            onRetry = { onSearch(state.searchQuery) })
                     } else if (state.searchResults.isEmpty() && state.searchQuery.isNotBlank()) {
-                        Text(
-                            "لا توجد نتائج",
-                            modifier = Modifier.align(Alignment.Center),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        IhsanEmptyState(title = "لا توجد نتائج", message = "جرّب كلمة أخرى أو امسح البحث.",
+                            modifier = Modifier.align(Alignment.Center), primaryActionLabel = "مسح البحث",
+                            onPrimaryAction = onClearSearch)
+                    } else if (state.searchQuery.isBlank()) {
+                        IhsanEmptyState(title = "البحث في القرآن", message = "اكتب كلمة للبحث في الآيات.",
+                            icon = Icons.Default.Search, modifier = Modifier.align(Alignment.Center))
                     } else {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
@@ -142,6 +168,15 @@ fun QuranListScreen(
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             item {
+                                IhsanActionCard(title = "خطة القراءة وملاحظاتي الخاصة",
+                                    subtitle = "تأكيد يدوي لإتمام الصفحات • ملاحظات وتصدير اختياري",
+                                    icon = Icons.Default.Bookmark, onClick = onReadingJourney)
+                            }
+                            item {
+                                IhsanActionCard(title = "الحفظ والمراجعة", subtitle = "نطاق آيات • تأكيد يدوي • مراجعات مستحقة",
+                                    icon = Icons.Default.Bookmark, onClick = onMemorization)
+                            }
+                            item {
                                 KhatmaProgressCard(progress = state.khatmaProgress)
                             }
 
@@ -150,6 +185,7 @@ fun QuranListScreen(
                                     LastReadCard(
                                         surahName = surah.name,
                                         surahNumber = surah.id,
+                                        ayahNumber = ayah,
                                         onContinueClick = { onSurahClick(surah.id, ayah) }
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
@@ -157,22 +193,53 @@ fun QuranListScreen(
                             }
 
                             items(state.surahs) { surah ->
-                                IhsanActionCard(
-                                    title = "سورة ${surah.name}",
-                                    subtitle = "${surah.revelationType} • ${surah.totalVerses} آية",
-                                    icon = Icons.AutoMirrored.Filled.MenuBook,
-                                    onClick = { onSurahClick(surah.id, null) },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
+                                val readingProgress = state.surahReadingProgress[surah.id]
+                                val lastAyah = state.lastRead
+                                    ?.takeIf { it.first.id == surah.id }
+                                    ?.second
+                                val subtitle = buildString {
+                                    append("${surah.revelationType} • ${surah.totalVerses} آية")
+                                    if (lastAyah != null) {
+                                        append(" • وصلت للآية $lastAyah")
+                                    }
+                                }
+                                Column(modifier = Modifier.fillMaxWidth()) {
+                                    IhsanActionCard(
+                                        title = "سورة ${surah.name}",
+                                        subtitle = subtitle,
+                                        icon = Icons.AutoMirrored.Filled.MenuBook,
+                                        onClick = { onSurahClick(surah.id, lastAyah) },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    if (readingProgress != null && readingProgress > 0f) {
+                                        Spacer(modifier = Modifier.height(6.dp))
+                                        LinearProgressIndicator(
+                                            progress = { readingProgress.coerceIn(0f, 1f) },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(6.dp)
+                                                .padding(horizontal = 4.dp),
+                                            color = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary,
+                                            trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                                        )
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                    }
+                                }
+                            }
+                        }
+                    } else if (selectedTab == 2) {
+                        LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            items(com.example.feature.quran.domain.model.QuranNavigation.juzStarts.withIndex().toList()) { (index, start) ->
+                                val surah = state.surahs.firstOrNull { it.id == start.first }
+                                IhsanActionCard(title = "الجزء ${index + 1}", subtitle = "${surah?.name.orEmpty()} — آية ${start.second}",
+                                    icon = Icons.AutoMirrored.Filled.MenuBook, onClick = { onSurahClick(start.first, start.second) }, modifier = Modifier.fillMaxWidth())
                             }
                         }
                     } else {
                         if (state.bookmarks.isEmpty()) {
-                            Text(
-                                "لا توجد محفوظات",
-                                modifier = Modifier.align(Alignment.Center),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            IhsanEmptyState(title = "لا توجد محفوظات", message = "يمكنك حفظ آية من قائمة الآية أثناء القراءة.",
+                                icon = Icons.Default.Bookmark, modifier = Modifier.align(Alignment.Center),
+                                primaryActionLabel = "تصفح السور", onPrimaryAction = { selectedTab = 0 })
                         } else {
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
@@ -241,14 +308,14 @@ fun KhatmaProgressCard(progress: Float) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "تقدم الختمة",
+                    "موضع القراءة في المصحف",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                     "${progress.toInt()}%",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -259,12 +326,12 @@ fun KhatmaProgressCard(progress: Float) {
                     .fillMaxWidth()
                     .height(8.dp)
                     .clip(RoundedCornerShape(4.dp)),
-                color = MaterialTheme.colorScheme.primary,
+                color = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                "استمر في القراءة لتصل لختم القرآن الكريم",
+                "يمثل آخر موضع فتحته، وليس مقدار ما أتممت قراءته",
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

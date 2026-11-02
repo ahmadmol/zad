@@ -1,7 +1,6 @@
 package com.example.feature.statistics
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,104 +14,163 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.designsystem.theme.Grey
-import com.example.designsystem.theme.White
+import com.example.designsystem.component.IhsanEmptyState
+import com.example.designsystem.component.IhsanErrorState
+import com.example.designsystem.component.IhsanLoadingState
+import com.example.designsystem.component.IhsanTopBar
+import com.example.designsystem.component.IhsanTopBarStyle
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
-import com.example.feature.azkar.presentation.AzkarUiState
+import com.example.feature.azkar.domain.model.DailyStat
+import com.example.feature.statistics.presentation.StatisticsUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StatisticsScreen(state: AzkarUiState, onBack: () -> Unit) {
+fun StatisticsScreen(
+    state: StatisticsUiState,
+    onBack: () -> Unit,
+    onRetry: (() -> Unit)? = null
+) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.stats_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) { 
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") 
-                    }
-                }
+            IhsanTopBar(
+                title = stringResource(R.string.stats_title),
+                style = IhsanTopBarStyle.Hero, backgroundImageRes = com.example.feature.R.drawable.ihsan_home_hero_background,
+                onNavigateBack = onBack
             )
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            item {
-                Text(stringResource(R.string.chart_title), style = MaterialTheme.typography.titleLarge)
-                Spacer(modifier = Modifier.height(16.dp))
-                DailyProgressChart(stats = state.last7DaysStats)
+        when {
+            state.isLoading -> {
+                IhsanLoadingState(
+                    modifier = Modifier
+                        .padding(padding)
+                        .fillMaxSize(),
+                    message = stringResource(R.string.common_loading)
+                )
             }
-
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+            state.error != null -> {
+                IhsanErrorState(
+                    title = stringResource(R.string.statistics_load_error),
+                    message = null,
+                    modifier = Modifier
+                        .padding(padding)
+                        .fillMaxSize(),
+                    retryLabel = stringResource(R.string.common_retry),
+                    onRetry = onRetry
+                )
+            }
+            else -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(padding)
+                        .fillMaxSize()
+                        .padding(IhsanTheme.dimens.screenHorizontal),
+                    verticalArrangement = Arrangement.spacedBy(IhsanTheme.dimens.sectionSpacing)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(stringResource(R.string.total_daily_count), style = MaterialTheme.typography.titleMedium)
-                        val totalDaily = state.azkarList.sumOf { it.dailyProgress }
-                        Text(
-                            text = totalDaily.toString(),
-                            style = MaterialTheme.typography.displayMedium.copy(
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Bold
+                    item {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(IhsanTheme.dimens.radiusLarge),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                             )
+                        ) {
+                            Column(modifier = Modifier.padding(IhsanTheme.spacing.medium)) {
+                                Text(
+                                    stringResource(R.string.total_daily_count),
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(
+                                    text = stringResource(
+                                        R.string.statistics_total_count_value,
+                                        state.summary.totalDailyCount
+                                    ),
+                                    style = MaterialTheme.typography.headlineMedium.copy(
+                                        color = IhsanTheme.colors.accentContent,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        Text(stringResource(R.string.chart_title), style = MaterialTheme.typography.titleLarge)
+                        Spacer(modifier = Modifier.height(IhsanTheme.spacing.medium))
+                        if (state.last7DaysStats.isNotEmpty()) {
+                            DailyProgressChart(stats = state.last7DaysStats)
+                        } else {
+                            Text(stringResource(R.string.statistics_empty_body),
+                                style = MaterialTheme.typography.bodySmall, color = IhsanTheme.colors.textSecondary)
+                        }
+                    }
+
+                    item {
+                        Text(
+                            stringResource(R.string.daily_details_title),
+                            style = MaterialTheme.typography.titleLarge
                         )
                     }
-                }
-            }
 
-            item {
-                Text(stringResource(R.string.daily_details_title), style = MaterialTheme.typography.titleLarge)
-            }
+                    if (state.isEmpty) {
+                        item {
+                            Text(stringResource(R.string.statistics_empty_title),
+                                style = MaterialTheme.typography.bodySmall, color = IhsanTheme.colors.textSecondary)
+                        }
+                    }
 
-            items(state.azkarList) { zikr ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(zikr.text, modifier = Modifier.weight(1f), fontSize = 18.sp)
-                    Badge(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = White,
-                        modifier = Modifier.padding(start = 8.dp)
-                    ) {
-                        Text("${zikr.dailyProgress}", modifier = Modifier.padding(4.dp))
+                    items(state.dailyItems, key = { it.id }) { item ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = IhsanTheme.spacing.small),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(item.text, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                            Badge(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.padding(start = IhsanTheme.spacing.small)
+                            ) {
+                                Text("${item.dailyProgress}", modifier = Modifier.padding(4.dp))
+                            }
+                        }
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
                     }
                 }
-                HorizontalDivider(color = Grey.copy(alpha = 0.2f))
             }
         }
     }
 }
 
 @Composable
-fun DailyProgressChart(stats: List<com.example.feature.azkar.domain.model.DailyStat>) {
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val labelColor = Grey
+fun DailyProgressChart(stats: List<DailyStat>) {
+    val primaryColor = if (IhsanTheme.isDark) IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.primary
+    val labelColor = MaterialTheme.colorScheme.onSurfaceVariant
 
-    Canvas(modifier = Modifier.fillMaxWidth().height(200.dp)) {
-        val spacing = 16.dp.toPx()
-        val barWidth = 30.dp.toPx()
+    val chartDescription = stats.joinToString(separator = "، ") { "${it.date}: ${it.totalCount}" }
+    Canvas(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(160.dp)
+            .semantics { contentDescription = "نشاط الأذكار خلال سبعة أيام: $chartDescription" }
+    ) {
+        val slotWidth = if (stats.isEmpty()) size.width else size.width / stats.size
+        val spacing = slotWidth * 0.35f
+        val barWidth = slotWidth * 0.55f
         val maxCount = (stats.maxOfOrNull { it.totalCount } ?: 1).coerceAtLeast(1)
         val canvasHeight = size.height - 30.dp.toPx()
-        
+
         val reversedStats = stats.reversed()
         val totalWidth = (barWidth + spacing) * reversedStats.size - spacing
         val startX = (size.width - totalWidth) / 2
@@ -128,7 +186,7 @@ fun DailyProgressChart(stats: List<com.example.feature.azkar.domain.model.DailyS
                 size = Size(barWidth, barHeight),
                 cornerRadius = CornerRadius(8.dp.toPx(), 8.dp.toPx())
             )
-            
+
             drawContext.canvas.nativeCanvas.apply {
                 val text = stat.date.takeLast(2)
                 val paint = android.graphics.Paint().apply {

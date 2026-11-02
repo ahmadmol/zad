@@ -10,6 +10,6 @@ interface DateProvider {
 
 class DateProviderImpl : DateProvider {
     override fun getCurrentDate(): String {
-        return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        return SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
     }
 }

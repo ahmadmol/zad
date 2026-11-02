@@ -18,6 +18,9 @@ interface HadithDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertHadiths(hadiths: List<HadithEntity>)
 
+    @Query("UPDATE hadiths SET isFavorite = NOT isFavorite WHERE id = :id")
+    suspend fun toggleFavorite(id: Long)
+
     @Update
     suspend fun updateHadith(hadith: HadithEntity)
 

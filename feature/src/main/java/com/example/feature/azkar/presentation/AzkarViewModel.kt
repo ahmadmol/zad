@@ -5,25 +5,26 @@ import androidx.lifecycle.viewModelScope
 import com.example.feature.azkar.data.local.SettingsManager
 import com.example.feature.azkar.domain.repository.AzkarRepository
 import com.example.feature.azkar.domain.usecase.*
+import com.example.feature.core.preferences.DailyActivityIds
 import com.example.feature.core.preferences.UserPreferences
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class AzkarViewModel(
+class AzkarViewModel @JvmOverloads constructor(
     private val repository: AzkarRepository,
     private val getAzkarUseCase: GetAzkarUseCase,
     private val incrementCounterUseCase: IncrementCounterUseCase,
     private val resetCounterUseCase: ResetCounterUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val addCustomZikrUseCase: AddCustomZikrUseCase,
-    private val getLast7DaysStatsUseCase: GetLast7DaysStatsUseCase,
     private val settingsManager: SettingsManager,
-    private val userPreferences: UserPreferences
+    private val userPreferences: UserPreferences,
+    private val handle: androidx.lifecycle.SavedStateHandle = androidx.lifecycle.SavedStateHandle()
 ) : ViewModel() {
 
-    private val _selectedCategory = MutableStateFlow<String?>(null)
-    private val _showFavoritesOnly = MutableStateFlow(false)
-    private val _searchQuery = MutableStateFlow("")
+    private val _selectedCategory = MutableStateFlow(handle.get<String>("category"))
+    private val _showFavoritesOnly = MutableStateFlow(handle.get<Boolean>("favorites") ?: false)
+    private val _searchQuery = MutableStateFlow(handle.get<String>("query") ?: "")
     private val _isLoading = MutableStateFlow(false)
     private val _error = MutableStateFlow<String?>(null)
 
@@ -35,43 +36,41 @@ class AzkarViewModel(
         Triple(category, favoritesOnly, query)
     }
 
-    private val _settings = combine(
+    private val refresh = MutableStateFlow(0)
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val uiState: StateFlow<AzkarUiState> = refresh.flatMapLatest { combine(
+        flow { emitAll(getAzkarUseCase()) },
+        _filters,
         settingsManager.fontSizeFlow,
         settingsManager.vibrationEnabledFlow,
-        settingsManager.darkModeFlow,
-        userPreferences.adhanSoundUri
-    ) { fontSize, vibration, darkMode, adhanSound ->
-        SettingsState(fontSize, vibration, darkMode, adhanSound)
-    }
-
-    val uiState: StateFlow<AzkarUiState> = combine(
-        getAzkarUseCase(),
-        _filters,
-        getLast7DaysStatsUseCase(),
-        combine(_settings, _isLoading, _error) { s, l, e -> Triple(s, l, e) }
-    ) { allAzkar, filters, stats, other ->
+        combine(_isLoading, _error) { loading, error -> loading to error }
+    ) { allAzkar, filters, fontSize, vibration, loadingError ->
         val (category, favoritesOnly, query) = filters
-        val (settings, loading, error) = other
-        
+        val (loading, error) = loadingError
+
         val filtered = allAzkar.filter { zikr ->
             (category == null || zikr.category == category) &&
-            (!favoritesOnly || zikr.isFavorite) &&
-            (query.isBlank() || zikr.text.contains(query, ignoreCase = true))
+                (!favoritesOnly || zikr.isFavorite) &&
+                (query.isBlank() ||
+                    com.example.feature.core.search.ArabicSearch.matches(zikr.title, query) ||
+                    com.example.feature.core.search.ArabicSearch.matches(zikr.text, query) ||
+                    com.example.feature.core.search.ArabicSearch.matches(zikr.category, query))
         }
 
         AzkarUiState(
             azkarList = filtered,
+            availableCategories = allAzkar.map { it.category }.distinct(),
             isLoading = loading,
             error = error,
             selectedCategory = category,
             showFavoritesOnly = favoritesOnly,
             searchQuery = query,
-            last7DaysStats = stats,
-            fontSize = settings.fontSize,
-            isVibrationEnabled = settings.vibrationEnabled,
-            isDarkMode = settings.darkMode,
-            adhanSoundUri = settings.adhanSoundUri
+            fontSize = fontSize,
+            isVibrationEnabled = vibration
         )
+    }.onStart { emit(AzkarUiState(isLoading = true, searchQuery = _searchQuery.value)) }
+      .catch { error -> if (error is kotlinx.coroutines.CancellationException) throw error
+          emit(AzkarUiState(error = "تعذر قراءة الأذكار؛ أعد المحاولة", searchQuery = _searchQuery.value, selectedCategory = _selectedCategory.value, showFavoritesOnly = _showFavoritesOnly.value)) }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -80,50 +79,54 @@ class AzkarViewModel(
 
     fun onAction(action: AzkarAction) {
         when (action) {
+            AzkarAction.Retry -> { _error.value = null; refresh.value++ }
             is AzkarAction.OnIncrement -> handleIncrement(action.zikrId)
             is AzkarAction.OnReset -> handleReset(action.zikrId)
             is AzkarAction.OnResetCategory -> handleResetCategory(action.category)
-            is AzkarAction.OnRetry -> { /* Flow handles retry automatically if source flows update */ }
             is AzkarAction.OnCategorySelected -> {
-                _selectedCategory.value = action.category
+                _selectedCategory.value = action.category; handle["category"] = action.category
             }
             is AzkarAction.OnToggleFavorite -> handleToggleFavorite(action.zikrId)
             is AzkarAction.OnToggleShowFavorites -> {
-                _showFavoritesOnly.value = action.show
+                _showFavoritesOnly.value = action.show; handle["favorites"] = action.show
             }
             is AzkarAction.OnSearchQueryChanged -> {
-                _searchQuery.value = action.query
+                _searchQuery.value = action.query; handle["query"] = action.query
             }
             is AzkarAction.OnAddCustomZikr -> {
                 viewModelScope.launch {
                     try {
                         addCustomZikrUseCase(action.text, action.targetCount)
                     } catch (e: Exception) {
-                        _error.value = e.message
+                        if (e is kotlinx.coroutines.CancellationException) throw e
+                _error.value = "تعذر حفظ التغيير؛ أعد المحاولة"
                     }
                 }
-            }
-            is AzkarAction.OnFontSizeChanged -> {
-                viewModelScope.launch { settingsManager.setFontSize(action.size) }
-            }
-            is AzkarAction.OnVibrationToggle -> {
-                viewModelScope.launch { settingsManager.setVibrationEnabled(action.enabled) }
-            }
-            is AzkarAction.OnDarkModeToggle -> {
-                viewModelScope.launch { settingsManager.setDarkMode(action.enabled) }
-            }
-            is AzkarAction.OnAdhanSoundChanged -> {
-                viewModelScope.launch { userPreferences.setAdhanSoundUri(action.uri) }
             }
         }
     }
 
     private fun handleIncrement(zikrId: Long) {
         viewModelScope.launch {
+            var counterSaved = false
             try {
-                incrementCounterUseCase(zikrId)
+                val category = uiState.value.azkarList.find { it.id == zikrId }?.category
+                    ?: uiState.value.selectedCategory
+                if (!incrementCounterUseCase(zikrId)) return@launch
+                counterSaved = true
+                val categoryComplete = repository.getAllAzkar().first().filter { it.category == category }.let { group ->
+                    group.isNotEmpty() && group.all { it.targetCount > 0 && it.currentCount >= it.targetCount }
+                }
+                when {
+                    categoryComplete && category?.contains("صباح") == true ->
+                        userPreferences.markDailyActivityComplete(DailyActivityIds.MORNING_AZKAR)
+                    categoryComplete && category?.contains("مساء") == true ->
+                        userPreferences.markDailyActivityComplete(DailyActivityIds.EVENING_AZKAR)
+                }
             } catch (e: Exception) {
-                _error.value = e.message
+                if (e is kotlinx.coroutines.CancellationException) throw e
+                _error.value = if (counterSaved) "حُفظ العدّ، وتعذر تحديث ملخص اليوم. لا تحتاج إلى إعادة الضغط لحفظ هذا العدّ."
+                    else "تعذر حفظ التغيير؛ أعد المحاولة"
             }
         }
     }
@@ -133,7 +136,8 @@ class AzkarViewModel(
             try {
                 resetCounterUseCase(zikrId)
             } catch (e: Exception) {
-                _error.value = e.message
+                if (e is kotlinx.coroutines.CancellationException) throw e
+                _error.value = "تعذر حفظ التغيير؛ أعد المحاولة"
             }
         }
     }
@@ -143,7 +147,8 @@ class AzkarViewModel(
             try {
                 repository.resetCategoryCounter(category)
             } catch (e: Exception) {
-                _error.value = e.message
+                if (e is kotlinx.coroutines.CancellationException) throw e
+                _error.value = "تعذر حفظ التغيير؛ أعد المحاولة"
             }
         }
     }
@@ -153,15 +158,9 @@ class AzkarViewModel(
             try {
                 toggleFavoriteUseCase(zikrId)
             } catch (e: Exception) {
-                _error.value = e.message
+                if (e is kotlinx.coroutines.CancellationException) throw e
+                _error.value = "تعذر حفظ التغيير؛ أعد المحاولة"
             }
         }
     }
-
-    private data class SettingsState(
-        val fontSize: Float,
-        val vibrationEnabled: Boolean,
-        val darkMode: Boolean,
-        val adhanSoundUri: String?
-    )
 }

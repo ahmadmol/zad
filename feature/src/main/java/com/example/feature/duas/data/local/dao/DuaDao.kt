@@ -23,4 +23,6 @@ interface DuaDao {
 
     @Query("SELECT COUNT(*) FROM duas")
     suspend fun getDuasCount(): Int
+    @Query("UPDATE duas SET isFavorite = NOT isFavorite WHERE id = :id")
+    suspend fun toggleFavorite(id: Long)
 }

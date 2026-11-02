@@ -1,0 +1,9 @@
+<resources>
+<string name="widget_title">إحسان • الصلاة القادمة</string><string name="widget_description">الصلاة القادمة ومتابعة قراءة القرآن؛ دون عرض سجل عبادتك</string>
+<string name="widget_next_event">الموعد القادم • %1$s</string>
+<string name="widget_next_prayer">الصلاة القادمة • %1$s</string>
+<string name="widget_updated_at">آخر تحديث %1$s • العد تقريبي وقد يتأخر التحديث</string>
+<string name="widget_open_to_setup">افتح مواقيت الصلاة للإعداد أو إعادة المحاولة</string>
+<string name="widget_prayer_action">مواقيت الصلاة</string><string name="widget_quran_action">متابعة القراءة</string>
+<color name="prayer_widget_button">#DDECE2</color>
+</resources>

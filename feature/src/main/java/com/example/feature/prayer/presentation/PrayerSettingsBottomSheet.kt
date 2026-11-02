@@ -1,6 +1,8 @@
 package com.example.feature.prayer.presentation
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +22,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.designsystem.component.IhsanButton
+import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.azkar.data.local.SettingsManager
 import com.example.feature.prayer.util.BatteryOptimizationHelper
 import org.koin.compose.koinInject
@@ -37,22 +40,27 @@ fun PrayerSettingsBottomSheet(
     settingsManager: SettingsManager = koinInject()
 ) {
     val context = LocalContext.current
-    val method by settingsManager.calculationMethodFlow.collectAsState(initial = "MUSLIM_WORLD_LEAGUE")
-    val madhab by settingsManager.madhabFlow.collectAsState(initial = "SHAFI")
-    val autoLocation by settingsManager.useAutoLocationFlow.collectAsState(initial = true)
-    val cityName by settingsManager.manualLocationCityFlow.collectAsState(initial = "حلب")
-    val soundType by settingsManager.notificationSoundTypeFlow.collectAsState(initial = "DEFAULT_ATHAN")
+    var retry by remember { mutableIntStateOf(0) }
+    val state by remember(settingsManager,retry) { settingsManager.observePrayerSheetState() }
+        .collectAsStateWithLifecycle(initialValue=PrayerSheetState())
+    val method=state.method
+    val madhab=state.madhab
+    val autoLocation=state.autoLocation
+    val cityName=state.cityName
+    val soundType=state.soundType
     
     val isIgnoringOptimizations = remember { BatteryOptimizationHelper.isIgnoringBatteryOptimizations(context) }
+
+    val colors = IhsanTheme.colors
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         modifier = modifier,
         shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
         dragHandle = {
-            BottomSheetDefaults.DragHandle(color = Color.LightGray.copy(alpha = 0.5f))
+            BottomSheetDefaults.DragHandle(color = colors.borderSubtle)
         },
-        containerColor = Color.White
+        containerColor = colors.surfaceElevated
     ) {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             Column(
@@ -66,11 +74,17 @@ fun PrayerSettingsBottomSheet(
                     text = "إعدادات الصلاة",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = IhsanTheme.colors.accentContent,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
 
                 // Battery Optimization Card
+                if (!state.ready) {
+                    if (state.error != null) com.example.designsystem.component.IhsanErrorState(
+                        title="تعذر قراءة الإعدادات",message=state.error,onRetry={retry++})
+                    else com.example.designsystem.component.IhsanLoadingState()
+                    return@Column
+                }
                 if (!isIgnoringOptimizations) {
                     BatteryOptimizationCard(onAction = {
                         BatteryOptimizationHelper.requestIgnoreBatteryOptimizations(context)
@@ -97,23 +111,13 @@ fun PrayerSettingsBottomSheet(
 
                 // Calculation Method
                 SettingsSectionTitle("طريقة الحساب")
-                val methods = listOf(
-                    "MUSLIM_WORLD_LEAGUE" to "رابطة العالم الإسلامي",
-                    "UMM_AL_QURA" to "أم القرى (مكة)",
-                    "EGYPTIAN" to "الهيئة المصرية العامة للمساحة",
-                    "KARACHI" to "جامعة العلوم الإسلامية بكراتشي",
-                    "NORTH_AMERICA" to "ISNA (أمريكا الشمالية)",
-                    "DUBAI" to "دبي",
-                    "KUWAIT" to "الكويت",
-                    "QATAR" to "قطر",
-                    "TURKEY" to "تركيا"
-                )
+                val methods = prayerMethodChoices
                 
                 methods.forEach { (key, label) ->
                     SelectableItem(
                         label = label,
-                        isSelected = method == key,
-                        onClick = { onUpdateMethod(key) }
+                        isSelected = method == key.name,
+                        onClick = { onUpdateMethod(key.name) }
                     )
                 }
 
@@ -160,14 +164,14 @@ fun PrayerSettingsBottomSheet(
                             modifier = Modifier.padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.LocationCity, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                            Icon(Icons.Default.LocationCity, contentDescription = null, tint = IhsanTheme.colors.accentContent)
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
-                                Text("المدينة المختارة", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+                                Text("المدينة المختارة", style = MaterialTheme.typography.labelSmall, color = colors.textSecondary)
                                 Text(cityName, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
                             }
                             Spacer(modifier = Modifier.weight(1f))
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = Color.Gray)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = colors.textSecondary)
                         }
                     }
                 }
@@ -217,7 +221,7 @@ fun BatteryOptimizationCard(onAction: () -> Unit) {
             TextButton(
                 onClick = onAction,
                 modifier = Modifier.align(Alignment.End)
-            ) {
+            , colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
                 Text("فتح الإعدادات", fontWeight = FontWeight.Bold)
             }
         }
@@ -230,7 +234,7 @@ fun SettingsSectionTitle(title: String) {
         text = title,
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold,
-        color = Color.Black,
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier.padding(bottom = 12.dp)
     )
 }
@@ -240,16 +244,17 @@ fun SelectableItem(label: String, isSelected: Boolean, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .heightIn(min=48.dp)
+            .selectable(selected=isSelected,role=androidx.compose.ui.semantics.Role.RadioButton,onClick=onClick)
             .padding(vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label,
-            color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Black,
+            color = if (isSelected) IhsanTheme.colors.accentContent else MaterialTheme.colorScheme.onSurface,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
         )
-        RadioButton(selected = isSelected, onClick = onClick)
+        RadioButton(selected = isSelected, onClick = null)
     }
 }
