@@ -18,8 +18,14 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("boolean", "IHSANPLUS_DAILY_ENABLED", "true")
+            buildConfigField("boolean", "IHSANPLUS_PRAYER_ASSIST_ENABLED", "true")
+        }
         release {
             isMinifyEnabled = false
+            buildConfigField("boolean", "IHSANPLUS_DAILY_ENABLED", "false")
+            buildConfigField("boolean", "IHSANPLUS_PRAYER_ASSIST_ENABLED", "false")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -36,9 +42,15 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+
+    sourceSets {
+        getByName("androidTest").assets.srcDir("$projectDir/schemas")
     }
 }
 ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
     arg("room.generateKotlin", "false")
 }
 dependencies {
@@ -90,6 +102,7 @@ dependencies {
     implementation(libs.adhan)
     // Media3
     implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.exoplayer.hls)
     implementation(libs.androidx.media3.ui)
     implementation(libs.androidx.media3.session)
 
@@ -100,6 +113,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.room.testing)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
