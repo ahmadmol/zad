@@ -13,9 +13,11 @@ class IhsanDetailsViewModel(
     private val _uiState = MutableStateFlow(IhsanDetailsUiState())
     val uiState = _uiState.asStateFlow()
 
+    private var loadJob: kotlinx.coroutines.Job? = null
     fun loadItem(id: Long) {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, item = null, errorMessage = null)
             try {
                 val donation = repository.getDonationById(id)
                 if (donation != null) {
@@ -31,7 +33,10 @@ class IhsanDetailsViewModel(
                             status = donation.status,
                             donorName = donation.donorName,
                             phoneNumber = donation.phoneNumber,
-                            imageUrl = donation.imageUrl
+                            imageUrl = donation.imageUrl,
+                            createdAt = donation.createdAt,
+                            origin = donation.origin,
+                            contactMethod = donation.contactMethod
                         )
                     )
                 } else {
@@ -41,9 +46,10 @@ class IhsanDetailsViewModel(
                     )
                 }
             } catch (e: Exception) {
+                if (e is kotlinx.coroutines.CancellationException) throw e
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    errorMessage = e.message ?: "حدث خطأ غير متوقع"
+                    errorMessage = "تعذر قراءة السجل المحلي؛ أعد المحاولة"
                 )
             }
         }

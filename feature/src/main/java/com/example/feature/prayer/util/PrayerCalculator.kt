@@ -9,7 +9,12 @@ import com.example.feature.prayer.PrayerTime
 import java.text.SimpleDateFormat
 import java.util.*
 
-@OptIn(kotlin.time.ExperimentalTime::class)
+/**
+ * Legacy Adhan wrapper retained for characterization tests and transitional callers.
+ * New production code must use [com.example.feature.prayer.data.calculator.AdhanPrayerCalculator]
+ * via [com.example.feature.prayer.domain.calculator.PrayerCalculator].
+ */
+@Deprecated("Use AdhanPrayerCalculator through the domain PrayerCalculator interface")
 object PrayerCalculator {
 
     fun calculate(
@@ -47,7 +52,7 @@ object PrayerCalculator {
     private fun createPrayerTime(
         nameAr: String,
         nameEn: String,
-        instant: kotlin.time.Instant,
+        instant: kotlinx.datetime.Instant,
         currentTime: Long,
         format: SimpleDateFormat
     ): PrayerTime {

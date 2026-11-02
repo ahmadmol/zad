@@ -22,7 +22,7 @@ object BatteryOptimizationHelper {
             val intent = Intent().apply {
                 action = Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS
             }
-            context.startActivity(intent)
+            com.example.feature.core.util.openExternalActivity(context, intent)
         }
     }
     
@@ -30,6 +30,6 @@ object BatteryOptimizationHelper {
     fun openBatterySettings(context: Context) {
         val intent = Intent(Settings.ACTION_SETTINGS)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
+        com.example.feature.core.util.openExternalActivity(context, intent)
     }
 }

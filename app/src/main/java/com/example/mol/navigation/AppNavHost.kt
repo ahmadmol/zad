@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -28,16 +30,22 @@ import com.example.feature.hadith.presentation.HadithScreen
 import com.example.feature.hadith.presentation.HadithViewModel
 import com.example.feature.ehsan.EhsanScreen
 import com.example.feature.ehsan.presentation.AddEhsanScreen
-import com.example.feature.ehsan.presentation.DonationDetailScreen
 import com.example.feature.ehsan.presentation.IhsanDetailsScreen
 import com.example.feature.ehsan.presentation.RequestHelpScreen
+import com.example.feature.settings.presentation.SettingsViewModel
+import com.example.feature.statistics.presentation.StatisticsViewModel
 import com.example.feature.prayer.PrayerScreen
 import com.example.feature.profile.DonationHistoryScreen
 import com.example.feature.profile.ProfileScreen
 import com.example.feature.profile.presentation.EditProfileScreen
 import com.example.feature.qibla.presentation.QiblaScreen
+import com.example.feature.tasbih.presentation.TasbihScreen
+import com.example.feature.live.LiveStreamScreen
+import com.example.feature.live.LiveStreamSources
+import com.example.feature.live.LiveSourceType
 import com.example.feature.quran.presentation.QuranAction
 import com.example.feature.quran.presentation.QuranListScreen
+import com.example.feature.quran.presentation.ReadingJourneyScreen
 import com.example.feature.quran.presentation.QuranReaderScreen
 import com.example.feature.quran.presentation.QuranViewModel
 import com.example.feature.reminders.RemindersScreen
@@ -49,6 +57,38 @@ import com.example.feature.statistics.StatisticsScreen
 import com.example.feature.onboarding.OnboardingScreen
 import com.example.feature.splashScreen.SplashScreen
 import com.example.feature.ui.LocationPermissionScreen
+import com.example.feature.ihsanplus.integration.flags.IhsanPlusFeatureFlags
+import com.example.feature.ihsanplus.integration.presentation.ControlledDailyExperienceScreen
+import com.example.feature.sanhya.presentation.SanhyaEpisodesScreen
+import com.example.feature.sanhya.presentation.SanhyaFavoritesScreen
+import com.example.feature.sanhya.presentation.SanhyaMainScreen
+import com.example.feature.sanhya.presentation.SanhyaQuranVersesScreen
+import com.example.feature.sanhya.presentation.SanhyaSearchResultsScreen
+import com.example.feature.sanhya.presentation.SanhyaSettingsScreen
+import com.example.feature.sanhya.presentation.SanhyaStoryDetailScreen
+import com.example.feature.sanhya.presentation.SanhyaViewModel
+import com.example.feature.sanhya.presentation.SanhyaWatchLaterScreen
+import com.example.feature.nabiihsan.presentation.NabiIhsanEpisodeDetailScreen
+import com.example.feature.nabiihsan.presentation.NabiIhsanEpisodesScreen
+import com.example.feature.nabiihsan.presentation.NabiIhsanFavoritesScreen
+import com.example.feature.nabiihsan.presentation.NabiIhsanMainScreen
+import com.example.feature.nabiihsan.presentation.NabiIhsanRecipeDetailScreen
+import com.example.feature.nabiihsan.presentation.NabiIhsanRecipesScreen
+import com.example.feature.nabiihsan.presentation.NabiIhsanSearchScreen
+import com.example.feature.nabiihsan.presentation.NabiIhsanSettingsScreen
+import com.example.feature.nabiihsan.presentation.NabiIhsanViewModel
+import com.example.feature.nabiihsan.presentation.NabiIhsanWatchLaterScreen
+import com.example.feature.fahmanallah.presentation.FahmAboutScreen
+import com.example.feature.fahmanallah.presentation.FahmCompletionScreen
+import com.example.feature.fahmanallah.presentation.FahmEpisodeDetailScreen
+import com.example.feature.fahmanallah.presentation.FahmEpisodesScreen
+import com.example.feature.fahmanallah.presentation.FahmJourneyScreen
+import com.example.feature.fahmanallah.presentation.FahmMainScreen
+import com.example.feature.fahmanallah.presentation.FahmSavedScreen
+import com.example.feature.fahmanallah.presentation.FahmSearchScreen
+import com.example.feature.fahmanallah.presentation.FahmSettingsScreen
+import com.example.feature.fahmanallah.presentation.FahmStationsScreen
+import com.example.feature.fahmanallah.presentation.FahmViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -61,7 +101,13 @@ fun AppNavHost(
         startDestination = Screen.Splash.route,
         modifier = modifier
     ) {
-        composable(route = Screen.Splash.route) {
+        composable(
+            route = Screen.Splash.route,
+            // The root bottom bar becomes visible as soon as Home is selected.
+            // Remove Splash immediately instead of fading it above that bar.
+            exitTransition = { androidx.compose.animation.ExitTransition.None },
+            popExitTransition = { androidx.compose.animation.ExitTransition.None }
+        ) {
             SplashScreen(
                 onNavigateToOnboarding = {
                     navController.navigate(Screen.Onboarding.route) {
@@ -72,11 +118,6 @@ fun AppNavHost(
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
-                },
-                onNavigateToPermission = {
-                    navController.navigate(Screen.LocationPermission.route) {
-                        popUpTo(Screen.Splash.route) { inclusive = true }
-                    }
                 }
             )
         }
@@ -84,7 +125,7 @@ fun AppNavHost(
         composable(route = Screen.Onboarding.route) {
             OnboardingScreen(
                 onFinish = {
-                    navController.navigate(Screen.LocationPermission.route) {
+                    navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Onboarding.route) { inclusive = true }
                     }
                 }
@@ -93,7 +134,7 @@ fun AppNavHost(
 
         composable(route = Screen.LocationPermission.route) {
             LocationPermissionScreen(
-                onPermissionGranted = {
+                onContinue = {
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.LocationPermission.route) { inclusive = true }
                     }
@@ -110,9 +151,84 @@ fun AppNavHost(
                 onNavigateToDonations = { navController.navigate(Screen.Donations.route) },
                 onNavigateToQibla = { navController.navigate(Screen.Qibla.route) },
                 onNavigateToSearch = { navController.navigate(Screen.GlobalSearch.route) },
+                onNavigateToReminders = { navController.navigate(Screen.Reminders.route) },
                 onNavigateToPrayer = { navController.navigate(Screen.Prayer.route) },
                 onNavigateToAsma = { navController.navigate(Screen.Asma.route) },
-                onNavigateToDailyActivities = { navController.navigate(Screen.DailyActivities.route) }
+                onNavigateToDailyActivities = { navController.navigate(Screen.DailyActivities.route) },
+                onNavigateToTasbih = { navController.navigate(Screen.Tasbih.route) },
+                onNavigateToHaramLive = { navController.navigate(Screen.HaramLive.route) },
+                onNavigateToNabawiLive = { navController.navigate(Screen.NabawiLive.route) },
+                onNavigateToRamadan = { navController.navigate(Screen.RamadanHub.route) },
+                onNavigateToCalendar = { navController.navigate(Screen.IslamicCalendar.route) },
+                onNavigateToPrayerJournal = { navController.navigate(Screen.PrayerJournal.route) },
+                onNavigateToStatistics = { navController.navigate(Screen.Statistics.route) },
+                onNavigateToSanhya = { navController.navigate(Screen.SanhyaMain.route) },
+                onNavigateToNabiIhsan = { navController.navigate(Screen.NabiIhsanMain.route) },
+                onNavigateToFahm = { navController.navigate(Screen.FahmMain.route) },
+                onNavigateToIhsanPlusDaily = if (IhsanPlusFeatureFlags.dailyEnabled) {
+                    { navController.navigate(Screen.IhsanPlusDaily.route) }
+                } else {
+                    null
+                },
+                onContinueLastRead = { surahId, ayahNumber ->
+                    navController.navigate(Screen.QuranReader.createRoute(surahId, ayahNumber))
+                }
+            )
+        }
+
+        if (IhsanPlusFeatureFlags.dailyEnabled) {
+            composable(route = Screen.IhsanPlusDaily.route) {
+                ControlledDailyExperienceScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+        }
+
+        composable(route = Screen.HaramLive.route) {
+            LiveStreamScreen(
+                title = Screen.HaramLive.title,
+                hlsUrl = LiveStreamSources.HARAM_HLS,
+                youtubeChannelId = LiveStreamSources.HARAM_YOUTUBE_CHANNEL_ID,
+                onBack = { navController.popBackStack() },
+                onSelectSource = { source ->
+                    if (source == LiveSourceType.NABAWI) {
+                        navController.navigate(Screen.NabawiLive.route) {
+                            popUpTo(Screen.HaramLive.route) { inclusive = true }
+                        }
+                    }
+                }
+            )
+        }
+
+        composable(route = Screen.NabawiLive.route) {
+            LiveStreamScreen(
+                title = Screen.NabawiLive.title,
+                hlsUrl = LiveStreamSources.NABAWI_HLS,
+                youtubeChannelId = LiveStreamSources.NABAWI_YOUTUBE_CHANNEL_ID,
+                onBack = { navController.popBackStack() },
+                onSelectSource = { source ->
+                    if (source == LiveSourceType.HARAM) {
+                        navController.navigate(Screen.HaramLive.route) {
+                            popUpTo(Screen.NabawiLive.route) { inclusive = true }
+                        }
+                    }
+                }
+            )
+        }
+
+        composable(route = Screen.Tasbih.route) {
+            TasbihScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateHome = {
+                    if (!navController.popBackStack(Screen.Home.route, inclusive = false)) {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Home.route) { inclusive = true }
+                        }
+                    }
+                },
+                onNavigateToStatistics = {
+                    navController.navigate(Screen.Statistics.route)
+                }
             )
         }
 
@@ -122,31 +238,58 @@ fun AppNavHost(
                 onNavigateToQuran = { surahId, ayah -> 
                     navController.navigate(Screen.QuranReader.createRoute(surahId, ayah))
                 },
+                onNavigateToDuaLibrary = { navController.navigate(Screen.Dua.route) },
                 onNavigateToDua = { duaId -> 
                     navController.navigate(Screen.DuaDetail.createRoute(duaId))
                 },
-                onNavigateToZikr = { /* Navigate to Zikr Pager or List */ }
+                onNavigateToAzkar = { navController.navigate(Screen.Azkar.route) },
+                onNavigateToHadith = { navController.navigate(Screen.Hadith.route) },
+                onNavigateToAsma = { navController.navigate(Screen.Asma.route) },
+                onNavigateToPrayer = { navController.navigate(Screen.Prayer.route) },
+                onNavigateToQibla = { navController.navigate(Screen.Qibla.route) },
+                onNavigateToDonations = { navController.navigate(Screen.Donations.route) },
+                onOpenResult = { kind, id ->
+                    val target = when (kind) {
+                        com.example.feature.dashboard.presentation.SearchResultKind.HADITH -> "${Screen.Hadith.route}?hadithId=$id"
+                        com.example.feature.dashboard.presentation.SearchResultKind.ASMA -> "${Screen.Asma.route}?nameId=$id"
+                        com.example.feature.dashboard.presentation.SearchResultKind.ZIKR -> "${Screen.Azkar.route}?zikrId=$id"
+                        com.example.feature.dashboard.presentation.SearchResultKind.COMMUNITY -> Screen.IhsanDetails.createRoute(id.toLong())
+                        com.example.feature.dashboard.presentation.SearchResultKind.SANHYA -> Screen.SanhyaStoryDetail.createRoute(id)
+                        com.example.feature.dashboard.presentation.SearchResultKind.NABI -> Screen.NabiIhsanEpisodeDetails.createRoute(id)
+                        com.example.feature.dashboard.presentation.SearchResultKind.FAHM -> Screen.FahmEpisodeDetail.createRoute(id)
+                        com.example.feature.dashboard.presentation.SearchResultKind.TASBIH -> Screen.Tasbih.route
+                    }
+                    navController.navigate(target)
+                },
+                onNavigateToLive = { navController.navigate(Screen.HaramLive.route) }
             )
         }
 
         composable(route = Screen.DailyActivities.route) {
-            val viewModel: HomeDashboardViewModel = koinViewModel()
+            val dailyActivitiesEntry = checkNotNull(navController.currentBackStackEntry)
+            val sharedOwner = remember(dailyActivitiesEntry) {
+                runCatching { navController.getBackStackEntry(Screen.Home.route) }
+                    .getOrDefault(dailyActivitiesEntry)
+            }
+            val viewModel: HomeDashboardViewModel = koinViewModel(viewModelStoreOwner = sharedOwner)
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             DailyActivitiesScreen(
-                activities = uiState.data.dailyActivities,
-                onActivityIncrease = { id ->
-                    viewModel.onAction(HomeDashboardAction.OnDailyActivityClick(id))
-                },
+                activityState = uiState.dailyActivities,
                 onActivityOpenRoute = { route ->
                     when (route) {
+                        "quran", "quran_list", Screen.Quran.route -> navController.navigate(Screen.Quran.route)
+                        "azkar", "azkar_screen", Screen.Azkar.route -> navController.navigate(Screen.Azkar.route)
+                        "dua", "dua_screen", Screen.Dua.route -> navController.navigate(Screen.Dua.route)
+                        "asma", "asma_screen", Screen.Asma.route -> navController.navigate(Screen.Asma.route)
+                        "tasbih", "tasbih_screen", Screen.Tasbih.route -> navController.navigate(Screen.Tasbih.route)
+                        "statistics", "statistics_screen", Screen.Statistics.route -> navController.navigate(Screen.Statistics.route)
                         Screen.Qibla.route -> navController.navigate(Screen.Qibla.route)
-                        Screen.Quran.route -> navController.navigate(Screen.Quran.route)
-                        Screen.Azkar.route -> navController.navigate(Screen.Azkar.route)
-                        Screen.Dua.route -> navController.navigate(Screen.Dua.route)
-                        Screen.Asma.route -> navController.navigate(Screen.Asma.route)
-                        else -> {}
+                        Screen.HaramLive.route -> navController.navigate(Screen.HaramLive.route)
+                        Screen.NabawiLive.route -> navController.navigate(Screen.NabawiLive.route)
+                        else -> runCatching { navController.navigate(route) }
                     }
                 },
+                onRetry = { viewModel.onAction(HomeDashboardAction.OnRefresh) },
                 onBack = { navController.popBackStack() }
             )
         }
@@ -155,16 +298,44 @@ fun AppNavHost(
             QiblaScreen(onNavigateBack = { navController.popBackStack() })
         }
 
-        composable(route = Screen.Asma.route) {
+        composable(route = Screen.Asma.route + "?nameId={nameId}", arguments = listOf(navArgument("nameId") { type = NavType.IntType; defaultValue = -1 })) { entry ->
             AsmaScreen(
+                initialNameId = entry.arguments?.getInt("nameId")?.takeIf { it > 0 },
                 onNavigateBack = { navController.popBackStack() }
             )
         }
 
         composable(route = Screen.Prayer.route) {
             PrayerScreen(
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToQibla = { navController.navigate(Screen.Qibla.route) },
+                onOpenJournal = { navController.navigate(Screen.PrayerJournal.route) },
+                onOpenCalendar = { navController.navigate(Screen.IslamicCalendar.route) }
             )
+        }
+        composable(Screen.FastingJournal.route) {
+            com.example.feature.fasting.presentation.FastingScreen(onBack = { navController.popBackStack() },
+                onCalendar = { navController.navigate(Screen.IslamicCalendar.route) })
+        }
+        composable(Screen.RamadanHub.route) {
+            com.example.feature.ramadan.RamadanScreen(onBack = { navController.popBackStack() },
+                onPrayer = { navController.navigate(Screen.Prayer.route) },
+                onQuran = { navController.navigate(Screen.Quran.route) },
+                onReadingPlan = { navController.navigate(Screen.ReadingJourney.createRoute()) },
+                onAzkar = { navController.navigate(Screen.Azkar.route) },
+                onDuas = { navController.navigate(Screen.Dua.route) },
+                onFasting = { navController.navigate(Screen.FastingJournal.route) },
+                onCalendar = { navController.navigate(Screen.IslamicCalendar.route) })
+        }
+        composable(Screen.IslamicCalendar.route) {
+            com.example.feature.calendar.IslamicCalendarScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.Memorization.route) {
+            com.example.feature.quran.presentation.MemorizationScreen(onBack = { navController.popBackStack() },
+                onRead = { surah, ayah -> navController.navigate(Screen.QuranReader.createRoute(surah, ayah)) })
+        }
+        composable(Screen.PrayerJournal.route) {
+            com.example.feature.prayer.presentation.PrayerJournalScreen(onBack = { navController.popBackStack() })
         }
 
         composable(route = Screen.Quran.route) {
@@ -181,7 +352,10 @@ fun AppNavHost(
                 onClearSearch = {
                     viewModel.onAction(QuranAction.ClearSearch)
                 },
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onMemorization = { navController.navigate(Screen.Memorization.route) },
+                onReadingJourney = { navController.navigate(Screen.ReadingJourney.createRoute()) },
+                onRetry = { viewModel.onAction(QuranAction.Retry) }
             )
         }
 
@@ -219,23 +393,42 @@ fun AppNavHost(
                 onTogglePlay = { viewModel.onAction(QuranAction.TogglePlay) },
                 onPlayNext = { viewModel.onAction(QuranAction.PlayNext) },
                 onPlayPrevious = { viewModel.onAction(QuranAction.PlayPrevious) },
+                onPlayAyah = { ayah -> viewModel.onAction(QuranAction.PlayAyah(ayah)) },
+                onSelectReader = { reader -> viewModel.onAction(QuranAction.SelectReader(reader)) },
                 onDownloadSurah = { viewModel.onAction(QuranAction.DownloadSurah) },
                 onSeekTo = { viewModel.onAction(QuranAction.SeekTo(it)) },
-                onUpdateFontSize = { viewModel.onAction(QuranAction.UpdateFontSize(it)) }
+                onUpdateFontSize = { viewModel.onAction(QuranAction.UpdateFontSize(it)) },
+                onSelectPageSurah = { id, verse -> viewModel.onAction(QuranAction.SelectSurah(id, verse)) },
+                onPrivateNote = { id, verse -> navController.navigate(Screen.ReadingJourney.createRoute(id, verse, 1)) }
             )
         }
 
-        composable(route = Screen.Azkar.route) {
+        composable(Screen.ReadingJourney.route, arguments = listOf(
+            navArgument("surah") { type = NavType.IntType; defaultValue = 0 },
+            navArgument("ayah") { type = NavType.IntType; defaultValue = 0 },
+            navArgument("tab") { type = NavType.IntType; defaultValue = 0 }
+        )) { entry ->
+            ReadingJourneyScreen(onBack = { navController.popBackStack() },
+                onRead = { surah, ayah -> navController.navigate(Screen.QuranReader.createRoute(surah, ayah)) },
+                initialSurah = entry.arguments?.getInt("surah") ?: 0,
+                initialAyah = entry.arguments?.getInt("ayah") ?: 0,
+                initialTab = entry.arguments?.getInt("tab") ?: 0)
+        }
+
+        composable(route = Screen.Azkar.route + "?zikrId={zikrId}", arguments = listOf(navArgument("zikrId") { type = NavType.LongType; defaultValue = -1L })) { entry ->
             val viewModel: AzkarViewModel = koinViewModel()
             AzkarScreen(
+                initialZikrId = entry.arguments?.getLong("zikrId")?.takeIf { it > 0 },
                 viewModel = viewModel,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onOpenSebha = { navController.navigate(Screen.Tasbih.route) }
             )
         }
 
-        composable(route = Screen.Hadith.route) {
+        composable(route = Screen.Hadith.route + "?hadithId={hadithId}", arguments = listOf(navArgument("hadithId") { type = NavType.LongType; defaultValue = -1L })) { entry ->
             val viewModel: HadithViewModel = koinViewModel()
             HadithScreen(
+                initialHadithId = entry.arguments?.getLong("hadithId")?.takeIf { it > 0 },
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() }
             )
@@ -260,6 +453,12 @@ fun AppNavHost(
             val viewModel: DuaViewModel = koinViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val dua = uiState.allDuas.find { it.id == duaId }
+
+            LaunchedEffect(duaId) {
+                if (duaId > 0L) {
+                    viewModel.onAction(DuaAction.OnDuaOpened(duaId))
+                }
+            }
             
             DuaDetailScreen(
                 dua = dua,
@@ -271,19 +470,19 @@ fun AppNavHost(
         }
 
         composable(route = Screen.Settings.route) {
-            val viewModel: AzkarViewModel = koinViewModel()
+            val viewModel: SettingsViewModel = koinViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             SettingsScreen(
-                state = uiState,
+                uiState = uiState,
                 onAction = viewModel::onAction,
                 onBack = { navController.popBackStack() }
             )
         }
 
         composable(route = Screen.Statistics.route) {
-            val viewModel: AzkarViewModel = koinViewModel()
+            val viewModel: StatisticsViewModel = koinViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-            StatisticsScreen(state = uiState, onBack = { navController.popBackStack() })
+            StatisticsScreen(state = uiState, onBack = { navController.popBackStack() }, onRetry = viewModel::retry)
         }
 
         composable(route = Screen.Reminders.route) {
@@ -311,7 +510,8 @@ fun AppNavHost(
             arguments = listOf(navArgument("type") { type = NavType.StringType })
         ) { backStackEntry ->
             val type = backStackEntry.arguments?.getString("type") ?: "OFFER"
-            AddEhsanScreen(
+            if (type == "REQUEST") RequestHelpScreen(onNavigateBack = { navController.popBackStack() })
+            else AddEhsanScreen(
                 onNavigateBack = { navController.popBackStack() },
                 initialType = type
             )
@@ -323,15 +523,19 @@ fun AppNavHost(
             )
         }
 
+        @Suppress("DEPRECATION")
         composable(
-            route = Screen.DonationDetail.route,
+            route = Screen.LegacyDonationDetail.route,
             arguments = listOf(navArgument("id") { type = NavType.LongType })
         ) { backStackEntry ->
             val donationId = backStackEntry.arguments?.getLong("id") ?: 0L
-            DonationDetailScreen(
-                donationId = donationId,
-                onNavigateBack = { navController.popBackStack() }
-            )
+            // Compatibility redirect: never render the obsolete DonationDetailScreen.
+            LaunchedEffect(donationId) {
+                navController.navigate(Screen.IhsanDetails.createRoute(donationId)) {
+                    popUpTo(backStackEntry.destination.id) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
         }
 
         composable(
@@ -349,19 +553,427 @@ fun AppNavHost(
             ProfileScreen(
                 onBackClick = { navController.popBackStack() },
                 onEditProfileClick = { navController.navigate(Screen.EditProfile.route) },
-                onNavigateToDonationHistory = { navController.navigate(Screen.DonationHistory.route) }
+                onNavigateToDonationHistory = { navController.navigate(Screen.DonationHistory.route) },
+                onManageListings = { navController.navigate(Screen.ManageListings.createRoute(it)) },
+                onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
+                onNavigateToPrayer = { navController.navigate(Screen.Prayer.route) },
+                onNavigateToReminders = { navController.navigate(Screen.Reminders.route) },
+                onNavigateToQuran = { navController.navigate(Screen.Quran.route) },
+                onNavigateToSearch = { navController.navigate(Screen.GlobalSearch.route) }
             )
         }
 
         composable(route = Screen.DonationHistory.route) {
             DonationHistoryScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onItemClick = { id ->
+                    navController.navigate(Screen.IhsanDetails.createRoute(id))
+                }
+            )
+        }
+
+        composable(route = Screen.ManageListings.route) { entry ->
+            com.example.feature.profile.ManageListingsScreen(
+                type = entry.arguments?.getString("type") ?: "OFFER",
+                onBack = { navController.popBackStack() },
+                onItemClick = { navController.navigate(Screen.IhsanDetails.createRoute(it)) }
             )
         }
 
         composable(route = Screen.EditProfile.route) {
             EditProfileScreen(
                 onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(route = Screen.SanhyaMain.route) {
+            val viewModel: SanhyaViewModel = koinViewModel()
+            SanhyaMainScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onStoryClick = { storyId ->
+                    navController.navigate(Screen.SanhyaStoryDetail.createRoute(storyId))
+                },
+                onNavigateToFavorites = {
+                    navController.navigate(Screen.SanhyaFavorites.route)
+                },
+                onNavigateToWatchLater = {
+                    navController.navigate(Screen.SanhyaWatchLater.route)
+                },
+                onNavigateToSettings = {
+                    navController.navigate(Screen.SanhyaSettings.route)
+                }
+            )
+        }
+
+        composable(
+            route = Screen.SanhyaStoryDetail.route,
+            arguments = listOf(navArgument("storyId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val storyId = backStackEntry.arguments?.getString("storyId") ?: ""
+            val viewModel: SanhyaViewModel = koinViewModel()
+            SanhyaStoryDetailScreen(
+                storyId = storyId,
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToQuranVerses = { id ->
+                    navController.navigate(Screen.SanhyaQuranVerses.createRoute(id))
+                },
+                onNavigateToEpisodes = { id ->
+                    navController.navigate(Screen.SanhyaEpisodes.createRoute(id))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.SanhyaEpisodes.route,
+            arguments = listOf(navArgument("storyId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val storyId = backStackEntry.arguments?.getString("storyId") ?: ""
+            val viewModel: SanhyaViewModel = koinViewModel()
+            SanhyaEpisodesScreen(
+                storyId = storyId,
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.SanhyaQuranVerses.route,
+            arguments = listOf(navArgument("storyId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val storyId = backStackEntry.arguments?.getString("storyId") ?: ""
+            val viewModel: SanhyaViewModel = koinViewModel()
+            SanhyaQuranVersesScreen(
+                storyId = storyId,
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onOpenInQuranReader = { surahId, ayahNumber ->
+                    navController.navigate(Screen.QuranReader.createRoute(surahId, ayahNumber))
+                }
+            )
+        }
+
+        composable(route = Screen.SanhyaFavorites.route) {
+            val viewModel: SanhyaViewModel = koinViewModel()
+            SanhyaFavoritesScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onStoryClick = { storyId ->
+                    navController.navigate(Screen.SanhyaStoryDetail.createRoute(storyId))
+                }
+            )
+        }
+
+        composable(route = Screen.SanhyaWatchLater.route) {
+            val viewModel: SanhyaViewModel = koinViewModel()
+            SanhyaWatchLaterScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onStoryClick = { storyId ->
+                    navController.navigate(Screen.SanhyaStoryDetail.createRoute(storyId))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.SanhyaSearch.route,
+            arguments = listOf(navArgument("query") {
+                type = NavType.StringType
+                defaultValue = ""
+            })
+        ) { backStackEntry ->
+            val query = backStackEntry.arguments?.getString("query") ?: ""
+            val viewModel: SanhyaViewModel = koinViewModel()
+            SanhyaSearchResultsScreen(
+                initialQuery = query,
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onStoryClick = { storyId ->
+                    navController.navigate(Screen.SanhyaStoryDetail.createRoute(storyId))
+                }
+            )
+        }
+
+        composable(route = Screen.SanhyaSettings.route) {
+            val viewModel: SanhyaViewModel = koinViewModel()
+            SanhyaSettingsScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToGeneralSettings = {
+                    navController.navigate(Screen.Settings.route)
+                }
+            )
+        }
+
+        composable(route = Screen.NabiIhsanMain.route) {
+            val viewModel: NabiIhsanViewModel = koinViewModel()
+            NabiIhsanMainScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onEpisodeClick = { episodeId ->
+                    navController.navigate(Screen.NabiIhsanEpisodeDetails.createRoute(episodeId))
+                },
+                onNavigateToEpisodes = {
+                    navController.navigate(Screen.NabiIhsanEpisodes.route)
+                },
+                onNavigateToRecipes = {
+                    navController.navigate(Screen.NabiIhsanRecipes.route)
+                },
+                onNavigateToFavorites = {
+                    navController.navigate(Screen.NabiIhsanFavorites.route)
+                },
+                onNavigateToWatchLater = {
+                    navController.navigate(Screen.NabiIhsanWatchLater.route)
+                },
+                onNavigateToSearch = { query ->
+                    navController.navigate(Screen.NabiIhsanSearch.createRoute(query))
+                },
+                onNavigateToSettings = {
+                    navController.navigate(Screen.NabiIhsanSettings.route)
+                }
+            )
+        }
+
+        composable(
+            route = Screen.NabiIhsanEpisodeDetails.route,
+            arguments = listOf(navArgument("episodeId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val episodeId = backStackEntry.arguments?.getString("episodeId") ?: ""
+            val viewModel: NabiIhsanViewModel = koinViewModel()
+            NabiIhsanEpisodeDetailScreen(
+                episodeId = episodeId,
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onRecipeClick = { recipeId ->
+                    navController.navigate(Screen.NabiIhsanRecipeDetails.createRoute(recipeId))
+                },
+                onOpenEpisode = { newEpId ->
+                    navController.navigate(Screen.NabiIhsanEpisodeDetails.createRoute(newEpId)) {
+                        popUpTo(Screen.NabiIhsanMain.route)
+                    }
+                }
+            )
+        }
+
+        composable(route = Screen.NabiIhsanEpisodes.route) {
+            val viewModel: NabiIhsanViewModel = koinViewModel()
+            NabiIhsanEpisodesScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onEpisodeClick = { episodeId ->
+                    navController.navigate(Screen.NabiIhsanEpisodeDetails.createRoute(episodeId))
+                }
+            )
+        }
+
+        composable(route = Screen.NabiIhsanRecipes.route) {
+            val viewModel: NabiIhsanViewModel = koinViewModel()
+            NabiIhsanRecipesScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onRecipeClick = { recipeId ->
+                    navController.navigate(Screen.NabiIhsanRecipeDetails.createRoute(recipeId))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.NabiIhsanRecipeDetails.route,
+            arguments = listOf(navArgument("recipeId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val recipeId = backStackEntry.arguments?.getString("recipeId") ?: ""
+            val viewModel: NabiIhsanViewModel = koinViewModel()
+            NabiIhsanRecipeDetailScreen(
+                recipeId = recipeId,
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onEpisodeClick = { episodeId ->
+                    navController.navigate(Screen.NabiIhsanEpisodeDetails.createRoute(episodeId))
+                }
+            )
+        }
+
+        composable(route = Screen.NabiIhsanFavorites.route) {
+            val viewModel: NabiIhsanViewModel = koinViewModel()
+            NabiIhsanFavoritesScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onEpisodeClick = { episodeId ->
+                    navController.navigate(Screen.NabiIhsanEpisodeDetails.createRoute(episodeId))
+                },
+                onRecipeClick = { recipeId ->
+                    navController.navigate(Screen.NabiIhsanRecipeDetails.createRoute(recipeId))
+                }
+            )
+        }
+
+        composable(route = Screen.NabiIhsanWatchLater.route) {
+            val viewModel: NabiIhsanViewModel = koinViewModel()
+            NabiIhsanWatchLaterScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onEpisodeClick = { episodeId ->
+                    navController.navigate(Screen.NabiIhsanEpisodeDetails.createRoute(episodeId))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.NabiIhsanSearch.route,
+            arguments = listOf(navArgument("query") {
+                type = NavType.StringType
+                defaultValue = ""
+            })
+        ) { backStackEntry ->
+            val query = backStackEntry.arguments?.getString("query") ?: ""
+            val viewModel: NabiIhsanViewModel = koinViewModel()
+            NabiIhsanSearchScreen(
+                initialQuery = query,
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onEpisodeClick = { episodeId ->
+                    navController.navigate(Screen.NabiIhsanEpisodeDetails.createRoute(episodeId))
+                },
+                onRecipeClick = { recipeId ->
+                    navController.navigate(Screen.NabiIhsanRecipeDetails.createRoute(recipeId))
+                }
+            )
+        }
+
+        composable(route = Screen.NabiIhsanSettings.route) {
+            val viewModel: NabiIhsanViewModel = koinViewModel()
+            NabiIhsanSettingsScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // الفهم عن الله - شاشات الميزة 1-10
+        composable(route = Screen.FahmMain.route) {
+            val viewModel: FahmViewModel = koinViewModel()
+            FahmMainScreen(
+                viewModel = viewModel,
+                onNavigateToEpisodes = { navController.navigate(Screen.FahmEpisodes.route) },
+                onNavigateToDetail = { epId -> navController.navigate(Screen.FahmEpisodeDetail.createRoute(epId)) },
+                onNavigateToStations = { navController.navigate(Screen.FahmStations.route) },
+                onNavigateToJourney = { navController.navigate(Screen.FahmJourney.route) },
+                onNavigateToSearch = { navController.navigate(Screen.FahmSearch.createRoute("")) },
+                onNavigateToSaved = { navController.navigate(Screen.FahmSaved.createRoute(0)) },
+                onNavigateToSettings = { navController.navigate(Screen.FahmSettings.route) },
+                onNavigateToAbout = { navController.navigate(Screen.FahmAbout.route) },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(route = Screen.FahmEpisodes.route) {
+            val viewModel: FahmViewModel = koinViewModel()
+            FahmEpisodesScreen(
+                viewModel = viewModel,
+                onNavigateToDetail = { epId -> navController.navigate(Screen.FahmEpisodeDetail.createRoute(epId)) },
+                onNavigateToStations = { navController.navigate(Screen.FahmStations.route) },
+                onNavigateToSearch = { navController.navigate(Screen.FahmSearch.createRoute("")) },
+                onNavigateToSaved = { navController.navigate(Screen.FahmSaved.createRoute(0)) },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.FahmEpisodeDetail.route,
+            arguments = listOf(navArgument("episodeId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val episodeId = backStackEntry.arguments?.getString("episodeId") ?: ""
+            val viewModel: FahmViewModel = koinViewModel()
+            FahmEpisodeDetailScreen(
+                episodeId = episodeId,
+                viewModel = viewModel,
+                onNavigateToDetail = { newEpId ->
+                    navController.navigate(Screen.FahmEpisodeDetail.createRoute(newEpId)) {
+                        popUpTo(Screen.FahmEpisodeDetail.route) { inclusive = true }
+                    }
+                },
+                onNavigateToCompletion = { epId -> navController.navigate(Screen.FahmCompletion.createRoute(epId)) },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(route = Screen.FahmStations.route) {
+            val viewModel: FahmViewModel = koinViewModel()
+            FahmStationsScreen(
+                viewModel = viewModel,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(route = Screen.FahmJourney.route) {
+            val viewModel: FahmViewModel = koinViewModel()
+            FahmJourneyScreen(
+                viewModel = viewModel,
+                onNavigateToDetail = { epId -> navController.navigate(Screen.FahmEpisodeDetail.createRoute(epId)) },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.FahmSearch.route,
+            arguments = listOf(navArgument("query") {
+                type = NavType.StringType
+                defaultValue = ""
+            })
+        ) { backStackEntry ->
+            val query = backStackEntry.arguments?.getString("query") ?: ""
+            val viewModel: FahmViewModel = koinViewModel()
+            FahmSearchScreen(
+                initialQuery = query,
+                viewModel = viewModel,
+                onNavigateToDetail = { epId -> navController.navigate(Screen.FahmEpisodeDetail.createRoute(epId)) },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.FahmSaved.route,
+            arguments = listOf(navArgument("tab") {
+                type = NavType.IntType
+                defaultValue = 0
+            })
+        ) { backStackEntry ->
+            val tab = backStackEntry.arguments?.getInt("tab") ?: 0
+            val viewModel: FahmViewModel = koinViewModel()
+            FahmSavedScreen(
+                initialTab = tab,
+                viewModel = viewModel,
+                onNavigateToDetail = { epId -> navController.navigate(Screen.FahmEpisodeDetail.createRoute(epId)) },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.FahmCompletion.route,
+            arguments = listOf(navArgument("episodeId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val episodeId = backStackEntry.arguments?.getString("episodeId") ?: ""
+            val viewModel: FahmViewModel = koinViewModel()
+            FahmCompletionScreen(
+                episodeId = episodeId,
+                viewModel = viewModel,
+                onNavigateToDetail = { epId -> navController.navigate(Screen.FahmEpisodeDetail.createRoute(epId)) },
+                onNavigateToJourney = { navController.navigate(Screen.FahmJourney.route) },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(route = Screen.FahmAbout.route) {
+            FahmAboutScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(route = Screen.FahmSettings.route) {
+            val viewModel: FahmViewModel = koinViewModel()
+            FahmSettingsScreen(
+                viewModel = viewModel,
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

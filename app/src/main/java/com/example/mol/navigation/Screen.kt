@@ -1,7 +1,7 @@
 package com.example.mol.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -27,6 +27,11 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
         title = "الصلاة",
         icon = Icons.Default.AccessTime
     )
+    object FastingJournal : Screen("fasting_journal", "سجل الصيام", Icons.Default.DateRange)
+    object RamadanHub : Screen("ramadan_hub", "مركز رمضان", Icons.Default.Star)
+    object Memorization : Screen("memorization", "الحفظ والمراجعة", Icons.Default.Bookmark)
+    object IslamicCalendar : Screen("islamic_calendar", "التقويم", Icons.Default.DateRange)
+    object PrayerJournal : Screen("prayer_journal", "سجل الصلاة", Icons.Default.CheckCircle)
     object Quran : Screen(
         route = "quran_list",
         title = "القرآن",
@@ -40,6 +45,9 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
         fun createRoute(surahId: Int, ayahNumber: Int? = null) = 
             if (ayahNumber != null) "quran_reader/$surahId?ayahNumber=$ayahNumber"
             else "quran_reader/$surahId"
+    }
+    object ReadingJourney : Screen("reading_journey?surah={surah}&ayah={ayah}&tab={tab}", "رحلتي مع القرآن", Icons.Default.Bookmark) {
+        fun createRoute(surah: Int = 0, ayah: Int = 0, tab: Int = 0) = "reading_journey?surah=$surah&ayah=$ayah&tab=$tab"
     }
     object Azkar : Screen(
         route = "azkar_screen",
@@ -83,11 +91,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
         title = "إحسان",
         icon = Icons.Default.Favorite
     )
-    object Inbox : Screen(
-        route = "inbox_screen",
-        title = "الرسائل",
-        icon = Icons.AutoMirrored.Filled.Chat
-    )
+    // Inbox deferred: no messaging implementation. Do not reintroduce without a real contract.
     object Profile : Screen(
         route = "profile_screen",
         title = "حسابي",
@@ -110,19 +114,33 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
         title = "طلب مساعدة",
         icon = Icons.Default.Handshake
     )
-    object DonationDetail : Screen(
-        route = "donation_detail_screen/{id}",
-        title = "تفاصيل الإحسان",
-        icon = Icons.Default.Info
-    ) {
-        fun createRoute(id: Long) = "donation_detail_screen/$id"
-    }
+    /**
+     * Canonical donation/request details destination.
+     * Legacy `donation_detail_screen/{id}` was unreachable and removed in Part 3.
+     */
     object IhsanDetails : Screen(
         route = "ihsan_details/{id}",
         title = "تفاصيل الإحسان",
         icon = Icons.Default.Info
     ) {
         fun createRoute(id: Long) = "ihsan_details/$id"
+    }
+
+    /**
+     * Compatibility redirect for any saved deep links to the legacy donation detail route.
+     * Renders nothing; [AppNavHost] immediately navigates to [IhsanDetails].
+     * Remove once no compatibility need remains.
+     */
+    @Deprecated("Use Screen.IhsanDetails; redirect-only legacy route")
+    object LegacyDonationDetail : Screen(
+        route = "donation_detail_screen/{id}",
+        title = "تفاصيل الإحسان",
+        icon = Icons.Default.Info
+    ) {
+        fun createRoute(id: Long) = "donation_detail_screen/$id"
+    }
+    object ManageListings : Screen("manage_listings/{type}", "إدارة إحسان", Icons.Default.Favorite) {
+        fun createRoute(type: String) = "manage_listings/${if (type == "REQUEST") "REQUEST" else "OFFER"}"
     }
     object EditProfile : Screen(
         route = "edit_profile",
@@ -152,10 +170,194 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object DailyActivities : Screen(
         route = "daily_activities",
         title = "النشاطات اليومية",
-        icon = Icons.Default.List
+        icon = Icons.AutoMirrored.Filled.List
+    )
+    object Tasbih : Screen(
+        route = "tasbih_screen",
+        title = "تسبيح",
+        icon = Icons.Default.BrightnessLow
+    )
+    /**
+     * Controlled Daily read-only experience (Stage 1).
+     * Registered only when [com.example.feature.ihsanplus.integration.flags.IhsanPlusFeatureFlags.dailyEnabled].
+     */
+    object IhsanPlusDaily : Screen(
+        route = "ihsan_plus_daily",
+        title = "تجربة اليوم",
+        icon = Icons.Default.Today
+    )
+    object HaramLive : Screen(
+        route = "haram_live",
+        title = "بث مباشر الحرم المكي",
+        icon = Icons.Default.LiveTv
+    )
+    object NabawiLive : Screen(
+        route = "nabawi_live",
+        title = "بث مباشر المسجد النبوي",
+        icon = Icons.Default.LiveTv
+    )
+    object SanhyaMain : Screen(
+        route = "sanhya_main",
+        title = "سنحيا بالقرآن",
+        icon = Icons.AutoMirrored.Filled.MenuBook
+    )
+    object SanhyaStoryDetail : Screen(
+        route = "sanhya_story_detail/{storyId}",
+        title = "تفاصيل القصة",
+        icon = Icons.Default.Book
+    ) {
+        fun createRoute(storyId: String) = "sanhya_story_detail/$storyId"
+    }
+    object SanhyaEpisodes : Screen(
+        route = "sanhya_episodes/{storyId}",
+        title = "حلقات القصة",
+        icon = Icons.Default.PlayCircle
+    ) {
+        fun createRoute(storyId: String) = "sanhya_episodes/$storyId"
+    }
+    object SanhyaQuranVerses : Screen(
+        route = "sanhya_quran_verses/{storyId}",
+        title = "آيات القصة",
+        icon = Icons.AutoMirrored.Filled.MenuBook
+    ) {
+        fun createRoute(storyId: String) = "sanhya_quran_verses/$storyId"
+    }
+    object SanhyaFavorites : Screen(
+        route = "sanhya_favorites",
+        title = "قصصي المفضلة",
+        icon = Icons.Default.Favorite
+    )
+    object SanhyaWatchLater : Screen(
+        route = "sanhya_watch_later",
+        title = "المشاهدة لاحقاً",
+        icon = Icons.Default.WatchLater
+    )
+    object SanhyaSearch : Screen(
+        route = "sanhya_search?query={query}",
+        title = "بحث سنحيا بالقرآن",
+        icon = Icons.Default.Search
+    ) {
+        fun createRoute(query: String = "") = "sanhya_search?query=${android.net.Uri.encode(query)}"
+    }
+    object SanhyaSettings : Screen(
+        route = "sanhya_settings",
+        title = "إعدادات سنحيا بالقرآن",
+        icon = Icons.Default.Settings
+    )
+    object NabiIhsanMain : Screen(
+        route = "nabi_ihsan_main",
+        title = "نبي الإحسان",
+        icon = Icons.Default.AutoAwesome
+    )
+    object NabiIhsanEpisodeDetails : Screen(
+        route = "nabi_ihsan_episode_details/{episodeId}",
+        title = "تفاصيل الحلقة",
+        icon = Icons.Default.PlayCircle
+    ) {
+        fun createRoute(episodeId: String) = "nabi_ihsan_episode_details/$episodeId"
+    }
+    object NabiIhsanEpisodes : Screen(
+        route = "nabi_ihsan_episodes",
+        title = "حلقات السلسلة",
+        icon = Icons.Default.FormatListNumbered
+    )
+    object NabiIhsanRecipes : Screen(
+        route = "nabi_ihsan_recipes",
+        title = "الوصفات النبوية",
+        icon = Icons.Default.VolunteerActivism
+    )
+    object NabiIhsanRecipeDetails : Screen(
+        route = "nabi_ihsan_recipe_details/{recipeId}",
+        title = "تفاصيل الوصفة",
+        icon = Icons.Default.Info
+    ) {
+        fun createRoute(recipeId: String) = "nabi_ihsan_recipe_details/$recipeId"
+    }
+    object NabiIhsanFavorites : Screen(
+        route = "nabi_ihsan_favorites",
+        title = "المفضلة",
+        icon = Icons.Default.Favorite
+    )
+    object NabiIhsanWatchLater : Screen(
+        route = "nabi_ihsan_watch_later",
+        title = "المشاهدة لاحقاً",
+        icon = Icons.Default.WatchLater
+    )
+    object NabiIhsanSearch : Screen(
+        route = "nabi_ihsan_search?query={query}",
+        title = "بحث نبي الإحسان",
+        icon = Icons.Default.Search
+    ) {
+        fun createRoute(query: String = "") = "nabi_ihsan_search?query=${android.net.Uri.encode(query)}"
+    }
+    object NabiIhsanSettings : Screen(
+        route = "nabi_ihsan_settings",
+        title = "إعدادات نبي الإحسان",
+        icon = Icons.Default.Settings
+    )
+
+    // الفهم عن الله - الجزء الأول
+    object FahmMain : Screen(
+        route = "fahm_main",
+        title = "الفهم عن الله",
+        icon = Icons.Default.SelfImprovement
+    )
+    object FahmEpisodes : Screen(
+        route = "fahm_episodes",
+        title = "جميع الدروس",
+        icon = Icons.AutoMirrored.Filled.List
+    )
+    object FahmEpisodeDetail : Screen(
+        route = "fahm_episode_detail/{episodeId}",
+        title = "تفاصيل الدرس",
+        icon = Icons.Default.PlayCircle
+    ) {
+        fun createRoute(episodeId: String) = "fahm_episode_detail/$episodeId"
+    }
+    object FahmStations : Screen(
+        route = "fahm_stations",
+        title = "منازل الرحلة",
+        icon = Icons.Default.Star
+    )
+    object FahmJourney : Screen(
+        route = "fahm_journey",
+        title = "رحلتي",
+        icon = Icons.Default.Explore
+    )
+    object FahmSearch : Screen(
+        route = "fahm_search?query={query}",
+        title = "بحث الفهم عن الله",
+        icon = Icons.Default.Search
+    ) {
+        fun createRoute(query: String = "") = "fahm_search?query=${android.net.Uri.encode(query)}"
+    }
+    object FahmSaved : Screen(
+        route = "fahm_saved?tab={tab}",
+        title = "المحفوظات",
+        icon = Icons.Default.Bookmark
+    ) {
+        fun createRoute(tab: Int = 0) = "fahm_saved?tab=$tab"
+    }
+    object FahmCompletion : Screen(
+        route = "fahm_completion/{episodeId}",
+        title = "إتمام الدرس",
+        icon = Icons.Default.CheckCircle
+    ) {
+        fun createRoute(episodeId: String) = "fahm_completion/$episodeId"
+    }
+    object FahmAbout : Screen(
+        route = "fahm_about",
+        title = "عن البرنامج",
+        icon = Icons.Default.Info
+    )
+    object FahmSettings : Screen(
+        route = "fahm_settings",
+        title = "إعدادات القسم",
+        icon = Icons.Default.Settings
     )
 
     companion object {
-        val items = listOf(Home, Donations, Profile)
+        val items: List<Screen>
+            get() = listOf(Home, Donations, Profile)
     }
 }

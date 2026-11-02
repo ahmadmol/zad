@@ -18,13 +18,13 @@ class QiblaManager(context: Context) : SensorEventListener {
     private val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
     private val magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
 
+    val hasCompassSensors: Boolean get() = accelerometer != null && magnetometer != null
+
     private var gravity = FloatArray(3)
     private var geomagnetic = FloatArray(3)
 
     // smoothing / state
     private var smoothedAzimuth: Float? = null
-    private val smoothingAlpha = 0.15f
-    private val maxJump = 45f // degrees, reject/limit sudden jumps
 
     // declination correction (magnetic -> true)
     private var declination: Float = 0f
@@ -35,6 +35,8 @@ class QiblaManager(context: Context) : SensorEventListener {
     private val accuracyFlow = MutableSharedFlow<Int>(replay = 1)
 
     fun getRotationFlow(): Flow<Float> = callbackFlow {
+        if (!hasCompassSensors) { close(); return@callbackFlow }
+        smoothedAzimuth = null
         onRotationChanged = { rotation ->
             trySend(rotation)
         }
@@ -51,17 +53,9 @@ class QiblaManager(context: Context) : SensorEventListener {
     fun getAccuracyFlow(): Flow<Int> = accuracyFlow.asSharedFlow()
 
     fun updateDeclinationFromLocation(lat: Double, lng: Double, alt: Double = 0.0) {
-        try {
-            // Use reflection to avoid compile-time dependency issues in some build environments
-            val cls = Class.forName("android.location.GeomagneticField")
-            val ctor = cls.getConstructor(Float::class.javaPrimitiveType, Float::class.javaPrimitiveType, Float::class.javaPrimitiveType, java.lang.Long.TYPE)
-            val instance = ctor.newInstance(lat.toFloat(), lng.toFloat(), alt.toFloat(), System.currentTimeMillis())
-            val field = cls.getField("declination")
-            val value = field.getFloat(instance)
-            declination = value
-        } catch (e: Throwable) {
-            // ignore, keep previous declination
-        }
+        declination = android.hardware.GeomagneticField(
+            lat.toFloat(), lng.toFloat(), alt.toFloat(), System.currentTimeMillis()
+        ).declination
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
@@ -73,6 +67,8 @@ class QiblaManager(context: Context) : SensorEventListener {
         if (event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
             geomagnetic = event.values.copyOf()
         }
+
+        if (gravity.all { it == 0f } || geomagnetic.all { it == 0f }) return
         
         val r = FloatArray(9)
         val i = FloatArray(9)
@@ -82,25 +78,21 @@ class QiblaManager(context: Context) : SensorEventListener {
             SensorManager.getOrientation(r, orientation)
             val azimuthInRadians = orientation[0]
             val azimuthInDegrees = Math.toDegrees(azimuthInRadians.toDouble()).toFloat()
-            // Sensor azimuth is relative to magnetic north; apply negation to match previous behavior
-            val magneticAz = -azimuthInDegrees
+            // Standard sensor azimuth in degrees [0, 360) clockwise from magnetic north
+            val magneticAz = ((azimuthInDegrees % 360f) + 360f) % 360f
 
             // apply declination to convert to true north
             var corrected = magneticAz + declination
             // normalize to 0..360
-            corrected = ((corrected % 360) + 360) % 360
+            corrected = ((corrected % 360f) + 360f) % 360f
 
             // smoothing on circular values
             val prev = smoothedAzimuth
             val smoothed = if (prev == null) {
                 corrected
             } else {
-                var delta = ((corrected - prev + 540f) % 360f) - 180f
-                // limit sudden jumps
-                if (kotlin.math.abs(delta) > maxJump) {
-                    delta = maxJump * kotlin.math.sign(delta)
-                }
-                var next = prev + smoothingAlpha * delta
+                val delta = ((corrected - prev + 540f) % 360f) - 180f
+                var next = prev + 0.25f * delta
                 next = ((next % 360f) + 360f) % 360f
                 next
             }
@@ -110,6 +102,9 @@ class QiblaManager(context: Context) : SensorEventListener {
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+        // Accelerometer accuracy does not establish magnetic heading accuracy.
+        // Do not let its callbacks dismiss the compass calibration warning.
+        if (sensor?.type != Sensor.TYPE_MAGNETIC_FIELD) return
         try {
             accuracyFlow.tryEmit(accuracy)
         } catch (_: Exception) {

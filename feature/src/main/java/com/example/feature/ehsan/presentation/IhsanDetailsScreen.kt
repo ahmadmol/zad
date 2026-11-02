@@ -2,260 +2,115 @@ package com.example.feature.ehsan.presentation
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Chat
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
+import com.example.designsystem.component.*
+import com.example.designsystem.theme.IhsanTheme
+import com.example.feature.core.notification.UserMessageNotifier
+import com.example.feature.ehsan.data.image.EhsanImageStore
+import com.example.feature.ehsan.domain.model.DonationStatus
+import com.example.feature.ehsan.domain.usecase.donationContactDestination
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
+import java.text.DateFormat
+import java.util.Date
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun IhsanDetailsScreen(
-    id: Long,
-    onBack: () -> Unit,
-    viewModel: IhsanDetailsViewModel = koinViewModel()
-) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+fun IhsanDetailsScreen(id: Long, onBack: () -> Unit, viewModel: IhsanDetailsViewModel = koinViewModel()) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val store: EhsanImageStore = koinInject()
     val context = LocalContext.current
-
-    LaunchedEffect(id) {
-        viewModel.loadItem(id)
+    val colors = IhsanTheme.colors
+    LaunchedEffect(id) { viewModel.loadItem(id) }
+    fun share() {
+        val item = state.item ?: return
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"; putExtra(Intent.EXTRA_TEXT, "${item.title}\n${item.description}")
+        }
+        runCatching { context.startActivity(Intent.createChooser(intent, "مشاركة")) }
+            .onFailure { UserMessageNotifier.notify(context, "تعذر المشاركة") }
     }
-
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-        Scaffold(
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = { Text("تفاصيل الإحسان", fontWeight = FontWeight.Bold) },
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { /* Share Logic */ }) {
-                            Icon(Icons.Outlined.Share, contentDescription = null)
-                        }
-                    }
-                )
-            },
-            containerColor = Color(0xFFF9F9F9)
-        ) { padding ->
-            Box(modifier = Modifier.padding(padding).fillMaxSize()) {
-                if (uiState.isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color(0xFF0D4D3D))
-                } else if (uiState.item != null) {
-                    val item = uiState.item!!
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        // Main Image Container
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(280.dp)
-                                .background(Color.White)
-                        ) {
-                            if (item.imageUrl != null) {
-                                AsyncImage(
-                                    model = item.imageUrl,
-                                    contentDescription = null,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop
-                                )
-                            } else {
-                                Box(
-                                    modifier = Modifier.fillMaxSize().background(Color(0xFFE8F5E9)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = when(item.category) {
-                                            "طعام" -> Icons.Default.Restaurant
-                                            "ملابس" -> Icons.Default.Checkroom
-                                            "أثاث" -> Icons.Default.Weekend
-                                            else -> Icons.Default.Category
-                                        },
-                                        contentDescription = null,
-                                        modifier = Modifier.size(80.dp),
-                                        tint = Color(0xFF0D4D3D).copy(alpha = 0.2f)
-                                    )
-                                }
-                            }
-                            
-                            Surface(
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .align(Alignment.TopEnd),
-                                color = if (item.type == "OFFER") Color(0xFF2E7D32) else Color(0xFFE65100),
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Text(
-                                    text = if (item.type == "OFFER") "تبرع متاح" else "طلب مساعدة",
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                    color = Color.White,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(24.dp)
-                        ) {
-                            Text(
-                                text = item.title,
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black
-                            )
-                            
-                            Spacer(modifier = Modifier.height(12.dp))
-                            
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.LocationOn, contentDescription = null, size16(), tint = Color.Gray)
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = item.location, color = Color.Gray, fontSize = 14.sp)
-                                Spacer(modifier = Modifier.width(16.dp))
-                                Icon(Icons.Default.Schedule, contentDescription = null, size16(), tint = Color.Gray)
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = "منذ يومين", color = Color.Gray, fontSize = 14.sp)
-                            }
-
-                            Spacer(modifier = Modifier.height(24.dp))
-                            
-                            Text("وصف الحالة", fontWeight = FontWeight.Bold, color = Color.Black)
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = item.description,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Color.DarkGray,
-                                lineHeight = 28.sp
-                            )
-
-                            Spacer(modifier = Modifier.height(32.dp))
-
-                            // Contact Info Card
-                            Surface(
-                                modifier = Modifier.fillMaxWidth(),
-                                color = Color.White,
-                                shape = RoundedCornerShape(16.dp),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF1F3F4))
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Surface(
-                                        modifier = Modifier.size(48.dp),
-                                        shape = CircleShape,
-                                        color = Color(0xFF0D4D3D).copy(alpha = 0.1f)
-                                    ) {
-                                        Box(contentAlignment = Alignment.Center) {
-                                            Text(
-                                                text = item.donorName.take(1),
-                                                color = Color(0xFF0D4D3D),
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 20.sp
-                                            )
-                                        }
-                                    }
-                                    Spacer(modifier = Modifier.width(16.dp))
-                                    Column {
-                                        Text(text = item.donorName, fontWeight = FontWeight.Bold)
-                                        Text(text = "صاحب الفرصة", fontSize = 12.sp, color = Color.Gray)
-                                    }
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(32.dp))
-
-                            // Action Buttons
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                Button(
-                                    onClick = {
-                                        val phone = item.phoneNumber
-                                        val uri = Uri.parse("tel:$phone")
-                                        val intent = Intent(Intent.ACTION_DIAL, uri)
-                                        context.startActivity(intent)
-                                    },
-                                    modifier = Modifier.weight(1f).height(56.dp),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0D4D3D))
-                                ) {
-                                    Icon(Icons.Default.Call, contentDescription = null)
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text("اتصال هاتفي")
-                                }
-                                
-                                Button(
-                                    onClick = {
-                                        val phone = item.phoneNumber
-                                        val url = "https://api.whatsapp.com/send?phone=$phone"
-                                        val intent = Intent(Intent.ACTION_VIEW)
-                                        intent.data = Uri.parse(url)
-                                        context.startActivity(intent)
-                                    },
-                                    modifier = Modifier.weight(1f).height(56.dp),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366))
-                                ) {
-                                    Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = null)
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text("واتساب")
-                                }
-                            }
-                            
-                            Spacer(modifier = Modifier.height(16.dp))
-                            
-                            OutlinedButton(
-                                onClick = { /* TODO: Report condition */ },
-                                modifier = Modifier.fillMaxWidth().height(56.dp),
-                                shape = RoundedCornerShape(12.dp),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
-                            ) {
-                                Icon(Icons.Default.Flag, contentDescription = null, tint = Color.Gray)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("الإبلاغ عن الحالة", color = Color.Gray)
-                            }
+    Scaffold(containerColor = colors.surfaceBase, contentWindowInsets = WindowInsets(0,0,0,0),
+        topBar = { IhsanTopBar(if (state.item?.type == "REQUEST") "تفاصيل طلب المساعدة" else "تفاصيل عرض التبرع",
+            style = IhsanTopBarStyle.CompactSkyline, onNavigateBack = onBack,
+            actions = { IconButton(onClick = { share() }, enabled = state.item != null) {
+                Icon(Icons.Default.Share, "مشاركة", tint = colors.accentContent)
+            } }) }) { padding ->
+        when {
+            state.isLoading -> Box(Modifier.padding(padding).fillMaxSize(), contentAlignment = Alignment.Center) {
+                IhsanLoadingState(message = "جارٍ تحميل التفاصيل")
+            }
+            state.item == null -> Box(Modifier.padding(padding).fillMaxSize(), contentAlignment = Alignment.Center) {
+                IhsanErrorState("تعذر تحميل التفاصيل", message = state.errorMessage,
+                    retryLabel = "إعادة المحاولة", onRetry = { viewModel.loadItem(id) })
+            }
+            else -> {
+                val item = state.item!!
+                val offer = item.type == "OFFER"
+                val status = when (DonationStatus.fromStorage(item.status)) {
+                    DonationStatus.ACTIVE -> "نشط"
+                    DonationStatus.COORDINATING -> "جارٍ التنسيق"
+                    DonationStatus.FULFILLED -> "مكتمل"
+                    DonationStatus.CANCELLED -> "ملغى"
+                    DonationStatus.EXPIRED -> "منتهي"
+                }
+                Column(Modifier.padding(padding).fillMaxSize().navigationBarsPadding()
+                    .verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(when (item.origin) { "DEMO" -> "مثال DEMO خيالي؛ ليس إعلانًا منشورًا"; "USER" -> "سجل محلي على هذا الجهاز؛ لم يُنشر للعامة"; else -> "سجل قديم؛ لا تثبت ملكيته أو نشره" }, color = colors.textSecondary)
+                    IhsanImageGallery(item.imageUrl, item.title, store)
+                    IhsanStatusChip(if (offer) "عرض تبرع" else "طلب مساعدة",
+                        container = if (offer) colors.charityOfferContainer else colors.charityRequestContainer,
+                        content = if (offer) colors.charityOffer else colors.charityRequest)
+                    Text(item.title, fontSize = 20.sp, lineHeight = 28.sp, fontWeight = FontWeight.Bold, color = colors.accentContent)
+                    Text(item.description.take(120), fontSize = 14.sp, lineHeight = 21.sp, color = colors.textBody)
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        IhsanStatusChip(status)
+                        Column(Modifier.weight(1f)) {
+                            Text(item.location, fontSize = 12.sp, color = colors.textSecondary)
+                            if (item.createdAt > 0) Text(DateFormat.getDateInstance(DateFormat.MEDIUM, java.util.Locale.forLanguageTag("ar")).format(Date(item.createdAt)),
+                                fontSize = 11.sp, color = colors.textSecondary)
                         }
                     }
+                    DetailSection(if (offer) "عن هذا العرض" else "تفاصيل المساعدة المطلوبة", item.description)
+                    DetailSection("معلومات التواصل", listOf(item.donorName, item.category).filter { it.isNotBlank() }.joinToString(" • "))
+                    val contactDestination = if (item.origin == "DEMO") null else donationContactDestination(item.phoneNumber, item.contactMethod)
+                    Button(onClick = {
+                        contactDestination?.let { destination ->
+                            val action = if (item.contactMethod == "WHATSAPP") Intent.ACTION_VIEW else Intent.ACTION_DIAL
+                            runCatching { context.startActivity(Intent(action, Uri.parse(destination))) }
+                                .onFailure { UserMessageNotifier.notify(context, "تعذر فتح تطبيق التواصل") }
+                        }
+                    }, enabled = contactDestination != null, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp)) {
+                        Text(if (offer) "تواصل لتنسيق التبرع" else "تواصل لتقديم المساعدة")
+                    }
+                    OutlinedButton(colors = com.example.designsystem.theme.ihsanOutlinedButtonColors(), onClick = { share() }, modifier = Modifier.fillMaxWidth()) { Text("مشاركة") }
+                    if (item.phoneNumber.isBlank()) Text(if (item.origin == "DEMO") "مثال DEMO خيالي؛ التواصل غير متاح ولا توجد جهة حقيقية" else "لا يتوفر رقم تواصل لهذا السجل", color = colors.textSecondary, fontSize = 12.sp)
+                    else if (contactDestination == null) Text("رقم التواصل غير صالح لهذه الطريقة؛ واتساب يتطلب رقمًا دوليًا يبدأ بـ +", color = colors.textSecondary, fontSize = 12.sp)
                 }
             }
         }
     }
 }
 
-private fun size16() = Modifier.size(16.dp)
+@Composable
+private fun DetailSection(title: String, text: String) {
+    Surface(color = IhsanTheme.colors.surfaceElevated, shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(title, fontSize = 17.sp, fontWeight = FontWeight.Bold, color = IhsanTheme.colors.accentContent)
+            Text(text, fontSize = 14.sp, lineHeight = 22.sp, color = IhsanTheme.colors.textBody)
+        }
+    }
+}

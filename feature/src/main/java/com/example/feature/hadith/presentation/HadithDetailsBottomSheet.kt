@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
+import com.example.designsystem.theme.IhsanTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -20,14 +21,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.feature.hadith.domain.model.Hadith
+import com.example.feature.core.notification.UserMessageNotifier
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HadithDetailsBottomSheet(
     hadith: Hadith,
     onDismiss: () -> Unit,
-    onCopied: () -> Unit = {},
-    onShared: () -> Unit = {}
+    onCopied: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
@@ -44,7 +45,7 @@ fun HadithDetailsBottomSheet(
                 text = "تفاصيل الحديث",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
+                color = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
@@ -74,19 +75,20 @@ fun HadithDetailsBottomSheet(
             Text(
                 text = "المصدر: ${hadith.source}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary,
+                color = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Divider()
+            HorizontalDivider()
 
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = hadith.explanation ?: "شرح مختصر مؤقت. TODO: إضافة شرح حقيقي.",
+                text = hadith.explanation
+                    ?: "لا يتوفر شرح مفصّل لهذا الحديث حاليًا.",
                 style = MaterialTheme.typography.bodyLarge.copy(lineHeight = 28.sp),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Justify
@@ -101,7 +103,7 @@ fun HadithDetailsBottomSheet(
                         onCopied()
                     },
                     modifier = Modifier.weight(1f).height(52.dp)
-                ) {
+                , colors = com.example.designsystem.theme.ihsanOutlinedButtonColors()) {
                     Icon(Icons.Default.ContentCopy, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("نسخ")
@@ -115,11 +117,11 @@ fun HadithDetailsBottomSheet(
                             type = "text/plain"
                         }
                         val shareIntent = Intent.createChooser(sendIntent, null)
-                        context.startActivity(shareIntent)
-                        onShared()
+                        runCatching { context.startActivity(shareIntent) }
+                            .onFailure { UserMessageNotifier.notify(context, "تعذر فتح تطبيق للمشاركة") }
                     },
                     modifier = Modifier.weight(1f).height(52.dp)
-                ) {
+                , colors = com.example.designsystem.theme.ihsanOutlinedButtonColors()) {
                     Icon(Icons.Default.Share, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("مشاركة")

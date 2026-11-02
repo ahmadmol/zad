@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical"
+    android:padding="12dp" android:layoutDirection="rtl" android:background="@drawable/widget_prayer_background">
+    <TextView android:id="@+id/widget_next_prayer" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/widget_title" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/widget_text_primary" />
+    <TextView android:id="@+id/widget_next_time" android:text="@string/widget_prayer_not_ready" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="18sp" android:textColor="@color/widget_text_primary" />
+    <Chronometer android:id="@+id/widget_countdown" android:visibility="gone" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="16sp" android:textColor="@color/widget_text_accent" android:gravity="start" />
+    <TextView android:id="@+id/widget_location" android:text="@string/widget_open_to_setup" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:textSize="11sp" android:textColor="@color/widget_text_secondary" />
+    <LinearLayout style="?android:attr/buttonBarStyle" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+        <Button style="?android:attr/buttonBarButtonStyle" android:id="@+id/widget_prayer" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:minHeight="48dp" android:textSize="12sp" android:text="@string/widget_prayer_action" android:textColor="@color/widget_text_primary" android:backgroundTint="@color/prayer_widget_button" />
+        <Button style="?android:attr/buttonBarButtonStyle" android:id="@+id/widget_quran" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:minHeight="48dp" android:textSize="12sp" android:text="@string/widget_quran_action" android:textColor="@color/widget_text_primary" android:backgroundTint="@color/prayer_widget_button" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,145 @@
+package com.example.feature.nabiihsan.presentation
+
+import androidx.compose.material3.LocalContentColor
+
+import com.example.designsystem.theme.IhsanTheme
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.designsystem.component.IhsanEmptyState
+import com.example.feature.nabiihsan.presentation.components.NabiEpisodeCard
+import com.example.feature.nabiihsan.presentation.components.NabiRecipeCard
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun NabiIhsanFavoritesScreen(
+    viewModel: NabiIhsanViewModel = koinViewModel(),
+    onNavigateBack: () -> Unit = {},
+    onEpisodeClick: (String) -> Unit = {},
+    onRecipeClick: (String) -> Unit = {}
+) {
+    val selectedTab by viewModel.favoritesTab.collectAsStateWithLifecycle()
+    val favoriteEpisodes by viewModel.favoriteEpisodes.collectAsStateWithLifecycle()
+    val favoriteRecipes by viewModel.favoriteRecipes.collectAsStateWithLifecycle()
+
+    val tabs = listOf("الحلقات", "الوصفات")
+
+    val readState by viewModel.mainUiState.collectAsStateWithLifecycle()
+    val writeError by viewModel.actionError.collectAsStateWithLifecycle()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(if (IhsanTheme.isDark) IhsanTheme.colors.surfaceBase else MaterialTheme.colorScheme.surface)
+    ) {
+        // Top Header
+        com.example.designsystem.component.IhsanTopBar(
+            title = "المفضلة", style = com.example.designsystem.component.IhsanTopBarStyle.CompactSkyline,
+            onNavigateBack = onNavigateBack)
+
+        if (com.example.feature.learning.presentation.components.LearningReadState(readState.isLoading, readState.errorMessage, viewModel::retry)) return@Column
+        com.example.feature.learning.presentation.components.LearningActionError(writeError, viewModel::retry)
+        // Tab Row
+        TabRow(
+            selectedTabIndex = selectedTab,
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary,
+            indicator = { tabPositions ->
+                TabRowDefaults.SecondaryIndicator(
+                    Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                    color = if (IhsanTheme.isDark) IhsanTheme.colors.textBody else MaterialTheme.colorScheme.primary
+                )
+            }
+        ) {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    selectedContentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textPrimary else LocalContentColor.current,
+                    unselectedContentColor = if (IhsanTheme.isDark) IhsanTheme.colors.textSecondary else LocalContentColor.current.copy(alpha = .7f),
+                    selected = selectedTab == index,
+                    onClick = { viewModel.setFavoritesTab(index) },
+                    text = {
+                        Text(
+                            text = title,
+                            fontSize = 14.sp,
+                            fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Medium
+                        )
+                    }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Tab Content
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            if (selectedTab == 0) {
+                // Favorite Episodes
+                if (favoriteEpisodes.isEmpty()) {
+                    IhsanEmptyState(
+                        title = "لا توجد حلقات مفضلة",
+                        message = "يمكنك إضافتها من خلال النقر على أيقونة القلب في أي حلقة.",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    favoriteEpisodes.forEach { episode ->
+                        NabiEpisodeCard(
+                            episode = episode,
+                            onEpisodeClick = onEpisodeClick,
+                            onFavoriteToggle = { viewModel.toggleEpisodeFavorite(it) }
+                        )
+                    }
+                }
+            } else {
+                // Favorite Recipes
+                if (favoriteRecipes.isEmpty()) {
+                    IhsanEmptyState(
+                        title = "لا توجد وصفات مفضلة",
+                        message = "يمكنك حفظ الوصفات النبوية للرجوع إليها في أي وقت.",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    favoriteRecipes.forEach { recipe ->
+                        NabiRecipeCard(
+                            recipe = recipe,
+                            onRecipeClick = onRecipeClick
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}

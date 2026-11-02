@@ -11,7 +11,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import java.io.IOException
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 @Serializable
 private data class AsmaJsonDto(
@@ -29,9 +30,9 @@ class AsmaLocalDataSource(
     private val _asmaCache = MutableStateFlow<List<AllahName>>(emptyList())
     val asmaFlow: StateFlow<List<AllahName>> = _asmaCache.asStateFlow()
 
-    suspend fun loadAsmaIfNeeded() {
+    private val lock = Mutex()
+    suspend fun loadAsmaIfNeeded() = lock.withLock {
         withContext(Dispatchers.IO) {
-            try {
                 if (_asmaCache.value.isEmpty()) {
                     val jsonString = context.assets.open("asma.json").bufferedReader().use { it.readText() }
                     val json = Json { ignoreUnknownKeys = true }
@@ -56,27 +57,13 @@ class AsmaLocalDataSource(
                         item.copy(isFavorite = favoriteIds.contains(item.id.toString()))
                     }
                 }
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
         }
     }
 
-    suspend fun toggleFavorite(id: Int) {
-        val favoriteIds = userPreferences.favoriteAsmaIds.first().toMutableSet()
-        val idKey = id.toString()
-        if (favoriteIds.contains(idKey)) {
-            favoriteIds.remove(idKey)
-        } else {
-            favoriteIds.add(idKey)
-        }
-        userPreferences.setFavoriteAsmaIds(favoriteIds)
-        _asmaCache.value = _asmaCache.value.map { item ->
-            if (item.id == id) {
-                item.copy(isFavorite = favoriteIds.contains(idKey))
-            } else {
-                item
-            }
-        }
+    suspend fun toggleFavorite(id: Int) = lock.withLock {
+        if (_asmaCache.value.none { it.id == id }) return@withLock
+        userPreferences.toggleFavoriteAsmaId(id)
+        val saved = userPreferences.favoriteAsmaIds.first()
+        _asmaCache.value = _asmaCache.value.map { it.copy(isFavorite = it.id.toString() in saved) }
     }
 }

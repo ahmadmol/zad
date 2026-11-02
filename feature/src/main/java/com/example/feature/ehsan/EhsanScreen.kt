@@ -1,78 +1,114 @@
 package com.example.feature.ehsan
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import com.example.feature.R
+import androidx.compose.ui.res.stringResource
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.layout.layout
+import androidx.compose.material3.FabPosition
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material3.*
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import com.example.designsystem.theme.IhsanTheme
-import com.example.feature.ehsan.domain.model.Donation
-import com.example.feature.ehsan.presentation.EhsanViewModel
 import com.example.feature.components.AuthBottomSheet
 import com.example.feature.components.AuthViewModel
+import com.example.feature.ehsan.data.image.EhsanImageStore
+import com.example.feature.ehsan.presentation.EhsanViewModel
+import com.example.feature.ehsan.presentation.components.AddEhsanFab
+import com.example.feature.ehsan.presentation.components.DonationCardItem
+import com.example.feature.ehsan.presentation.components.EhsanEmptyContent
+import com.example.feature.ehsan.presentation.components.EhsanFilterRow
+import com.example.feature.ehsan.presentation.components.EhsanHeaderBanner
+import com.example.feature.ehsan.presentation.components.EhsanSearchField
+import com.example.feature.ehsan.presentation.components.EhsanSegmentedTabs
+import com.example.feature.ehsan.presentation.components.LocalBoardNoticeCard
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Ehsan Screen Redesign matching reference design
+ */
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun EhsanScreen(
     onNavigateBack: () -> Unit = {},
     onAddEhsanClick: (String) -> Unit = {},
     onDonationClick: (Long) -> Unit = {},
+    showNavigationIcon: Boolean = false,
     viewModel: EhsanViewModel = koinViewModel(),
     authViewModel: AuthViewModel = koinViewModel()
 ) {
+    val imageStore: EhsanImageStore = koinInject()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val currentUser by authViewModel.currentUser.collectAsStateWithLifecycle()
     var showAuthSheet by remember { mutableStateOf(false) }
+    var showAdvancedFilters by remember { mutableStateOf(false) }
+    var showDemoReset by remember { mutableStateOf(false) }
     var pendingActionType by remember { mutableStateOf("OFFER") }
+
+    val hasActiveFilters = remember(
+        uiState.selectedLocation,
+        uiState.selectedCategory,
+        uiState.selectedSort,
+        uiState.selectedType, uiState.selectedStatus, uiState.selectedOrigin
+    ) {
+            uiState.selectedLocation != "الكل" ||
+            uiState.selectedCategory != "الكل" ||
+            uiState.selectedSort != "DEFAULT" ||
+            uiState.selectedType != "OFFER" || uiState.selectedStatus != "ALL" || uiState.selectedOrigin != "ALL"
+    }
+
+    val startAdd: (String) -> Unit = { type ->
+        pendingActionType = type
+        if (currentUser == null) showAuthSheet = true else onAddEhsanClick(type)
+    }
+
+    if (showDemoReset) androidx.compose.material3.AlertDialog(
+        onDismissRequest = { showDemoReset = false }, title = { Text("إعادة أمثلة DEMO؟") },
+        text = { Text("يعاد إنشاء الأمثلة الخيالية فقط. تبقى سجلاتك وصورك وملفك والقرآن والأذكار والإعدادات محفوظة.") },
+        confirmButton = { androidx.compose.material3.TextButton(colors = com.example.designsystem.theme.ihsanTextButtonColors(), onClick = { showDemoReset = false; viewModel.resetDemoOnly() }) { Text("إعادة أمثلة DEMO") } },
+        dismissButton = { androidx.compose.material3.TextButton(colors = com.example.designsystem.theme.ihsanTextButtonColors(), onClick = { showDemoReset = false }) { Text("إلغاء") } })
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
-            topBar = {
-                EhsanTopBar(onNavigateBack)
-            },
+            floatingActionButtonPosition = FabPosition.Start,
             floatingActionButton = {
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        pendingActionType = "OFFER"
-                        if (currentUser == null) showAuthSheet = true else onAddEhsanClick("OFFER")
-                    },
-                    containerColor = Color(0xFF0D4D3D),
-                    contentColor = Color.White,
-                    shape = RoundedCornerShape(16.dp),
-                    icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                    text = { Text("إضافة إحسان", fontWeight = FontWeight.Bold) }
+                AddEhsanFab(
+                    type = uiState.selectedType,
+                    onClick = { startAdd(uiState.selectedType) }
                 )
             },
-            containerColor = Color(0xFFF9F9F9)
-        ) { padding ->
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
+            containerColor = MaterialTheme.colorScheme.background
+        ) { scaffoldPadding ->
             if (showAuthSheet) {
                 AuthBottomSheet(
                     onDismiss = { showAuthSheet = false },
@@ -83,425 +119,151 @@ fun EhsanScreen(
                 )
             }
 
+            if (showAdvancedFilters) com.example.feature.ehsan.presentation.EhsanAdvancedFilters(
+                uiState, onDismiss = { showAdvancedFilters = false },
+                onApply = { city, category, sort ->
+                    viewModel.onLocationChange(city); viewModel.onCategoryChange(category); viewModel.onSortChange(sort)
+                    showAdvancedFilters = false
+                })
+
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    bottom = scaffoldPadding.calculateBottomPadding() + 80.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                // Header / Impact Card
+                // Item 0: Atmospheric Mosque Silhouette Banner
                 item {
-                    ImpactSection(
-                        donorCount = uiState.donorCount,
-                        completedCount = uiState.completedCount
+                    EhsanHeaderBanner(
+                        cityName = uiState.locationName,
+                        islamicDate = com.example.feature.core.util.currentHijriDateText(),
+                        onSearchClick = { showAdvancedFilters = true }
                     )
                 }
 
-                // Quick Action Buttons
+                // Item 1: Segmented Tabs (عروض تبرع / طلبات مساعدة)
                 item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = IhsanTheme.dimens.screenHorizontal)
+                            .layout { measurable, constraints ->
+                                val child = measurable.measure(constraints)
+                                val overlap = 12.dp.roundToPx()
+                                layout(child.width, (child.height - overlap).coerceAtLeast(0)) {
+                                    child.placeRelative(0, -overlap)
+                                }
+                            },
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        QuickActionCard(
-                            title = "أرغب بالتبرع",
-                            subtitle = "عرض فائض لديك",
-                            icon = Icons.Default.VolunteerActivism,
-                            containerColor = Color(0xFF0D4D3D),
-                            contentColor = Color.White,
-                            modifier = Modifier.weight(1f),
-                            onClick = {
-                                pendingActionType = "OFFER"
-                                if (currentUser == null) showAuthSheet = true else onAddEhsanClick("OFFER")
-                            }
-                        )
-                        QuickActionCard(
-                            title = "أحتاج مساعدة",
-                            subtitle = "اطلب ما ينقصك",
-                            icon = Icons.Default.Handshake,
-                            containerColor = Color.White,
-                            contentColor = Color(0xFF0D4D3D),
-                            modifier = Modifier.weight(1f),
-                            onClick = {
-                                pendingActionType = "REQUEST"
-                                if (currentUser == null) showAuthSheet = true else onAddEhsanClick("REQUEST")
-                            }
-                        )
-                    }
-                }
-
-                // Search and Filters
-                item {
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        SearchBar(
-                            query = uiState.searchQuery,
-                            onQueryChange = viewModel::onSearchQueryChange
-                        )
-                        
-                        LocationAndCategoryFilters(
-                            selectedLocation = uiState.selectedLocation,
-                            onLocationSelected = viewModel::onLocationChange,
-                            selectedCategory = uiState.selectedCategory,
-                            onCategorySelected = viewModel::onCategoryChange
-                        )
-
-                        TypeSelectionTabs(
+                        EhsanSegmentedTabs(
                             selectedType = uiState.selectedType,
                             onTypeSelected = viewModel::onTypeChange
                         )
+
+                        // Item 2: Search Bar
+                        EhsanSearchField(
+                            query = uiState.searchQuery,
+                            onQueryChange = viewModel::onSearchQueryChange,
+                            cityName = uiState.locationName,
+                            onFilterClick = { showAdvancedFilters = true }
+                        )
+
+                        // Item 3: Sorting controls
+                        EhsanFilterRow(
+                            selectedSort = uiState.selectedSort,
+                            onSortChange = viewModel::onSortChange
+                        )
+
+                        Text("${uiState.filteredDonations.size} نتيجة", style = MaterialTheme.typography.labelSmall,
+                            color = IhsanTheme.colors.textSecondary)
+                        LocalBoardNoticeCard()
+                        androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            listOf("ALL" to "كل الحالات", "AVAILABLE" to "متاح", "PENDING" to "بانتظار محلي", "COMPLETED" to "منتهٍ محليًا").forEach { (value, label) ->
+                                androidx.compose.material3.FilterChip(selected = uiState.selectedStatus == value, onClick = { viewModel.onStatusChange(value) }, label = { Text(label) })
+                            }
+                        }
+                        androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            listOf("ALL" to "كل المصادر", "USER" to "محلي", "LEGACY" to "قديم بلا ملكية", "DEMO" to "أمثلة DEMO").forEach { (value, label) ->
+                                androidx.compose.material3.FilterChip(selected = uiState.selectedOrigin == value, onClick = { viewModel.onOriginChange(value) }, label = { Text(label) })
+                            }
+                        }
+                        androidx.compose.material3.TextButton(colors = com.example.designsystem.theme.ihsanTextButtonColors(), onClick = { showDemoReset = true }) { Text("إعادة أمثلة DEMO فقط") }
                     }
                 }
 
-                item {
-                    Text(
-                        text = "فرص إحسان المتاحة",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
-
-                if (uiState.isLoading) {
-                    item {
-                        Box(Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator(color = Color(0xFF0D4D3D))
+                // Listing Content Section
+                when {
+                    uiState.isLoading -> {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(color = IhsanTheme.colors.accentContent)
+                            }
                         }
                     }
-                } else if (uiState.filteredDonations.isEmpty()) {
-                    item {
-                        EhsanEmptyState(
-                            query = uiState.searchQuery,
-                            modifier = Modifier.fillParentMaxHeight(0.5f)
-                        )
+
+                    uiState.error != null -> {
+                        item {
+                            Column { EhsanErrorContent(message = uiState.error.orEmpty()); Button(onClick = viewModel::retry, modifier = Modifier.padding(16.dp)) { Text("إعادة المحاولة") } }
+                        }
                     }
-                } else {
-                    items(uiState.filteredDonations, key = { it.id }) { donation ->
-                        DonationListItem(
-                            donation = donation,
-                            onClick = { onDonationClick(donation.id) }
-                        )
+
+                    uiState.filteredDonations.isEmpty() -> {
+                        item {
+                            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                                EhsanEmptyContent(
+                                    searchQuery = uiState.searchQuery,
+                                    hasActiveFilters = hasActiveFilters
+                                )
+                            }
+                        }
+                    }
+
+                    else -> {
+                        items(uiState.filteredDonations, key = { it.id }) { donation ->
+                            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                                DonationCardItem(
+                                    donation = donation,
+                                    imageModel = imageStore.resolve(donation.imageUrl),
+                                    onClick = { onDonationClick(donation.id) }
+                                )
+                            }
+                        }
                     }
                 }
-
-                item { Spacer(modifier = Modifier.height(80.dp)) }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun EhsanTopBar(onBack: () -> Unit) {
-    CenterAlignedTopAppBar(
-        title = {
-            Text("إحسان", fontWeight = FontWeight.Bold)
-        },
-        navigationIcon = {
-            IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
-            }
-        },
-        actions = {
-            IconButton(onClick = {}) {
-                Icon(Icons.Outlined.Notifications, contentDescription = null)
-            }
-        },
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
-    )
-}
-
-@Composable
-private fun ImpactSection(donorCount: Int, completedCount: Int) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        color = Color(0xFF0D4D3D)
-    ) {
-        Column(
-            modifier = Modifier.padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text("مجتمع إحسان", color = Color.White.copy(alpha = 0.7f), fontSize = 12.sp)
-                    Text("يداً بيد لنشر الخير", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                }
-                Icon(
-                    Icons.Default.AutoAwesome,
-                    contentDescription = null,
-                    tint = Color(0xFFFFD700),
-                    modifier = Modifier.size(32.dp)
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                ImpactStatItem(Modifier.weight(1f), "متبرع", donorCount.toString())
-                ImpactStatItem(Modifier.weight(1f), "حالة مكتملة", completedCount.toString())
-                ImpactStatItem(Modifier.weight(1f), "مدينة", "١٢")
             }
         }
     }
 }
 
 @Composable
-private fun ImpactStatItem(modifier: Modifier, label: String, value: String) {
+private fun EhsanErrorContent(message: String) {
+    val charityLoadErrorText = stringResource(R.string.polish_charity_load_error)
+
     Column(
-        modifier = modifier
-            .background(Color.White.copy(alpha = 0.1f), RoundedCornerShape(16.dp))
-            .padding(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(value, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-        Text(label, color = Color.White.copy(alpha = 0.8f), fontSize = 10.sp)
-    }
-}
-
-@Composable
-private fun QuickActionCard(
-    title: String,
-    subtitle: String,
-    icon: ImageVector,
-    containerColor: Color,
-    contentColor: Color,
-    modifier: Modifier,
-    onClick: () -> Unit
-) {
-    Card(
-        onClick = onClick,
-        modifier = modifier.height(100.dp),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = containerColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(12.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(icon, contentDescription = null, tint = contentColor, modifier = Modifier.size(24.dp))
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(title, color = contentColor, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-            Text(subtitle, color = contentColor.copy(alpha = 0.7f), fontSize = 10.sp)
-        }
-    }
-}
-
-@Composable
-private fun SearchBar(query: String, onQueryChange: (String) -> Unit) {
-    TextField(
-        value = query,
-        onValueChange = onQueryChange,
-        modifier = Modifier.fillMaxWidth().height(56.dp),
-        placeholder = { Text("ابحث عن غرض، مدينة، أو محتاج...", fontSize = 14.sp) },
-        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.Gray) },
-        shape = RoundedCornerShape(28.dp),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
-        )
-    )
-}
-
-@Composable
-private fun LocationAndCategoryFilters(
-    selectedLocation: String,
-    onLocationSelected: (String) -> Unit,
-    selectedCategory: String,
-    onCategorySelected: (String) -> Unit
-) {
-    val locations = listOf("الكل", "حلب", "دمشق", "حمص", "حماة")
-    val categories = listOf("الكل", "طعام", "ملابس", "أثاث", "أخرى")
-
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(locations) { loc ->
-                FilterChip(
-                    selected = selectedLocation == loc,
-                    onClick = { onLocationSelected(loc) },
-                    label = { Text(loc) },
-                    shape = RoundedCornerShape(20.dp),
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFF0D4D3D),
-                        selectedLabelColor = Color.White
-                    ),
-                    border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
-                )
-            }
-        }
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(categories) { cat ->
-                FilterChip(
-                    selected = selectedCategory == cat,
-                    onClick = { onCategorySelected(cat) },
-                    label = { Text(cat) },
-                    shape = RoundedCornerShape(20.dp),
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Color(0xFF6B9080),
-                        selectedLabelColor = Color.White
-                    ),
-                    border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun TypeSelectionTabs(selectedType: String, onTypeSelected: (String) -> Unit) {
-    TabRow(
-        selectedTabIndex = when(selectedType) { "OFFER" -> 1; "REQUEST" -> 2; else -> 0 },
-        containerColor = Color.Transparent,
-        divider = {},
-        indicator = { tabPositions ->
-            TabRowDefaults.SecondaryIndicator(
-                Modifier.tabIndicatorOffset(tabPositions[when(selectedType) { "OFFER" -> 1; "REQUEST" -> 2; else -> 0 }]),
-                color = Color(0xFF0D4D3D)
-            )
-        }
-    ) {
-        Tab(selected = selectedType == "ALL", onClick = { onTypeSelected("ALL") }) {
-            Text("الكل", modifier = Modifier.padding(12.dp), fontSize = 14.sp)
-        }
-        Tab(selected = selectedType == "OFFER", onClick = { onTypeSelected("OFFER") }) {
-            Text("عروض تبرع", modifier = Modifier.padding(12.dp), fontSize = 14.sp)
-        }
-        Tab(selected = selectedType == "REQUEST", onClick = { onTypeSelected("REQUEST") }) {
-            Text("طلبات مساعدة", modifier = Modifier.padding(12.dp), fontSize = 14.sp)
-        }
-    }
-}
-
-@Composable
-private fun DonationListItem(donation: Donation, onClick: () -> Unit) {
-    Card(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Image or Icon
-            Surface(
-                modifier = Modifier.size(90.dp).clip(RoundedCornerShape(16.dp)),
-                color = Color(0xFFF5F5F5)
-            ) {
-                if (donation.imageUrl != null) {
-                    AsyncImage(
-                        model = donation.imageUrl,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Icon(
-                        imageVector = when(donation.category) {
-                            "طعام" -> Icons.Default.Restaurant
-                            "ملابس" -> Icons.Default.Checkroom
-                            "أثاث" -> Icons.Default.Weekend
-                            else -> Icons.Default.Category
-                        },
-                        contentDescription = null,
-                        modifier = Modifier.padding(24.dp),
-                        tint = Color.LightGray
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Surface(
-                        color = if (donation.type == "OFFER") Color(0xFFE8F5E9) else Color(0xFFFFF3E0),
-                        shape = RoundedCornerShape(6.dp)
-                    ) {
-                        Text(
-                            text = if (donation.type == "OFFER") "تبرع" else "طلب",
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            fontSize = 10.sp,
-                            color = if (donation.type == "OFFER") Color(0xFF2E7D32) else Color(0xFFE65100),
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = donation.location,
-                        fontSize = 11.sp,
-                        color = Color.Gray
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(4.dp))
-                
-                Text(
-                    text = donation.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                
-                Text(
-                    text = donation.description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(12.dp), tint = Color(0xFF0D4D3D))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(donation.donorName, fontSize = 11.sp, fontWeight = FontWeight.Medium)
-                    Spacer(modifier = Modifier.weight(1f))
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = null, tint = Color.LightGray)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun EhsanEmptyState(query: String, modifier: Modifier) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Surface(
-            modifier = Modifier.size(100.dp),
-            shape = CircleShape,
-            color = Color(0xFFF5F5F5)
-        ) {
-            Icon(
-                imageVector = if (query.isNotEmpty()) Icons.Default.SearchOff else Icons.Default.VolunteerActivism,
-                contentDescription = null,
-                modifier = Modifier.padding(24.dp),
-                tint = Color.LightGray
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = if (query.isNotEmpty()) "لا توجد نتائج لـ \"$query\"" else "لا توجد فرص إحسان متاحة حالياً",
-            color = Color.Gray,
-            fontWeight = FontWeight.Medium
+            text = charityLoadErrorText,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.error
         )
+        if (message.isNotBlank()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = IhsanTheme.colors.textSecondaryMuted
+            )
+        }
     }
 }

@@ -37,7 +37,7 @@ fun AyahItem(
             ) {
                 Text(
                     text = number.toString(),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = com.example.designsystem.theme.IhsanTheme.colors.accentContent,
                     fontWeight = FontWeight.Bold,
                     fontSize = 12.sp
                 )

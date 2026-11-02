@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Phase 7: dark-theme palette for the Prayer home widget. -->
+<resources>
+    <color name="widget_background">#1E1F1B</color>
+    <color name="widget_text_primary">#ECEFE6</color>
+    <color name="widget_text_secondary">#A9B0A2</color>
+    <color name="widget_text_accent">#8FD6A0</color>
+</resources>

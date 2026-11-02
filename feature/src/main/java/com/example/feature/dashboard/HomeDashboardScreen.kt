@@ -1,50 +1,55 @@
 package com.example.feature.dashboard
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import android.widget.Toast
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.designsystem.component.DailyActivityItemData
-import com.example.designsystem.component.DailyActivityCard
-import com.example.designsystem.component.DashboardHeader
-import com.example.designsystem.component.IhsanActionCard
-import com.example.designsystem.component.LastReadCard
-import com.example.feature.azkar.domain.model.Zikr
-import com.example.feature.core.util.HijriDateFormatter
+import com.example.designsystem.theme.IhsanTheme
+import com.example.feature.R
+import com.example.feature.core.notification.UserMessageNotifier
 import com.example.feature.dashboard.presentation.HomeDashboardAction
 import com.example.feature.dashboard.presentation.HomeDashboardViewModel
+import com.example.feature.dashboard.presentation.components.HomeContextualHero
+import com.example.feature.dashboard.presentation.components.HomeDailyJourneyCard
+import com.example.feature.dashboard.presentation.components.HomeDiscoverServicesGrid
+import com.example.feature.dashboard.presentation.components.HomeEhsanCommunityCard
+import com.example.feature.dashboard.presentation.components.HomeQuranContinueCard
+import com.example.feature.dashboard.presentation.components.HomeRefreshErrorNotice
+import com.example.feature.dashboard.presentation.components.HomeSectionStateNotice
+import com.example.feature.dashboard.presentation.components.HomeLiveStreamCard
 import com.example.feature.prayer.presentation.CitySelectionBottomSheet
 import com.example.feature.prayer.presentation.PrayerDetailsBottomSheet
 import com.example.feature.prayer.presentation.PrayerSettingsBottomSheet
-import android.Manifest
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import org.koin.androidx.compose.koinViewModel
 
 data class HomeIslamicAction(
@@ -63,179 +68,213 @@ fun HomeDashboardScreen(
     onNavigateToDonations: () -> Unit = {},
     onNavigateToQibla: () -> Unit = {},
     onNavigateToSearch: () -> Unit = {},
+    onNavigateToReminders: () -> Unit = {},
     onNavigateToPrayer: () -> Unit = {},
     onNavigateToAsma: () -> Unit = {},
-    onNavigateToDailyActivities: () -> Unit = {}
+    onNavigateToDailyActivities: () -> Unit = {},
+    onNavigateToTasbih: () -> Unit = {},
+    onNavigateToHaramLive: () -> Unit = {},
+    onNavigateToNabawiLive: () -> Unit = {},
+    onNavigateToRamadan: () -> Unit = {},
+    onNavigateToCalendar: () -> Unit = {},
+    onNavigateToPrayerJournal: () -> Unit = {},
+    onNavigateToStatistics: () -> Unit = {},
+    onNavigateToSanhya: () -> Unit = {},
+    onNavigateToNabiIhsan: () -> Unit = {},
+    onNavigateToFahm: () -> Unit = {},
+    @Suppress("UNUSED_PARAMETER") onNavigateToIhsanPlusDaily: (() -> Unit)? = null,
+    onContinueLastRead: (surahId: Int, ayahNumber: Int) -> Unit = { _, _ -> }
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var showLiveChooser by remember { mutableStateOf(false) }
 
-    // Notification Permission Launcher
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (!isGranted) {
-            Toast.makeText(context, "يجب منح إذن الإشعارات لتفعيل التنبيهات", Toast.LENGTH_LONG).show()
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
-    }
-
-    val actions = remember {
-        listOf(
-            HomeIslamicAction("القبلة", Icons.Default.Explore, "qibla"),
-            HomeIslamicAction("أسماء الله", Icons.Default.AutoAwesome, "asma"),
-            HomeIslamicAction("دعاء", Icons.Default.VolunteerActivism, "dua"),
-            HomeIslamicAction("قرآن", Icons.AutoMirrored.Filled.MenuBook, "quran"),
-            HomeIslamicAction("حديث", Icons.Default.AutoStories, "hadith"),
-            HomeIslamicAction("أذكار", Icons.Default.SelfImprovement, "azkar")
-        )
-    }
-
-    val onActionClick: (String) -> Unit = remember(onNavigateToQibla, onNavigateToQuran, onNavigateToAzkar, onNavigateToDua, onNavigateToHadith, onNavigateToAsma) {
+    val onActionClick: (String) -> Unit = remember(
+        onNavigateToQibla, onNavigateToQuran, onNavigateToAzkar,
+        onNavigateToDua, onNavigateToHadith, onNavigateToAsma,
+        onNavigateToTasbih, onNavigateToHaramLive, onNavigateToNabawiLive,
+        onNavigateToPrayer, onNavigateToSearch, onNavigateToDailyActivities,
+        onNavigateToReminders, onNavigateToStatistics, onNavigateToDonations,
+        onNavigateToSanhya, onNavigateToNabiIhsan, onNavigateToFahm
+    ) {
         { route ->
             when (route) {
+                "fahm" -> onNavigateToFahm()
+                "nabi_ihsan" -> onNavigateToNabiIhsan()
+                "sanhya" -> onNavigateToSanhya()
                 "qibla" -> onNavigateToQibla()
                 "quran" -> onNavigateToQuran()
                 "azkar" -> onNavigateToAzkar()
                 "dua" -> onNavigateToDua()
                 "hadith" -> onNavigateToHadith()
                 "asma" -> onNavigateToAsma()
-                else -> Toast.makeText(context, "قريبًا، سيتم تفعيل هذه الميزة لاحقًا", Toast.LENGTH_SHORT).show()
+                "tasbih" -> onNavigateToTasbih()
+                "haram" -> onNavigateToHaramLive()
+                "nabawi" -> onNavigateToNabawiLive()
+                "prayer" -> onNavigateToPrayer()
+                "search" -> onNavigateToSearch()
+                "daily" -> onNavigateToDailyActivities()
+                "reminders" -> onNavigateToReminders()
+                "statistics" -> onNavigateToStatistics()
+                "donations" -> onNavigateToDonations()
+                "live_chooser" -> showLiveChooser = true
+                else -> UserMessageNotifier.notify(
+                    context,
+                    "قريبًا، سيتم تفعيل هذه الميزة لاحقًا"
+                )
             }
         }
     }
 
-    val prayerTimesDisplay = remember(uiState.data.allPrayers) {
-        uiState.data.allPrayers.map { it.nameAr to it.time }
+    // 1. Current active prayer comes ONLY from an item in allPrayers where isActive == true
+    val activePrayer = remember(uiState.data.allPrayers) {
+        uiState.data.allPrayers.firstOrNull { it.isActive }
     }
+    val currentPrayerTitle = activePrayer?.nameAr ?: "—"
 
-    val activePrayerIndex = remember(uiState.data.allPrayers) {
-        uiState.data.allPrayers.indexOfFirst { it.isActive }.takeIf { it != -1 } ?: 0
+    // 2. Next prayer name comes directly from domain result uiState.data.nextPrayerName
+    val nextPrayerTitle = uiState.data.nextPrayerName.ifBlank { "—" }
+
+    // 3. Next prayer time is safely matched against the full allPrayers list (presentation-only)
+    val nextPrayerItem = remember(uiState.data.allPrayers, nextPrayerTitle) {
+        if (nextPrayerTitle != "—") {
+            uiState.data.allPrayers.firstOrNull {
+                it.nameAr == nextPrayerTitle || nextPrayerTitle.contains(it.nameAr) || it.nameAr.contains(nextPrayerTitle)
+            }
+        } else null
     }
+    val nextPrayerTimeLabel = nextPrayerItem?.time ?: "—"
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary)
-    ) {
-        DashboardHeader(
-            userName = uiState.data.userName.ifBlank { "مستخدم" },
-            currentTime = uiState.data.currentTime.ifBlank { "00:00" },
-            hijriDate = uiState.data.hijriDate.ifBlank { HijriDateFormatter.nowFormatted() },
-            location = uiState.data.location,
-            nextPrayerInfo = "${uiState.data.nextPrayerName} خلال ${uiState.data.nextPrayerTimeLeft}",
-            prayerTimes = prayerTimesDisplay,
-            activePrayerIndex = activePrayerIndex,
-            onMenuClick = { Toast.makeText(context, "قريبًا، سيتم تفعيل هذه الميزة لاحقًا", Toast.LENGTH_SHORT).show() },
-            onNotificationClick = onNavigateToSearch,
-            onPrayerClick = { index -> viewModel.onAction(HomeDashboardAction.OnPrayerClick(index)) }
-        )
+    val scrollState = rememberScrollState()
 
-        Surface(
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .weight(1f),
-            color = MaterialTheme.colorScheme.surface,
-            shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+                .background(MaterialTheme.colorScheme.background)
+                .verticalScroll(scrollState)
         ) {
-            Column(
+            // 1. Contextual Skyline Hero Banner
+            HomeContextualHero(
+                location = uiState.data.location,
+                hijriDate = com.example.feature.core.util.currentHijriDateText(),
+                currentPrayerName = currentPrayerTitle,
+                countdownText = uiState.data.nextPrayerTimeLeft,
+                nextPrayerName = nextPrayerTitle,
+                nextPrayerTime = nextPrayerTimeLabel,
+                dailyVerseText = uiState.data.dailyVerse,
+                dailyVerseSource = uiState.data.dailyVerseSource,
+                onNotificationClick = onNavigateToReminders,
+                onSearchClick = onNavigateToSearch,
+                onQiblaClick = onNavigateToQibla
+            )
+
+            // 2. Main Content Surface Overlay
+            Surface(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+                    .offset(y = (-16).dp),
+                color = MaterialTheme.colorScheme.background,
+                shape = RoundedCornerShape(
+                    topStart = 24.dp,
+                    topEnd = 24.dp
+                )
             ) {
-                // Islamic Actions Section
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    contentPadding = PaddingValues(horizontal = 4.dp)
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(actions) { action ->
-                        IslamicActionItem(action, onActionClick)
+                    uiState.refreshErrorMessage?.let { message ->
+                        HomeRefreshErrorNotice(
+                            message = message,
+                            onRetry = { viewModel.onAction(HomeDashboardAction.OnRefresh) }
+                        )
                     }
-                }
 
-                // Spotlight Allah Name Card
-                if (uiState.data.spotlightAllahName.isNotEmpty()) {
-                    SpotlightAllahNameCard(
-                        name = uiState.data.spotlightAllahName,
-                        transliteration = uiState.data.spotlightTransliteration,
-                        meaning = uiState.data.spotlightMeaning,
-                        onClick = onNavigateToAsma
+                    HomeSectionStateNotice(
+                        state = uiState.prayer,
+                        onRetry = { viewModel.onAction(HomeDashboardAction.OnRetryPrayer) }
                     )
-                }
 
-                LastReadCard(
-                    surahName = "سورة البقرة",
-                    surahNumber = 2,
-                    onContinueClick = onNavigateToQuran
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    IhsanActionCard(
-                        title = "القبلة",
-                        subtitle = "تحديد الاتجاه",
-                        icon = Icons.Default.Explore,
-                        onClick = onNavigateToQibla,
-                        modifier = Modifier.weight(1f)
+                    // 2.1 Continue / Start Quran Card (Requirement 2)
+                    HomeQuranContinueCard(
+                        surahName = uiState.data.lastReadSurahName,
+                        surahId = uiState.data.lastReadSurahId,
+                        ayahNumber = uiState.data.lastReadAyahNumber,
+                        onContinueClick = onContinueLastRead,
+                        onStartQuranClick = onNavigateToQuran
                     )
-                    IhsanActionCard(
-                        title = "تبرع قريب",
-                        subtitle = "ابحث الآن",
-                        icon = Icons.Default.Place,
-                        onClick = onNavigateToDonations,
-                        modifier = Modifier.weight(1f)
+
+                    com.example.designsystem.component.IhsanSecondaryButton(onClick = onNavigateToCalendar) { Text("التقويم الهجري والميلادي") }
+                    com.example.feature.prayer.presentation.HomePrayerJournalSummary(onOpen = onNavigateToPrayerJournal)
+                    com.example.feature.ramadan.RamadanHomeEntry(onOpen = onNavigateToRamadan)
+                    // 2.2 Journey Card ("رحلتي مع الإحسان") (Requirement 3)
+                    HomeDailyJourneyCard(
+                        onGoToChecklist = onNavigateToDailyActivities,
+                        activities = uiState.data.dailyActivities,
+                        onPrayerClick = onNavigateToPrayer,
+                        onQuranClick = onNavigateToQuran,
+                        onAzkarClick = onNavigateToAzkar
                     )
+
+                    // 2.4 Ehsan Community Donation Card ("عروض التبرع والمساعدة") (Requirement 5)
+                    HomeEhsanCommunityCard(
+                        onNavigateToDonations = onNavigateToDonations
+                    )
+
+                    HomeLiveStreamCard(onLiveClick = { showLiveChooser = true })
+
+                    // 2.5 Discover Services ("الخدمات") (Requirement 6)
+                    HomeDiscoverServicesGrid(
+                        onServiceClick = onActionClick
+                    )
+
+                    Spacer(modifier = Modifier.height(IhsanTheme.dimens.contentBottomSpacing))
                 }
-
-                // New Supplications Section
-                Text(
-                    text = "دعاء اليوم",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    contentPadding = PaddingValues(horizontal = 0.dp)
-                ) {
-                    items(uiState.data.dailyDuas) { zikr ->
-                        SupplicationCard(zikr)
-                    }
-                }
-
-                DailyActivityCard(
-                    activities = uiState.data.dailyActivities,
-                    onGoToChecklist = onNavigateToDailyActivities,
-                    onActivityClick = { activity ->
-                        viewModel.onAction(HomeDashboardAction.OnDailyActivityClick(activity.id))
-                    },
-                    onActivityOpenRoute = { route ->
-                        when (route) {
-                            "qibla_screen" -> onNavigateToQibla()
-                            "quran_list" -> onNavigateToQuran()
-                            "azkar_screen" -> onNavigateToAzkar()
-                            "dua_screen" -> onNavigateToDua()
-                            "asma_screen" -> onNavigateToAsma()
-                            else -> Toast.makeText(context, "قريبًا، سيتم تفعيل هذه الميزة لاحقًا", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                )
             }
         }
+
+        // Pinned Status Bar Protection Layer with smooth alpha transition
+        val statusBarAlpha = (scrollState.value / 120f).coerceIn(0f, 1f)
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsTopHeight(WindowInsets.statusBars)
+                .background(MaterialTheme.colorScheme.background.copy(alpha = statusBarAlpha))
+                .align(Alignment.TopCenter)
+        )
     }
 
-    // Prayer Details Bottom Sheet
+    if (showLiveChooser) {
+        AlertDialog(
+            onDismissRequest = { showLiveChooser = false },
+            title = { Text(stringResource(R.string.home_live_chooser_title)) },
+            text = { Text(stringResource(R.string.home_live_chooser_body)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showLiveChooser = false
+                        onNavigateToHaramLive()
+                    }
+                , colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
+                    Text(stringResource(R.string.home_live_haram))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showLiveChooser = false
+                        onNavigateToNabawiLive()
+                    }
+                , colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
+                    Text(stringResource(R.string.home_live_nabawi))
+                }
+            }
+        )
+    }
+
     uiState.data.selectedPrayerIndex?.let { index ->
         val selectedPrayer = uiState.data.allPrayers.getOrNull(index)
         if (selectedPrayer != null) {
@@ -263,7 +302,6 @@ fun HomeDashboardScreen(
         }
     }
 
-    // Prayer Settings Bottom Sheet
     if (uiState.data.isPrayerSettingsVisible) {
         PrayerSettingsBottomSheet(
             onDismiss = { viewModel.onAction(HomeDashboardAction.OnDismissPrayerSettings) },
@@ -278,7 +316,6 @@ fun HomeDashboardScreen(
         )
     }
 
-    // City Selection Bottom Sheet
     if (uiState.data.isCitySelectionVisible) {
         CitySelectionBottomSheet(
             onDismiss = { viewModel.onAction(HomeDashboardAction.OnDismissCitySelection) },
@@ -289,145 +326,22 @@ fun HomeDashboardScreen(
     }
 }
 
+@Preview(name = "Home Screen Light", locale = "ar", widthDp = 360, heightDp = 800, showBackground = true)
 @Composable
-fun SpotlightAllahNameCard(
-    name: String,
-    transliteration: String,
-    meaning: String,
-    onClick: () -> Unit = {}
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() },
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F8F6))
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(20.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "أسماء الله الحسنى",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = Color(0xFF0D4D3D).copy(alpha = 0.6f)
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = name,
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0D4D3D)
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = transliteration,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF0D4D3D).copy(alpha = 0.8f)
-                )
-            }
-            
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .background(Color.White, RoundedCornerShape(16.dp))
-                    .border(1.dp, Color(0xFF0D4D3D).copy(alpha = 0.1f), RoundedCornerShape(16.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = meaning,
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center,
-                    color = Color(0xFF0D4D3D),
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun IslamicActionItem(action: HomeIslamicAction, onClick: (String) -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clickable { onClick(action.route) }
-            .width(65.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(50.dp)
-                .rotate(45f)
-                .background(Color.White, RoundedCornerShape(12.dp))
-                .border(1.dp, Color(0xFFE8F5E9), RoundedCornerShape(12.dp)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = action.icon,
-                contentDescription = action.title,
-                tint = Color(0xFF0D4D3D),
-                modifier = Modifier
-                    .size(24.dp)
-                    .rotate(-45f)
-            )
-        }
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(
-            text = action.title,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF0D4D3D),
-            textAlign = TextAlign.Center
+private fun HomeDashboardPreviewLight() {
+    IhsanTheme {
+        HomeContextualHero(
+            location = "حلب",
+            hijriDate = "12 ربيع الأول 1448",
+            currentPrayerName = "الظهر",
+            countdownText = "1:14",
+            nextPrayerName = "العصر",
+            nextPrayerTime = "3:42 م",
+            dailyVerseText = "وَأَقِمِ الصَّلَاةَ إِنَّ الصَّلَاةَ تَنْهَىٰ عَنِ الْفَحْشَاءِ وَالْمُنْكَرِ",
+            dailyVerseSource = "سورة العنكبوت (٤٥)",
+            onNotificationClick = {},
+            onSearchClick = {},
+            onQiblaClick = {}
         )
-    }
-}
-
-@Composable
-fun SupplicationCard(zikr: Zikr) {
-    Card(
-        modifier = Modifier
-            .width(280.dp)
-            .height(140.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(
-                            Color(0xFF0D4D3D),
-                            Color(0xFF1E824C)
-                        )
-                    )
-                )
-                .padding(16.dp)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = zikr.category,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.End
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = zikr.text,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.9f),
-                    maxLines = 3,
-                    textAlign = TextAlign.End,
-                    lineHeight = 18.sp
-                )
-            }
-        }
     }
 }
