@@ -287,19 +287,135 @@ fun HomeDashboardScreen(
 @Preview(name = "Home Screen Light", locale = "ar", widthDp = 360, heightDp = 800, showBackground = true)
 @Composable
 private fun HomeDashboardPreviewLight() {
-    IhsanTheme {
-        HomeContextualHero(
-            location = "حلب",
-            hijriDate = "12 ربيع الأول 1448",
-            currentPrayerName = "الظهر",
-            countdownText = "1:14",
-            nextPrayerName = "العصر",
-            nextPrayerTime = "3:42 م",
-            dailyVerseText = "وَأَقِمِ الصَّلَاةَ إِنَّ الصَّلَاةَ تَنْهَىٰ عَنِ الْفَحْشَاءِ وَالْمُنْكَرِ",
-            dailyVerseSource = "سورة العنكبوت (٤٥)",
-            onNotificationClick = {},
-            onSearchClick = {},
-            onQiblaClick = {}
-        )
+    IhsanTheme(darkTheme = false) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                HomeContextualHero(
+                    location = "حلب",
+                    hijriDate = "23 جمادى الأولى 1448",
+                    currentPrayerName = "—",
+                    countdownText = "01:04:07",
+                    nextPrayerName = "العصر",
+                    nextPrayerTime = "03:10 م",
+                    dailyVerseText = "",
+                    dailyVerseSource = "",
+                    onNotificationClick = {},
+                    onSearchClick = {},
+                    onQiblaClick = {}
+                )
+                HomeDiscoverServicesGrid(
+                    onServiceClick = {},
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
+                )
+                Column(Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) {
+                    HomeQuranContinueCard(
+                        surahName = "البقرة",
+                        surahId = 2,
+                        ayahNumber = 20,
+                        onContinueClick = { _, _ -> },
+                        onStartQuranClick = {}
+                    )
+                }
+                Column(Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) {
+                    HomeDailyJourneyCard(
+                        onGoToChecklist = {},
+                        activities = emptyList()
+                    )
+                }
+                Column(Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) {
+                    IhsanDailyGoalCard(
+                        title = "أهدافك اليومية",
+                        count = 0,
+                        target = 1,
+                        onOpen = {}
+                    )
+                }
+            }
+            IhsanBottomNavigation(
+                destinations = listOf(
+                    IhsanBottomNavDestination("الرئيسية", Icons.Outlined.Home, Icons.Outlined.Home),
+                    IhsanBottomNavDestination("إحسان", Icons.Outlined.FavoriteBorder, Icons.Outlined.Favorite),
+                    IhsanBottomNavDestination("الملف الشخصي", Icons.Outlined.Person, Icons.Outlined.Person)
+                ),
+                selectedIndex = 0,
+                onDestinationSelected = {}
+            )
+        }
+    }
+}
+
+@Preview(name = "Home Screen Dark", locale = "ar", widthDp = 360, heightDp = 800, showBackground = true)
+@Composable
+private fun HomeDashboardPreviewDark() {
+    IhsanTheme(darkTheme = true) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                HomeContextualHero(
+                    location = "حلب",
+                    hijriDate = "23 جمادى الأولى 1448",
+                    currentPrayerName = "—",
+                    countdownText = "01:04:07",
+                    nextPrayerName = "العصر",
+                    nextPrayerTime = "03:10 م",
+                    dailyVerseText = "",
+                    dailyVerseSource = "",
+                    onNotificationClick = {},
+                    onSearchClick = {},
+                    onQiblaClick = {}
+                )
+                HomeDiscoverServicesGrid(
+                    onServiceClick = {},
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
+                )
+                Column(Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) {
+                    HomeQuranContinueCard(
+                        surahName = "البقرة",
+                        surahId = 2,
+                        ayahNumber = 20,
+                        onContinueClick = { _, _ -> },
+                        onStartQuranClick = {}
+                    )
+                }
+                Column(Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) {
+                    HomeDailyJourneyCard(
+                        onGoToChecklist = {},
+                        activities = emptyList()
+                    )
+                }
+                Column(Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) {
+                    IhsanDailyGoalCard(
+                        title = "أهدافك اليومية",
+                        count = 0,
+                        target = 1,
+                        onOpen = {}
+                    )
+                }
+            }
+            IhsanBottomNavigation(
+                destinations = listOf(
+                    IhsanBottomNavDestination("الرئيسية", Icons.Outlined.Home, Icons.Outlined.Home),
+                    IhsanBottomNavDestination("إحسان", Icons.Outlined.FavoriteBorder, Icons.Outlined.Favorite),
+                    IhsanBottomNavDestination("الملف الشخصي", Icons.Outlined.Person, Icons.Outlined.Person)
+                ),
+                selectedIndex = 0,
+                onDestinationSelected = {}
+            )
+        }
     }
 }

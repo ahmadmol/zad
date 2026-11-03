@@ -79,13 +79,40 @@ fun IhsanIconContainer(icon: ImageVector, modifier: Modifier = Modifier, descrip
 
 @Composable
 fun IhsanServiceCard(title: String, icon: ImageVector, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Surface(onClick, modifier.heightIn(min = 112.dp), shape = MaterialTheme.shapes.large,
-        color = IhsanTheme.colors.surfaceElevated, border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle)) {
-        Column(Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically)) {
-            IhsanIconContainer(icon)
-            Text(title, style = MaterialTheme.typography.labelLarge, textAlign = TextAlign.Center,
-                color = IhsanTheme.colors.textPrimary)
+    val isDark = IhsanTheme.isDark
+    Surface(
+        onClick = onClick,
+        modifier = modifier.heightIn(min = 104.dp),
+        shape = RoundedCornerShape(18.dp),
+        color = if (isDark) IhsanTheme.colors.surfaceElevated else Color.White,
+        border = BorderStroke(1.dp, if (isDark) IhsanTheme.colors.borderSubtle else Color(0xFFF0F0F0))
+    ) {
+        Column(
+            Modifier.padding(horizontal = 6.dp, vertical = 12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
+        ) {
+            Surface(
+                modifier = Modifier.size(46.dp),
+                shape = RoundedCornerShape(14.dp),
+                color = if (isDark) Color(0xFF1E302C) else Color(0xFFEDF4FA)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = if (isDark) Color(0xFF6ED9C5) else Color(0xFF2C6D9E)
+                    )
+                }
+            }
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                textAlign = TextAlign.Center,
+                color = IhsanTheme.colors.textPrimary,
+                maxLines = 1
+            )
         }
     }
 }
@@ -102,24 +129,58 @@ fun IhsanGlassCard(modifier: Modifier = Modifier, content: @Composable ColumnSco
 fun IhsanProgressIndicator(progress: Float, modifier: Modifier = Modifier) {
     val motion = rememberIhsanMotionEnabled()
     val value by animateFloatAsState(progress.coerceIn(0f, 1f), tween(if (motion) IhsanMotion.Standard else 0), label = "progress")
-    CircularProgressIndicator(progress = { value }, modifier = modifier, color = IhsanTheme.colors.progressActive,
-        trackColor = IhsanTheme.colors.progressTrack, strokeWidth = 5.dp, strokeCap = StrokeCap.Round)
+    val isDark = IhsanTheme.isDark
+    CircularProgressIndicator(
+        progress = { value },
+        modifier = modifier,
+        color = if (isDark) Color(0xFF33C6AE) else Color(0xFF2C6D9E),
+        trackColor = if (isDark) Color(0xFF24332F) else Color(0xFFEBF1F6),
+        strokeWidth = 3.5.dp,
+        strokeCap = StrokeCap.Round
+    )
 }
 
 @Composable
 fun IhsanDailyGoalCard(title: String, count: Int, target: Int, onOpen: () -> Unit, modifier: Modifier = Modifier) {
-    Surface(onOpen, modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large, color = IhsanTheme.colors.surfaceElevated) {
-        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Box(Modifier.size(52.dp), contentAlignment = Alignment.Center) {
+    val isDark = IhsanTheme.isDark
+    Surface(
+        onClick = onOpen,
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        color = if (isDark) IhsanTheme.colors.surfaceElevated else Color.White,
+        border = BorderStroke(1.dp, if (isDark) IhsanTheme.colors.borderSubtle else Color(0xFFF0F0F0))
+    ) {
+        Row(
+            Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
                 IhsanProgressIndicator(if (target > 0) count.toFloat() / target else 0f, Modifier.fillMaxSize())
-                Text("$count", style = MaterialTheme.typography.labelLarge)
+                Text(
+                    text = "$count",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = IhsanTheme.colors.textPrimary
+                )
             }
             Column(Modifier.weight(1f)) {
-                Text(title, style = MaterialTheme.typography.titleMedium)
-                Text("$count من $target • بتسجيلك", style = MaterialTheme.typography.bodySmall, color = IhsanTheme.colors.textSecondary)
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                    color = IhsanTheme.colors.textPrimary
+                )
+                Text(
+                    text = "$count من $target • بتسجيلك",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = IhsanTheme.colors.textSecondary
+                )
             }
-            Icon(Icons.AutoMirrored.Outlined.KeyboardArrowLeft, null, tint = IhsanTheme.colors.accentContent)
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
+                contentDescription = null,
+                tint = if (isDark) Color(0xFF6ED9C5) else Color(0xFF2C6D9E),
+                modifier = Modifier.size(20.dp)
+            )
         }
     }
 }

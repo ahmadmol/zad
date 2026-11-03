@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,8 +26,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,47 +56,50 @@ fun HomeQuranContinueCard(
 ) {
     val hasLastRead = (surahId != null) && (ayahNumber != null) && (surahId > 0) && (ayahNumber > 0)
 
-    val titleText = if (hasLastRead) {
+    val buttonText = if (hasLastRead) {
         stringResource(R.string.home_quran_continue_title)
     } else {
         stringResource(R.string.home_quran_start_title)
     }
 
-    val bodyText = if (hasLastRead) {
-        stringResource(R.string.polish_quran_location, surahName.orEmpty(), ayahNumber ?: 0)
+    val positionText = if (hasLastRead) {
+        "سورة ${surahName.orEmpty()} - الآية $ayahNumber"
     } else {
         stringResource(R.string.home_quran_browse_surahs)
     }
 
     val handleClick = {
-        if (hasLastRead) {
+        if (surahId != null && ayahNumber != null && surahId > 0 && ayahNumber > 0) {
             onContinueClick(surahId, ayahNumber)
         } else {
             onStartQuranClick()
         }
     }
 
-    val darkTealColor = IhsanTheme.colors.textPrimary
+    val isDark = IhsanTheme.isDark
+    val darkTealColor = if (isDark) Color(0xFFE2EBE5) else Color(0xFF1B3B34)
 
     Card(
         modifier = modifier
             .fillMaxWidth()
             .semantics(mergeDescendants = true) {
                 role = Role.Button
-                contentDescription = "$titleText، $bodyText"
+                contentDescription = "$positionText، $buttonText"
             }
             .clickable(onClick = handleClick),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, IhsanTheme.colors.borderSubtle.copy(alpha = 0.5f)),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isDark) IhsanTheme.colors.surfaceElevated else Color(0xFFF9F7F2)
+        ),
+        border = BorderStroke(1.dp, if (isDark) IhsanTheme.colors.borderSubtle else Color(0xFFE8E3D7)),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 108.dp)
+                .heightIn(min = 112.dp)
         ) {
-            // Background Image: Quran background spanning smoothly across card
+            // Background Image: Islamic pattern spanning across card
             Image(
                 painter = painterResource(id = R.drawable.ihsan_quran_card_background),
                 contentDescription = null,
@@ -101,52 +107,73 @@ fun HomeQuranContinueCard(
                 modifier = Modifier.matchParentSize()
             )
 
-            if (IhsanTheme.isDark) {
-                Box(Modifier.matchParentSize().background(androidx.compose.ui.graphics.Brush.horizontalGradient(0f to IhsanTheme.colors.surfaceElevated.copy(alpha = .28f), .34f to IhsanTheme.colors.surfaceElevated.copy(alpha = .86f), 1f to IhsanTheme.colors.surfaceElevated.copy(alpha = .86f))))
+            // Physical left corner showing the Quran book cover
+            Image(
+                painter = painterResource(id = R.drawable.ihsan_quran_book_corner),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .align(AbsoluteAlignment.CenterLeft)
+                    .size(width = 82.dp, height = 96.dp)
+            )
+
+            if (isDark) {
+                Box(
+                    Modifier
+                        .matchParentSize()
+                        .background(Color(0x88151D1A))
+                )
             }
 
-            // Content Overlay
+            // Content Overlay centered with proper typography
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Calligraphy Header Text
+                // Calligraphy Header Text (Bismillah)
                 Text(
                     text = stringResource(R.string.polish_bismillah),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 17.sp
+                    ),
                     color = darkTealColor,
                     textAlign = TextAlign.Center,
-                    maxLines = 3,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                // Surah & Ayah / Start Info Text
+                // Last read position info (Surah Name - Ayah Number)
                 Text(
-                    text = bodyText,
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Bold,
-                    color = darkTealColor.copy(alpha = 0.90f),
+                    text = positionText,
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 13.sp
+                    ),
+                    color = darkTealColor.copy(alpha = 0.88f),
                     textAlign = TextAlign.Center,
-                    maxLines = 3,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                // Action Button with Quran Icon
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Action Button with Navy Fill from Reference 01
                 Button(
                     onClick = handleClick,
-                    contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-                    shape = RoundedCornerShape(22.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                        horizontal = 18.dp,
+                        vertical = 6.dp
                     ),
-                    modifier = Modifier
-                        .fillMaxWidth(.68f)
-                        .heightIn(min = 48.dp)
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isDark) Color(0xFF1B4E7A) else Color(0xFF15487B),
+                        contentColor = Color.White
+                    ),
+                    modifier = Modifier.heightIn(min = 40.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -155,13 +182,14 @@ fun HomeQuranContinueCard(
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.MenuBook,
                             contentDescription = null,
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.White
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = titleText,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold
+                            text = buttonText,
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                            color = Color.White
                         )
                     }
                 }
@@ -169,3 +197,4 @@ fun HomeQuranContinueCard(
         }
     }
 }
+

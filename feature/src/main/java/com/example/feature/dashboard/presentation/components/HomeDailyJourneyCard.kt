@@ -11,67 +11,166 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.example.designsystem.component.DailyActivityItemData
+import com.example.designsystem.component.IhsanProgressIndicator
 import com.example.designsystem.theme.IhsanTheme
 import com.example.feature.R
 
-@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-fun HomeDailyJourneyCard(onGoToChecklist: () -> Unit, modifier: Modifier = Modifier,
-    activities: List<DailyActivityItemData> = emptyList(), onPrayerClick: () -> Unit = onGoToChecklist,
-    onQuranClick: () -> Unit = onGoToChecklist, onAzkarClick: () -> Unit = onGoToChecklist) {
+fun HomeDailyJourneyCard(
+    onGoToChecklist: () -> Unit,
+    modifier: Modifier = Modifier,
+    activities: List<DailyActivityItemData> = emptyList(),
+    onPrayerClick: () -> Unit = onGoToChecklist,
+    onQuranClick: () -> Unit = onGoToChecklist,
+    onAzkarClick: () -> Unit = onGoToChecklist
+) {
     val quran = activities.filter { it.route == "quran_list" }
     val azkar = activities.filter { it.route == "azkar_screen" }
-    Surface(modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp), color = IhsanTheme.colors.surfaceElevated) {
-        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    Text(stringResource(R.string.correction_journey_title), style = MaterialTheme.typography.titleMedium)
-                    Text(stringResource(R.string.correction_journey_subtitle), style = MaterialTheme.typography.bodySmall,
-                        color = IhsanTheme.colors.textSecondary)
-                }
-                TextButton(onGoToChecklist, contentPadding = PaddingValues(4.dp), colors = com.example.designsystem.theme.ihsanTextButtonColors()) {
-                    Text(stringResource(R.string.correction_view_all), style = MaterialTheme.typography.labelMedium)
-                }
+
+    val quranCurrent = quran.takeIf { it.isNotEmpty() }?.sumOf { it.currentCount } ?: 0
+    val quranTarget = quran.takeIf { it.isNotEmpty() }?.sumOf { it.targetCount }?.takeIf { it > 0 } ?: 1
+
+    val azkarCurrent = azkar.takeIf { it.isNotEmpty() }?.sumOf { it.currentCount } ?: 0
+    val azkarTarget = azkar.takeIf { it.isNotEmpty() }?.sumOf { it.targetCount }?.takeIf { it > 0 } ?: 2
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        // Section Header: "مسيرتك اليوم" / "خطوات صغيرة تصنع أثرًا كبيرًا" / "عرض الكل"
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.correction_journey_title),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = IhsanTheme.colors.textPrimary
+                )
+                Text(
+                    text = stringResource(R.string.correction_journey_subtitle),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = IhsanTheme.colors.textSecondary
+                )
             }
-            androidx.compose.foundation.layout.FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp), maxItemsInEachRow = 3) {
-                // Home does not expose prayer completion counts: show an honest unavailable value.
-                JourneyProgress(stringResource(R.string.polish_service_prayer), Icons.Outlined.Mosque, null, null,
-                    onPrayerClick, Modifier.widthIn(min = (84 * androidx.compose.ui.platform.LocalDensity.current.fontScale).dp).weight(1f))
-                JourneyProgress(stringResource(R.string.correction_quran_portion), Icons.AutoMirrored.Outlined.MenuBook,
-                    quran.takeIf { it.isNotEmpty() }?.sumOf { it.currentCount },
-                    quran.takeIf { it.isNotEmpty() }?.sumOf { it.targetCount }, onQuranClick, Modifier.widthIn(min = (84 * androidx.compose.ui.platform.LocalDensity.current.fontScale).dp).weight(1f))
-                JourneyProgress(stringResource(R.string.polish_service_azkar), Icons.Outlined.VolunteerActivism,
-                    azkar.takeIf { it.isNotEmpty() }?.sumOf { it.currentCount },
-                    azkar.takeIf { it.isNotEmpty() }?.sumOf { it.targetCount }, onAzkarClick, Modifier.widthIn(min = (84 * androidx.compose.ui.platform.LocalDensity.current.fontScale).dp).weight(1f))
+            TextButton(
+                onClick = onGoToChecklist,
+                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp),
+                colors = com.example.designsystem.theme.ihsanTextButtonColors()
+            ) {
+                Text(
+                    text = stringResource(R.string.correction_view_all),
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold)
+                )
             }
+        }
+
+        // Three standalone cards: Prayer, Quran Portion, Azkar
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            JourneyProgressCard(
+                title = stringResource(R.string.polish_service_prayer),
+                icon = Icons.Outlined.Mosque,
+                current = null,
+                target = null,
+                onClick = onPrayerClick,
+                modifier = Modifier.weight(1f)
+            )
+            JourneyProgressCard(
+                title = stringResource(R.string.correction_quran_portion),
+                icon = Icons.AutoMirrored.Outlined.MenuBook,
+                current = quranCurrent,
+                target = quranTarget,
+                onClick = onQuranClick,
+                modifier = Modifier.weight(1f)
+            )
+            JourneyProgressCard(
+                title = stringResource(R.string.polish_service_azkar),
+                icon = Icons.Outlined.VolunteerActivism,
+                current = azkarCurrent,
+                target = azkarTarget,
+                onClick = onAzkarClick,
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
 
 @Composable
-private fun JourneyProgress(title: String, icon: ImageVector, current: Int?, target: Int?,
-    onClick: () -> Unit, modifier: Modifier) {
+private fun JourneyProgressCard(
+    title: String,
+    icon: ImageVector,
+    current: Int?,
+    target: Int?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val isDark = IhsanTheme.isDark
     val summary = if (current == null || target == null) "$title، لا يتوفر تقدم مسجل" else "$title، $current من $target"
-    Surface(onClick, modifier.semantics(mergeDescendants = true) { contentDescription = summary },
-        shape = RoundedCornerShape(12.dp), color = IhsanTheme.colors.surfaceMuted,
-        border = BorderStroke(.5.dp, IhsanTheme.colors.borderSubtle)) {
-        Column(Modifier.padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(3.dp)) {
-            Box(Modifier.size(64.dp), contentAlignment = Alignment.Center) {
-                if (current != null && target != null && target > 0)
-                    com.example.designsystem.component.IhsanProgressIndicator(current.toFloat() / target, Modifier.fillMaxSize())
-                Icon(icon, null, modifier = Modifier.size(24.dp), tint = IhsanTheme.colors.accentContent)
+    Surface(
+        onClick = onClick,
+        modifier = modifier
+            .semantics(mergeDescendants = true) { contentDescription = summary }
+            .heightIn(min = 116.dp),
+        shape = RoundedCornerShape(18.dp),
+        color = if (isDark) IhsanTheme.colors.surfaceElevated else Color.White,
+        border = BorderStroke(1.dp, if (isDark) IhsanTheme.colors.borderSubtle else Color(0xFFF0F0F0))
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(vertical = 12.dp, horizontal = 6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically)
+        ) {
+            Box(
+                modifier = Modifier.size(52.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                if (current != null && target != null && target > 0) {
+                    IhsanProgressIndicator(
+                        progress = current.toFloat() / target,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        shape = RoundedCornerShape(26.dp),
+                        color = if (isDark) Color(0xFF1E302C) else Color(0xFFEDF4FA)
+                    ) {}
+                }
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp),
+                    tint = if (isDark) Color(0xFF6ED9C5) else Color(0xFF2C6D9E)
+                )
             }
-            Text(title, style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
-            Text(if (current == null || target == null) "—" else "$current/$target", style = MaterialTheme.typography.labelMedium)
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
+                textAlign = TextAlign.Center,
+                color = IhsanTheme.colors.textPrimary,
+                maxLines = 1
+            )
+            Text(
+                text = if (current == null || target == null) "—" else "$current/$target",
+                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center,
+                color = IhsanTheme.colors.textPrimary
+            )
         }
     }
 }
+

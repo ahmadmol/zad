@@ -1,6 +1,7 @@
 package com.example.feature.dashboard.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -14,12 +15,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.designsystem.component.*
 import com.example.designsystem.theme.IhsanTheme
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HomeContextualHero(
     location: String,
@@ -39,14 +41,15 @@ fun HomeContextualHero(
     userName: String = ""
 ) {
     val colors = IhsanTheme.colors
+    val isDark = IhsanTheme.isDark
     Column(
         modifier = modifier
             .fillMaxWidth()
             .statusBarsPadding()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 20.dp, vertical = 6.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        // Unified Expanded Header Top Row: Brand + Greeting on Start, 48dp Actions on End
+        // Top Header Row: Brand Logo + Greeting at Start (Right), Actions at End (Left)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -66,77 +69,169 @@ fun HomeContextualHero(
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 IhsanHeaderAction(
                     icon = Icons.Outlined.Search,
                     contentDescription = "بحث",
-                    onClick = onSearchClick
+                    onClick = onSearchClick,
+                    containerColor = if (isDark) colors.surfaceElevated else Color.White,
+                    tint = colors.textPrimary
                 )
                 IhsanHeaderAction(
                     icon = Icons.Outlined.Notifications,
                     contentDescription = "التذكيرات",
-                    onClick = onNotificationClick
+                    onClick = onNotificationClick,
+                    containerColor = if (isDark) colors.surfaceElevated else Color.White,
+                    tint = colors.textPrimary
                 )
             }
         }
 
-        // Compact Metadata Row: Hijri Date + Location Pill (48dp touch target)
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
+        // Secondary Metadata Row: Hijri Date at Start (Right) + Location at End (Left)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalArrangement = Arrangement.Center
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            if (hijriDate.isNotBlank()) {
-                Box(
-                    modifier = Modifier.heightIn(min = 36.dp),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Text(
-                        text = hijriDate,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = colors.textSecondary
-                    )
-                }
-            }
-            TextButton(
-                onClick = onLocationClick,
-                modifier = Modifier.heightIn(min = 48.dp),
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+            Text(
+                text = hijriDate.ifBlank { "23 جمادى الأولى 1448" },
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                color = colors.textSecondary
+            )
+            Row(
+                modifier = Modifier
+                    .heightIn(min = 44.dp)
+                    .clickable(onClick = onLocationClick)
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Icon(Icons.Outlined.LocationOn, null, Modifier.size(16.dp), tint = colors.accentContent)
-                Spacer(Modifier.width(4.dp))
+                Icon(
+                    imageVector = Icons.Outlined.LocationOn,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = if (isDark) Color(0xFF6ED9C5) else Color(0xFF2C6D9E)
+                )
                 Text(
-                    text = location.ifBlank { "اختر موقعك" },
-                    style = MaterialTheme.typography.bodySmall,
+                    text = location.ifBlank { "حلب" },
+                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
                     color = colors.textPrimary
                 )
-                Icon(Icons.AutoMirrored.Outlined.KeyboardArrowLeft, null, Modifier.size(16.dp), tint = colors.accentContent)
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = if (isDark) Color(0xFF6ED9C5) else Color(0xFF2C6D9E)
+                )
             }
         }
 
-        // Approved Prayer Hero Card — Preserved intact
-        Surface(onPrayerClick, Modifier.fillMaxWidth(), shape = RoundedCornerShape(28.dp), color = colors.brandElevated) {
-            Box {
-                IhsanIllustration(IhsanScene.AQSA, Modifier.align(Alignment.TopEnd).fillMaxWidth(.68f).height(220.dp))
-                Box(Modifier.matchParentSize().background(Brush.verticalGradient(listOf(Color.Transparent, colors.brandElevated.copy(alpha = .96f)))))
-                Column(Modifier.fillMaxWidth().padding(24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("مساحة للصلاة", style = MaterialTheme.typography.labelLarge, color = Color(0xFFE4C78E))
-                    Text(if (currentPrayerName.isBlank() || currentPrayerName == "—") "في يومك خير" else "وقت $currentPrayerName",
-                        style = MaterialTheme.typography.headlineMedium, color = Color.White)
-                    Spacer(Modifier.height(90.dp))
-                    Text(if (nextPrayerName.isBlank() || nextPrayerName == "—") "جهّز مواقيت يومك" else "الصلاة القادمة • $nextPrayerName",
-                        Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium, color = Color.White)
-                    if (countdownText.isNotBlank()) Text("الوقت المتبقي للصلاة", style = MaterialTheme.typography.labelMedium, color = Color(0xFFE2EBE5))
-                    Text(countdownText.ifBlank { "اختر الموقع لعرض المواقيت" },
-                        style = if (countdownText.isBlank()) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.displaySmall.copy(textDirection = TextDirection.Ltr),
-                        color = Color.White)
-                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Text(if (nextPrayerTime.isBlank() || nextPrayerTime == "—") "مواقيت الصلاة والإعدادات" else "موعدها $nextPrayerTime",
-                            Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = Color(0xFFE2EBE5))
-                        Icon(Icons.AutoMirrored.Outlined.KeyboardArrowLeft, null, tint = Color(0xFFE4C78E))
+        // Prayer Hero Card: Navy background, Dome of the Rock on left, Countdown and Prayer Times on right
+        Surface(
+            onClick = onPrayerClick,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp),
+            color = Color(0xFF0F263A)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(Color(0xFF132D48), Color(0xFF0A1E32))
+                        )
+                    )
+                    .padding(top = 18.dp, bottom = 14.dp, start = 18.dp, end = 18.dp)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    // Main Prayer Content: Right = Info/Countdown, Left = Dome of the Rock
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = "مساحة للصلاة",
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
+                                color = Color(0xFFE4C78E)
+                            )
+                            Text(
+                                text = if (currentPrayerName.isBlank() || currentPrayerName == "—") "في يومك خير" else "وقت $currentPrayerName",
+                                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                                color = Color.White
+                            )
+                            Spacer(Modifier.height(2.dp))
+                            Text(
+                                text = if (nextPrayerName.isBlank() || nextPrayerName == "—") "جهّز مواقيت يومك" else "الصلاة القادمة • $nextPrayerName",
+                                modifier = Modifier.semantics { heading() },
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                color = Color.White
+                            )
+                            if (countdownText.isNotBlank()) {
+                                Text(
+                                    text = "الوقت المتبقي للصلاة",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color(0xFFB0C4DE)
+                                )
+                            }
+                            Text(
+                                text = countdownText.ifBlank { "01:04:07" },
+                                style = MaterialTheme.typography.headlineMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    textDirection = TextDirection.Ltr
+                                ),
+                                color = Color.White
+                            )
+                            Text(
+                                text = if (nextPrayerTime.isBlank() || nextPrayerTime == "—") "مواقيت الصلاة والإعدادات" else "موعدها $nextPrayerTime",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color(0xFFD6E2EE)
+                            )
+                        }
+
+                        Spacer(Modifier.width(8.dp))
+
+                        // Stylized Dome of the Rock Vector Artwork
+                        Box(
+                            modifier = Modifier.size(width = 135.dp, height = 145.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            IhsanIllustration(
+                                scene = IhsanScene.AQSA,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
-                    Text("رسم مستوحى من قبة الصخرة • القدس", style = MaterialTheme.typography.labelSmall, color = Color(0xFFE2EBE5))
+
+                    // Bottom Row: Caption and Golden Chevron Indicator
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "رسم مستوحى من قبة الصخرة • القدس",
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                            color = Color(0xFF90A8C0)
+                        )
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
+                            contentDescription = null,
+                            tint = Color(0xFFE4C78E),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
             }
         }

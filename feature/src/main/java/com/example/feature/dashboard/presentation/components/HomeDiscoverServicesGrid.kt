@@ -24,7 +24,7 @@ val ihsanServices = listOf(
     ServiceItemData("اتجاه القبلة", Icons.Outlined.Explore, "qibla"),
     ServiceItemData("الأدعية", Icons.Outlined.VolunteerActivism, "dua"),
     ServiceItemData("التقويم", Icons.Outlined.CalendarMonth, "calendar"),
-    ServiceItemData("الأسماء الحسنى", Icons.Outlined.TextFields, "asma"),
+    ServiceItemData("الأسماء الحسنى", Icons.Outlined.AutoAwesome, "asma"),
     ServiceItemData("مواقيت الصلاة", Icons.Outlined.Mosque, "prayer"),
     ServiceItemData("التسبيح", Icons.Outlined.TouchApp, "tasbih"),
     ServiceItemData("الأحاديث", Icons.Outlined.AutoStories, "hadith"),
