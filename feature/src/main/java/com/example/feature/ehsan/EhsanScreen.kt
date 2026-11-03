@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -142,18 +143,10 @@ fun EhsanScreen(
                     )
                 }
 
-                // Item 1: Segmented Tabs (عروض تبرع / طلبات مساعدة)
+                // Item 1: Segmented Tabs (عروض تبرع / طلبات مساعدة) & Filters
                 item {
                     Column(
-                        modifier = Modifier
-                            .padding(horizontal = IhsanTheme.dimens.screenHorizontal)
-                            .layout { measurable, constraints ->
-                                val child = measurable.measure(constraints)
-                                val overlap = 12.dp.roundToPx()
-                                layout(child.width, (child.height - overlap).coerceAtLeast(0)) {
-                                    child.placeRelative(0, -overlap)
-                                }
-                            },
+                        modifier = Modifier.padding(horizontal = IhsanTheme.dimens.screenHorizontal),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         EhsanSegmentedTabs(
@@ -169,26 +162,64 @@ fun EhsanScreen(
                             onFilterClick = { showAdvancedFilters = true }
                         )
 
-                        // Item 3: Sorting controls
-                        EhsanFilterRow(
-                            selectedSort = uiState.selectedSort,
-                            onSortChange = viewModel::onSortChange
-                        )
+                        // Item 3: Sorting & Count Row
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            EhsanFilterRow(
+                                selectedSort = uiState.selectedSort,
+                                onSortChange = viewModel::onSortChange,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Text(
+                                text = "${uiState.filteredDonations.size} نتيجة",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = IhsanTheme.colors.textSecondary,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
 
-                        Text("${uiState.filteredDonations.size} نتيجة", style = MaterialTheme.typography.labelSmall,
-                            color = IhsanTheme.colors.textSecondary)
-                        LocalBoardNoticeCard()
-                        androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        // Compact Status & Origin Filter Chips
+                        androidx.compose.foundation.layout.FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
                             listOf("ALL" to "كل الحالات", "AVAILABLE" to "متاح", "PENDING" to "بانتظار محلي", "COMPLETED" to "منتهٍ محليًا").forEach { (value, label) ->
-                                androidx.compose.material3.FilterChip(selected = uiState.selectedStatus == value, onClick = { viewModel.onStatusChange(value) }, label = { Text(label) })
+                                androidx.compose.material3.FilterChip(
+                                    selected = uiState.selectedStatus == value,
+                                    onClick = { viewModel.onStatusChange(value) },
+                                    label = { Text(label, style = MaterialTheme.typography.labelMedium) }
+                                )
                             }
                         }
-                        androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            listOf("ALL" to "كل المصادر", "USER" to "محلي", "LEGACY" to "قديم بلا ملكية", "DEMO" to "أمثلة DEMO").forEach { (value, label) ->
-                                androidx.compose.material3.FilterChip(selected = uiState.selectedOrigin == value, onClick = { viewModel.onOriginChange(value) }, label = { Text(label) })
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            androidx.compose.foundation.layout.FlowRow(
+                                modifier = Modifier.weight(1f),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                listOf("ALL" to "كل المصادر", "USER" to "محلي", "LEGACY" to "قديم بلا ملكية", "DEMO" to "أمثلة DEMO").forEach { (value, label) ->
+                                    androidx.compose.material3.FilterChip(
+                                        selected = uiState.selectedOrigin == value,
+                                        onClick = { viewModel.onOriginChange(value) },
+                                        label = { Text(label, style = MaterialTheme.typography.labelMedium) }
+                                    )
+                                }
+                            }
+                            androidx.compose.material3.TextButton(
+                                colors = com.example.designsystem.theme.ihsanTextButtonColors(),
+                                onClick = { showDemoReset = true }
+                            ) {
+                                Text("إعادة أمثلة DEMO فقط", style = MaterialTheme.typography.labelMedium)
                             }
                         }
-                        androidx.compose.material3.TextButton(colors = com.example.designsystem.theme.ihsanTextButtonColors(), onClick = { showDemoReset = true }) { Text("إعادة أمثلة DEMO فقط") }
+                        LocalBoardNoticeCard()
                     }
                 }
 

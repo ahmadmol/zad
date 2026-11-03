@@ -6,6 +6,13 @@ import com.example.feature.quran.domain.model.Bookmark
 import com.example.feature.quran.domain.model.Reader
 import com.example.feature.quran.domain.usecase.QuranDownloadStatus
 
+enum class QuranReadingMode {
+    /** Classic 604-page Madani Mushaf page layout with page frame artwork */
+    Mushaf,
+    /** Flowing continuous reading layout with scalable Arabic typography */
+    ContinuousText
+}
+
 data class QuranUiState(
     val surahs: List<Surah> = emptyList(),
     val ayahs: List<Verse> = emptyList(),
@@ -35,7 +42,14 @@ data class QuranUiState(
     val downloadedAyahs: List<Int> = emptyList(),
     val downloadStatus: QuranDownloadStatus = QuranDownloadStatus.Unknown,
     val downloadProgress: Int = 0,
-    val downloadErrorMessage: String? = null
+    val downloadErrorMessage: String? = null,
+
+    // Reader Mode & Navigation State
+    val currentReadingSurahId: Int? = null,
+    val currentReadingAyah: Int? = null,
+    val isTargetLocked: Boolean = false,
+    val activeRequestKey: String = "",
+    val readingMode: QuranReadingMode = QuranReadingMode.Mushaf
 ) {
     val isDownloading: Boolean
         get() = downloadStatus == QuranDownloadStatus.Enqueued ||
@@ -48,6 +62,9 @@ data class QuranUiState(
 sealed interface QuranAction {
     object LoadSurahs : QuranAction
     data class SelectSurah(val surahId: Int, val ayahNumber: Int? = null) : QuranAction
+    data class InitializeReaderTarget(val explicitSurahId: Int?, val explicitAyahNumber: Int?) : QuranAction
+    data class UpdateActivePosition(val surahId: Int, val ayahNumber: Int) : QuranAction
+    data class SetReadingMode(val mode: QuranReadingMode) : QuranAction
     data class SaveLastRead(val surahId: Int, val ayahNumber: Int) : QuranAction
     data class ToggleBookmark(val surahId: Int, val verseNumber: Int) : QuranAction
     object LoadBookmarks : QuranAction

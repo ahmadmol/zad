@@ -2,19 +2,29 @@ package com.example.feature.quran.presentation
 
 import android.content.Context
 import androidx.compose.foundation.Image
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.AbsoluteAlignment
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChanged
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -22,19 +32,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.TextUnit
-import com.example.designsystem.theme.QuranInk
+import androidx.compose.ui.unit.sp
 import com.example.designsystem.theme.QuranDecorativeGreen
+import com.example.designsystem.theme.QuranInk
 import com.example.feature.R
 import com.example.feature.quran.domain.model.Verse
 import org.json.JSONArray
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.semantics.CustomAccessibilityAction
-import androidx.compose.ui.semantics.customActions
-import androidx.compose.ui.semantics.semantics
+import kotlin.math.abs
 
 /** Presentation assets only. IDs are matched against the application's existing Quran text. */
 internal data class MushafPage(val number: Int, val verses: List<Verse>, val names: Map<Int, String>)
@@ -62,17 +67,35 @@ internal fun loadMushafPages(context: Context): List<MushafPage> {
     return (0 until 604).map { MushafPage(it + 1, verses.subList(offsets[it], offsets[it + 1]).toList(), names) }
 }
 
-internal fun List<MushafPage>.pageFor(surahId: Int, verseNumber: Int): Int =
-    indexOfFirst { page -> page.verses.any { it.surahId == surahId && it.verseNumber == verseNumber } }.coerceAtLeast(0)
+internal fun List<MushafPage>.pageFor(surahId: Int, verseNumber: Int): Int {
+    val exact = indexOfFirst { page ->
+        page.verses.any { it.surahId == surahId && it.verseNumber == verseNumber }
+    }
+    if (exact >= 0) return exact
+    val surahFallback = indexOfFirst { page ->
+        page.verses.any { it.surahId == surahId }
+    }
+    return surahFallback.coerceAtLeast(0)
+}
 
 /** A full native text page, fitted as a single paragraph. No per-verse cards or vertical list. */
 @Composable
-internal fun MushafPageSurface(page: MushafPage, requestedFontSize: Float,
-    activeSurahId: Int?, activeVerseNumber: Int?, onVerse: (Verse) -> Unit, modifier: Modifier = Modifier) {
+internal fun MushafPageSurface(
+    page: MushafPage,
+    requestedFontSize: Float,
+    activeSurahId: Int?,
+    activeVerseNumber: Int?,
+    onVerse: (Verse) -> Unit,
+    onZoomFontSize: (Float) -> Unit = {},
+    modifier: Modifier = Modifier
+) {
     val ink = QuranInk
     val font = remember { FontFamily(Font(R.font.amiri_quran)) }
     val zoom = (requestedFontSize / 28f).coerceIn(.7f, 2f)
-    var pan by remember(page.number, zoom) { mutableStateOf(Offset.Zero) }
+    var pan by remember(page.number, zoom <= 1.01f) { mutableStateOf(Offset.Zero) }
+    val currentFontSize by rememberUpdatedState(requestedFontSize)
+    val updateFontSize by rememberUpdatedState(onZoomFontSize)
+
     // Use the original 1024 × 1536 artwork unchanged. All content coordinates
     // are relative to this fitted page, so the frame never stretches or crops.
     BoxWithConstraints(modifier.clipToBounds().semantics(mergeDescendants = true) {
@@ -86,13 +109,47 @@ internal fun MushafPageSurface(page: MushafPage, requestedFontSize: Float,
         val pageHeight = pageWidth * 1.5f
         val panLimitX = with(LocalDensity.current) { pageWidth.toPx() } * (zoom - 1f).coerceAtLeast(0f) / 2f
         val panLimitY = with(LocalDensity.current) { pageHeight.toPx() } * (zoom - 1f).coerceAtLeast(0f) / 2f
-        val panGesture = if (zoom > 1f) Modifier.pointerInput(page.number, zoom) {
-            detectDragGestures { change, delta ->
-                change.consume()
-                pan = Offset((pan.x + delta.x).coerceIn(-panLimitX, panLimitX), (pan.y + delta.y).coerceIn(-panLimitY, panLimitY))
+
+        // Unified multi-touch pinch-to-zoom and zoomed single-finger pan gesture
+        // that passes single-finger horizontal swipes through to HorizontalPager when at 1x zoom.
+        val zoomAndPanGesture = Modifier.pointerInput(page.number, panLimitX, panLimitY) {
+            awaitEachGesture {
+                awaitFirstDown(requireUnconsumed = false)
+                do {
+                    val event = awaitPointerEvent()
+                    val pressedCount = event.changes.count { it.pressed }
+                    if (pressedCount >= 2) {
+                        val zoomChange = event.calculateZoom()
+                        val panChange = event.calculatePan()
+                        if (abs(zoomChange - 1f) > 0.005f || panChange != Offset.Zero) {
+                            val nextFontSize = (currentFontSize * zoomChange).coerceIn(20f, 48f)
+                            updateFontSize(nextFontSize)
+                            val nextZoom = (nextFontSize / 28f).coerceIn(.7f, 2f)
+                            if (nextZoom > 1.01f) {
+                                pan = Offset(
+                                    (pan.x + panChange.x).coerceIn(-panLimitX, panLimitX),
+                                    (pan.y + panChange.y).coerceIn(-panLimitY, panLimitY)
+                                )
+                            } else {
+                                pan = Offset.Zero
+                            }
+                            event.changes.forEach { if (it.positionChanged()) it.consume() }
+                        }
+                    } else if (pressedCount == 1 && (currentFontSize / 28f) > 1.02f) {
+                        val panChange = event.calculatePan()
+                        if (panChange != Offset.Zero) {
+                            pan = Offset(
+                                (pan.x + panChange.x).coerceIn(-panLimitX, panLimitX),
+                                (pan.y + panChange.y).coerceIn(-panLimitY, panLimitY)
+                            )
+                            event.changes.forEach { if (it.positionChanged()) it.consume() }
+                        }
+                    }
+                } while (event.changes.any { it.pressed })
             }
-        } else Modifier
-        Box(Modifier.size(pageWidth, pageHeight).then(panGesture).graphicsLayer {
+        }
+
+        Box(Modifier.size(pageWidth, pageHeight).then(zoomAndPanGesture).graphicsLayer {
             scaleX = zoom; scaleY = zoom; translationX = pan.x; translationY = pan.y
         }, contentAlignment = AbsoluteAlignment.TopLeft) {
             Image(

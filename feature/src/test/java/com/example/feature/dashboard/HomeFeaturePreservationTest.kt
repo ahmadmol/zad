@@ -143,13 +143,15 @@ class HomeFeaturePreservationTest {
     fun `splash routes on persisted readiness and keeps the original logo`() {
         assertTrue(splash.contains("IhsanTextWithKaabaIcon"))
         assertTrue(splash.contains("onStartupResolved"))
-        assertTrue(splash.contains("Build.VERSION.SDK_INT < 31"))
+        assertTrue(splash.contains("SplashScreenContent(IhsanTheme.isDark)"))
         assertFalse(splash.contains("delay("))
         assertFalse(splash.contains("infiniteRepeatable"))
         val brand = read("designsystem/src/main/java/com/example/designsystem/component/IhsanHeaderTitle.kt")
         assertTrue(brand.contains("ContentScale.Fit"))
         assertTrue(brand.contains("isKaaba"))
-        assertTrue(read("app/src/main/res/values-v31/themes.xml").contains("windowSplashScreenAnimatedIcon"))
+        val v31Theme = read("app/src/main/res/values-v31/themes.xml")
+        assertTrue(v31Theme.contains("windowSplashScreenAnimatedIcon"))
+        assertFalse(v31Theme.contains("windowSplashScreenIconBackgroundColor"))
     }
 }
 

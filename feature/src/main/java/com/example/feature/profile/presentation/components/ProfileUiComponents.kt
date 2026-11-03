@@ -32,6 +32,7 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
@@ -77,6 +78,7 @@ import com.example.feature.R
 //    and a smooth curved bottom transition into the body surface.
 // =================================================================================================
 
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun ProfileHeroHeader(
     location: String,
@@ -85,16 +87,87 @@ fun ProfileHeroHeader(
     onNotificationClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier.fillMaxWidth().background(IhsanTheme.colors.surfaceMint).statusBarsPadding()
-        .padding(horizontal = 20.dp).padding(top = 12.dp, bottom = 70.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            com.example.designsystem.component.IhsanTextWithKaabaIcon("إحسان", IhsanTheme.colors.accentContent, logoHeight = 40.dp)
-            Spacer(Modifier.weight(1f))
-            IconButton(onSearchClick, Modifier.size(48.dp)) { Icon(Icons.Default.Search, "بحث", tint = IhsanTheme.colors.textPrimary) }
-            IconButton(onNotificationClick, Modifier.size(48.dp)) { Icon(Icons.Default.Notifications, "التذكيرات", tint = IhsanTheme.colors.textPrimary) }
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(IhsanTheme.colors.surfaceMint)
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp)
+            .padding(top = 8.dp, bottom = 52.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        // Top Row: Brand wordmark on Start, standardized 48dp action buttons on End
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            com.example.designsystem.component.IhsanTextWithKaabaIcon(
+                text = "إحسان",
+                color = IhsanTheme.colors.accentContent,
+                logoHeight = 34.dp
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                com.example.designsystem.component.IhsanHeaderAction(
+                    icon = Icons.Default.Search,
+                    contentDescription = "بحث",
+                    onClick = onSearchClick,
+                    tint = IhsanTheme.colors.textPrimary
+                )
+                com.example.designsystem.component.IhsanHeaderAction(
+                    icon = Icons.Default.Notifications,
+                    contentDescription = "التذكيرات",
+                    onClick = onNotificationClick,
+                    tint = IhsanTheme.colors.textPrimary
+                )
+            }
         }
-        Text("مساحتك في إحسان", style = MaterialTheme.typography.headlineLarge, color = IhsanTheme.colors.textPrimary)
-        Text("ملفك وتفضيلاتك على هذا الجهاز", style = MaterialTheme.typography.bodyMedium, color = IhsanTheme.colors.textSecondary)
+
+        // Location & Hijri Date Metadata Row (Compact FlowRow for font scaling)
+        if (location.isNotBlank() || !hijriDate.isNullOrBlank()) {
+            androidx.compose.foundation.layout.FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                if (location.isNotBlank()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        androidx.compose.material3.Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = null,
+                            tint = IhsanTheme.colors.accentContent,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Text(
+                            text = location,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = IhsanTheme.colors.textSecondary
+                        )
+                    }
+                }
+                if (location.isNotBlank() && !hijriDate.isNullOrBlank()) {
+                    Text(
+                        text = "•",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = IhsanTheme.colors.textSecondary
+                    )
+                }
+                if (!hijriDate.isNullOrBlank()) {
+                    Text(
+                        text = hijriDate,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = IhsanTheme.colors.textSecondary
+                    )
+                }
+            }
+        }
     }
 }
 

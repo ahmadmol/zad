@@ -165,12 +165,11 @@ fun ProfileScreen(
                     onNotificationClick = onNavigateToReminders
                 )
 
-                // 2. Avatar straddles the hero/body boundary.
-                // 2. Avatar Overlay Centered on the Curved Boundary
+                // 2. Avatar Overlay Centered on the Header/Body Boundary
                 Box(
                     modifier = Modifier.fillMaxWidth().layout { measurable, constraints ->
                         val placeable = measurable.measure(constraints)
-                        val overlap = 48.dp.roundToPx()
+                        val overlap = 40.dp.roundToPx()
                         layout(placeable.width, (placeable.height - overlap).coerceAtLeast(0)) {
                             placeable.placeRelative(0, -overlap)
                         }
@@ -196,16 +195,16 @@ fun ProfileScreen(
                             modifier = Modifier.padding(top = 0.dp)
                         )
 
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
 
                         // 3. Title & Subtitle
                         uiState.managementError?.let { error ->
-                    Text(error, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(16.dp))
-                    TextButton(onClick = viewModel::retry) { Text("إعادة المحاولة") }
-                }
-                ProfileTitleHeader()
+                            Text(error, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(16.dp))
+                            TextButton(onClick = viewModel::retry) { Text("إعادة المحاولة") }
+                        }
+                        ProfileTitleHeader()
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         // 4. Section 1 — الحساب
                         ProfileGroupedSection(

@@ -100,12 +100,27 @@ fun EhsanHeaderBanner(
     onSearchClick: () -> Unit = {}
 ) {
     com.example.designsystem.component.IhsanSkylineHeader(
-        title = "مجتمع إحسان", subtitle = stringResource(R.string.polish_community_hero),
-        location = cityName, hijriDate = islamicDate, showBrand = true, modifier = modifier,
+        title = "مجتمع إحسان",
+        subtitle = stringResource(R.string.polish_community_hero),
+        location = cityName,
+        hijriDate = islamicDate,
+        showBrand = true,
+        modifier = modifier,
         actions = {
-            IconButton(onSearchClick, Modifier.size(48.dp)) { Icon(Icons.Default.Search, "بحث", modifier = Modifier.size(20.dp)) }
-            onNotificationClick?.let { action -> IconButton(action, Modifier.size(48.dp)) { Icon(Icons.Outlined.Notifications, "الإشعارات", modifier = Modifier.size(20.dp)) } }
-        })
+            com.example.designsystem.component.IhsanHeaderAction(
+                icon = Icons.Default.Search,
+                contentDescription = "بحث",
+                onClick = onSearchClick
+            )
+            onNotificationClick?.let { action ->
+                com.example.designsystem.component.IhsanHeaderAction(
+                    icon = Icons.Outlined.Notifications,
+                    contentDescription = "الإشعارات",
+                    onClick = action
+                )
+            }
+        }
+    )
 }
 
 /**

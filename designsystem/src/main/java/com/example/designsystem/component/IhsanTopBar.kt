@@ -11,54 +11,124 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.designsystem.R
 import com.example.designsystem.theme.IhsanTheme
 
-/** Compatibility styles map to two layouts: standard and large. */
+/**
+ * Two canonical header geometry modes:
+ * - [Compact]: Single-row bar with title/subtitle inline between navigation and actions.
+ * - [Expanded]: Two-row hero bar with brand/navigation/actions on top and prominent title/subtitle/metadata below.
+ */
+enum class IhsanHeaderMode { Compact, Expanded }
+
+/** Compatibility styles map deterministically to the two canonical header modes: Compact and Expanded. */
 enum class IhsanTopBarStyle { Hero, Surface, CompactSkyline, Minimal }
+
+fun IhsanTopBarStyle.toHeaderMode(): IhsanHeaderMode =
+    if (this == IhsanTopBarStyle.Hero) IhsanHeaderMode.Expanded else IhsanHeaderMode.Compact
 
 @Composable
 fun IhsanTopBar(
-    title: String, modifier: Modifier = Modifier,
-    style: IhsanTopBarStyle = IhsanTopBarStyle.Surface, subtitle: String? = null,
+    title: String,
+    modifier: Modifier = Modifier,
+    style: IhsanTopBarStyle = IhsanTopBarStyle.Surface,
+    subtitle: String? = null,
     onNavigateBack: (() -> Unit)? = null,
     navigationIconContentDescription: String = stringResource(R.string.back_desc),
     actions: @Composable RowScope.() -> Unit = {},
     bottomContent: @Composable (() -> Unit)? = null,
     containerColor: Color? = null,
-    @Suppress("UNUSED_PARAMETER") backgroundImageRes: Int? = null
+    @Suppress("UNUSED_PARAMETER") backgroundImageRes: Int? = null,
+    leadingContent: @Composable (() -> Unit)? = null
 ) {
-    val large = style == IhsanTopBarStyle.Hero
-    Surface(modifier.fillMaxWidth(), color = containerColor ?: IhsanTheme.colors.surfaceBase) {
-        Column(Modifier.statusBarsPadding().padding(horizontal = 16.dp, vertical = 8.dp)) {
-            Row(Modifier.fillMaxWidth().heightIn(min = 56.dp), verticalAlignment = Alignment.CenterVertically) {
+    val mode = style.toHeaderMode()
+    val expanded = mode == IhsanHeaderMode.Expanded
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = containerColor ?: IhsanTheme.colors.surfaceBase
+    ) {
+        Column(
+            modifier = Modifier
+                .statusBarsPadding()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 onNavigateBack?.let { back ->
-                    FilledTonalIconButton(back, Modifier.size(48.dp),
-                        colors = IconButtonDefaults.filledTonalIconButtonColors(
-                            containerColor = IhsanTheme.colors.surfaceElevated,
-                            contentColor = IhsanTheme.colors.textPrimary)) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, navigationIconContentDescription, Modifier.size(24.dp))
-                    }
-                    Spacer(Modifier.width(12.dp))
+                    IhsanHeaderAction(
+                        icon = Icons.AutoMirrored.Outlined.ArrowBack,
+                        contentDescription = navigationIconContentDescription,
+                        onClick = back
+                    )
+                    Spacer(Modifier.width(10.dp))
                 }
-                if (!large) Column(Modifier.weight(1f).semantics { heading() }) {
-                    Text(title, style = MaterialTheme.typography.titleLarge, color = IhsanTheme.colors.textPrimary)
+                if (expanded) {
+                    if (leadingContent != null) {
+                        Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+                            leadingContent()
+                        }
+                    } else {
+                        Spacer(Modifier.weight(1f))
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .semantics { heading() },
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = IhsanTheme.colors.textPrimary,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        subtitle?.takeIf { it.isNotBlank() }?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = IhsanTheme.colors.textSecondary,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    content = actions
+                )
+            }
+            if (expanded) {
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(
+                        text = title,
+                        modifier = Modifier.semantics { heading() },
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = IhsanTheme.colors.textPrimary
+                    )
                     subtitle?.takeIf { it.isNotBlank() }?.let {
-                        Text(it, style = MaterialTheme.typography.bodySmall, color = IhsanTheme.colors.textSecondary)
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = IhsanTheme.colors.textSecondary
+                        )
                     }
-                } else Spacer(Modifier.weight(1f))
-                Row(verticalAlignment = Alignment.CenterVertically, content = actions)
-            }
-            if (large) {
-                Text(title, Modifier.padding(top = 12.dp).semantics { heading() },
-                    style = MaterialTheme.typography.headlineLarge, color = IhsanTheme.colors.textPrimary)
-                subtitle?.takeIf { it.isNotBlank() }?.let {
-                    Text(it, Modifier.padding(top = 6.dp, bottom = 8.dp),
-                        style = MaterialTheme.typography.bodyMedium, color = IhsanTheme.colors.textSecondary)
                 }
             }
-            bottomContent?.let { Spacer(Modifier.height(12.dp)); it() }
+            bottomContent?.let { it() }
         }
     }
 }

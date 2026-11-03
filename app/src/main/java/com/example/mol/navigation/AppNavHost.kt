@@ -403,23 +403,30 @@ fun AppNavHost(
                 }
             )
         ) { backStackEntry ->
-            val surahId = backStackEntry.arguments?.getInt("surahId") ?: 1
+            val surahIdArg = backStackEntry.arguments?.getInt("surahId") ?: -1
+            val surahId = if (surahIdArg <= 0) null else surahIdArg
             val ayahNumberArg = backStackEntry.arguments?.getInt("ayahNumber") ?: -1
-            val ayahNumber = if (ayahNumberArg == -1) null else ayahNumberArg
+            val ayahNumber = if (ayahNumberArg <= 0) null else ayahNumberArg
             
             val viewModel: QuranViewModel = koinViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             
             LaunchedEffect(surahId, ayahNumber) {
-                viewModel.onAction(QuranAction.SelectSurah(surahId, ayahNumber))
+                viewModel.onAction(QuranAction.InitializeReaderTarget(surahId, ayahNumber))
             }
             
             QuranReaderScreen(
                 state = uiState,
                 onBack = { navController.popBackStack() },
-                onRetry = { viewModel.onAction(QuranAction.SelectSurah(surahId, ayahNumber)) },
+                onRetry = { viewModel.onAction(QuranAction.InitializeReaderTarget(surahId, ayahNumber)) },
                 onSaveLastRead = { sId, aNum ->
                     viewModel.onAction(QuranAction.SaveLastRead(sId, aNum))
+                },
+                onUpdateActivePosition = { sId, aNum ->
+                    viewModel.onAction(QuranAction.UpdateActivePosition(sId, aNum))
+                },
+                onSetReadingMode = { mode ->
+                    viewModel.onAction(QuranAction.SetReadingMode(mode))
                 },
                 onToggleBookmark = { sId, vNum ->
                     viewModel.onAction(QuranAction.ToggleBookmark(sId, vNum))
@@ -432,7 +439,6 @@ fun AppNavHost(
                 onDownloadSurah = { viewModel.onAction(QuranAction.DownloadSurah) },
                 onSeekTo = { viewModel.onAction(QuranAction.SeekTo(it)) },
                 onUpdateFontSize = { viewModel.onAction(QuranAction.UpdateFontSize(it)) },
-                onSelectPageSurah = { id, verse -> viewModel.onAction(QuranAction.SelectSurah(id, verse)) },
                 onPrivateNote = { id, verse -> navController.navigate(Screen.ReadingJourney.createRoute(id, verse, 1)) }
             )
         }

@@ -17,20 +17,54 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.designsystem.theme.*
 
 @Composable
-fun IhsanSectionHeader(title: String, subtitle: String? = null, action: String? = null,
-    onAction: () -> Unit = {}, modifier: Modifier = Modifier) {
-    Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+fun IhsanSectionHeader(
+    title: String,
+    subtitle: String? = null,
+    action: String? = null,
+    onAction: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Column(Modifier.weight(1f)) {
-            Text(title, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleLarge,
-                color = IhsanTheme.colors.textPrimary)
-            subtitle?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = IhsanTheme.colors.textSecondary) }
+            Text(
+                text = title,
+                modifier = Modifier.semantics { heading() },
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = IhsanTheme.colors.textPrimary
+            )
+            subtitle?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = IhsanTheme.colors.textSecondary,
+                    modifier = Modifier.padding(top = 2.dp)
+                )
+            }
         }
-        if (action != null) TextButton(onAction, colors = ihsanTextButtonColors()) { Text(action) }
+        if (action != null) {
+            TextButton(
+                onClick = onAction,
+                colors = ihsanTextButtonColors(),
+                modifier = Modifier.heightIn(min = 48.dp)
+            ) {
+                Text(
+                    text = action,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
     }
 }
 

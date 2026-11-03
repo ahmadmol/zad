@@ -10,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.heading
@@ -20,37 +19,103 @@ import androidx.compose.ui.unit.dp
 import com.example.designsystem.component.*
 import com.example.designsystem.theme.IhsanTheme
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun HomeContextualHero(location: String, hijriDate: String, currentPrayerName: String,
-    countdownText: String, nextPrayerName: String, nextPrayerTime: String,
-    @Suppress("UNUSED_PARAMETER") dailyVerseText: String, @Suppress("UNUSED_PARAMETER") dailyVerseSource: String,
-    onNotificationClick: () -> Unit, onSearchClick: () -> Unit,
-    @Suppress("UNUSED_PARAMETER") onQiblaClick: () -> Unit, modifier: Modifier = Modifier,
-    onPrayerClick: () -> Unit = {}, onLocationClick: () -> Unit = {}, userName: String = "") {
+fun HomeContextualHero(
+    location: String,
+    hijriDate: String,
+    currentPrayerName: String,
+    countdownText: String,
+    nextPrayerName: String,
+    nextPrayerTime: String,
+    @Suppress("UNUSED_PARAMETER") dailyVerseText: String,
+    @Suppress("UNUSED_PARAMETER") dailyVerseSource: String,
+    onNotificationClick: () -> Unit,
+    onSearchClick: () -> Unit,
+    @Suppress("UNUSED_PARAMETER") onQiblaClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    onPrayerClick: () -> Unit = {},
+    onLocationClick: () -> Unit = {},
+    userName: String = ""
+) {
     val colors = IhsanTheme.colors
-    Column(modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 20.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                IhsanTextWithKaabaIcon("إحسان", colors.accentContent, logoHeight = 40.dp)
-                Text(if (userName.isBlank() || userName == "مستخدم إحسان") "أهلًا بك، طاب يومك" else "أهلًا ${userName.substringBefore(' ').take(24)}",
-                    Modifier.padding(top = 6.dp), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        // Unified Expanded Header Top Row: Brand + Greeting on Start, 48dp Actions on End
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                IhsanTextWithKaabaIcon("إحسان", colors.accentContent, logoHeight = 36.dp)
+                Text(
+                    text = if (userName.isBlank() || userName == "مستخدم إحسان") "أهلًا بك، طاب يومك" else "أهلًا ${userName.substringBefore(' ').take(24)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.textSecondary
+                )
             }
-            FilledTonalIconButton(onSearchClick, Modifier.size(48.dp), colors = IconButtonDefaults.filledTonalIconButtonColors(
-                containerColor = colors.surfaceElevated, contentColor = colors.textPrimary)) { Icon(Icons.Outlined.Search, "بحث") }
-            Spacer(Modifier.width(8.dp))
-            FilledTonalIconButton(onNotificationClick, Modifier.size(48.dp), colors = IconButtonDefaults.filledTonalIconButtonColors(
-                containerColor = colors.surfaceElevated, contentColor = colors.textPrimary)) { Icon(Icons.Outlined.Notifications, "التذكيرات") }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                IhsanHeaderAction(
+                    icon = Icons.Outlined.Search,
+                    contentDescription = "بحث",
+                    onClick = onSearchClick
+                )
+                IhsanHeaderAction(
+                    icon = Icons.Outlined.Notifications,
+                    contentDescription = "التذكيرات",
+                    onClick = onNotificationClick
+                )
+            }
         }
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(hijriDate, style = MaterialTheme.typography.bodyMedium, color = colors.textPrimary)
-            TextButton(onLocationClick, contentPadding = PaddingValues(0.dp)) {
-                Icon(Icons.Outlined.LocationOn, null, Modifier.size(18.dp), tint = colors.accentContent)
+
+        // Compact Metadata Row: Hijri Date + Location Pill (48dp touch target)
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.Center
+        ) {
+            if (hijriDate.isNotBlank()) {
+                Box(
+                    modifier = Modifier.heightIn(min = 36.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        text = hijriDate,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colors.textSecondary
+                    )
+                }
+            }
+            TextButton(
+                onClick = onLocationClick,
+                modifier = Modifier.heightIn(min = 48.dp),
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                Icon(Icons.Outlined.LocationOn, null, Modifier.size(16.dp), tint = colors.accentContent)
                 Spacer(Modifier.width(4.dp))
-                Text(location.ifBlank { "اختر موقعك" }, style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
-                Icon(Icons.AutoMirrored.Outlined.KeyboardArrowLeft, null, Modifier.size(18.dp), tint = colors.accentContent)
+                Text(
+                    text = location.ifBlank { "اختر موقعك" },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.textPrimary
+                )
+                Icon(Icons.AutoMirrored.Outlined.KeyboardArrowLeft, null, Modifier.size(16.dp), tint = colors.accentContent)
             }
         }
+
+        // Approved Prayer Hero Card — Preserved intact
         Surface(onPrayerClick, Modifier.fillMaxWidth(), shape = RoundedCornerShape(28.dp), color = colors.brandElevated) {
             Box {
                 IhsanIllustration(IhsanScene.AQSA, Modifier.align(Alignment.TopEnd).fillMaxWidth(.68f).height(220.dp))

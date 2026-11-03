@@ -3,6 +3,5 @@
     <style name="Theme.Ihsan" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowSplashScreenBackground">@color/ihsan_startup_surface</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_ihsan_logo_transparent</item>
-        <item name="android:windowSplashScreenIconBackgroundColor">#202427</item>
     </style>
 </resources>

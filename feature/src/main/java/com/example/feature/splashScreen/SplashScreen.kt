@@ -1,6 +1,5 @@
 package com.example.feature.splashScreen
 
-import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -27,8 +26,7 @@ fun SplashScreen(onNavigateToOnboarding: () -> Unit, onNavigateToMain: () -> Uni
     }
     if (state.error != null) IhsanErrorState(title = "تعذر بدء التطبيق", message = state.error,
         onRetry = viewModel::retry, modifier = Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding())
-    else if (Build.VERSION.SDK_INT < 31) SplashScreenContent(IhsanTheme.isDark)
-    else Box(Modifier.fillMaxSize().background(IhsanTheme.colors.surfaceBase)) // Native splash owns the logo on API 31+.
+    else SplashScreenContent(IhsanTheme.isDark)
 }
 
 @Composable
