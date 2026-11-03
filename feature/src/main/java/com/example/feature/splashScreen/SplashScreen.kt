@@ -28,11 +28,18 @@ fun SplashScreen(onNavigateToOnboarding: () -> Unit, onNavigateToMain: () -> Uni
     viewModel: StartupViewModel = org.koin.androidx.compose.koinViewModel(), onStartupResolved: () -> Unit = {}) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(state.loading, state.onboardingCompleted, state.error) {
-        if (!state.loading) onStartupResolved()
-        when (state.onboardingCompleted) {
-            true -> onNavigateToMain()
-            false -> onNavigateToOnboarding()
-            null -> Unit
+        if (!state.loading && state.error == null) {
+            when (state.onboardingCompleted) {
+                true -> {
+                    onStartupResolved()
+                    onNavigateToMain()
+                }
+                false -> {
+                    onStartupResolved()
+                    onNavigateToOnboarding()
+                }
+                null -> Unit
+            }
         }
     }
     if (state.error != null) IhsanErrorState(title = "تعذر بدء التطبيق", message = state.error,
@@ -164,5 +171,13 @@ fun SplashScreenContent(isDark: Boolean) {
 private fun SplashScreenPreviewLight() {
     IhsanTheme(darkTheme = false) {
         SplashScreenContent(isDark = false)
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(name = "Splash Dark", locale = "ar", widthDp = 360, heightDp = 800, showBackground = true)
+@Composable
+private fun SplashScreenPreviewDark() {
+    IhsanTheme(darkTheme = true) {
+        SplashScreenContent(isDark = true)
     }
 }

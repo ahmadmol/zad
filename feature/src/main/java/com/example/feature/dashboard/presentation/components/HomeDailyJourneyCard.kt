@@ -33,14 +33,14 @@ fun HomeDailyJourneyCard(
     onQuranClick: () -> Unit = onGoToChecklist,
     onAzkarClick: () -> Unit = onGoToChecklist
 ) {
-    val quran = activities.filter { it.route == "quran_list" }
-    val azkar = activities.filter { it.route == "azkar_screen" }
+    val quranActivities = activities.filter { it.route == "quran_list" }
+    val azkarActivities = activities.filter { it.route == "azkar_screen" }
 
-    val quranCurrent = quran.takeIf { it.isNotEmpty() }?.sumOf { it.currentCount } ?: 0
-    val quranTarget = quran.takeIf { it.isNotEmpty() }?.sumOf { it.targetCount }?.takeIf { it > 0 } ?: 1
+    val quranCurrent = quranActivities.takeIf { it.isNotEmpty() }?.sumOf { it.currentCount }
+    val quranTarget = quranActivities.takeIf { it.isNotEmpty() }?.sumOf { it.targetCount }?.takeIf { it > 0 }
 
-    val azkarCurrent = azkar.takeIf { it.isNotEmpty() }?.sumOf { it.currentCount } ?: 0
-    val azkarTarget = azkar.takeIf { it.isNotEmpty() }?.sumOf { it.targetCount }?.takeIf { it > 0 } ?: 2
+    val azkarCurrent = azkarActivities.takeIf { it.isNotEmpty() }?.sumOf { it.currentCount }
+    val azkarTarget = azkarActivities.takeIf { it.isNotEmpty() }?.sumOf { it.targetCount }?.takeIf { it > 0 }
 
     Column(
         modifier = modifier.fillMaxWidth(),

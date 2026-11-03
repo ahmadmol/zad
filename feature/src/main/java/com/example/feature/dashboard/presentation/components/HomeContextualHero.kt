@@ -183,12 +183,22 @@ fun HomeContextualHero(
                                     color = Color(0xFFB0C4DE)
                                 )
                             }
+                            val fontScale = androidx.compose.ui.platform.LocalDensity.current.fontScale
                             Text(
                                 text = countdownText.ifBlank { "01:04:07" },
-                                style = MaterialTheme.typography.headlineMedium.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    textDirection = TextDirection.Ltr
-                                ),
+                                style = if (fontScale > 1.3f) {
+                                    MaterialTheme.typography.titleLarge.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        textDirection = TextDirection.Ltr
+                                    )
+                                } else {
+                                    MaterialTheme.typography.headlineMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        textDirection = TextDirection.Ltr
+                                    )
+                                },
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                 color = Color.White
                             )
                             Text(
@@ -200,9 +210,12 @@ fun HomeContextualHero(
 
                         Spacer(Modifier.width(8.dp))
 
-                        // Stylized Dome of the Rock Vector Artwork
+                        // Stylized Dome of the Rock Vector Artwork - responsive sizing
+                        val fontScale = androidx.compose.ui.platform.LocalDensity.current.fontScale
+                        val illustrationWidth = (130f / fontScale.coerceAtLeast(1f)).coerceIn(85f, 130f).dp
+                        val illustrationHeight = (145f / fontScale.coerceAtLeast(1f)).coerceIn(95f, 145f).dp
                         Box(
-                            modifier = Modifier.size(width = 135.dp, height = 145.dp),
+                            modifier = Modifier.size(width = illustrationWidth, height = illustrationHeight),
                             contentAlignment = Alignment.Center
                         ) {
                             IhsanIllustration(

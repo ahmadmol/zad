@@ -8,7 +8,6 @@ import androidx.compose.material.icons.outlined.*
 import com.example.designsystem.component.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -327,7 +326,10 @@ private fun HomeDashboardPreviewLight() {
                 Column(Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) {
                     HomeDailyJourneyCard(
                         onGoToChecklist = {},
-                        activities = emptyList()
+                        activities = listOf(
+                            DailyActivityItemData("quran", "الورد القرآني", 0, 1, "جزء", false, "quran_list"),
+                            DailyActivityItemData("azkar", "الأذكار", 0, 2, "مرة", false, "azkar_screen")
+                        )
                     )
                 }
                 Column(Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) {
@@ -350,6 +352,18 @@ private fun HomeDashboardPreviewLight() {
             )
         }
     }
+}
+
+@Preview(name = "Home Screen 393dp", locale = "ar", widthDp = 393, heightDp = 852, showBackground = true)
+@Composable
+private fun HomeDashboardPreview393() {
+    HomeDashboardPreviewLight()
+}
+
+@Preview(name = "Home Screen 412dp", locale = "ar", widthDp = 412, heightDp = 915, showBackground = true)
+@Composable
+private fun HomeDashboardPreview412() {
+    HomeDashboardPreviewLight()
 }
 
 @Preview(name = "Home Screen Dark", locale = "ar", widthDp = 360, heightDp = 800, showBackground = true)
@@ -395,7 +409,10 @@ private fun HomeDashboardPreviewDark() {
                 Column(Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) {
                     HomeDailyJourneyCard(
                         onGoToChecklist = {},
-                        activities = emptyList()
+                        activities = listOf(
+                            DailyActivityItemData("quran", "الورد القرآني", 0, 1, "جزء", false, "quran_list"),
+                            DailyActivityItemData("azkar", "الأذكار", 0, 2, "مرة", false, "azkar_screen")
+                        )
                     )
                 }
                 Column(Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) {
