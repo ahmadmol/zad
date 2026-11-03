@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MATRIX = ROOT / "docs/planning/IHSAN_UI_UX_SCREEN_MATRIX.csv"
+BASELINE = "ac904e3e456f995e525195b46e3e8bba1b00c9a8"
 
 SCOPES = {
     "UI-001": "Readiness-driven launch; native API31 splash; restoration release; no fixed delay",
@@ -55,7 +56,7 @@ def main():
             status="IMPLEMENTED / SOURCE VERIFIED / VISUAL NOT VERIFIED")
         rows.append(row)
         SCOPES[ident] = scope
-    changed = set(subprocess.check_output(["git", "diff", "--name-only", "HEAD"], cwd=ROOT).decode().splitlines())
+    changed = set(subprocess.check_output(["git", "diff", "--name-only", BASELINE], cwd=ROOT).decode().splitlines())
     extras = ["premium_status", "premium_scope", "premium_source_hashes", "premium_visual", "premium_backend", "premium_content"]
     fields = original_fields + [field for field in extras if field not in original_fields]
     backend_ids = {f"UI-{number:03}" for number in [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 68, 69]}
