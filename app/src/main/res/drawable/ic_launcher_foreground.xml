@@ -6,63 +6,134 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- 1. Spiritual Heavenly Radiance & Islamic Arch Halo -->
-    <!-- Soft radial glow centered behind the golden dome -->
+    <!-- 1. Spiritual Heavenly Radiance & Arch Glow -->
     <path
-        android:pathData="M24,20h60v60h-60z">
+        android:pathData="M20,15h68v68h-68z">
         <aapt:attr name="android:fillColor">
             <gradient
                 android:centerX="54"
                 android:centerY="42"
-                android:gradientRadius="34"
+                android:gradientRadius="36"
                 android:type="radial">
                 <item android:color="#4DFFD54F" android:offset="0.0" />
-                <item android:color="#20C7A35C" android:offset="0.5" />
+                <item android:color="#20C7A35C" android:offset="0.55" />
                 <item android:color="#00000000" android:offset="1.0" />
             </gradient>
         </aapt:attr>
     </path>
 
-    <!-- Outer Decorative Islamic Mihrab Arch -->
+    <!-- 2. Framing Ornate Jerusalem Stone Arch (القوس الحجري المعقود - مستخلص من صورة 1) -->
+    <!-- Outer Arch Contour -->
     <path
-        android:pathData="M28,78 L28,47 C28,34 39,23 54,19.5 C69,23 80,34 80,47 L80,78"
-        android:strokeWidth="1.2"
+        android:pathData="M26,78 L26,46 C26,30 38,18 54,15.5 C70,18 82,30 82,46 L82,78"
+        android:strokeWidth="1.6"
         android:strokeLineCap="round"
-        android:strokeColor="#C7A35C"
+        android:strokeColor="#FFC7A35C"
         android:fillColor="#00000000" />
 
+    <!-- Inner Arch Contour -->
     <path
-        android:pathData="M31,78 L31,48 C31,37 41,27 54,23.5 C67,27 77,37 77,48 L77,78"
-        android:strokeWidth="0.6"
+        android:pathData="M29,78 L29,47 C29,33 40,22 54,19.5 C68,22 79,33 79,47 L79,78"
+        android:strokeWidth="0.8"
         android:strokeLineCap="round"
-        android:strokeColor="#66C7A35C"
+        android:strokeColor="#80D4AF37"
         android:fillColor="#00000000" />
 
-    <!-- 2. Crescent & Spire of the Dome of the Rock (هلال قبة الصخرة المشرفة) -->
-    <!-- Golden Spire Pin -->
+    <!-- Arch Keystone & Apex Ornament -->
     <path
-        android:pathData="M54,21 L54,27"
-        android:strokeWidth="1.0"
-        android:strokeLineCap="round"
-        android:strokeColor="#FFFCE588" />
+        android:pathData="M52.5,14 h3 v3 h-3 z"
+        android:fillColor="#FFF5D686" />
 
-    <!-- Crescent Moon facing upward -->
+    <!-- 3. Hanging Golden Lantern (الفانوس الذهبي المعلق - مستخلص من صورة 1) -->
+    <!-- Gold Chain suspended from arch keystone -->
     <path
-        android:pathData="M51.5,23 C51.5,26.5 56.5,26.5 56.5,23 C55,25 53,25 51.5,23 Z"
+        android:pathData="M54,16 L54,20"
+        android:strokeWidth="0.8"
+        android:strokeColor="#FFFFD54F" />
+
+    <!-- Lantern Radial Warm Glow -->
+    <path
+        android:pathData="M48,18h12v12h-12z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="54"
+                android:centerY="23.5"
+                android:gradientRadius="6"
+                android:type="radial">
+                <item android:color="#80FFE082" android:offset="0.0" />
+                <item android:color="#00000000" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Lantern Top Cap -->
+    <path
+        android:pathData="M52.5,20 L55.5,20 L55,21 L53,21 Z"
         android:fillColor="#FFFFEE9C" />
 
-    <!-- Small Star Jewel atop spire -->
+    <!-- Lantern Body (Brass & Luminous Glass) -->
     <path
-        android:pathData="M53.5,20 h1 v1 h-1 z"
+        android:pathData="M52,21 L56,21 L55.5,24.5 L54,26 L52.5,24.5 Z"
+        android:fillColor="#FFFFD54F" />
+    <path
+        android:pathData="M53,22 L55,22 L54.5,24 L54,24.8 L53.5,24 Z"
+        android:fillColor="#FFFFFFFF" />
+    <!-- Lantern Bottom Finial -->
+    <path
+        android:pathData="M53.8,26 h0.4 v1 h-0.4 z"
+        android:fillColor="#FFD4AF37" />
+
+    <!-- 4. Sacred Olive Branch along the left arch (غصن الزيتون الأخضر المبارك - مستخلص من صورة 1) -->
+    <path
+        android:pathData="M27.5,50 C28,38 35,26 44,20"
+        android:strokeWidth="0.8"
+        android:strokeLineCap="round"
+        android:strokeColor="#FF4A7055"
+        android:fillColor="#00000000" />
+    <!-- Olive Leaf 1 -->
+    <path
+        android:pathData="M30,42 C28.5,39.5 30,37 32,38 C32,40 31,42 30,42 Z"
+        android:fillColor="#FF5C8A67" />
+    <!-- Olive Leaf 2 -->
+    <path
+        android:pathData="M33,35 C32,32.5 34,30.5 36,31.5 C36,33.5 34.5,35 33,35 Z"
+        android:fillColor="#FF6E9D7A" />
+    <!-- Olive Leaf 3 -->
+    <path
+        android:pathData="M37,29 C36.5,26.5 39,25 40.5,26 C40.5,28 39,29.5 37,29 Z"
+        android:fillColor="#FF5C8A67" />
+    <!-- Olive Leaf 4 -->
+    <path
+        android:pathData="M42,24 C41.5,22 44,20.5 45.5,21.5 C45.5,23 44,24.5 42,24 Z"
+        android:fillColor="#FF6E9D7A" />
+    <!-- Olive Fruit Drop -->
+    <path
+        android:pathData="M31.5,38.5 C31,38 31.5,37 32.5,37.5 C33,38.5 32.5,39 31.5,38.5 Z"
+        android:fillColor="#FF2E4B35" />
+
+    <!-- 5. Crescent & Spire of the Dome of the Rock (هلال قبة الصخرة المشرفة) -->
+    <!-- Spire Pin -->
+    <path
+        android:pathData="M54,23 L54,28"
+        android:strokeWidth="0.9"
+        android:strokeLineCap="round"
+        android:strokeColor="#FFFCE588" />
+    <!-- Crescent Moon facing upward -->
+    <path
+        android:pathData="M52.2,24.5 C52.2,27 55.8,27 55.8,24.5 C54.8,25.8 53.2,25.8 52.2,24.5 Z"
+        android:fillColor="#FFFFEE9C" />
+    <!-- Star Jewel atop Spire -->
+    <path
+        android:pathData="M53.5,22 h1 v1 h-1 z"
         android:fillColor="#FFFFFFFF" />
 
-    <!-- 3. The Golden Dome (القبة الذهبية المشرفة) -->
+    <!-- 6. The Golden Dome (القبة الذهبية المشرفة) -->
     <path
-        android:pathData="M39,48.5 C38,38 44,27 54,27 C64,27 70,38 69,48.5 Z">
+        android:pathData="M39,48.5 C38,38 44,28 54,28 C64,28 70,38 69,48.5 Z">
         <aapt:attr name="android:fillColor">
             <gradient
                 android:startX="40"
-                android:startY="27"
+                android:startY="28"
                 android:endX="68"
                 android:endY="48.5"
                 android:type="linear">
@@ -74,70 +145,61 @@
         </aapt:attr>
     </path>
 
-    <!-- Meridian Rib Lines of the Golden Dome -->
-    <!-- Center meridian rib -->
+    <!-- Meridian Rib Lines -->
     <path
-        android:pathData="M54,27 L54,48.5"
+        android:pathData="M54,28 L54,48.5"
         android:strokeWidth="0.6"
         android:strokeColor="#66FFFFFF" />
-    <!-- Left meridian ribs -->
     <path
-        android:pathData="M54,27 C50,34 46,41 45,48.5"
+        android:pathData="M54,28 C50,34.5 46,41 45,48.5"
         android:strokeWidth="0.5"
         android:strokeColor="#40FFFFFF" />
     <path
-        android:pathData="M54,27 C46,35 41,41 40,48.5"
+        android:pathData="M54,28 C46,35.5 41,41.5 40,48.5"
         android:strokeWidth="0.5"
         android:strokeColor="#30FFFFFF" />
-    <!-- Right meridian ribs -->
     <path
-        android:pathData="M54,27 C58,34 62,41 63,48.5"
+        android:pathData="M54,28 C58,34.5 62,41 63,48.5"
         android:strokeWidth="0.5"
         android:strokeColor="#33664A00" />
     <path
-        android:pathData="M54,27 C62,35 67,41 68,48.5"
+        android:pathData="M54,28 C62,35.5 67,41.5 68,48.5"
         android:strokeWidth="0.5"
         android:strokeColor="#33664A00" />
 
-    <!-- Dome Base Cornice (إفريز قاعدة القبة) -->
+    <!-- Dome Base Cornice -->
     <path
         android:pathData="M38,47.5 h32 v1.8 h-32 z"
         android:fillColor="#FFFCE588" />
 
-    <!-- 4. The Drum / Tholobate with Stained Glass Arched Windows (رقبة القبة والنوافذ المعقودة) -->
-    <!-- Drum Base Wall in Turquoise/Emerald Ceramic Mosaic -->
+    <!-- 7. Cylinder Drum & Stained Glass Arched Windows (رقبة القبة والنوافذ المعقودة) -->
     <path
         android:pathData="M39.5,49.3 h29 v8.5 h-29 z"
         android:fillColor="#FF0E5A49" />
 
     <!-- 5 Luminous Arched Windows on Drum -->
-    <!-- Window 1 (left) -->
     <path
         android:pathData="M42,56.5 v-4.5 c0,-1.2 2,-1.2 2,0 v4.5 z"
         android:fillColor="#FFFFEE9C" />
-    <!-- Window 2 -->
     <path
         android:pathData="M47.5,56.5 v-4.5 c0,-1.2 2,-1.2 2,0 v4.5 z"
         android:fillColor="#FFFFEE9C" />
-    <!-- Window 3 (center) -->
     <path
         android:pathData="M53,56.5 v-4.5 c0,-1.2 2,-1.2 2,0 v4.5 z"
         android:fillColor="#FFFFEE9C" />
-    <!-- Window 4 -->
     <path
         android:pathData="M58.5,56.5 v-4.5 c0,-1.2 2,-1.2 2,0 v4.5 z"
         android:fillColor="#FFFFEE9C" />
-    <!-- Window 5 (right) -->
     <path
         android:pathData="M64,56.5 v-4.5 c0,-1.2 2,-1.2 2,0 v4.5 z"
         android:fillColor="#FFFFEE9C" />
 
-    <!-- Lower Drum Molding / Cornice Band -->
+    <!-- Lower Drum Molding -->
     <path
         android:pathData="M38,57.8 h32 v1.5 h-32 z"
         android:fillColor="#FFD4AF37" />
 
-    <!-- 5. The Octagonal Building Base (مبنى قبة الصخرة المثمن والفسيفساء الإسلامية) -->
+    <!-- 8. Octagonal Base Building (المبنى المثمن والفسيفساء التركوازية والكحلية) -->
     <!-- Left Angled Facade -->
     <path
         android:pathData="M31,60.5 L39.5,58.5 L39.5,74.5 L31,74.5 Z"
@@ -146,38 +208,35 @@
     <path
         android:pathData="M68.5,58.5 L77,60.5 L77,74.5 L68.5,74.5 Z"
         android:fillColor="#FF124639" />
-    <!-- Center Front Facade - Upper Turquoise/Sapphire Mosaic Band -->
+    <!-- Center Front Facade - Upper Persian Turquoise & Sapphire Mosaic Band -->
     <path
         android:pathData="M39.5,58.5 h29 v7.5 h-29 z"
         android:fillColor="#FF106351" />
-    <!-- Center Front Facade - Lower White Jerusalem Stone / Marble -->
+    <!-- Center Front Facade - Lower Jerusalem Stone / White Marble -->
     <path
         android:pathData="M39.5,66 h29 v8.5 h-29 z"
         android:fillColor="#FFF0EBE1" />
 
-    <!-- Mosaic Geometric Divider Line -->
+    <!-- Mosaic Gold Trim Line -->
     <path
         android:pathData="M31,66 h46"
         android:strokeWidth="0.6"
         android:strokeColor="#FFC7A35C" />
 
     <!-- Arched Portal / Main Central Door (الباب الأوسط المعقود الشريف) -->
-    <!-- Outer Marble Frame -->
     <path
         android:pathData="M49.5,74.5 v-6 c0,-2.5 9,-2.5 9,0 v6 z"
         android:strokeWidth="0.8"
         android:strokeColor="#FFC7A35C"
         android:fillColor="#FFEDE6D8" />
-    <!-- Inner Doorway -->
     <path
         android:pathData="M51,74.5 v-5 c0,-1.8 6,-1.8 6,0 v5 z"
         android:fillColor="#FF1A2E26" />
-    <!-- Golden Door Lattice Accent -->
     <path
         android:pathData="M52.5,74.5 v-3.5 c0,-1 3,-1 3,0 v3.5 z"
         android:fillColor="#FFD4AF37" />
 
-    <!-- Left & Right Decorative Windows on Base -->
+    <!-- Side Windows on Base -->
     <path
         android:pathData="M43,71.5 v-3.5 c0,-1.2 2.5,-1.2 2.5,0 v3.5 z"
         android:fillColor="#FF1B382F" />
@@ -185,41 +244,48 @@
         android:pathData="M62.5,71.5 v-3.5 c0,-1.2 2.5,-1.2 2.5,0 v3.5 z"
         android:fillColor="#FF1B382F" />
 
-    <!-- 6. Marble Terrace Platform & Steps (صحن الصخرة والدرجات الرخامية) -->
-    <!-- Upper Terrace Slab -->
+    <!-- 9. Marble Terrace Platform & Steps (صحن الصخرة المشرفة) -->
     <path
         android:pathData="M25,74.5 h58 v2.5 h-58 z"
         android:fillColor="#FFFDFBF7" />
-    <!-- Bevel Highlight on Terrace -->
     <path
         android:pathData="M25,74.5 h58"
         android:strokeWidth="0.6"
         android:strokeColor="#FFFFFFFF" />
-    <!-- Lower Marble Step -->
     <path
         android:pathData="M28,77 h52 v2 h-52 z"
         android:fillColor="#FFE8E2D5" />
 
-    <!-- 7. Symmetrical Islamic Arabesque Base Flourish (الزخرفة النباتية الإسلامية المذهبة) -->
+    <!-- 10. Inlaid 8-Pointed Islamic Geometric Star Medallion (النجمة الثمانية الإسلامية - مستخلص من أرضية صحن الأقصى في صورة 1) -->
+    <!-- Gold Outer 8-Pointed Star -->
+    <!-- Square 1 -->
     <path
-        android:pathData="M44,82 C48,80.5 51,82 54,83.5 C57,82 60,80.5 64,82 C60.5,84 47.5,84 44,82 Z">
-        <aapt:attr name="android:fillColor">
-            <gradient
-                android:startX="44"
-                android:startY="80.5"
-                android:endX="64"
-                android:endY="83.5"
-                android:type="linear">
-                <item android:color="#FFD4AF37" android:offset="0.0" />
-                <item android:color="#FFF5D686" android:offset="0.5" />
-                <item android:color="#FFC7A35C" android:offset="1.0" />
-            </gradient>
-        </aapt:attr>
-    </path>
+        android:pathData="M50.5,80.5 h7 v7 h-7 z"
+        android:fillColor="#FFD4AF37" />
+    <!-- Square 2 (Rotated 45 degrees, diamond) -->
+    <path
+        android:pathData="M54,77 L59,84 L54,91 L49,84 Z"
+        android:fillColor="#FFD4AF37" />
 
-    <!-- Star Jewel at Bottom Accent -->
+    <!-- Inner Jade Star -->
     <path
-        android:pathData="M53.3,85 L54,84.2 L54.7,85 L54,85.8 Z"
-        android:fillColor="#FFF5D686" />
+        android:pathData="M51.5,81.5 h5 v5 h-5 z"
+        android:fillColor="#FF0E4738" />
+    <path
+        android:pathData="M54,79 L57.5,84 L54,89 L50.5,84 Z"
+        android:fillColor="#FF0E4738" />
+
+    <!-- Center Radiant Diamond Jewel -->
+    <path
+        android:pathData="M54,82.5 L55.5,84 L54,85.5 L52.5,84 Z"
+        android:fillColor="#FFFFF59D" />
+
+    <!-- Subtle Arabesque Base Flourish Wings -->
+    <path
+        android:pathData="M43,84 C46,83 48,84 49,85 C48,86 45,86 43,84 Z"
+        android:fillColor="#80C7A35C" />
+    <path
+        android:pathData="M65,84 C62,83 60,84 59,85 C60,86 63,86 65,84 Z"
+        android:fillColor="#80C7A35C" />
 
 </vector>
