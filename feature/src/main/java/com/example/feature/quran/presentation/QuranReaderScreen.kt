@@ -1,5 +1,6 @@
 package com.example.feature.quran.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -15,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.draw.alpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.MenuBook
@@ -122,6 +124,23 @@ fun QuranReaderScreen(
     var landedRequestKey by rememberSaveable { mutableStateOf("") }
     val initialLandingDone = landedRequestKey == requestIdentity &&
         (state.isTargetLocked || state.selectedSurah != null)
+
+    val targetPageIndex = remember(pages, targetSurahId, targetAyahNumber) {
+        if (pages.isNotEmpty()) pages.pageFor(targetSurahId, targetAyahNumber) else 0
+    }
+    val isWaitingForInitialLanding = pages.isNotEmpty() && !initialLandingDone && targetPageIndex != pager.currentPage
+
+    BackHandler(
+        enabled = showFontSettings || showReaderPicker || activeActionVerse != null || selectedVerseForTafsir != null || playerExpanded
+    ) {
+        when {
+            showFontSettings -> showFontSettings = false
+            showReaderPicker -> showReaderPicker = false
+            selectedVerseForTafsir != null -> selectedVerseForTafsir = null
+            activeActionVerse != null -> activeActionVerse = null
+            playerExpanded -> playerExpanded = false
+        }
+    }
 
     val selectedSurah = state.selectedSurah
     val currentPage = pages.getOrNull(pager.currentPage)
@@ -620,7 +639,8 @@ fun QuranReaderScreen(
                                         state = pager,
                                         modifier = Modifier
                                             .fillMaxSize()
-                                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                                            .alpha(if (isWaitingForInitialLanding) 0f else 1f),
                                         userScrollEnabled = state.fontSize <= 28.5f,
                                         key = { it },
                                         beyondViewportPageCount = 1
@@ -640,6 +660,13 @@ fun QuranReaderScreen(
                                             onZoomFontSize = onUpdateFontSize,
                                             onToggleChrome = toggleChrome,
                                             modifier = Modifier.fillMaxSize()
+                                        )
+                                    }
+
+                                    if (isWaitingForInitialLanding) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.align(Alignment.Center),
+                                            color = topBarIconTint
                                         )
                                     }
 

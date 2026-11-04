@@ -85,7 +85,9 @@ fun ProfileHeroHeader(
     hijriDate: String?,
     onSearchClick: () -> Unit,
     onNotificationClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showNavigationIcon: Boolean = false,
+    onBackClick: (() -> Unit)? = null
 ) {
     Column(
         modifier = modifier
@@ -96,7 +98,7 @@ fun ProfileHeroHeader(
             .padding(top = 4.dp, bottom = 28.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        // Top Row: Brand wordmark on Start, standardized 48dp action buttons on End
+        // Top Row: Brand wordmark or Back button on Start, standardized 48dp action buttons on End
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -104,11 +106,24 @@ fun ProfileHeroHeader(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            com.example.designsystem.component.IhsanTextWithKaabaIcon(
-                text = "إحسان",
-                color = IhsanTheme.colors.accentContent,
-                logoHeight = 30.dp
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if (showNavigationIcon && onBackClick != null) {
+                    com.example.designsystem.component.IhsanHeaderAction(
+                        icon = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "رجوع",
+                        onClick = onBackClick,
+                        tint = IhsanTheme.colors.textPrimary
+                    )
+                }
+                com.example.designsystem.component.IhsanTextWithKaabaIcon(
+                    text = "إحسان",
+                    color = IhsanTheme.colors.accentContent,
+                    logoHeight = 30.dp
+                )
+            }
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically

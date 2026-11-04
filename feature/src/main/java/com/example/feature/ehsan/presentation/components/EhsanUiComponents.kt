@@ -96,6 +96,7 @@ fun EhsanHeaderBanner(
     cityName: String?,
     islamicDate: String?,
     modifier: Modifier = Modifier,
+    onBack: (() -> Unit)? = null,
     onNotificationClick: (() -> Unit)? = null,
     onSearchClick: () -> Unit = {}
 ) {
@@ -106,6 +107,7 @@ fun EhsanHeaderBanner(
         hijriDate = islamicDate,
         showBrand = true,
         compact = true,
+        onBack = onBack,
         modifier = modifier,
         actions = {
             com.example.designsystem.component.IhsanHeaderAction(

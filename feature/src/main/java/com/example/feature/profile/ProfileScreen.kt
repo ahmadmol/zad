@@ -81,6 +81,7 @@ import org.koin.compose.koinInject
 @Composable
 fun ProfileScreen(
     onBackClick: () -> Unit = {},
+    showNavigationIcon: Boolean = false,
     onEditProfileClick: () -> Unit = {},
     onNavigateToDonationHistory: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
@@ -161,6 +162,8 @@ fun ProfileScreen(
                 ProfileHeroHeader(
                     location = uiState.city,
                     hijriDate = com.example.feature.core.util.currentHijriDateText(),
+                    showNavigationIcon = showNavigationIcon,
+                    onBackClick = onBackClick,
                     onSearchClick = onNavigateToSearch,
                     onNotificationClick = onNavigateToReminders
                 )

@@ -532,8 +532,11 @@ fun AppNavHost(
         }
 
         composable(route = Screen.Donations.route) {
+            val hasBackStack = navController.previousBackStackEntry != null &&
+                navController.previousBackStackEntry?.destination?.route != Screen.Home.route
             EhsanScreen(
                 onNavigateBack = { navController.popBackStack() },
+                showNavigationIcon = hasBackStack,
                 onAddEhsanClick = { type -> 
                     if (type == "REQUEST") {
                         navController.navigate(Screen.RequestHelp.route)
@@ -592,7 +595,10 @@ fun AppNavHost(
         }
 
         composable(route = Screen.Profile.route) {
+            val hasBackStack = navController.previousBackStackEntry != null &&
+                navController.previousBackStackEntry?.destination?.route != Screen.Home.route
             ProfileScreen(
+                showNavigationIcon = hasBackStack,
                 onNavigateToSupport = { navController.navigate(Screen.Support.route) },
                 onBackClick = { navController.popBackStack() },
                 onEditProfileClick = { navController.navigate(Screen.EditProfile.route) },

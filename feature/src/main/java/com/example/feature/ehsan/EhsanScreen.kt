@@ -140,6 +140,7 @@ fun EhsanScreen(
                     EhsanHeaderBanner(
                         cityName = uiState.locationName,
                         islamicDate = com.example.feature.core.util.currentHijriDateText(),
+                        onBack = onNavigateBack.takeIf { showNavigationIcon },
                         onSearchClick = { showAdvancedFilters = true }
                     )
                 }

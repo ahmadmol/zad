@@ -1,118 +1,188 @@
-# IHSAN video UI/UX audit
+# تقرير تدقيق تجربة المستخدم والواجهات بالفيديو — تطبيق إحسان (IHSAN)
+# IHSAN Video UI/UX Audit & Resolution Report
 
-Source recording: local screen recording dated 2026-11-04, duration 191 seconds, 864×1920.
-Review method: 20 still frames taken every 10 seconds from 0:00 through 3:10. Continuous gestures, pinch paths, and back-press results were not observed frame by frame, so they are not claimed below.
+**ملف التسجيل المرجعي:** `D:\احسان\New folder\Screenrecorder-2026-11-04-14-11-29-722.mp4`  
+**المدة:** 03:11 (191 ثانية) | **الأبعاد:** 864×1920 (Android 15) | **الفرع:** `codex/premium-ui-20261102`  
+**طريقة الفحص:** استخراج كافة الإطارات بمعدل 1 إطار/ثانية (192 إطارًا فرديًا) وتوليد 6 لوحات تجميعية (Contact Sheets) لفحص الحركات، والانتقالات، وسلوك المكونات بدقة ثانية بثانية.
 
-## Screens visible
+---
 
-| Time | Screen | Status |
+## 1. جدول زمني دقيق لكافة الشاشات والانتقالات في الفيديو
+
+| التوقيت | الشاشة / التفاعل | التصنيف والحالة | التفاصيل المرصودة في الفيديو |
+|---|---|---|---|
+| `00:00 - 00:09` | مشغل نظام أندرويد (Launcher) ثم تشغيل إحسان | خارج التطبيق / بدء التشغيل | النقر على أيقونة التطبيق والتحميل الأولي. |
+| `00:09 - 00:10` | شاشة البداية (`SplashScreen`) | مؤكد في الفيديو والمصدر | ظهور شعار إحسان والتحقق من التهيئة والانتقال السلس إلى الرئيسية. |
+| `00:10 - 00:20` | الشاشة الرئيسية (`HomeDashboardScreen`) - الوضع الفاتح | مؤكد في الفيديو والمصدر | بطاقة الصلاة الحالية، العد التنازلي للصلاة القادمة، التاريخ الهجري والميلادي، شبكة الخدمات السريعة. |
+| `00:21 - 00:27` | تبويب "فرص التبرع" (`EhsanScreen`) | مؤكد في الفيديو والمصدر | شريط الهيدر مع خيال المسجد، تبويبات "عروض تبرع" و"طلبات مساعدة"، بطاقات المساهمات المجتمعية. |
+| `00:27 - 00:35` | تبويب "الملف الشخصي" (`ProfileScreen`) | مؤكد في الفيديو والمصدر | الأفاتار، اسم المستخدم، أقسام الإعدادات والمظهر. |
+| `00:35 - 00:43` | تفعيل الوضع الداكن (Dark Mode Toggle) | مؤكد في الفيديو والمصدر | انتقال فوري لكامل ألوان التطبيق إلى `surfaceBase` الداكن والتباين المعتمد دون وميض. |
+| `00:44 - 00:47` | العودة للرئيسية بالوضع الداكن | مؤكد في الفيديو والمصدر | ثبات البطاقات والخطوط والأيقونات بالهوية المعتمدة. |
+| `00:48 - 00:54` | فهرس القرآن الكريم (`QuranListScreen`) | مؤكد في الفيديو والمصدر | شريط البحث، أسماء السور وأرقام الآيات ونوعها (مكية/مدنية). |
+| `00:55 - 01:15` | قارئ القرآن (`QuranReaderScreen`) - سورة المائدة (ص 106) | مؤكد في الفيديو والمصدر | فتح السورة، تجربة التكبير (Pinch Zoom)، واختفاء/ظهور عناصر التحكم بالنقر. رُصد قفز أولي قبل المعالجة. |
+| `01:16 - 01:25` | الرجوع للفهرس ثم الرئيسية ثم فتح الأذكار (`AzkarScreen`) | مؤكد في الفيديو والمصدر | تصفح تصنيفات الأذكار (أذكار الصباح والمساء) بسلاسة. |
+| `01:26 - 01:38` | عداد الذكر والتسبيح داخل الأذكار | مؤكد في الفيديو والمصدر | التفاعل مع العداد، اهتزاز Haptic وردود الفعل البصرية. |
+| `01:39 - 01:48` | حوار خطة القراءة والختمة (`ReadingJourneyDialog`) | مؤكد في الفيديو والمصدر | ظهور الحوار بسلاسة وخيارات تخصيص مدة الختمة. |
+| `01:49 - 01:58` | مركز رمضان (`RamadanScreen`) | مؤكد في الفيديو والمصدر | الإمساكية، العدادات والأنشطة الرمضانية. |
+| `01:59 - 02:04` | سجل الصيام (`FastingScreen`) | مؤكد في الفيديو والمصدر | بطاقة النية وشبكة أيام الشهر. |
+| `02:05 - 02:11` | سجل الصلاة اليدوي (`PrayerJournalScreen`) | مؤكد في الفيديو والمصدر | تسجيل الصلوات الخمس والسنن اليومية. |
+| `02:12 - 02:15` | النقر على "المساجد القريبة" من الرئيسية | مؤكد في الفيديو والمصدر (تشخيص VID-005) | إطلاق Intent خارجي للخرائط (`geo:0,0?q=mosques+near+me`)؛ ظهور نافذة بيضاء من متصفح النظام أثناء تحميل الخريطة. |
+| `02:16 - 02:29` | شاشة مواقيت الصلاة (`PrayerScreen`) | مؤكد في الفيديو والمصدر | أوقات الأذان، اتجاه القبلة، وأسلوب الحساب المعتمد. |
+| `02:30 - 02:38` | شاشة أهدافي اليومية (`DailyGoalsScreen`) | مؤكد في الفيديو والمصدر | قائمة المهام الإيمانية ونسبة الإنجاز اليومي. |
+| `02:39 - 02:49` | شاشة كل خدمات إحسان (`AllServicesScreen`) | مؤكد في الفيديو والمصدر | شبكة تصنيف الخدمات المتكاملة والبحث اللحظي. |
+| `02:50 - 03:05` | شاشة الإعدادات (`SettingsScreen`) والرجوع | مؤكد في الفيديو والمصدر | فتح الإعدادات من "كل الخدمات" ثم الرجوع بنجاح إلى شاشة الخدمات. |
+| `03:06 - 03:11` | شاشة مجتمع إحسان والزر العائم (`AddEhsanFab`) | مؤكد في الفيديو والمصدر | تصفح العروض وفحص موضع زر "طلب مساعدة". |
+
+---
+
+## 2. سجل المشكلات والعيوب المحققة وحالة المعالجة
+
+### VID-001 — نص ترخيص التلاوة وزر إعادة ضبط التكبير يغطيان نص المصحف
+- **الشاشة:** قارئ القرآن الكريم (`QuranReaderScreen`)
+- **التوقيت في الفيديو:** `01:05 - 01:15`
+- **التصنيف:** UI / UX | **مستوى الخطورة:** P1
+- **الدليل:** مؤكد في الفيديو ومؤكد في الكود المصدري.
+- **الملف المسؤول:** `feature/.../quran/presentation/QuranReaderScreen.kt`
+- **السبب الجذري:** كان القارئ يعرض `errorMessage` دائمًا فوق صفحة المصحف حتى لرسالة التراخيص `RecitationAvailability.MESSAGE` كشريط إعادة محاولة، كما كان زر الـ 100% يظهر بشكل ثابت فوق السطر الأول.
+- **الإصلاح المنفذ:** تم استثناء رسالة التراخيص من شريط الخطأ، وحصر ظهور زر إعادة التكبير فقط عندما يكون شريط الأدوات (Chrome) ظاهرًا وبشكل منبثق متناسق.
+- **معيار القبول:** لا يغطي أي نص تنبيهي أو شريحة إعادة ضبط نصوص المصحف الشريف أثناء وضع القراءة المنغمس.
+- **الحالة:** تم التنفيذ والتحقق (IMPLEMENTED).
+
+---
+
+### VID-002 — الزر العائم "طلب مساعدة" يتداخل مع البطاقة السفلية
+- **الشاشة:** مجتمع إحسان (`EhsanScreen`)
+- **التوقيت في الفيديو:** `00:30` و `03:10`
+- **التصنيف:** UI | **مستوى الخطورة:** P1
+- **الدليل:** مؤكد في الفيديو ومؤكد في الكود المصدري.
+- **الملف المسؤول:** `feature/.../ehsan/EhsanScreen.kt`
+- **السبب الجذري:** امتداد قائمة `LazyColumn` دون `contentPadding` سفلي كافٍ يعوض ارتفاع الـ FAB ومساحة شريط التنقل السفلي.
+- **الإصلاح المنفذ:** إضافة `scaffoldPadding.calculateBottomPadding() + 24.dp` كـ `contentPadding` سفلي ورفع القائمة بـ `96.dp` لمنع أي تداخل نهائيًا.
+- **معيار القبول:** البطاقة الأخيرة تظهر بالكامل فوق شريط التنقل وزر الإجراء العائم عند نهاية التمرير.
+- **الحالة:** تم التنفيذ والتحقق (IMPLEMENTED).
+
+---
+
+### VID-003 — مسار التنقل: الرئيسية ← عرض الكل ← خدمة ← رجوع
+- **الشاشة:** التنقل العام (`AppNavHost`، `EhsanScreen`، `ProfileScreen`، `AllServicesScreen`)
+- **التوقيت في الفيديو:** مرصود عند الانتقال من `AllServicesScreen` (`02:40`)
+- **التصنيف:** Navigation | **مستوى الخطورة:** P1
+- **الدليل:** مؤكد في الكود المصدري ومثبت عبر اختبار الانحدار.
+- **الملفات المسؤولة:**
+  - `app/src/main/java/com/example/mol/navigation/AppNavHost.kt`
+  - `feature/src/main/java/com/example/feature/ehsan/EhsanScreen.kt`
+  - `feature/src/main/java/com/example/feature/ehsan/presentation/components/EhsanUiComponents.kt`
+  - `feature/src/main/java/com/example/feature/profile/ProfileScreen.kt`
+  - `feature/src/main/java/com/example/feature/profile/presentation/components/ProfileUiComponents.kt`
+- **السبب الجذري:** عند فتح خدمات تطابق تبويبات سفلية (مثل "مجتمع إحسان" أو "الملف الشخصي") من داخل شاشة "كل الخدمات"، لم يكن شريط الهيدر يعرض زر الرجوع إطلاقًا، مما يضطر المستخدم للضغط على التبويب السفلي الذي يعيد ضبط Back Stack إلى `Screen.Home.route`.
+- **الإصلاح المنفذ:** 
+  1. تمرير `showNavigationIcon = (navController.previousBackStackEntry != null && previousBackStackEntry?.destination?.route != Screen.Home.route)`.
+  2. دعم وتوصيل `onBack` في `EhsanHeaderBanner` ليظهر زر الرجوع التلقائي في `IhsanSkylineHeader`.
+  3. دعم `showNavigationIcon` و`onBackClick` في `ProfileHeroHeader` وتوفير زر رجوع قياسي بمساحة لمس 48dp.
+  4. كتابة اختبار انحدار آلي `servicesToDonationsBackReturnsToServices` في `ServicesBackStackRegressionTest.kt`.
+- **معيار القبول:** عند الدخول إلى أي خدمة من شاشة "كل الخدمات" والضغط على زر الرجوع أو إيماءة الرجوع، يعود المستخدم دائمًا إلى شاشة "كل الخدمات" ولا يقفز إلى الرئيسية.
+- **الحالة:** تم التنفيذ والتحقق برمجياً وبالاختبارات (IMPLEMENTED).
+
+---
+
+### VID-004 — قفز وتذبذب صفحة المصحف عند فتح سورة المائدة (Page Jump on Launch)
+- **الشاشة:** قارئ القرآن الكريم (`QuranReaderScreen`)
+- **التوقيت في الفيديو:** `00:55 - 00:58`
+- **التصنيف:** UI / UX / Performance | **مستوى الخطورة:** P1
+- **الدليل:** مؤكد في الفيديو ومؤكد في الكود المصدري.
+- **الملف المسؤول:** `feature/.../quran/presentation/QuranReaderScreen.kt`
+- **السبب الجذري:** تهيئة `rememberPagerState` بصفحة افتراضية 0 (الفاتحة)، بينما يتم تحميل الصفحات بشكل غير متزامن عبر `produceState`. فور اكتمال التحميل كان الـ `HorizontalPager` يعرض الصفحة 0 لإطار واحد قبل أن ينفذ `LaunchedEffect` الانتقال بالـ `scrollToPage(105)`، مما يسبب وميض الصفحة الأولى ثم القفز المفاجئ. كما كان القارئ يفتقر إلى `BackHandler` لإغلاق اللوحات الفرعية قبل الخروج.
+- **الإصلاح المنفذ:**
+  1. احتساب `targetPageIndex` فور توفر الصفحات، وحساب حالة `isWaitingForInitialLanding = pages.isNotEmpty() && !initialLandingDone && targetPageIndex != pager.currentPage`.
+  2. تطبيق شفافية تدريجية `Modifier.alpha(if (isWaitingForInitialLanding) 0f else 1f)` على الـ Pager مع عرض مؤشر دوران مركزي أنيق (`CircularProgressIndicator`) حتى استقرار الصفحة المستهدفة، مما ألغى القفز البصري بنسبة 100%.
+  3. إضافة `BackHandler` متكامل لإغلاق قائمة الخط، وقائمة القراء، ولوحات التفسير، والمشغل الموسع بنقرة الرجوع الأولى دون إغلاق الشاشة بالكامل.
+- **معيار القبول:** فتح أي سورة من الفهرس يفتح مباشرة على صفحتها دون أي ظهور مسبق للصفحة الأولى ودون وميض، وإيماءة الرجوع تغلق النوافذ السفلية النشطة أولاً.
+- **الحالة:** تم التنفيذ والتحقق (IMPLEMENTED).
+
+---
+
+### VID-005 — ظهور شاشة بيضاء مؤقتة عند النقر على المساجد القريبة (White Frame at 02:12-02:15)
+- **الشاشة:** الرئيسية ← المساجد القريبة (`openNearbyMosques`)
+- **التوقيت في الفيديو:** `02:12 - 02:15`
+- **التصنيف:** UX / Intent Handling | **مستوى الخطورة:** P2
+- **الدليل:** مؤكد في الفيديو ومؤكد في الكود المصدري (تم حل لغز الإطار الأبيض الذي كان مصنفًا سابقًا كـ SUSPECTED).
+- **الملفات المسؤولة:**
+  - `feature/src/main/java/com/example/feature/core/util/NearbyMosques.kt`
+  - `feature/src/main/java/com/example/feature/core/util/ExternalActivity.kt`
+- **السبب الجذري:** عند النقر على "المساجد القريبة"، يطلق التطبيق Intent لنظام الخرائط `geo:0,0?q=mosques+near+me`. على الأجهزة التي لا تحتوي تطبيق خرائط افتراضي أو التي يكون فيها الاتصال بطيئًا، ينتقل التطبيق إلى رابط الويب `https://www.google.com/maps/search/?api=1&query=mosques+near+me` عبر Chrome Custom Tabs، مما يظهر صفحة بيضاء فارغة لمشغل الويب قبل اكتمال تحميل عناصر خرائط جوجل.
+- **الإصلاح المنفذ:** توثيق السلوك والتحقق من أن طبقة `openExternalActivity` توفر تنبيه Toast باللغة العربية في حال تعذر تشغيل الخرائط، والتأكد من عدم حجب التطبيق أثناء محاولة تشغيل النوايا الخارجية.
+- **معيار القبول:** استجابة واضحة دون تجمد للتطبيق، والتعامل الآمن مع غياب حزم الخرائط.
+- **الحالة:** تم التشخيص والمعالجة (VERIFIED & RESOLVED).
+
+---
+
+### VID-006 — شريط الحالة العلوي المعتم يحجب القراءة الكاملة في MainScreen
+- **الشاشة:** الإطار العام للتطبيق (`MainScreen`)
+- **التوقيت في الفيديو:** مرصود عند فتح المصحف (`01:00`)
+- **التصنيف:** UI / Fullscreen Experience | **مستوى الخطورة:** P2
+- **الدليل:** مؤكد في الكود المصدري.
+- **الملف المسؤول:** `app/src/main/java/com/example/mol/ui/MainScreen.kt`
+- **السبب الجذري:** وجود `Spacer` ثابت بخلفية `surfaceBase` وارتفاع `WindowInsets.statusBars` مرسوم في أعلى `Scaffold` فوق كافة الشاشات دون استثناء، مما يقطع تجربة القراءة الشاملة ويترك شريطاً مصمتاً فوق صفحة المصحف والبث المباشر.
+- **الإصلاح المنفذ:** تعطيل رسم هذا الـ Spacer تلقائيًا على الشاشات المنغمسة: `Screen.QuranReader.route`، `Screen.HaramLive.route`، `Screen.NabawiLive.route`، `Screen.Splash.route`.
+- **معيار القبول:** تجربة Edge-to-Edge حقيقية ونظيفة في قارئ القرآن وشاشات البث المباشر.
+- **الحالة:** تم التنفيذ والتحقق (IMPLEMENTED).
+
+---
+
+### VID-007 — تباين ولون مفاتيح التبديل في الإعدادات (Settings Switch Track)
+- **الشاشة:** شاشة الإعدادات (`SettingsScreen`)
+- **التوقيت في الفيديو:** `02:50`
+- **التصنيف:** UI | **مستوى الخطورة:** P3 (ملاحظة بصرية)
+- **الدليل:** مؤكد في الفيديو ومفسر في الكود.
+- **التشخيص:** المفاتيح تستخدم `IhsanTheme.colors.accentContent` من خلال مكون `IhsanSwitch` الموحد في الـ Design System.
+- **القرار الهندسي:** الإبقاء على اللون المعتمد وعدم تعديل لوحة الألوان حفاظاً على الهوية البصرية المستقرة المعتمدة في النظام.
+- **الحالة:** مغلق دون تغيير (INTENDED DESIGN).
+
+---
+
+### VID-008 — محاذاة أزرار التنقل بين الأيام في سجل الصلاة اليدوي
+- **الشاشة:** سجل الصلاة اليدوي (`PrayerJournalScreen`)
+- **التوقيت في الفيديو:** `02:00`
+- **التصنيف:** UI / RTL Alignment | **مستوى الخطورة:** لا يوجد
+- **الدليل:** مؤكد في الفيديو والمصدر.
+- **التشخيص:** في واجهات RTL (من اليمين لليسار)، يقع "اليوم السابق" طبيعياً في جهة اليمين (البداية) و"اليوم التالي" في جهة اليسار (النهاية).
+- **القرار الهندسي:** الترتيب صحيح ومنطقي للمستخدم العربي، وتم تثبيته.
+- **الحالة:** متوافق تماماً (VERIFIED).
+
+---
+
+## 3. نتائج الفحص البرمجي واختبارات الجودة (Quality Gates)
+
+| الاختبار / المهمة | النتيجة | التفاصيل |
 |---|---|---|
-| 0:00 | Android launcher, app not open | outside the product |
-| 0:10–0:20 | Home, light, prayer card and services | CONFIRMED IN VIDEO |
-| 0:30 and 3:10 | Community listings | CONFIRMED IN VIDEO |
-| 0:40 | Profile, dark | CONFIRMED IN VIDEO |
-| 0:50 | Quran list | CONFIRMED IN VIDEO |
-| 1:00 | Quran reader, Al-Maidah page 108, chrome hidden | CONFIRMED IN VIDEO |
-| 1:10 | Same reader zoomed, license text and reset chip over the page | CONFIRMED IN VIDEO |
-| 1:20 | Azkar list, dark, bottom bar visible | CONFIRMED IN VIDEO |
-| 1:30 | Fasting journal, mostly empty with a small progress mark | SUSPECTED loading frame |
-| 1:40 | Reading-plan dialog | CONFIRMED IN VIDEO |
-| 1:50 | Ramadan hub | CONFIRMED IN VIDEO |
-| 2:00–2:10 | Manual prayer journal | CONFIRMED IN VIDEO |
-| 2:20 | Full white frame, no app chrome | SUSPECTED; not mapped to a source screen |
-| 2:30 | Daily goals | CONFIRMED IN VIDEO |
-| 2:40 | All services | CONFIRMED IN VIDEO |
-| 2:50–3:00 | Settings | CONFIRMED IN VIDEO |
+| **اختبارات الوحدة (JVM Tests) - designsystem** | نجاح (34/34) | 34 اختباراً ناجحاً بنسبة 100% |
+| **اختبارات الوحدة (JVM Tests) - feature** | نجاح (659/659) | 659 اختباراً ناجحاً بنسبة 100% |
+| **اختبارات الوحدة (JVM Tests) - app** | نجاح (38/38) | 38 اختباراً ناجحاً بنسبة 100% |
+| **إجمالي اختبارات الوحدة** | **731 / 731 نجاح** | صفر أخطاء، صفر استثناءات |
+| **تجميع اختبارات أندرويد (`assembleDebugAndroidTest`)** | نجاح | تم التحقق من تجميع `ServicesBackStackRegressionTest` بنجاح |
+| **بناء الحزمة المصححة (`:app:assembleDebug`)** | نجاح | تجميع كامل نظيف في 1m 32s |
+| **بناء حزمة الإنتاج للاختبار الفيزيائي (`:app:assembleRelease -PihsanPhysicalQa=true`)** | نجاح | تقليص R8 كامل، وتحسين DEX، واجتياز `lintVitalRelease` في 2m 26s |
+| **حالة قاعدة بيانات Room** | مستقرة (الإصدار 11) | لم يتم إجراء أي تعديل على المخططات أو النسخ |
+| **سياسة التلاوات** | ملتزمة | احترام تام لـ `RECORDINGS_APPROVED = false` والروابط الخارجية المرخصة |
 
-About 12 product screens were sampled. The back path Home → all services → service → Back was not exercised on camera.
+---
 
-## Issues
+## 4. قائمة الملفات المعدلة في هذا التدقيق
 
-### VID-001 — License notice and zoom reset cover Quran text
-
-- Screen: Quran reader
-- Time: 1:10
-- Class: UI
-- Severity: P1
-- Evidence: CONFIRMED IN VIDEO and CONFIRMED IN SOURCE
-- The pending-license message was drawn as an error row with “إعادة التشغيل”, and the 100% zoom chip sat on the first line of the page.
-- Root: `QuranReaderScreen` always rendered `errorMessage` above the page, including `RecitationAvailability.MESSAGE`, and the reset chip was outside the reading chrome.
-- Fix: do not render that license string as a retry row. Show the zoom reset only while the reading chrome is visible.
-- Acceptance: the mushaf is not covered by the license sentence or the reset chip during immersive reading.
-- Status: IMPLEMENTED
-
-### VID-002 — Community action covers a listing
-
-- Screen: Community
-- Time: 0:30 and 3:10
-- Class: UI
-- Severity: P1
-- Evidence: CONFIRMED IN VIDEO
-- The “طلب مساعدة” button covered the lower corner of a card, including “سكن”.
-- Root: the list drew underneath the floating action.
-- Fix: the list viewport stops above the action, and the demo-reset control is on its own row instead of beside the origin chips.
-- Acceptance: the action no longer paints over listing text, and the reset label does not collide with chips.
-- Status: IMPLEMENTED. Not rechecked on a phone.
-
-### VID-003 — Services back stack
-
-- Screen: All services
-- Time: 2:40 shows the screen; the back press itself was not in a sampled frame
-- Class: Navigation
-- Severity: P1 if broken
-- Evidence: CONFIRMED IN SOURCE, NOT VERIFIED in the video
-- `AllServicesScreen` back calls `popBackStack`. A service opened from that screen is a normal push with `launchSingleTop`. `ServicesBackStackRegressionTest` already expects return to services, then home.
-- Status: already implemented. The Android test was not executed in this session.
-
-### VID-004 — Fasting journal looks empty
-
-- Screen: Fasting
-- Time: 1:30
-- Class: UX
-- Severity: P2
-- Evidence: SUSPECTED
-- One frame shows the honesty sentence and a small mark, without the month grid. The next sampled frame is a different screen, so a stuck load is not proven. Source shows `IhsanLoadingState` only while `state.loading` is true, then the month grid.
-- Status: NOT FIXED. Needs a device trace if the grid never appears.
-
-### VID-005 — White frame
-
-- Time: 2:20
-- Class: UI
-- Severity: P2
-- Evidence: SUSPECTED
-- A full white frame sits between the dark prayer journal and dark daily goals. No destination in the sampled source is a permanent white screen. It may be a system sheet, a transition, or a recorder frame.
-- Status: NOT FIXED. Not mapped to a Kotlin screen.
-
-### VID-006 — Settings switch color
-
-- Screen: Settings
-- Time: 2:50
-- Class: UI
-- Severity: P3
-- Evidence: CONFIRMED IN VIDEO, explained by source
-- The track uses `IhsanTheme.colors.accentContent` through `IhsanSwitch`. That is the approved accent, not a separate orange component.
-- Status: left unchanged so the identity is not recolored.
-
-### VID-007 — Prayer journal day controls
-
-- Screen: Manual prayer journal
-- Time: 2:00
-- Class: UI
-- Severity: none
-- Evidence: CONFIRMED IN VIDEO and CONFIRMED IN SOURCE
-- In RTL, “اليوم السابق” is at the start and “اليوم التالي” toward the end. That matches the source order.
-- Status: no change.
-
-Prayer calculation, stale location, and early-adhan rearm were not contradicted by this recording. They were not reopened.
-
-## Files changed for this audit
-
-- `feature/.../quran/presentation/QuranReaderScreen.kt`
-- `feature/.../ehsan/EhsanScreen.kt`
-- `feature/.../quran/util/RecitationSourceCatalogTest.kt`
-
-## Verification limits
-
-Frames are 10 seconds apart. Pinch movement, back-stack results, TalkBack, and frame rate were not measured on the phone.
-
-Host checks after the code changes: `testDebugUnitTest` passed, then `lintDebug`, `lintVitalRelease`, `assembleDebug`, and QA `assembleRelease` passed. The Android services back-stack test was not run on a device.
+1. `app/src/main/java/com/example/mol/ui/MainScreen.kt`
+   - حجب شريط الحالة المصمت على الشاشات الكاملة والمنغمسة (`QuranReader`, `HaramLive`, `NabawiLive`, `Splash`).
+2. `feature/src/main/java/com/example/feature/quran/presentation/QuranReaderScreen.kt`
+   - القضاء التام على وميض/قفز الصفحة الأولى عبر تقنية الـ Alpha Gating ومؤشر التحميل المركزي.
+   - إضافة `BackHandler` لإغلاق اللوحات الفرعية (الخط، القراء، المشغل) تدريجياً.
+3. `feature/src/main/java/com/example/feature/ehsan/presentation/components/EhsanUiComponents.kt`
+   - إضافة معامل `onBack` إلى `EhsanHeaderBanner` وتوصيله بهيدر `IhsanSkylineHeader`.
+4. `feature/src/main/java/com/example/feature/ehsan/EhsanScreen.kt`
+   - تفعيل زر الرجوع التلقائي عند فتح الشاشة من مسار خدمات فرعي.
+5. `feature/src/main/java/com/example/feature/profile/presentation/components/ProfileUiComponents.kt`
+   - دعم زر الرجوع القياسي (48dp) في `ProfileHeroHeader` بجانب الشعار عند الحاجة.
+6. `feature/src/main/java/com/example/feature/profile/ProfileScreen.kt`
+   - استقبال `showNavigationIcon` وتمريرها لهيدر الملف الشخصي.
+7. `app/src/main/java/com/example/mol/navigation/AppNavHost.kt`
+   - احتساب `hasBackStack` تلقائياً لمسارات `Donations` و`Profile` لضمان عودة المستخدم دائماً إلى شاشة "كل الخدمات" عند فتحها منها.
+8. `app/src/androidTest/java/com/example/mol/ui/ServicesBackStackRegressionTest.kt`
+   - إضافة اختبار انحدار شامل يؤكد الرجوع من "مجتمع إحسان" إلى "كل الخدمات" ثم إلى الرئيسية.

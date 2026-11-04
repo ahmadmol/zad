@@ -58,4 +58,40 @@ class ServicesBackStackRegressionTest {
         compose.onNodeWithTag("service_search").assertTextContains("التسبيح")
         compose.onNodeWithTag("service_tasbih").assertExists()
     }
+
+    @Test fun servicesToDonationsBackReturnsToServices() {
+        lateinit var controller: NavHostController
+        compose.setContent { IhsanTheme {
+            controller = rememberNavController()
+            NavHost(controller, startDestination = Screen.Home.route) {
+                composable(Screen.Home.route) {
+                    Button({ controller.navigate(Screen.Services.route) }) { Text("عرض الكل") }
+                }
+                composable(Screen.Services.route) {
+                    AllServicesScreen(onBack = { controller.popBackStack() }, onServiceClick = { key ->
+                        serviceDestinationRoute(key)?.let { controller.navigate(it) { launchSingleTop = true } }
+                    })
+                }
+                composable(Screen.Donations.route) {
+                    val hasBackStack = controller.previousBackStackEntry != null &&
+                        controller.previousBackStackEntry?.destination?.route != Screen.Home.route
+                    IhsanTopBar(
+                        title = "مجتمع إحسان",
+                        onNavigateBack = if (hasBackStack) { { controller.popBackStack() } } else null,
+                        navigationIconContentDescription = "رجوع"
+                    )
+                }
+            }
+        } }
+        compose.onNodeWithText("عرض الكل").performClick()
+        compose.onNodeWithTag("service_search").performTextInput("مجتمع")
+        compose.onNodeWithTag("service_donations").performClick()
+        compose.runOnIdle { assertEquals(Screen.Donations.route, controller.currentDestination?.route) }
+        compose.onNodeWithContentDescription("رجوع").performClick()
+        compose.runOnIdle {
+            assertEquals(Screen.Services.route, controller.currentDestination?.route)
+            controller.popBackStack()
+            assertEquals(Screen.Home.route, controller.currentDestination?.route)
+        }
+    }
 }

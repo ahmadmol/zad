@@ -119,12 +119,20 @@ fun MainScreen(widgetRequest: com.example.mol.widget.WidgetOpenRequest? = null, 
             containerColor = MaterialTheme.colorScheme.background
         ) { innerPadding ->
             Box {
-            AppNavHost(
-                navController = navController,
-                onStartupResolved = onStartupResolved,
-                modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
-            )
-            Spacer(Modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(IhsanTheme.colors.surfaceBase))
+                AppNavHost(
+                    navController = navController,
+                    onStartupResolved = onStartupResolved,
+                    modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
+                )
+                val isImmersiveScreen = currentRoute in listOf(
+                    Screen.QuranReader.route,
+                    Screen.HaramLive.route,
+                    Screen.NabawiLive.route,
+                    Screen.Splash.route
+                )
+                if (!isImmersiveScreen) {
+                    Spacer(Modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(IhsanTheme.colors.surfaceBase))
+                }
             }
         }
     }
