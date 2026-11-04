@@ -1,31 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+
+    <!-- 1. Spiritual Arch / Mihrab Frame Framing the Scene -->
     <path
-        android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
+        android:pathData="M31,76 L31,48 C31,37 41,27 54,23 C67,27 77,37 77,48 L77,76"
+        android:strokeWidth="1.2"
+        android:strokeLineCap="round"
+        android:strokeColor="#C7A35C"
+        android:fillColor="#00000000" />
+
+    <path
+        android:pathData="M34,76 L34,49 C34,40 43,30 54,26.5 C65,30 74,40 74,49 L74,76"
+        android:strokeWidth="0.6"
+        android:strokeLineCap="round"
+        android:strokeColor="#66C7A35C"
+        android:fillColor="#00000000" />
+
+    <!-- 2. Golden Crescent Moon Facing Upwards -->
+    <path
+        android:pathData="M48,31.5 C48,36.5 60,36.5 60,31.5 C57.5,34.2 50.5,34.2 48,31.5 Z">
         <aapt:attr name="android:fillColor">
             <gradient
-                android:startY="49.59793"
-                android:startX="42.9492"
-                android:endY="92.4963"
-                android:endX="85.84757"
+                android:startX="48"
+                android:startY="31"
+                android:endX="60"
+                android:endY="36"
                 android:type="linear">
-                <item
-                    android:color="#44000000"
-                    android:offset="0.0" />
-                <item
-                    android:color="#00000000"
-                    android:offset="1.0" />
+                <item android:color="#FFF5D686" android:offset="0.0" />
+                <item android:color="#FFD4AF37" android:offset="1.0" />
             </gradient>
         </aapt:attr>
     </path>
+
+    <!-- 3. Eight-Pointed Islamic Star inside / above Crescent -->
+    <!-- Star square 1 -->
     <path
-        android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
-        android:fillColor="#FFFFFF"
-        android:fillType="nonZero"
-        android:strokeWidth="1"
-        android:strokeColor="#00000000"/>
+        android:pathData="M52.5,24 h3 v3 h-3 z"
+        android:fillColor="#FFFDE08B" />
+    <!-- Star square 2 rotated 45 deg -->
+    <group
+        android:pivotX="54"
+        android:pivotY="25.5"
+        android:rotation="45">
+        <path
+            android:pathData="M52.5,24 h3 v3 h-3 z"
+            android:fillColor="#FFF5D686" />
+    </group>
+    <!-- Central star jewel -->
+    <path
+        android:pathData="M53.5,25 h1 v1 h-1 z"
+        android:fillColor="#FFFFFFFF" />
+
+    <!-- 4. Subtle Radial Spiritual Radiance behind Kaaba -->
+    <path
+        android:pathData="M36,44 L54,35 L72,44 L54,80 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="54"
+                android:centerY="52"
+                android:gradientRadius="26"
+                android:type="radial">
+                <item android:color="#26FFFFFF" android:offset="0.0" />
+                <item android:color="#00FFFFFF" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- 5. Holy Kaaba (الكعبة المشرفة) - Isometric 3D -->
+    <!-- Kaaba Roof (Top Diamond) -->
+    <path
+        android:pathData="M54,43 L68,49.5 L54,56 L40,49.5 Z"
+        android:fillColor="#FF2E3034"
+        android:strokeColor="#FF383B40"
+        android:strokeWidth="0.4" />
+
+    <!-- Kaaba Left Facade (Southwest face - Dark Obsidian) -->
+    <path
+        android:pathData="M40,49.5 L54,56 L54,76.5 L40,70 Z"
+        android:fillColor="#FF18191C" />
+
+    <!-- Kaaba Right Facade (Southeast face - Illuminated Obsidian with Door) -->
+    <path
+        android:pathData="M54,56 L68,49.5 L68,70 L54,76.5 Z"
+        android:fillColor="#FF232529" />
+
+    <!-- Golden Kiswah Belt: Left Facade -->
+    <path
+        android:pathData="M40,53.5 L54,60 L54,63.5 L40,57 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="40"
+                android:startY="53.5"
+                android:endX="54"
+                android:endY="63.5"
+                android:type="linear">
+                <item android:color="#FFE6C368" android:offset="0.0" />
+                <item android:color="#FFC59E4E" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Golden Kiswah Belt: Right Facade -->
+    <path
+        android:pathData="M54,60 L68,53.5 L68,57 L54,63.5 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="54"
+                android:startY="60"
+                android:endX="68"
+                android:endY="53.5"
+                android:type="linear">
+                <item android:color="#FFFFE288" android:offset="0.0" />
+                <item android:color="#FFDCA842" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Sub-belt Calligraphic Gold Threads (Embroidery Lines) -->
+    <path
+        android:pathData="M40,60 L54,66.5"
+        android:strokeWidth="0.5"
+        android:strokeColor="#66C7A35C" />
+    <path
+        android:pathData="M54,66.5 L68,60"
+        android:strokeWidth="0.5"
+        android:strokeColor="#80FFE288" />
+
+    <!-- Bab Al-Kaaba (The Golden Door of the Kaaba - باب الكعبة المشرفة) -->
+    <path
+        android:pathData="M57.5,62.2 L63.2,59.5 L63.2,71 L57.5,73.7 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="57.5"
+                android:startY="62"
+                android:endX="63.2"
+                android:endY="71"
+                android:type="linear">
+                <item android:color="#FFFFEE9C" android:offset="0.0" />
+                <item android:color="#FFF5C84C" android:offset="0.45" />
+                <item android:color="#FFB8860B" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Door Inner Panels & Lock Plate Details -->
+    <path
+        android:pathData="M60.35,60.8 L60.35,72.4"
+        android:strokeWidth="0.4"
+        android:strokeColor="#FF8B6508" />
+    <path
+        android:pathData="M58.3,64 L62.4,62"
+        android:strokeWidth="0.3"
+        android:strokeColor="#FF8B6508" />
+    <path
+        android:pathData="M58.3,67.8 L62.4,65.8"
+        android:strokeWidth="0.3"
+        android:strokeColor="#FF8B6508" />
+    <!-- Door Lock / Key Emblem -->
+    <path
+        android:pathData="M59.8,68.2 h1.1 v1.2 h-1.1 z"
+        android:fillColor="#FFFFFFFF" />
+
+    <!-- Mizab Al-Rahmah (Golden Spout on roof) -->
+    <path
+        android:pathData="M45.5,47 L44,46.3"
+        android:strokeWidth="0.8"
+        android:strokeLineCap="round"
+        android:strokeColor="#FFFCE588" />
+
+    <!-- Marble Shadhrawan Foundation (قاعدة الشاذروان الرخامية) -->
+    <!-- Left base -->
+    <path
+        android:pathData="M39,70 L54,77 L54,78.8 L39,71.8 Z"
+        android:fillColor="#FFD4CFC4" />
+    <!-- Right base -->
+    <path
+        android:pathData="M54,77 L69,70 L69,71.8 L54,78.8 Z"
+        android:fillColor="#FFE8E3D8" />
+    <!-- Bevel highlight -->
+    <path
+        android:pathData="M39,70 L54,77 L69,70"
+        android:strokeWidth="0.6"
+        android:strokeColor="#FFFFFFFF" />
+
+    <!-- 6. Elegant Islamic Ornament / Base Flourish under the Kaaba -->
+    <path
+        android:pathData="M44,81.5 C48,80 51,81.5 54,83 C57,81.5 60,80 64,81.5 C60.5,83.5 47.5,83.5 44,81.5 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="44"
+                android:startY="80"
+                android:endX="64"
+                android:endY="83"
+                android:type="linear">
+                <item android:color="#FFD4AF37" android:offset="0.0" />
+                <item android:color="#FFF5D686" android:offset="0.5" />
+                <item android:color="#FFC7A35C" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Small Diamond Dot below flourish -->
+    <path
+        android:pathData="M53.2,84.5 L54,83.7 L54.8,84.5 L54,85.3 Z"
+        android:fillColor="#FFF5D686" />
+
 </vector>
