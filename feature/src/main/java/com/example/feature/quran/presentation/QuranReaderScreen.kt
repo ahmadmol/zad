@@ -535,7 +535,9 @@ fun QuranReaderScreen(
             ) {
                 QuranDownloadStatusPanel(state = state, onRetry = onDownloadSurah)
 
-                if (state.errorMessage != null && state.ayahs.isNotEmpty()) {
+                if (state.errorMessage != null && state.ayahs.isNotEmpty() &&
+                    state.errorMessage != com.example.feature.quran.util.RecitationAvailability.MESSAGE
+                ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -642,7 +644,7 @@ fun QuranReaderScreen(
                                     }
 
                                     // Floating Quick Reset Zoom Pill when zoomed in or out from 100%
-                                    if (kotlin.math.abs(state.fontSize - 28f) > 1f) {
+                                    if (chromeVisible && kotlin.math.abs(state.fontSize - 28f) > 1f) {
                                         Surface(
                                             onClick = { onUpdateFontSize(28f) },
                                             shape = RoundedCornerShape(20.dp),

@@ -112,13 +112,11 @@ class PrayerLocationRepositoryImpl(
         }
 
         return try {
-            @SuppressLint("MissingPermission")
-            val cached = fusedLocationClient.lastLocation.await()
             val now = System.currentTimeMillis()
+            val cached = permittedLastLocation()
             val cachedFresh = cached != null &&
                 com.example.feature.prayer.domain.location.DeviceLocationFreshness.isFresh(cached.time, now)
-            val fresh = if (cachedFresh) null
-            else fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null).await()
+            val fresh = if (cachedFresh) null else permittedCurrentLocation()
             val choice = com.example.feature.prayer.domain.location.DeviceLocationFreshness.choose(
                 hasCachedFix = cached != null,
                 cachedFresh = cachedFresh,
@@ -168,6 +166,13 @@ class PrayerLocationRepositoryImpl(
         settingsManager.setUseAutoLocation(false)
         settingsManager.setManualLocation(displayName, latitude, longitude)
     }
+
+    @SuppressLint("MissingPermission")
+    private suspend fun permittedLastLocation() = fusedLocationClient.lastLocation.await()
+
+    @SuppressLint("MissingPermission")
+    private suspend fun permittedCurrentLocation() =
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null).await()
 
     private fun hasLocationPermission(): Boolean {
         val fine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.layout.layout
 import androidx.compose.material3.FabPosition
@@ -128,9 +129,9 @@ fun EhsanScreen(
                 })
 
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().padding(bottom = 96.dp),
                 contentPadding = PaddingValues(
-                    bottom = scaffoldPadding.calculateBottomPadding() + 80.dp
+                    bottom = scaffoldPadding.calculateBottomPadding() + 24.dp
                 ),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
@@ -194,30 +195,24 @@ fun EhsanScreen(
                                 )
                             }
                         }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                        androidx.compose.foundation.layout.FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            androidx.compose.foundation.layout.FlowRow(
-                                modifier = Modifier.weight(1f),
-                                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                listOf("ALL" to "كل المصادر", "USER" to "محلي", "LEGACY" to "قديم بلا ملكية", "DEMO" to "أمثلة DEMO").forEach { (value, label) ->
-                                    androidx.compose.material3.FilterChip(
-                                        selected = uiState.selectedOrigin == value,
-                                        onClick = { viewModel.onOriginChange(value) },
-                                        label = { Text(label, style = MaterialTheme.typography.labelMedium) }
-                                    )
-                                }
+                            listOf("ALL" to "كل المصادر", "USER" to "محلي", "LEGACY" to "قديم بلا ملكية", "DEMO" to "أمثلة DEMO").forEach { (value, label) ->
+                                androidx.compose.material3.FilterChip(
+                                    selected = uiState.selectedOrigin == value,
+                                    onClick = { viewModel.onOriginChange(value) },
+                                    label = { Text(label, style = MaterialTheme.typography.labelMedium) }
+                                )
                             }
-                            androidx.compose.material3.TextButton(
-                                colors = com.example.designsystem.theme.ihsanTextButtonColors(),
-                                onClick = { showDemoReset = true }
-                            ) {
-                                Text("إعادة أمثلة DEMO فقط", style = MaterialTheme.typography.labelMedium)
-                            }
+                        }
+                        androidx.compose.material3.TextButton(
+                            colors = com.example.designsystem.theme.ihsanTextButtonColors(),
+                            onClick = { showDemoReset = true },
+                            modifier = Modifier.heightIn(min = 48.dp)
+                        ) {
+                            Text("إعادة أمثلة DEMO فقط", style = MaterialTheme.typography.labelMedium)
                         }
                         LocalBoardNoticeCard()
                     }
