@@ -26,6 +26,13 @@ class PrayerAlarmDeliveryPolicyTest {
     @Test fun `missing trigger time is never delivered`() {
         assertFalse(PrayerAlarmDeliveryPolicy.shouldDeliver(0L, 1_700_000_000_000L))
     }
+
+    @Test fun `delivery ends exactly at fifteen minutes and a broadcast before the trigger is dropped`() {
+        val trigger = 1_700_000_000_000L
+        assertTrue(PrayerAlarmDeliveryPolicy.shouldDeliver(trigger, trigger + PrayerAlarmDeliveryPolicy.LATE_GRACE_MILLIS))
+        assertFalse(PrayerAlarmDeliveryPolicy.shouldDeliver(trigger, trigger + PrayerAlarmDeliveryPolicy.LATE_GRACE_MILLIS + 1))
+        assertFalse(PrayerAlarmDeliveryPolicy.shouldDeliver(trigger, trigger - 1))
+    }
 }
 
 class AsrMadhhabReferenceTest {

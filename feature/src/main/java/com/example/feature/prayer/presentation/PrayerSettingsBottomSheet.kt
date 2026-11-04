@@ -75,7 +75,21 @@ fun PrayerSettingsBottomSheet(
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = IhsanTheme.colors.accentContent,
-                    modifier = Modifier.padding(bottom = 24.dp)
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                val methodLabel = prayerMethodChoices.firstOrNull { it.first.name == method }?.second ?: method
+                val madhabLabel = if (madhab == "HANAFI") "حنفي" else "شافعي، مالكي، حنبلي"
+                val placeLabel = if (autoLocation) "موقع تلقائي" else "موقع يدوي: ${cityName.ifBlank { "غير محدد" }}"
+                Text(
+                    text = "المستخدم الآن: $methodLabel • $madhabLabel • $placeLabel",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = colors.textPrimary
+                )
+                Text(
+                    text = "هذه طريقة حساب، وليست مطابقة تلقائية لموعد مسجدك المحلي. التنبيه لا يُشغَّل إذا وصل بعد 15 دقيقة من الموعد المحسوب.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.textSecondary,
+                    modifier = Modifier.padding(top = 6.dp, bottom = 16.dp)
                 )
 
                 // Battery Optimization Card
@@ -141,6 +155,16 @@ fun PrayerSettingsBottomSheet(
 
                 // Location
                 SettingsSectionTitle("الموقع")
+                Text(
+                    text = if (autoLocation) {
+                        "يُستخدم موقع الجهاز إذا كان أحدث من 30 دقيقة. الموقع الأقدم يُستبدل بطلب جديد، وإلى أن ينجح قد يبقى آخر موقع محفوظ."
+                    } else {
+                        "الموقع اليدوي هو المستخدم في الحساب، ولا يتبدل مع حركة الجهاز."
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.textSecondary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,

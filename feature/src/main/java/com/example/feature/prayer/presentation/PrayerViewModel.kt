@@ -109,6 +109,7 @@ class PrayerViewModel(
                         locationUnavailableMessage = (location as? PrayerLocationState.Unavailable)
                             ?.let { unavailableMessage(it.reason) },
                         calculationMethodName = methodLabel(settings.method),
+                        madhhabName = madhhabLabel(settings.madhhab),
                         prePrayerReminderMinutes = settings.prePrayerNotificationMinutes,
                         adhanEnabled = settings.notificationsEnabled,
                         scheduleWarning = bundle.system.lastFailureSummary
@@ -208,6 +209,11 @@ class PrayerViewModel(
         PrayerCalculationMethod.QATAR -> "قطر"
         PrayerCalculationMethod.SINGAPORE -> "سنغافورة"
         PrayerCalculationMethod.OTHER -> "طريقة أخرى"
+    }
+
+    private fun madhhabLabel(madhhab: com.example.feature.prayer.domain.model.PrayerMadhhab): String = when (madhhab) {
+        com.example.feature.prayer.domain.model.PrayerMadhhab.SHAFI -> "شافعي، مالكي، حنبلي"
+        com.example.feature.prayer.domain.model.PrayerMadhhab.HANAFI -> "حنفي"
     }
 
     private fun locationLabel(state: PrayerLocationState): String = when (state) {

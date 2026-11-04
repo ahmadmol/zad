@@ -17,7 +17,7 @@ object RecitationSourceCatalog {
             name = "Quran.com API v4",
             documentationUrl = "https://api-docs.quran.foundation/docs/quickstart",
             verseAddressing = "chapter_number and verse_number on recitations/{reciter_id}/by_ayah/{verse_key}",
-            decision = "Official documented API. Audio files are copyrighted; commercial in-app playback needs a content license and must not ship an API secret in the APK."
+            decision = "Official documented API. Audio files are copyrighted; in-app playback needs a per-reciter grant and owner approval. The app may only open the public verse page externally."
         ),
         Candidate(
             name = "EveryAyah",

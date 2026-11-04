@@ -17,6 +17,7 @@ data class PrayerUiState(
     val locationUnavailable: Boolean = false,
     val locationUnavailableMessage: String? = null,
     val calculationMethodName: String = "رابطة العالم الإسلامي",
+    val madhhabName: String = "شافعي، مالكي، حنبلي",
     val prePrayerReminderMinutes: Int = 10,
     val adhanEnabled: Boolean = true,
     val showSettingsBottomSheet: Boolean = false,

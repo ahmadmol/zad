@@ -140,7 +140,7 @@ internal fun MushafPageSurface(
                             }
                             event.changes.forEach { if (it.positionChanged()) it.consume() }
                         }
-                    } else if (pressedCount == 1 && liveZoom > 1.02f) {
+                    } else if (pressedCount == 1 && QuranZoomPolicy.blocksHorizontalPaging(liveZoom, pressedCount)) {
                         val panChange = event.calculatePan()
                         if (panChange.getDistance() > 2f) {
                             pinched = true
@@ -153,7 +153,7 @@ internal fun MushafPageSurface(
                     }
                 } while (event.changes.any { it.pressed })
                 if (pinched && abs(gestureScale - 1f) > 0.01f) {
-                    updateFontSize((currentFontSize * gestureScale).coerceIn(20f, 48f))
+                    updateFontSize(QuranZoomPolicy.committedFontSize(currentFontSize, gestureScale))
                     gestureScale = 1f
                 } else if (!pinched) {
                     toggleChrome()

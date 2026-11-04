@@ -42,7 +42,7 @@ class HeaderAndSplashPolishTest {
         assertFalse("Duplicate hero title should be removed from ProfileHeroHeader", profileComponents.contains("مساحتك في إحسان"))
         assertFalse("Duplicate hero subtitle should be removed from ProfileHeroHeader", profileComponents.contains("ملفك وتفضيلاتك على هذا الجهاز"))
         assertFalse("Excessive 70.dp bottom padding should be replaced", profileComponents.contains("bottom = 70.dp"))
-        assertTrue("ProfileHeroHeader uses compact 52.dp bottom padding for avatar overlap", profileComponents.contains("bottom = 52.dp"))
+        assertTrue("ProfileHeroHeader keeps a short bottom inset for the avatar", profileComponents.contains("bottom = 28.dp"))
         assertTrue("Single canonical ProfileTitleHeader remains in ProfileScreen", profileScreen.contains("ProfileTitleHeader()"))
     }
 

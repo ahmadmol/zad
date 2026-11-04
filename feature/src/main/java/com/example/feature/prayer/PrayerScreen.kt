@@ -95,6 +95,13 @@ fun PrayerScreen(
                         })
                     Text(com.example.feature.core.util.currentHijriDateText(), Modifier.padding(horizontal = 20.dp),
                         style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
+                    Text(
+                        listOfNotNull(uiState.calculationMethodName, uiState.madhhabName, uiState.locationSourceLabel)
+                            .joinToString(" • "),
+                        Modifier.padding(horizontal = 20.dp),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = colors.textSecondary
+                    )
                     Box(Modifier.padding(20.dp)) {
                         PrayerHeroSection(uiState.nextPrayerName, uiState.nextPrayerCountdown, onNavigateToQibla)
                     }

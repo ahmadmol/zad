@@ -860,6 +860,27 @@ private fun VerseQuickActionSheet(
             ) {
                 Text("إضافة ملاحظة شخصية للآية")
             }
+            if (!com.example.feature.quran.util.RecitationAvailability.RECORDINGS_APPROVED) {
+                val officialUrl = com.example.feature.quran.util.OfficialRecitationLink.quranComVerse(verse.surahId, verse.verseNumber)
+                Text(
+                    text = "التلاوة داخل التطبيق غير مفعّلة حتى اعتماد ترخيص التسجيلات. يمكن فتح الآية نفسها في Quran.com.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = IhsanTheme.colors.textSecondary,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+                if (officialUrl != null) {
+                    TextButton(
+                        onClick = {
+                            runCatching {
+                                context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(officialUrl)))
+                            }.onFailure {
+                                com.example.feature.core.notification.UserMessageNotifier.notify(context, "تعذر فتح صفحة التلاوة")
+                            }
+                        },
+                        colors = com.example.designsystem.theme.ihsanTextButtonColors()
+                    ) { Text("فتح الآية في Quran.com") }
+                }
+            }
             if (verse.tafsir.isNullOrBlank()) {
                 Text(
                     text = "التفسير غير متاح في هذه النسخة؛ يلزم مصدر موثق وترخيص.",

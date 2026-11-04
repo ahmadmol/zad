@@ -105,6 +105,7 @@ fun EhsanHeaderBanner(
         location = cityName,
         hijriDate = islamicDate,
         showBrand = true,
+        compact = true,
         modifier = modifier,
         actions = {
             com.example.designsystem.component.IhsanHeaderAction(

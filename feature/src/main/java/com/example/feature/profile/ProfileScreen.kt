@@ -169,7 +169,7 @@ fun ProfileScreen(
                 Box(
                     modifier = Modifier.fillMaxWidth().layout { measurable, constraints ->
                         val placeable = measurable.measure(constraints)
-                        val overlap = 40.dp.roundToPx()
+                        val overlap = 24.dp.roundToPx()
                         layout(placeable.width, (placeable.height - overlap).coerceAtLeast(0)) {
                             placeable.placeRelative(0, -overlap)
                         }
@@ -195,7 +195,7 @@ fun ProfileScreen(
                             modifier = Modifier.padding(top = 0.dp)
                         )
 
-                        Spacer(modifier = Modifier.height(6.dp))
+                        Spacer(modifier = Modifier.height(2.dp))
 
                         // 3. Title & Subtitle
                         uiState.managementError?.let { error ->

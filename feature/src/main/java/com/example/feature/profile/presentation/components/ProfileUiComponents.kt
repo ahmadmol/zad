@@ -93,8 +93,8 @@ fun ProfileHeroHeader(
             .background(IhsanTheme.colors.surfaceMint)
             .statusBarsPadding()
             .padding(horizontal = 16.dp)
-            .padding(top = 8.dp, bottom = 52.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(top = 4.dp, bottom = 28.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         // Top Row: Brand wordmark on Start, standardized 48dp action buttons on End
         Row(
@@ -107,7 +107,7 @@ fun ProfileHeroHeader(
             com.example.designsystem.component.IhsanTextWithKaabaIcon(
                 text = "إحسان",
                 color = IhsanTheme.colors.accentContent,
-                logoHeight = 34.dp
+                logoHeight = 30.dp
             )
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),

@@ -53,6 +53,14 @@ class PrayerScheduleModeTest {
     }
 
     @Test
+    fun `built alarms have unique ids and none are already in the past`() {
+        val schedule = build(PrayerSchedulePolicy(includeSunrise = true, prePrayerMinutes = 10, iqamahMinutes = 10))
+        val ids = schedule.alarms.map { it.stableId }
+        assertEquals(ids.size, ids.toSet().size)
+        assertTrue(schedule.alarms.all { it.triggerEpochMillis > now })
+    }
+
+    @Test
     fun `fingerprint changes when scheduling settings change`() {
         assertNotEquals(fingerprint(pre = 10, iqamah = 5), fingerprint(pre = 5, iqamah = 20))
     }
