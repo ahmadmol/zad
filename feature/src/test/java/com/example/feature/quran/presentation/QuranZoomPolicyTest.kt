@@ -16,6 +16,11 @@ class QuranZoomPolicyTest {
         assertEquals(48f, QuranZoomPolicy.committedFontSize(40f, 2f), 0.01f)
     }
 
+    @Test fun `committing zoom keeps the surah ayah and page`() {
+        val anchor = ReadingAnchor(surahId = 4, ayahNumber = 50, pageIndex = 85)
+        assertEquals(anchor, QuranZoomPolicy.anchorAfterZoomCommit(anchor))
+    }
+
     @Test fun `one finger at the fitted size does not block the horizontal pager`() {
         assertFalse(QuranZoomPolicy.blocksHorizontalPaging(1f, 1))
         assertTrue(QuranZoomPolicy.blocksHorizontalPaging(1f, 2))

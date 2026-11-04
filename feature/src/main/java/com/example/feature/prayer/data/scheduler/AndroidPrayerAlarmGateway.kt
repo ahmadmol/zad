@@ -127,6 +127,12 @@ class AndroidPrayerAlarmGateway(
         storeAlarmIds(emptySet())
     }
 
+    /** Puts the same alarm id back when a broadcast arrived early. Does not add another id. */
+    fun rearmFutureAlarm(id: Int, triggerTime: Long, title: String, message: String): Boolean {
+        if (id == 0 || triggerTime <= System.currentTimeMillis()) return false
+        return scheduleAlarm(id, triggerTime, title, message).scheduled
+    }
+
     private data class ScheduleOutcome(val scheduled: Boolean, val inexact: Boolean)
 
     private fun scheduleAlarm(id: Int, triggerTime: Long, title: String, message: String): ScheduleOutcome {

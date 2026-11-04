@@ -12,6 +12,17 @@ object RecitationSourceCatalog {
         val decision: String
     )
 
+    /**
+     * One reciter can be enabled only after all of these exist outside the APK.
+     * RECORDINGS_APPROVED stays false until then.
+     */
+    val singleReciterRequirements: List<String> = listOf(
+        "Written license from the rights holder naming this app and allowing in-app streaming or download.",
+        "A verse-level map of surah and ayah to one audio file, not a whole-surah file.",
+        "Owner approval recorded before RECORDINGS_APPROVED is changed.",
+        "No API secret or bearer token stored in the APK."
+    )
+
     val reviewed: List<Candidate> = listOf(
         Candidate(
             name = "Quran.com API v4",

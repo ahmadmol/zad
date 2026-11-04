@@ -167,6 +167,7 @@ class QiblaViewModel(
         PrayerLocationUnavailableReason.PERMISSION_DENIED -> "يلزم إذن الموقع عند عدم وجود موقع محفوظ أو يدوي"
         PrayerLocationUnavailableReason.PROVIDER_DISABLED -> "خدمة الموقع متوقفة"
         PrayerLocationUnavailableReason.TIMEOUT -> "تعذر الحصول على موقع جديد"
+        PrayerLocationUnavailableReason.STALE_LOCATION -> "موقع الجهاز قديم وتعذر تحديثه. لن يُستخدم كموقع حالي."
         PrayerLocationUnavailableReason.NO_SAVED_LOCATION -> "لا يوجد موقع محفوظ. اسمح بالموقع أو اختر مدينة من إعدادات الصلاة."
         PrayerLocationUnavailableReason.UNKNOWN -> "تعذر تحديد الموقع"
     }

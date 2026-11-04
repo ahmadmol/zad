@@ -235,6 +235,7 @@ class PrayerViewModel(
         PrayerLocationUnavailableReason.PERMISSION_DENIED -> "يلزم إذن الموقع لحساب المواقيت"
         PrayerLocationUnavailableReason.PROVIDER_DISABLED -> "خدمة الموقع متوقفة"
         PrayerLocationUnavailableReason.TIMEOUT -> "تعذر الحصول على الموقع، حاول مرة أخرى"
+        PrayerLocationUnavailableReason.STALE_LOCATION -> "موقع الجهاز أقدم من 30 دقيقة وتعذر تحديثه. لن يُعرض كموقع حالي؛ أعد المحاولة أو اختر مدينة."
         PrayerLocationUnavailableReason.NO_SAVED_LOCATION -> "لا يوجد موقع محفوظ. حدّث الموقع أو اختر مدينة يدوياً"
         PrayerLocationUnavailableReason.UNKNOWN -> "تعذر تحديد الموقع"
     }

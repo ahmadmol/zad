@@ -114,16 +114,34 @@ class PrayerLocationRepositoryImpl(
         return try {
             @SuppressLint("MissingPermission")
             val cached = fusedLocationClient.lastLocation.await()
-            val cachedIsFresh = cached != null &&
-                com.example.feature.prayer.domain.location.DeviceLocationFreshness.isFresh(
-                    cached.time, System.currentTimeMillis()
-                )
-            val location = if (cachedIsFresh) cached
+            val now = System.currentTimeMillis()
+            val cachedFresh = cached != null &&
+                com.example.feature.prayer.domain.location.DeviceLocationFreshness.isFresh(cached.time, now)
+            val fresh = if (cachedFresh) null
             else fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null).await()
-                ?: cached
+            val choice = com.example.feature.prayer.domain.location.DeviceLocationFreshness.choose(
+                hasCachedFix = cached != null,
+                cachedFresh = cachedFresh,
+                freshFixAvailable = fresh != null
+            )
+            val location = when (choice) {
+                com.example.feature.prayer.domain.location.DeviceLocationFreshness.FixChoice.UseCached -> cached
+                com.example.feature.prayer.domain.location.DeviceLocationFreshness.FixChoice.UseFresh -> fresh
+                com.example.feature.prayer.domain.location.DeviceLocationFreshness.FixChoice.RejectStale -> null
+                com.example.feature.prayer.domain.location.DeviceLocationFreshness.FixChoice.Missing -> null
+            }
 
             if (location == null) {
-                Result.failure(LocationUnavailableException(PrayerLocationUnavailableReason.TIMEOUT))
+                if (choice == com.example.feature.prayer.domain.location.DeviceLocationFreshness.FixChoice.RejectStale) {
+                    lastDeviceFix.value = null
+                }
+                Result.failure(LocationUnavailableException(
+                    if (choice == com.example.feature.prayer.domain.location.DeviceLocationFreshness.FixChoice.RejectStale) {
+                        PrayerLocationUnavailableReason.STALE_LOCATION
+                    } else {
+                        PrayerLocationUnavailableReason.TIMEOUT
+                    }
+                ))
             } else {
                 val displayName = resolveDisplayName(location.latitude, location.longitude)
                 val prayerLocation = PrayerLocation(

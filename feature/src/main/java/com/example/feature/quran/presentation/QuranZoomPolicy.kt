@@ -14,4 +14,9 @@ internal object QuranZoomPolicy {
 
     fun blocksHorizontalPaging(liveZoom: Float, pressedPointers: Int): Boolean =
         pressedPointers >= 2 || liveZoom > 1.02f
+
+    /** Ending a pinch only changes the font scale. The reading anchor stays put. */
+    fun anchorAfterZoomCommit(anchor: ReadingAnchor): ReadingAnchor = anchor
 }
+
+internal data class ReadingAnchor(val surahId: Int, val ayahNumber: Int, val pageIndex: Int)

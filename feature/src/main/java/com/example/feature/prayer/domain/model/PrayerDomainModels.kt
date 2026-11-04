@@ -49,6 +49,7 @@ enum class PrayerLocationUnavailableReason {
     PERMISSION_DENIED,
     PROVIDER_DISABLED,
     TIMEOUT,
+    STALE_LOCATION,
     NO_SAVED_LOCATION,
     UNKNOWN
 }

@@ -11,5 +11,7 @@ class RecitationSourceCatalogTest {
         assertTrue(RecitationSourceCatalog.reviewed.all { it.documentationUrl.startsWith("https://") })
         assertFalse(RecitationAvailability.RECORDINGS_APPROVED)
         assertTrue(RecitationSourceCatalog.reviewed.single { it.name == "mp3quran.net" }.decision.contains("Rejected"))
+        assertTrue(RecitationSourceCatalog.singleReciterRequirements.any { it.contains("Written license") })
+        assertTrue(RecitationSourceCatalog.singleReciterRequirements.any { it.contains("verse-level") })
     }
 }

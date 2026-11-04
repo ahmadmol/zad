@@ -6,6 +6,7 @@ import com.example.feature.prayer.domain.model.PrayerCalculationSettings
 import com.example.feature.prayer.domain.model.PrayerLocation
 import com.example.feature.prayer.domain.model.PrayerMadhhab
 import com.example.feature.prayer.domain.model.PrayerName
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -27,11 +28,15 @@ class PrayerAlarmDeliveryPolicyTest {
         assertFalse(PrayerAlarmDeliveryPolicy.shouldDeliver(0L, 1_700_000_000_000L))
     }
 
-    @Test fun `delivery ends exactly at fifteen minutes and a broadcast before the trigger is dropped`() {
+    @Test fun `delivery ends exactly at fifteen minutes and an early broadcast is rearmed once`() {
         val trigger = 1_700_000_000_000L
         assertTrue(PrayerAlarmDeliveryPolicy.shouldDeliver(trigger, trigger + PrayerAlarmDeliveryPolicy.LATE_GRACE_MILLIS))
         assertFalse(PrayerAlarmDeliveryPolicy.shouldDeliver(trigger, trigger + PrayerAlarmDeliveryPolicy.LATE_GRACE_MILLIS + 1))
+        val early = PrayerAlarmDeliveryPolicy.decide(trigger, trigger - 60_000L)
+        assertTrue(early is PrayerAlarmDeliveryPolicy.DeliveryDecision.Rearm)
+        assertEquals(trigger, (early as PrayerAlarmDeliveryPolicy.DeliveryDecision.Rearm).triggerEpochMillis)
         assertFalse(PrayerAlarmDeliveryPolicy.shouldDeliver(trigger, trigger - 1))
+        assertTrue(PrayerAlarmDeliveryPolicy.decide(trigger, trigger) is PrayerAlarmDeliveryPolicy.DeliveryDecision.Deliver)
     }
 }
 

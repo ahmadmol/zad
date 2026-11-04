@@ -28,6 +28,19 @@ class PrayerCalendarBoundaryTest {
         assertEquals("Europe/London", before.timeZoneId)
     }
 
+    @Test fun `the solar instant stays put while the requested zone changes the shown clock`() {
+        val date = LocalDate.of(2026, 10, 14)
+        val damascus = day(date, aleppo, ZoneId.of("Asia/Damascus"))
+        val london = day(date, aleppo, ZoneId.of("Europe/London"))
+        val fajr = damascus.instant(PrayerName.FAJR)!!.epochMillis
+        assertEquals(fajr, london.instant(PrayerName.FAJR)!!.epochMillis)
+        assertEquals("Asia/Damascus", damascus.timeZoneId)
+        assertEquals("Europe/London", london.timeZoneId)
+        val damascusClock = Instant.ofEpochMilli(fajr).atZone(ZoneId.of("Asia/Damascus"))
+        val londonClock = Instant.ofEpochMilli(fajr).atZone(ZoneId.of("Europe/London"))
+        assertNotEquals(damascusClock.toLocalTime(), londonClock.toLocalTime())
+    }
+
     @Test fun `the requested civil date is the prayer day even when the clock is near midnight`() {
         val zone = ZoneId.of("Asia/Damascus")
         val today = day(LocalDate.of(2026, 10, 14), aleppo, zone)

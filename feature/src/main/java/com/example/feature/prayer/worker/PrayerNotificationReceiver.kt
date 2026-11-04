@@ -17,10 +17,18 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
         val title = intent.getStringExtra("title") ?: "تنبيه الصلاة"
         val message = intent.getStringExtra("message") ?: ""
         val triggerEpoch = intent.getLongExtra("trigger_epoch", 0L)
-        if (!com.example.feature.prayer.domain.scheduler.PrayerAlarmDeliveryPolicy.shouldDeliver(
-                triggerEpoch, System.currentTimeMillis()
-            )
-        ) return
+        val alarmId = intent.getIntExtra("alarm_id", 0)
+        when (val decision = com.example.feature.prayer.domain.scheduler.PrayerAlarmDeliveryPolicy.decide(
+            triggerEpoch, System.currentTimeMillis()
+        )) {
+            is com.example.feature.prayer.domain.scheduler.PrayerAlarmDeliveryPolicy.DeliveryDecision.Rearm -> {
+                com.example.feature.prayer.data.scheduler.AndroidPrayerAlarmGateway(context)
+                    .rearmFutureAlarm(alarmId, decision.triggerEpochMillis, title, message)
+                return
+            }
+            com.example.feature.prayer.domain.scheduler.PrayerAlarmDeliveryPolicy.DeliveryDecision.Drop -> return
+            com.example.feature.prayer.domain.scheduler.PrayerAlarmDeliveryPolicy.DeliveryDecision.Deliver -> Unit
+        }
         val pendingResult = goAsync()
 
         val settingsManager = SettingsManager(context)

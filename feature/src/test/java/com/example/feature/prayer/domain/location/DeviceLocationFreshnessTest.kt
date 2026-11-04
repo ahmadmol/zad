@@ -1,5 +1,6 @@
 package com.example.feature.prayer.domain.location
 
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -16,5 +17,18 @@ class DeviceLocationFreshnessTest {
         assertFalse(DeviceLocationFreshness.isFresh(now - DeviceLocationFreshness.MAX_AGE_MILLIS - 1, now))
         assertFalse(DeviceLocationFreshness.isFresh(0L, now))
         assertFalse(DeviceLocationFreshness.isFresh(now + 60_000L, now))
+    }
+
+    @Test fun `a stale cache is rejected again when the fresh request fails`() {
+        val first = DeviceLocationFreshness.choose(hasCachedFix = true, cachedFresh = false, freshFixAvailable = false)
+        val second = DeviceLocationFreshness.choose(hasCachedFix = true, cachedFresh = false, freshFixAvailable = false)
+        assertEquals(DeviceLocationFreshness.FixChoice.RejectStale, first)
+        assertEquals(first, second)
+        assertEquals(DeviceLocationFreshness.FixChoice.UseFresh,
+            DeviceLocationFreshness.choose(true, false, true))
+        assertEquals(DeviceLocationFreshness.FixChoice.UseCached,
+            DeviceLocationFreshness.choose(true, true, false))
+        assertEquals(DeviceLocationFreshness.FixChoice.Missing,
+            DeviceLocationFreshness.choose(false, false, false))
     }
 }

@@ -53,6 +53,14 @@ class PrayerScheduleModeTest {
     }
 
     @Test
+    fun `rebuilding the same schedule keeps the same ids`() {
+        val policy = PrayerSchedulePolicy(includeSunrise = true, prePrayerMinutes = 10, iqamahMinutes = 10)
+        val first = build(policy).alarms.map { it.stableId }
+        val second = build(policy).alarms.map { it.stableId }
+        assertEquals(first, second)
+    }
+
+    @Test
     fun `built alarms have unique ids and none are already in the past`() {
         val schedule = build(PrayerSchedulePolicy(includeSunrise = true, prePrayerMinutes = 10, iqamahMinutes = 10))
         val ids = schedule.alarms.map { it.stableId }
