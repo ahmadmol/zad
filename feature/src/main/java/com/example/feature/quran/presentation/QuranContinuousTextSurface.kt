@@ -60,7 +60,8 @@ fun QuranContinuousTextSurface(
     modifier: Modifier = Modifier,
     initialAyah: Int = 1,
     requestKey: String = "${surah.id}:$initialAyah",
-    onZoomFontSize: (Float) -> Unit = {}
+    onZoomFontSize: (Float) -> Unit = {},
+    onToggleChrome: () -> Unit = {}
 ) {
     val isDark = IhsanTheme.isDark
     val font = remember { FontFamily(Font(R.font.amiri_quran)) }
@@ -71,6 +72,7 @@ fun QuranContinuousTextSurface(
     val listState = rememberLazyListState()
     val currentFontSize by rememberUpdatedState(fontSizeSp)
     val updateFontSize by rememberUpdatedState(onZoomFontSize)
+    val toggleChrome by rememberUpdatedState(onToggleChrome)
     val visibleAyahCallback by rememberUpdatedState(onVisibleAyahChanged)
 
     // Jump to initial ayah once per requestKey + surah.id
@@ -118,7 +120,7 @@ fun QuranContinuousTextSurface(
                 val event = awaitPointerEvent()
                 if (event.changes.count { it.pressed } >= 2) {
                     val zoomChange = event.calculateZoom()
-                    if (abs(zoomChange - 1f) > 0.005f) {
+                    if (abs(zoomChange - 1f) > 0.02f) {
                         val nextSize = (currentFontSize * zoomChange).coerceIn(20f, 48f)
                         updateFontSize(nextSize)
                         event.changes.forEach { if (it.positionChanged()) it.consume() }
@@ -140,6 +142,7 @@ fun QuranContinuousTextSurface(
         // 1. Surah Header Cartouche
         item(key = "surah_header_${surah.id}") {
             Surface(
+                onClick = toggleChrome,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(18.dp),
                 color = cardBg,

@@ -134,6 +134,7 @@ class AndroidPrayerAlarmGateway(
             putExtra("title", title)
             putExtra("message", message)
             putExtra("alarm_id", id)
+            putExtra("trigger_epoch", triggerTime)
         }
         val pendingIntent = PendingIntent.getBroadcast(
             context,

@@ -16,6 +16,11 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val title = intent.getStringExtra("title") ?: "تنبيه الصلاة"
         val message = intent.getStringExtra("message") ?: ""
+        val triggerEpoch = intent.getLongExtra("trigger_epoch", 0L)
+        if (!com.example.feature.prayer.domain.scheduler.PrayerAlarmDeliveryPolicy.shouldDeliver(
+                triggerEpoch, System.currentTimeMillis()
+            )
+        ) return
         val pendingResult = goAsync()
 
         val settingsManager = SettingsManager(context)

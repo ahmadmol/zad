@@ -10,6 +10,9 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -87,14 +90,18 @@ internal fun MushafPageSurface(
     activeVerseNumber: Int?,
     onVerse: (Verse) -> Unit,
     onZoomFontSize: (Float) -> Unit = {},
+    onToggleChrome: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val ink = QuranInk
     val font = remember { FontFamily(Font(R.font.amiri_quran)) }
     val zoom = (requestedFontSize / 28f).coerceIn(.7f, 2f)
-    var pan by remember(page.number, zoom <= 1.01f) { mutableStateOf(Offset.Zero) }
+    var gestureScale by remember(page.number) { mutableFloatStateOf(1f) }
+    val liveZoom = (zoom * gestureScale).coerceIn(.7f, 2f)
+    var pan by remember(page.number, liveZoom <= 1.01f) { mutableStateOf(Offset.Zero) }
     val currentFontSize by rememberUpdatedState(requestedFontSize)
     val updateFontSize by rememberUpdatedState(onZoomFontSize)
+    val toggleChrome by rememberUpdatedState(onToggleChrome)
 
     // Use the original 1024 × 1536 artwork unchanged. All content coordinates
     // are relative to this fitted page, so the frame never stretches or crops.
@@ -107,37 +114,36 @@ internal fun MushafPageSurface(
     }, contentAlignment = Alignment.Center) {
         val pageWidth = minOf(maxWidth, maxHeight * (2f / 3f))
         val pageHeight = pageWidth * 1.5f
-        val panLimitX = with(LocalDensity.current) { pageWidth.toPx() } * (zoom - 1f).coerceAtLeast(0f) / 2f
-        val panLimitY = with(LocalDensity.current) { pageHeight.toPx() } * (zoom - 1f).coerceAtLeast(0f) / 2f
+        val panLimitX = with(LocalDensity.current) { pageWidth.toPx() } * (liveZoom - 1f).coerceAtLeast(0f) / 2f
+        val panLimitY = with(LocalDensity.current) { pageHeight.toPx() } * (liveZoom - 1f).coerceAtLeast(0f) / 2f
 
-        // Unified multi-touch pinch-to-zoom and zoomed single-finger pan gesture
-        // that passes single-finger horizontal swipes through to HorizontalPager when at 1x zoom.
-        val zoomAndPanGesture = Modifier.pointerInput(page.number, panLimitX, panLimitY) {
+        // Pinch updates a local scale only. The fitted Quran text is measured again
+        // once, when the gesture ends, instead of on every pointer move.
+        val zoomAndPanGesture = Modifier.pointerInput(page.number) {
             awaitEachGesture {
                 awaitFirstDown(requireUnconsumed = false)
+                var pinched = false
                 do {
                     val event = awaitPointerEvent()
                     val pressedCount = event.changes.count { it.pressed }
                     if (pressedCount >= 2) {
                         val zoomChange = event.calculateZoom()
                         val panChange = event.calculatePan()
-                        if (abs(zoomChange - 1f) > 0.005f || panChange != Offset.Zero) {
-                            val nextFontSize = (currentFontSize * zoomChange).coerceIn(20f, 48f)
-                            updateFontSize(nextFontSize)
-                            val nextZoom = (nextFontSize / 28f).coerceIn(.7f, 2f)
-                            if (nextZoom > 1.01f) {
+                        if (abs(zoomChange - 1f) > 0.001f || panChange != Offset.Zero) {
+                            pinched = true
+                            gestureScale = (gestureScale * zoomChange).coerceIn(0.7f / zoom, 2f / zoom)
+                            if (liveZoom > 1.01f) {
                                 pan = Offset(
                                     (pan.x + panChange.x).coerceIn(-panLimitX, panLimitX),
                                     (pan.y + panChange.y).coerceIn(-panLimitY, panLimitY)
                                 )
-                            } else {
-                                pan = Offset.Zero
                             }
                             event.changes.forEach { if (it.positionChanged()) it.consume() }
                         }
-                    } else if (pressedCount == 1 && (currentFontSize / 28f) > 1.02f) {
+                    } else if (pressedCount == 1 && liveZoom > 1.02f) {
                         val panChange = event.calculatePan()
-                        if (panChange != Offset.Zero) {
+                        if (panChange.getDistance() > 2f) {
+                            pinched = true
                             pan = Offset(
                                 (pan.x + panChange.x).coerceIn(-panLimitX, panLimitX),
                                 (pan.y + panChange.y).coerceIn(-panLimitY, panLimitY)
@@ -146,11 +152,17 @@ internal fun MushafPageSurface(
                         }
                     }
                 } while (event.changes.any { it.pressed })
+                if (pinched && abs(gestureScale - 1f) > 0.01f) {
+                    updateFontSize((currentFontSize * gestureScale).coerceIn(20f, 48f))
+                    gestureScale = 1f
+                } else if (!pinched) {
+                    toggleChrome()
+                }
             }
         }
 
         Box(Modifier.size(pageWidth, pageHeight).then(zoomAndPanGesture).graphicsLayer {
-            scaleX = zoom; scaleY = zoom; translationX = pan.x; translationY = pan.y
+            scaleX = liveZoom; scaleY = liveZoom; translationX = pan.x; translationY = pan.y
         }, contentAlignment = AbsoluteAlignment.TopLeft) {
             Image(
                 painter = painterResource(R.drawable.quran_page_background),
@@ -216,7 +228,7 @@ internal fun MushafPageSurface(
                     textAlign = if (page.number <= 2) TextAlign.Center else TextAlign.Justify,
                     style = TextStyle(textDirection = TextDirection.Rtl), onTextLayout = { layout = it },
                     modifier = Modifier.fillMaxWidth().pointerInput(page, text) {
-                        detectTapGestures(onTap = { point ->
+                        detectTapGestures(onLongPress = { point ->
                             layout?.getOffsetForPosition(point)?.let { offset ->
                                 text.getStringAnnotations("verse", offset, offset).firstOrNull()?.item?.toIntOrNull()?.let {
                                     onVerse(page.verses[it])

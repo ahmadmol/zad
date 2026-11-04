@@ -101,7 +101,7 @@ fun EhsanHeaderBanner(
 ) {
     com.example.designsystem.component.IhsanSkylineHeader(
         title = "مجتمع إحسان",
-        subtitle = stringResource(R.string.polish_community_hero),
+        subtitle = stringResource(R.string.polish_community_hero).lineSequence().firstOrNull().orEmpty(),
         location = cityName,
         hijriDate = islamicDate,
         showBrand = true,

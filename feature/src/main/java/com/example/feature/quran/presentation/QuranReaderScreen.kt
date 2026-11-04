@@ -108,7 +108,8 @@ fun QuranReaderScreen(
     var activeActionVerse by remember { mutableStateOf<Verse?>(null) }
     var showFontSettings by remember { mutableStateOf(false) }
     var showReaderPicker by remember { mutableStateOf(false) }
-    var playerExpanded by rememberSaveable { mutableStateOf(true) }
+    var playerExpanded by rememberSaveable { mutableStateOf(false) }
+    var chromeVisible by rememberSaveable { mutableStateOf(false) }
 
     val targetSurahId = state.currentReadingSurahId ?: state.selectedSurah?.id ?: 1
     val targetAyahNumber = state.currentReadingAyah ?: state.initialAyahScroll ?: 1
@@ -130,6 +131,16 @@ fun QuranReaderScreen(
     val updateActivePosition by rememberUpdatedState(onUpdateActivePosition)
     val selectPageSurah by rememberUpdatedState(onSelectPageSurah)
     val latestState by rememberUpdatedState(state)
+
+    LaunchedEffect(chromeVisible, showFontSettings, showReaderPicker, activeActionVerse, selectedVerseForTafsir) {
+        if (chromeVisible && !showFontSettings && !showReaderPicker && activeActionVerse == null && selectedVerseForTafsir == null) {
+            delay(4_500)
+            chromeVisible = false
+        }
+    }
+    val toggleChrome = {
+        chromeVisible = !chromeVisible
+    }
 
     // Initial landing execution: scroll to resolved target page once per reading request.
     LaunchedEffect(pages.isNotEmpty(), requestIdentity, state.isTargetLocked, state.selectedSurah?.id) {
@@ -243,6 +254,7 @@ fun QuranReaderScreen(
         Scaffold(
             containerColor = bgCanvas,
             topBar = {
+                AnimatedVisibility(visible = chromeVisible, enter = slideInVertically { -it }, exit = slideOutVertically { -it }) {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                     Row(
                         modifier = Modifier
@@ -401,8 +413,10 @@ fun QuranReaderScreen(
                         }
                     }
                 }
+                }
             },
             bottomBar = {
+                AnimatedVisibility(visible = chromeVisible, enter = slideInVertically { it }, exit = slideOutVertically { it }) {
                 Column {
                     AnimatedVisibility(visible = showFontSettings) {
                         Surface(
@@ -509,11 +523,13 @@ fun QuranReaderScreen(
                         }
                     }
                 }
+                }
             }
         ) { padding ->
             Column(
                 modifier = Modifier
                     .padding(padding)
+                    .then(if (chromeVisible) Modifier else Modifier.statusBarsPadding().navigationBarsPadding())
                     .fillMaxSize()
                     .background(bgCanvas)
             ) {
@@ -592,6 +608,7 @@ fun QuranReaderScreen(
                                     initialAyah = targetAyahNumber,
                                     requestKey = requestIdentity,
                                     onZoomFontSize = onUpdateFontSize,
+                                    onToggleChrome = toggleChrome,
                                     modifier = Modifier.fillMaxSize()
                                 )
                             } else {
@@ -619,6 +636,7 @@ fun QuranReaderScreen(
                                                 } ?: verse
                                             },
                                             onZoomFontSize = onUpdateFontSize,
+                                            onToggleChrome = toggleChrome,
                                             modifier = Modifier.fillMaxSize()
                                         )
                                     }

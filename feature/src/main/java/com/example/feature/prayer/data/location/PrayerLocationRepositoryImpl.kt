@@ -113,8 +113,12 @@ class PrayerLocationRepositoryImpl(
 
         return try {
             @SuppressLint("MissingPermission")
-            val location = fusedLocationClient.lastLocation.await()
-                ?: fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null).await()
+            val cached = fusedLocationClient.lastLocation.await()
+            val cachedIsFresh = cached != null &&
+                System.currentTimeMillis() - cached.time <= 30L * 60L * 1000L
+            val location = if (cachedIsFresh) cached
+            else fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null).await()
+                ?: cached
 
             if (location == null) {
                 Result.failure(LocationUnavailableException(PrayerLocationUnavailableReason.TIMEOUT))
